@@ -19,7 +19,7 @@
 }
 
 .user-links a {
-  color: black;
+  color: #14171a;
   font-size: 24px;
 }
 
@@ -44,11 +44,11 @@
   font-size: 12px;
   background-color: lightgrey;
   border: none;
-  color: black;
+  color: #14171a;
 }
 
 .button-edit:hover {
-  color: black;
+  color: #14171a;
   background-color: lightgrey;
 }
 

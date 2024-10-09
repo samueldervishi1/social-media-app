@@ -14,7 +14,6 @@ public class Post {
 
     @Id
     private String id;
-    private String title;
     private String userId;
     private String content;
     private List<Comments> commentsList = new ArrayList<>();
@@ -23,12 +22,14 @@ public class Post {
     private String postTime;
     private String imageUrl;
 
-    public Post(String title, String content) {
+    public Post(String content) {
         this.id = UUID.randomUUID().toString();
-        this.title = title;
         this.content = content;
         this.postDate = LocalDate.now().toString();
         this.postTime = LocalTime.now().toString();
+    }
+
+    public Post() {
     }
 
     public String getUserId() {
@@ -43,20 +44,12 @@ public class Post {
         return id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getContent() {
         return content;
     }
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public void setContent(String content) {

@@ -16,6 +16,7 @@ const AiChat = () => {
   const [countdown, setCountdown] = useState(0);
   const chatContainerRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -96,7 +97,18 @@ const AiChat = () => {
 
     if (isRateLimited) return;
 
+    if (userInput.length > 4000) {
+      // Check if the input exceeds the character limit
+      const errorResponse = {
+        content: "Your input exceeds the 4000 character limit.",
+        isUser: false,
+      };
+      setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
+      return;
+    }
+
     setIsLoading(true);
+    setIsThinking(true); 
 
     const message = { content: userInput, isUser: true };
     setChatMessages((prevMessages) => [...prevMessages, message]);
@@ -126,6 +138,7 @@ const AiChat = () => {
       if (response.status === 200) {
         const responseData = response.data.answer;
         simulateTypingEffect(responseData);
+        setIsThinking(false);
 
         const userId = getUserIdFromToken();
         if (userId) {
@@ -139,6 +152,7 @@ const AiChat = () => {
         }
       } else {
         console.error("Error: ", response.statusText);
+        setIsThinking(false);
       }
     } catch (error) {
       if (error.response?.status === 408) {
@@ -210,9 +224,9 @@ const AiChat = () => {
     scrollToBottom();
   }, [chatMessages, isLoading]);
 
-  const navigatehome =() => {
+  const navigatehome = () => {
     navigate("/home");
-  }
+  };
 
   return (
     <div className="sideb-bar-container">
@@ -243,6 +257,21 @@ const AiChat = () => {
               </div>
             </div>
           ))}
+          {isThinking && (
+  <div className={`wrapper ai`}>
+    <div className="chat">
+      <div className="profile">
+        <img src={bot} alt="bot" />
+      </div>
+      <div className="message thinking-placeholder">
+        Thinking
+        <span className="dot">.</span>
+        <span className="dot">.</span>
+        <span className="dot">.</span>
+      </div>
+    </div>
+  </div>
+)}
         </div>
         <form className="ai-form" onSubmit={handleSubmit}>
           <textarea
@@ -255,6 +284,7 @@ const AiChat = () => {
             onChange={(e) => setUserInput(e.target.value)}
             onKeyUp={handleKeyUp}
             disabled={isRateLimited}
+            maxLength={4000} // Set a maximum character length
           ></textarea>
           <button className="ai-submit" type="submit" disabled={isRateLimited}>
             <img src={send} alt="Send" />
@@ -267,13 +297,14 @@ const AiChat = () => {
           <button
             style={{
               border: "none",
-              background: "linear-gradient(to right, #0072ff, #00c6ff)",
+              background: "white",
               padding: 10,
               borderRadius: 200,
               marginLeft: 10,
               height: 35,
               textAlign: "center",
-              color: "white"
+              color: "black",
+              textDecoration: "underline"
             }}
             onClick={navigatehome}
           >

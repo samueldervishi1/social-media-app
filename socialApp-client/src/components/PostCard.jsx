@@ -8,11 +8,11 @@ import { AiOutlineComment, AiOutlineShareAlt } from "react-icons/ai";
 import { IoSend } from "react-icons/io5";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import Modal from "react-bootstrap/Modal";
-import defaultUserIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/user.webp";
-import redditIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/reddit.png";
-import whatsapp from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/whatsapp.png";
-import xIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/twitter.jpg";
-import facebookIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/faceboook.png";
+import defaultUserIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
+import redditIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/reddit.png";
+import whatsapp from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/whatsapp.png";
+import xIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/twitter.jpg";
+import facebookIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/faceboook.png";
 import "../styles/post-card.css";
 
 const PostCard = ({
@@ -632,7 +632,6 @@ PostCard.propTypes = {
   title: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
   postDate: PropTypes.string.isRequired,
-  postTime: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
 };

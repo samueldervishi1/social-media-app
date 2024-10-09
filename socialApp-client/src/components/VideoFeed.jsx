@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/video-feed.css";
-import loaderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/ZKZg.gif";
-import placeHolderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/user.webp";
+import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
+import placeHolderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
 import VideoCard from "../components/video/VideoCard";
 import { CopyToClipboard } from "react-copy-to-clipboard"; // For copy to clipboard functionality
 

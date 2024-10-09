@@ -1,6 +1,6 @@
 button.gen-new {
   background-color: #b3d4fc;
-  color: black;
+  color: #14171a;
   width: auto;
   margin-top: 20px;
 }
@@ -11,7 +11,7 @@ button.gen-new {
 
 .header-qr {
   margin: 0 auto 40px auto;
-  background-image: url("/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/background.jpg");
+  background-image: url("/home/samuel/Documents/social-media-app/socialApp-client/src/assets/background.jpg");
   background-size: cover;
   background-position: center;
   padding: 40px;

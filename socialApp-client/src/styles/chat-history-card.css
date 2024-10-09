@@ -1,15 +1,12 @@
 .chat-history-card {
   cursor: pointer;
-  border: 1px solid #ddd;
+  border: .2px solid grey;
   border-radius: 5px;
   padding: 10px;
   margin: 10px;
-  background-color: #f9f9f9;
+  background-color: black;
   transition: background-color 0.3s;
-}
-
-.chat-history-card:hover {
-  background-color: #e0e0e0;
+  color: white;
 }
 
 .text-lader {

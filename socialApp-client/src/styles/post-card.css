@@ -1,13 +1,15 @@
 .post-card {
-  background-color: white;
+  background-color: #14171a;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 15px;
   margin-bottom: 20px;
   margin: 20px auto;
   position: relative;
-  max-width: 800px;
+  max-width: 600px;
   cursor: pointer;
+  color: white;
+  border: 0.2px solid grey;
 }
 
 .copy-url-button {
@@ -25,7 +27,7 @@
 .list-loader {
   width: 100%;
   transform: translate(-50%, 50%);
-  left: 35%;
+  left: 50%;
   position: absolute;
   justify-content: center;
   align-items: center;
@@ -44,7 +46,7 @@
 
 .saved-count {
   font-size: 14px;
-  color: #555;
+  color: white;
 }
 
 .post-image {
@@ -61,7 +63,7 @@
 .loader-text {
   margin-top: 10px;
   font-size: 16px;
-  color: #333;
+  color: white;
   text-align: center;
 }
 
@@ -156,7 +158,7 @@
 }
 
 .comment-date {
-  color: #888;
+  color: white;
   font-size: 0.8rem;
 }
 
@@ -168,7 +170,7 @@
 
 .post-date {
   font-size: 8.5px;
-  color: grey;
+  color: white;
   position: absolute;
   left: 26px;
   top: 105px;
@@ -207,7 +209,7 @@
 
 .add-comment-button {
   background: transparent;
-  color: black;
+  color: #14171a;
   border: none;
   margin-top: -1px;
 }
@@ -272,7 +274,7 @@
     border-radius: 3px;
   }
   .post-comment-button:hover {
-    background-color: black;
+    background-color: #14171a;
     color: white;
     transition: 0.5s ease-in-out;
   }
@@ -315,7 +317,7 @@
   }
   .add-comment-button {
     background-color: transparent;
-    color: black;
+    color: #14171a;
     margin-left: 70px;
     margin-top: -16px;
   }
@@ -331,11 +333,11 @@
   }
   .post-comment-button {
     background-color: transparent;
-    color: black;
+    color: #14171a;
     padding: 5px;
   }
   .post-comment-button:hover {
-    background-color: black;
+    background-color: #14171a;
     color: white;
     transition: 0.5s ease-in-out;
   }

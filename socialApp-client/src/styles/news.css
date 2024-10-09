@@ -1,12 +1,11 @@
 .recent-news-container {
-  background-color: white;
-  box-shadow: 0 4px 8px rgb(0, 0, 0, 0.2);
+  background-color: #14171a;
   padding: 15px;
   height: calc(96vh - 20px);
   overflow: auto;
   position: fixed;
   right: 0;
-  top: -2px;
+  top: 6%;
   max-width: 580px;
   z-index: 1000;
   display: flex;
@@ -43,12 +42,14 @@
   text-align: center;
   position: sticky;
   top: 0;
-  background: white;
+  background: #14171a;
+  color: white;
   z-index: 1001;
 }
 
 .news-header h1{
   font-size: 50px;
+  color: white;
 }
 
 .news-list {
@@ -84,7 +85,7 @@
 .news-title {
   display: block;
   margin-top: 5px;
-  color: #333;
+  color: white;
 }
 
 .loader-container {

@@ -2,15 +2,37 @@
   display: flex;
   flex-direction: row;
   justify-content: center; 
-  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  background: #fff;
+  padding: 5px;
   position: fixed;
-  width: 100%;
+  width: 60%; 
   overflow: visible;
   z-index: 1001;
-  right: 0;
-  top: 94%;
+  right: 20%;
+  top: 5px; 
+  background: rgba(127, 112, 112, 0.48);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.1px);
+  -webkit-backdrop-filter: blur(10.1px);
+  border: 1px solid rgba(158, 102, 102, 0.68);
+}
+.custom-modal {
+  background-color: black !important; /* Set the background color to black */
+  color: white; /* Set the text color to white */
+}
+
+.custom-modal .modal-body {
+  background-color: black !important; /* Ensure the modal body also has a black background */
+}
+
+.custom-modal .modal-header, 
+.custom-modal .modal-footer {
+  background-color: black !important; /* Ensure the header and footer have a black background */
+  color: white; /* Set text color in header and footer to white */
+}
+
+.custom-modal .close {
+  color: white !important; /* Set the close button color to white */
 }
 
 .history-div-2 {
@@ -101,7 +123,7 @@
   align-items: center;
   padding: 12px 0;
   margin-bottom: 10px;
-  color: black;
+  color: white;
   text-decoration: none;
   transition: all 0.3s ease;
 }
@@ -122,7 +144,7 @@
   align-items: center;
   padding: 10px;
   font-size: 18px;
-  color: black;
+  color: white;
   text-decoration: none;
   transition: all 0.3s ease;
   cursor: pointer;

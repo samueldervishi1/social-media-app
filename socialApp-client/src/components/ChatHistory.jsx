@@ -20,15 +20,12 @@ import { FaRegFileAlt } from "react-icons/fa";
 import { IoQrCodeOutline } from "react-icons/io5";
 import {
   MdContacts,
-  MdOutlineManageHistory,
-  MdOutlineVideoLibrary,
   MdOutlinePassword
 } from "react-icons/md";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import loaderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/ZKZg.gif";
-import image from "../assets/nw3.png";
+import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 import "../styles/history.css";
 
 const ChatHistory = () => {
@@ -212,6 +209,7 @@ const ChatHistory = () => {
           show={showSearchModal}
           onHide={handleCloseSearchModal}
           backdrop="true"
+          className="custom-modal"
         >
           <Modal.Body>
             <div className="form-container">

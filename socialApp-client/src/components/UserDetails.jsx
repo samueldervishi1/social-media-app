@@ -5,9 +5,9 @@ import PostCard from "./PostCard";
 import { Image } from "react-bootstrap";
 import ChatHistory from "./ChatHistory";
 import Button from "react-bootstrap/Button";
-import profileImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/user.webp";
-import placeHolderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/placeholder.png";
-import loaderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/ZKZg.gif";
+import profileImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
+import placeHolderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/placeholder.png";
+import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 import "../styles/user-details.css";
 
 const UserDetail = () => {
@@ -330,7 +330,7 @@ const UserDetail = () => {
             style={{
               fontWeight: activeTab === "posts" ? "bold" : "normal",
               padding: "10px",
-              borderBottom: activeTab === "posts" ? "2px solid black" : "none",
+              borderBottom: activeTab === "posts" ? "2px solid #14171a" : "none",
               cursor: "pointer",
               textAlign: "center",
               marginTop: "20px",
@@ -349,7 +349,6 @@ const UserDetail = () => {
                       title={post.title}
                       content={post.content}
                       postDate={post.postDate}
-                      postTime={post.postTime}
                       userId={post.userId}
                       imageUrl={post.imageUrl}
                     />

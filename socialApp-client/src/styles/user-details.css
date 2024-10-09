@@ -20,11 +20,11 @@
   font-size: 12px;
   background-color: lightgrey;
   border: none;
-  color: black;
+  color: #14171a;
   width: 150px;
 }
 .butt-edit:hover {
-  color: black;
+  color: #14171a;
   background-color: lightgrey;
 }
 .again {
@@ -69,7 +69,7 @@
     font-size: 12px;
     background-color: lightgrey;
     border: none;
-    color: black;
+    color: #14171a;
   }
   .again {
     background-color: white;

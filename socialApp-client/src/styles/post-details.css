@@ -1,13 +1,14 @@
 .p-card {
-  background-color: white;
-  border-radius: 8px;
+  background-color: #14171a;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   position: relative;
-  max-width: 72.5%;
+  max-width: 100%;
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  margin-top: 4%;
+  color: white;
 }
 
 .like-count {
@@ -23,7 +24,7 @@
 
 .comment-btn {
   background-color: transparent;
-  color: black;
+  color: #14171a;
   margin-top: -1px;
   width: 20px;
   border: none;
@@ -45,7 +46,7 @@
 .loading-spinner {
   width: 30px;
   height: 30px;
-  right: 15%;
+  right: 2%;
   position: relative;
 }
 
@@ -94,7 +95,7 @@
   }
 
   .post-comment-button:hover {
-    background-color: black;
+    background-color: #14171a;
     color: white;
     transition: 0.5s ease-in-out;
   }
@@ -156,7 +157,7 @@
   }
 
   .post-comment-button:hover {
-    background-color: black;
+    background-color: #14171a;
     color: white;
     transition: 0.5s ease-in-out;
   }

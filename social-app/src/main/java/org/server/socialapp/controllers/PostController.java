@@ -66,15 +66,12 @@ public class PostController {
     @PostMapping("/create/{username}")
     public ResponseEntity<String> create(
             @PathVariable String username,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content) {
+            @RequestBody Post post) {
 
         logger.debug("Received POST request to create a post for user: {}", username);
 
         try {
-            Post post = new Post(title, content);
             post.setImageUrl(null);
-
             postService.createPost(username, post);
             return ResponseEntity.ok("Post created successfully");
 

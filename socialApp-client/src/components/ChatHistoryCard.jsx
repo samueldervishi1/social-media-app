@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IoIosArrowRoundBack } from "react-icons/io";
-import loaderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/ZKZg.gif";
+import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 import "../styles/chat-history-card.css";
 
 const formatCodeBlocks = (text) => {
@@ -101,10 +101,7 @@ const ChatHistoryCard = () => {
   return (
     <div>
       <div className="h1-ac-button">
-        <button className="backB" onClick={handleBackHome}>
-          <IoIosArrowRoundBack className="back-icon" />
-        </button>
-        <h1 className="ac-pg">ChirpAI History</h1>
+        <h1 className="ac-pg" style={{color:"white"}}>ChirpAI History</h1>
       </div>
       {isLoading || !delayOver ? (
         <div className="text-lader">

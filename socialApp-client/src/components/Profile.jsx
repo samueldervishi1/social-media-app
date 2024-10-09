@@ -5,7 +5,7 @@ import { createContext } from "react";
 import { Container } from "react-bootstrap";
 import ChatHistory from "./ChatHistory";
 import ProfileHeader from "./ProfileHeader";
-import loaderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/ZKZg.gif";
+import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 import "../styles/profile.css";
 
 export const ProfileContext = createContext(null);

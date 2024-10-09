@@ -17,8 +17,8 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import PostCard from "./PostCard";
-import profileImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/user.webp";
-import placeHolderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/placeholder.png";
+import profileImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
+import placeHolderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/placeholder.png";
 import "../styles/profile-header.css";
 
 const ProfileHeader = ({ followers, following, posts, profile }) => {
@@ -338,12 +338,14 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
     <div
       className="constructor-container"
       style={{
-        border: "1px solid #e0e0e0",
+        border: ".2px solid lightgrey",
         top: 30,
         position: "relative",
         boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2)",
-        background: "white",
-        marginBottom: 40
+        background: "#14170a",
+        color: "white",
+        marginBottom: 40,
+        right: "7%"
       }}
     >
       <div style={{ position: "relative", width: "100%", height: "300px" }}>
@@ -437,7 +439,7 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
         style={{
           fontWeight: activeTab === "posts" ? "bold" : "normal",
           padding: "10px",
-          borderBottom: activeTab === "posts" ? "2px solid black" : "none",
+          borderBottom: activeTab === "posts" ? "2px solid grey" : "none",
           cursor: "pointer",
           textAlign: "center",
           marginTop: "20px",
@@ -456,7 +458,6 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
                   title={post.title}
                   content={post.content}
                   postDate={post.postDate}
-                  postTime={post.postTime}
                   userId={post.userId}
                   imageUrl={post.imageUrl}
                 />

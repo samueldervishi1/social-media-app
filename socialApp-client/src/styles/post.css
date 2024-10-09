@@ -1,11 +1,12 @@
 .post-form {
   margin: 30px auto;
   margin-top: 20px;
-  padding: 20px;
-  background-color: white;
+  padding: 10px;
+  background-color: #14171a;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
+  max-width: 600px;
+  border: 0.2px solid grey;
 }
 
 .post-form form {
@@ -17,8 +18,10 @@
 .post-form textarea {
   margin-bottom: 10px;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #3f3d3d;
   border-radius: 4px;
+  background-color: #14171a;
+  color: white;
   font-size: 16px;
 }
 

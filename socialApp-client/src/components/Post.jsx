@@ -56,21 +56,20 @@ const PostForm = () => {
 
     const username = getUsernameFromToken(token);
 
-    // Prepare form data to include file
-    const formData = new FormData();
-    formData.append("title", postTitle);
-    formData.append("content", postContent);
-    formData.append("file", selectedFile);
+    // Prepare the data to be sent in JSON format
+    const postData = {
+        content: postContent, // Use the post content only
+    };
 
     try {
       const response = await axios.post(
         `http://localhost:5000/api/v1/posts/create/${username}`,
-        formData,
+        postData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
+            'Content-Type': 'application/json', // Specify JSON content type
+            'Authorization': `Bearer ${token}` // Optionally, send the token if required
+          }
         }
       );
 
@@ -79,14 +78,12 @@ const PostForm = () => {
         localStorage.removeItem("cachedPosts");
         window.location.reload();
       }
-
-      setPostTitle("");
-      setPostContent("");
-      setSelectedFile(null); // Clear file input after submission
+      setPostContent(""); // Clear content after successful post
     } catch (error) {
       console.error("Error creating post:", error.message);
     }
-  };
+};
+
 
   const getUsernameFromToken = (token) => {
     try {
@@ -105,13 +102,6 @@ const PostForm = () => {
   return (
     <div className="post-form">
       <form onSubmit={handlePostSubmit}>
-        <input
-          type="text"
-          placeholder="Title"
-          value={postTitle}
-          onChange={handlePostTitleChange}
-          required
-        />
         <textarea
           placeholder={placeholderText}
           value={postContent}
@@ -119,7 +109,6 @@ const PostForm = () => {
           rows={4}
           required
         />
-        <input type="file" onChange={handleFileChange} />
         <button type="submit" className="post-the-post">
           Post
         </button>

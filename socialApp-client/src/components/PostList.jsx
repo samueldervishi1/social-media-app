@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PostCard from "./PostCard";
-import loaderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/ZKZg.gif";
+import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -96,7 +96,7 @@ const PostList = () => {
     return (
       <div
         className="no-posts-message"
-        style={{ textAlign: "center", marginTop: "20px" }}
+        style={{ textAlign: "center", marginTop: "20px", color: "white" }}
       >
         <p>No more posts.</p>
       </div>
@@ -113,7 +113,6 @@ const PostList = () => {
           content={post.content}
           commentsList={post.commentsList}
           postDate={post.postDate}
-          postTime={post.postTime}
           userId={post.userId}
           imageUrl={post.imageUrl}
         />

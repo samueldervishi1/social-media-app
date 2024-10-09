@@ -177,7 +177,7 @@
   background-color: #269aff;
 }
 .-plan-title {
-  color: black;
+  color: #14171a;
   z-index: 100;
   position: relative;
   font-size: 25px;
@@ -185,7 +185,7 @@
 
 .back-button {
   background-color: lightgrey;
-  color: black;
+  color: #14171a;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -197,7 +197,7 @@
 @media (max-width: 768px) {
   .back-button {
     background-color: lightgrey;
-    color: black;
+    color: #14171a;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -215,7 +215,7 @@
     transform: translate(-50%, -50%);
   }
   .-plan-title {
-    color: black;
+    color: #14171a;
     z-index: 100;
     position: relative;
     font-size: 25px;

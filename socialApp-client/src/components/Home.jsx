@@ -42,9 +42,9 @@ const Home = () => {
           <Post />
           <PostList />
         </div>
-        <div className="side-content">
+        {/* <div className="side-content">
           <RecentNews />
-        </div>
+        </div> */}
       </div>
       <div className="chat-history">
         <ChatHistory />

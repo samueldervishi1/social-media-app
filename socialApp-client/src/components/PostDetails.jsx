@@ -9,12 +9,12 @@ import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import ChatHistory from "./ChatHistory";
 import Modal from "react-bootstrap/Modal";
 import News from "./News";
-import loaderImage from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/ZKZg.gif";
-import defaultUserIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/user.webp";
-import redditIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/reddit.png";
-import whatsapp from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/whatsapp.png";
-import xIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/twitter.jpg";
-import facebookIcon from "/home/samuel/Documents/GitHub/social-media-app/socialApp-client/src/assets/faceboook.png";
+import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
+import defaultUserIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
+import redditIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/reddit.png";
+import whatsapp from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/whatsapp.png";
+import xIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/twitter.jpg";
+import facebookIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/faceboook.png";
 import "../styles/post-details.css";
 
 const PostDetail = () => {
@@ -377,11 +377,6 @@ const PostDetail = () => {
     return format(date, "MMM dd, yyyy");
   };
 
-  const formatTime = (postTime) => {
-    const [timeString] = postTime.split(".");
-    const [hours, minutes] = timeString.split(":");
-    return `${hours}:${minutes}`;
-  };
 
   if (error) {
     return <div style={{ color: "red" }}>{error}</div>;
@@ -390,7 +385,6 @@ const PostDetail = () => {
   return (
     <div>
       <ChatHistory />
-      <News />
       {isLoading ? (
         <div className="loading-container">
           <img src={loaderImage} alt="Loading..." className="loading-spinner" />
@@ -431,7 +425,7 @@ const PostDetail = () => {
                   marginLeft: 10,
                 }}
               >
-                {formatDate(post.postDate)} &bull; {formatTime(post.postTime)}
+                {formatDate(post.postDate)}
               </div>
             </div>
             <div className="post-footer">
