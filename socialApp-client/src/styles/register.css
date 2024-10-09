@@ -1,0 +1,124 @@
+body.register-page {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body.register-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("../assets/bbc.jpeg") no-repeat center center;
+  background-size: cover;
+  filter: blur(6px);
+  z-index: -1;
+}
+
+.error-message-register{
+  color: red;
+  text-align: center;
+  font-size: 13px;
+}
+
+.container-sign {
+  background: rgba(255, 255, 255);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  width: 600px;
+  padding: 25px;
+  margin-right: 10px;
+  box-sizing: border-box;
+  position: relative;
+  margin-top: 50px;
+}
+
+.regTitle {
+  color: black;
+}
+
+.fill {
+  text-align: center;
+}
+
+.name-register {
+  display: flex;
+  text-align: start;
+  justify-content: start;
+  margin-left: 10px;
+}
+
+label {
+  display: flex !important;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+  border-radius: 20px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+a {
+  color: dodgerblue;
+}
+
+.signin {
+  text-align: center;
+}
+
+.screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: auto;
+  gap: 10px;
+}
+
+
+@media (max-width: 768px) {
+  .container-sign {
+    width: 600px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 468px) {
+  .container-sign {
+    width: 380px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-sign {
+    width: 800px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
