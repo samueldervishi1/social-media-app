@@ -109,7 +109,6 @@ const PostList = () => {
         <PostCard
           key={post.id}
           id={post.id}
-          title={post.title}
           content={post.content}
           commentsList={post.commentsList}
           postDate={post.postDate}

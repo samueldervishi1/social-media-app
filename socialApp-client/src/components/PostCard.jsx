@@ -17,10 +17,8 @@ import "../styles/post-card.css";
 
 const PostCard = ({
   id,
-  title,
   content,
   postDate,
-  postTime,
   userId,
   imageUrl,
 }) => {
@@ -446,17 +444,6 @@ const PostCard = ({
     return format(date, "MMM dd, yyyy");
   };
 
-  const formatTime = (postTime) => {
-    if (!postTime) {
-      return "N/A";
-    }
-
-    const [timeString] = postTime.split(".");
-    const [hours, minutes] = timeString.split(":");
-
-    return `${hours}:${minutes}`;
-  };
-
   const isValidDate = (date) => {
     return !isNaN(Date.parse(date));
   };
@@ -474,9 +461,9 @@ const PostCard = ({
         <div className="post-header-text" onClick={navigateToPost}>
           <div className="post-header-text" onClick={navigateToPost}>
             <h2>{username || "Unknown User"}</h2>
-            <p style={{ position: "absolute", marginTop: 15, fontSize: 10 }}>
+            {/* <p style={{ position: "absolute", marginTop: 15, fontSize: 10 }}>
               @{username ? user.username : "Error"}
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
@@ -523,7 +510,7 @@ const PostCard = ({
           </div>
           <AiOutlineShareAlt className="icon" onClick={handleShowShareModal} />
           <div className="post-date">
-            {formatDate(postDate)} &bull; {formatTime(postTime)}
+            {formatDate(postDate)}
           </div>
         </div>
         {expanded && (
@@ -629,7 +616,6 @@ const PostCard = ({
 
 PostCard.propTypes = {
   id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
   postDate: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,

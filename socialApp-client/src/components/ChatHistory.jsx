@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GoHome } from "react-icons/go";
 import {
@@ -10,7 +9,7 @@ import {
 } from "react-icons/io5";
 import { AiOutlineMessage, AiOutlineHistory } from "react-icons/ai";
 import { TbPremiumRights } from "react-icons/tb";
-import { CiLogout, CiSearch } from "react-icons/ci";
+import { CiLogout } from "react-icons/ci";
 import {
   IoIosHelpCircleOutline,
   IoIosInformationCircleOutline,
@@ -18,25 +17,17 @@ import {
 import { GiArtificialHive } from "react-icons/gi";
 import { FaRegFileAlt } from "react-icons/fa";
 import { IoQrCodeOutline } from "react-icons/io5";
-import {
-  MdContacts,
-  MdOutlinePassword
-} from "react-icons/md";
-import Button from "react-bootstrap/Button";
+import { MdContacts, MdOutlinePassword } from "react-icons/md";
 import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
 import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 import "../styles/history.css";
 
 const ChatHistory = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [showSearchModal, setShowSearchModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   const [message, setMessage] = useState("");
   const [logoutMessage, setLogoutMessage] = useState("");
 
@@ -68,74 +59,12 @@ const ChatHistory = () => {
     }, 2000);
   };
 
-  const handleShowSearchModal = () => {
-    setShowSearchModal(true);
-  };
-
-  const handleCloseSearchModal = () => {
-    setShowSearchModal(false);
-    setSearchQuery("");
-    setSearchResults([]);
-    setMessage("");
-  };
-
   const handleCloseLogoutModal = () => {
     setShowLogoutModal(false);
   };
 
   const handleCloseSettingsModal = () => {
     setShowSettingsModal(false);
-  };
-
-  const handleSearch = async () => {
-    setLoading(true);
-    try {
-      if (searchQuery) {
-        let response;
-        if (searchQuery.includes(" ")) {
-          const [name, surname] = searchQuery.split(" ");
-          response = await axios.get(
-            `http://localhost:5000/api/v1/search/users?name=${name}&surname=${surname}`
-          );
-        } else {
-          response = await axios.get(
-            `http://localhost:5000/api/v1/search/users?username=${searchQuery}`
-          );
-        }
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-
-        if (response.data.length === 0) {
-          setMessage(`No user found`);
-        } else {
-          setSearchResults(response.data);
-          setMessage("");
-        }
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        setMessage("No user found");
-      } else {
-        setMessage("No user found");
-      }
-      console.error(
-        "Error searching users",
-        error.response ? error.response.data : error.message
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    setSearchQuery(e.target.value);
-    setSearchResults([]);
-    setMessage("");
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
   };
 
   const handleProfileRedirect = (userId) => {
@@ -175,10 +104,6 @@ const ChatHistory = () => {
               <IoPersonCircleOutline className="icon" />
               <span>Profile</span>
             </a>
-            <a className="history-link" onClick={handleShowSearchModal}>
-              <CiSearch className="icon" />
-              <span style={{ cursor: "pointer" }}>Search</span>
-            </a>
             <a href="/bookmarks" className="history-link">
               <IoBookmarkOutline className="icon" />
               <span>Bookmarks</span>
@@ -186,10 +111,6 @@ const ChatHistory = () => {
             <a href="/messages" className="history-link">
               <AiOutlineMessage className="icon" />
               <span>Messages</span>
-            </a>
-            <a href="/premium" className="history-link">
-              <TbPremiumRights className="icon" />
-              <span>Premium</span>
             </a>
             <a href="/ai" className="history-link">
               <GiArtificialHive className="icon" />
@@ -204,59 +125,6 @@ const ChatHistory = () => {
             </a>
           </div>
         </div>
-        {/* Search Modal */}
-        <Modal
-          show={showSearchModal}
-          onHide={handleCloseSearchModal}
-          backdrop="true"
-          className="custom-modal"
-        >
-          <Modal.Body>
-            <div className="form-container">
-              <Form.Group controlId="searchForm" className="flex-container">
-                <Form.Control
-                  type="text"
-                  placeholder="Enter username or name and surname"
-                  value={searchQuery}
-                  onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
-                />
-                <Button
-                  className="btn-search"
-                  onClick={handleSearch}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <img
-                        src={loaderImage}
-                        style={{ width: 20, marginRight: 10 }}
-                        alt="Loading..."
-                      />{" "}
-                    </>
-                  ) : (
-                    "Search"
-                  )}
-                </Button>
-              </Form.Group>
-              {searchResults.length > 0 && (
-                <ul className="user-lists">
-                  {searchResults.map((user) => (
-                    <li key={user.id}>
-                      <a
-                        href="#"
-                        onClick={() => handleProfileRedirect(user.id)}
-                      >
-                        — {user.username}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {searchResults.length === 0 && !loading && <p>{message}</p>}
-            </div>
-          </Modal.Body>
-        </Modal>
 
         {/* Settings Modal */}
         <Modal
@@ -278,7 +146,10 @@ const ChatHistory = () => {
                 <MdOutlinePassword className="icon" />
                 <span>Update Password</span>
               </a>
-
+              <a href="/premium" className="history-link">
+                <TbPremiumRights className="icon" />
+                <span>Premium</span>
+              </a>
               <a href="/about">
                 <IoIosInformationCircleOutline className="icon" />
                 <span>About</span>
