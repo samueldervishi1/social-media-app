@@ -2,6 +2,7 @@ package org.server.socialapp.controllers;
 
 import org.server.socialapp.exceptions.NotFoundException;
 import org.server.socialapp.models.User;
+import org.server.socialapp.services.UpdatePassword;
 import org.server.socialapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UpdatePassword updatePassword;
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {
@@ -38,4 +42,13 @@ public class UserController {
         }
     }
 
+    @PutMapping("/update-password")
+    public ResponseEntity<String> updatePassword(@RequestParam String username, @RequestParam String newPassword) {
+        boolean isUpdated = updatePassword.updatePassword(username, newPassword);
+        if (isUpdated) {
+            return ResponseEntity.ok("Password updated successfully!");
+        } else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

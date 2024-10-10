@@ -97,13 +97,13 @@ const QRCodePage = () => {
           <QRCode
             value={profileUrl}
             style={{
-              width: "500px",
-              height: "500px",
+              width: "300px",
+              height: "300px",
               marginTop: 50,
               marginBottom: 50,
             }}
           />
-          <p>Give this QR code to your friends to scan it and follow you.</p>
+          <p style={{color: "white"}}>Give this QR code to your friends to scan it and follow you.</p>
         </>
       ) : (
         <>

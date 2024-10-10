@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import Axios
 import image from "../assets/nw3.png";
 import "../styles/contact.css";
 
@@ -46,10 +47,26 @@ const Contact = () => {
     if (emailError) {
       return;
     }
+    
     setIsSubmitting(true);
-    console.log("Form submitted: ", formData);
-
-    setIsSubmitting(false);
+    
+    try {
+      const response = await axios.post("http://localhost:5000/api/v1/contact", formData);
+      console.log("Email sent successfully:", response.data);
+      alert("Your message has been sent successfully!");
+  
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+      
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("There was an error sending your message. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleLoginClick = (event) => {
@@ -77,19 +94,11 @@ const Contact = () => {
         />
 
         <div className="bottom-links">
-          <a href="/home" className="bottom-link">
-            Home
-          </a>
-          <a href="/terms" className="bottom-link">
-            Terms &amp; Services
-          </a>
-          <a href="/about" className="bottom-link">
-            About
-          </a>
+          <a href="/home" className="bottom-link">Home</a>
+          <a href="/terms" className="bottom-link">Terms &amp; Services</a>
+          <a href="/about" className="bottom-link">About</a>
           {!isAuthenticated() && (
-            <a href="/login" onClick={handleLoginClick} className="bottom-link">
-              Login
-            </a>
+            <a href="/login" onClick={handleLoginClick} className="bottom-link">Login</a>
           )}
         </div>
       </div>

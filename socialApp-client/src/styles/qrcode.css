@@ -3,10 +3,14 @@ button.gen-new {
   color: #14171a;
   width: auto;
   margin-top: 20px;
+  border-radius: 18px;
+  border: none;
+  padding: 10px;
 }
 
 .generate-qr-new {
   margin-top: 30px;
+  color: white;
 }
 
 .header-qr {
@@ -48,8 +52,4 @@ button.gen-new {
   color: #1da1f2;
   text-decoration: none;
   font-weight: bold;
-}
-
-.bottom-lin:hover {
-  text-decoration: underline;
 }

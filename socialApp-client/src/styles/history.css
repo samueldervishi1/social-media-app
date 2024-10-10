@@ -1,4 +1,4 @@
-.chat-history1 {
+/* .chat-history1 {
   display: flex;
   flex-direction: row;
   justify-content: center; 
@@ -16,25 +16,6 @@
   -webkit-backdrop-filter: blur(10.1px);
   border: 1px solid rgba(158, 102, 102, 0.68);
 }
-.custom-modal {
-  background-color: black !important; /* Set the background color to black */
-  color: white; /* Set the text color to white */
-}
-
-.custom-modal .modal-body {
-  background-color: black !important; /* Ensure the modal body also has a black background */
-}
-
-.custom-modal .modal-header, 
-.custom-modal .modal-footer {
-  background-color: black !important; /* Ensure the header and footer have a black background */
-  color: white; /* Set text color in header and footer to white */
-}
-
-.custom-modal .close {
-  color: white !important; /* Set the close button color to white */
-}
-
 .history-div-2 {
   display: flex;
   flex-direction: row;
@@ -175,6 +156,155 @@
   }
 
   .history-links a span {
+    display: none;
+  }
+
+  .toggle-button {
+    display: block;
+  }
+  .history-links {
+    margin-left: 10px;
+  }
+
+  .test-image {
+    width: 50px;
+  }
+} */
+.chat-history1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 5px;
+  position: fixed;
+  width: 60%;
+  overflow: visible;
+  z-index: 1001;
+  right: 20%;
+  top: 5px;
+  background: rgba(127, 112, 112, 0.48);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.1px);
+  -webkit-backdrop-filter: blur(10.1px);
+  border: 1px solid rgba(158, 102, 102, 0.68);
+}
+
+.history-div-2 {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.history-links {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+.history-links a,
+.history-links .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  margin-bottom: 10px;
+  color: white;
+  text-decoration: none;
+  transition: none;
+  cursor: pointer;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  color: black !important; 
+  background-color: transparent !important;
+  padding: 10px 20px; 
+  transition: none; 
+}
+
+.history-links a:hover,
+.history-links .dropdown-toggle:hover {
+  color: white;
+  background-color: transparent; 
+}
+
+.dropdown-menu{
+  padding: 30px;
+}
+
+.dropdown-item:hover {
+  color: black !important;
+  background-color: transparent !important; 
+}
+
+.history-links a:active,
+.history-links a:focus,
+.history-links .dropdown-toggle:active,
+.history-links .dropdown-toggle:focus {
+  color: white;
+  background-color: transparent; 
+  outline: none; 
+}
+
+.dropdown-item:active,
+.dropdown-item:focus {
+  color: black !important; 
+  background-color: transparent !important; 
+  outline: none; 
+}
+
+
+.logout-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000; 
+}
+
+.logout-box {
+  background-color: white;
+  padding: 20px 50px;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.logout-box img {
+  width: 50px; /* Adjust size as needed */
+  margin-bottom: 20px;
+}
+
+.logout-box p {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .chat-history1 {
+    width: 50px;
+    transform: translateX(0);
+    left: 0;
+    z-index: 1000;
+  }
+
+  .history-links a,
+  .history-links .dropdown-toggle {
+    justify-content: center;
+  }
+
+  .history-links a span,
+  .history-links .dropdown-toggle span {
     display: none;
   }
 

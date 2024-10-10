@@ -12,7 +12,7 @@ import Profile from "./components/Profile";
 import PostDetail from "./components/PostDetails";
 import UserDetails from "./components/UserDetails";
 import NotFound from "./components/NotFound";
-import SavedPosts from "./components/SavedPosts";
+// import SavedPosts from "./components/SavedPosts";
 import PremiumPage from "./components/PremiumPage";
 import UserCard from "./components/MessageUserCard";
 import QRCodePage from "./components/QrCode";
@@ -67,10 +67,10 @@ const App = () => {
             path="/users/:userId"
             element={isAuthenticated() ? <UserDetails /> : <LoginScript />}
           />
-          <Route
+          {/* <Route
             path="/bookmarks"
             element={isAuthenticated() ? <SavedPosts /> : <LoginScript />}
-          />
+          /> */}
           <Route
             path="/messages"
             element={isAuthenticated() ? <UserCard /> : <LoginScript />}

@@ -36,10 +36,9 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
   const [isEditingLinks, setIsEditingLinks] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [emailInput, setEmailInput] = useState("");
   const [postCount, setPostCount] = useState(0);
   const navigate = useNavigate();
-
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   const isAuthenticated = () => {
     const token = localStorage.getItem("token");
@@ -70,12 +69,14 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
       setLinksInput(profile.links);
       setFamilyNameInput(profile.familyName);
       setGivenNameInput(profile.givenName);
+      setEmailInput(profile.email);
     }
   }, [profile]);
 
   const handleShowModal = () => {
     setBioInput(profile.bio);
     setTitleInput(profile.title);
+    setEmailInput(profile.email);
     setLinksInput(profile.links);
     setIsEditingLinks(false);
     setShowModal(true);
@@ -154,7 +155,7 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
     };
 
     fetchPostCount();
-  }, []); 
+  }, []);
 
   const fetchUserPosts = async () => {
     const userId = getUserIdFromToken();
@@ -197,6 +198,7 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
       familyName: familyNameInput,
       bio: bioInput,
       title: titleInput,
+      email: emailInput,
       links: linksInput.filter((link) => link.trim() !== ""),
     };
 
@@ -241,8 +243,11 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
       setBioInput(value);
     } else if (name === "title") {
       setTitleInput(value);
+    } else if (name === "email") {
+      setEmailInput(value);
     }
   };
+
   const handleLinksChange = (event) => {
     const linksArray = event.target.value
       .split(",")
@@ -345,7 +350,7 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
         background: "#14170a",
         color: "white",
         marginBottom: 40,
-        right: "7%"
+        right: "7%",
       }}
     >
       <div style={{ position: "relative", width: "100%", height: "300px" }}>
@@ -508,6 +513,16 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
               name="title"
               value={titleInput}
               onChange={handleInputChange}
+            />
+          </Form.Group>
+          <Form.Group controlId="formEmail">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              name="email"
+              value={emailInput}
+              onChange={handleInputChange}
+              placeholder="Enter your email"
             />
           </Form.Group>
           <Form.Group controlId="formLinks">

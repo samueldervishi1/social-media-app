@@ -52,6 +52,10 @@ public class ProfileService {
                 user.setFamilyName(updatedUser.getFamilyName());
             }
 
+            if(updatedUser.getEmail() != null) {
+                user.setEmail(updatedUser.getEmail());
+            }
+
             if (updatedUser.getLinks() != null) {
                 List<String> newLinks = updatedUser.getLinks().stream()
                         .filter(link -> link != null && !link.trim().isEmpty())
