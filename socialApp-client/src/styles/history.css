@@ -1,0 +1,168 @@
+.chat-history1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  position: fixed;
+  width: 100%;
+  overflow: visible;
+  z-index: 1001;
+  right: 0;
+  top: 0;
+  background: #252728;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.1px);
+  -webkit-backdrop-filter: blur(10.1px);
+}
+
+.history-div-2 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.left-section {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.right-section {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+.history-links {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+.logo-icon {
+  width: 70px;
+}
+
+.history-links a,
+.history-links .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: white;
+  text-decoration: none;
+  transition: none;
+  cursor: pointer;
+  gap: 4px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  color: black !important;
+  background-color: transparent !important;
+  padding: 10px 20px;
+  transition: none;
+}
+
+.history-links a:hover,
+.history-links .dropdown-toggle:hover {
+  color: white;
+  background-color: transparent;
+}
+
+.dropdown-menu {
+  padding: 10px;
+}
+
+.dropdown-item:hover {
+  color: black !important;
+  background-color: transparent !important;
+}
+
+.history-links a:active,
+.history-links a:focus,
+.history-links .dropdown-toggle:active,
+.history-links .dropdown-toggle:focus {
+  color: white;
+  background-color: transparent;
+  outline: none;
+}
+
+.dropdown-item:active,
+.dropdown-item:focus {
+  color: black !important;
+  background-color: transparent !important;
+  outline: none;
+}
+
+.logout-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.logout-box {
+  background-color: white;
+  padding: 20px 50px;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.logout-box img {
+  width: 50px;
+  margin-bottom: 20px;
+}
+
+.logout-box p {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.icon-p{
+  gap: 20px;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 768px) {
+  .chat-history1 {
+    width: 50px;
+    transform: translateX(0);
+    left: 0;
+    z-index: 1000;
+  }
+
+  .history-links a,
+  .history-links .dropdown-toggle {
+    justify-content: center;
+  }
+
+  .history-links a span,
+  .history-links .dropdown-toggle span {
+    display: none;
+  }
+
+  .toggle-button {
+    display: block;
+  }
+  .history-links {
+    margin-left: 10px;
+  }
+
+  .test-image {
+    width: 50px;
+  }
+}
