@@ -15,7 +15,6 @@ import NotFound from "./components/NotFound";
 // import SavedPosts from "./components/SavedPosts";
 import PremiumPage from "./components/PremiumPage";
 import UserCard from "./components/MessageUserCard";
-import QRCodePage from "./components/QrCode";
 import TermsAndServices from "./components/Terms";
 import About from "./components/About";
 import Contact from "./components/Contact";
@@ -70,10 +69,6 @@ const App = () => {
           <Route
             path="/messages"
             element={isAuthenticated() ? <UserCard /> : <LoginScript />}
-          />
-          <Route
-            path="/qrcode/:username"
-            element={isAuthenticated() ? <QRCodePage /> : <LoginScript />}
           />
           {/* <Route
             path="/activity"

@@ -113,10 +113,6 @@ const ChatHistory = () => {
                     <FaRegUserCircle className="icon" /> See your profile{" "}
                     {username}
                   </Dropdown.Item>
-                  <Dropdown.Item href={`/qrcode/${username}`}>
-                    <IoQrCodeOutline className="icon" /> Share QR code with
-                    friends
-                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
 
