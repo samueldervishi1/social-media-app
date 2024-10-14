@@ -85,4 +85,19 @@ public class HistoryController {
         }
     }
 
+    @DeleteMapping("/delete/{sessionId}")
+    public ResponseEntity<?> deleteChatHistory(@PathVariable String sessionId) {
+        logger.info("Received request to delete chat history for sessionId: {}", sessionId);
+
+        try {
+            historyService.deleteHistoryBySessionId(sessionId);
+            return new ResponseEntity<>("Chat history deleted successfully", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error deleting chat history for sessionId: {}. Error: {}", sessionId, e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            logger.error("Error deleting chat history for sessionId: {}. Error: {}", sessionId, e.getMessage());
+            return new ResponseEntity<>("Failed to delete chat history", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

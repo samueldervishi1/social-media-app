@@ -21,21 +21,15 @@ import profileImage from "/home/samuel/Documents/social-media-app/socialApp-clie
 import placeHolderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/placeholder.png";
 import "../styles/profile-header.css";
 
-const ProfileHeader = ({ followers, following, posts, profile }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const ProfileHeader = ({ followers, following, profile }) => {
   const [showModal, setShowModal] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
   const [bioInput, setBioInput] = useState("");
   const [titleInput, setTitleInput] = useState("");
-  const [linksInput, setLinksInput] = useState([]);
   const [userPosts, setUserPosts] = useState([]);
   const [givenNameInput, setGivenNameInput] = useState("");
   const [familyNameInput, setFamilyNameInput] = useState("");
   const [error, setError] = useState(null);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [isEditingLinks, setIsEditingLinks] = useState(false);
-  const [followersCount, setFollowersCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
   const [emailInput, setEmailInput] = useState("");
   const [postCount, setPostCount] = useState(0);
   const navigate = useNavigate();
@@ -66,7 +60,6 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
     if (profile) {
       setBioInput(profile.bio);
       setTitleInput(profile.title);
-      setLinksInput(profile.links);
       setFamilyNameInput(profile.familyName);
       setGivenNameInput(profile.givenName);
       setEmailInput(profile.email);
@@ -76,9 +69,6 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
   const handleShowModal = () => {
     setBioInput(profile.bio);
     setTitleInput(profile.title);
-    setEmailInput(profile.email);
-    setLinksInput(profile.links);
-    setIsEditingLinks(false);
     setShowModal(true);
   };
 
@@ -89,48 +79,9 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
     setShowPostModal(true);
   };
 
-  const handleEditLinks = () => {
-    setIsEditingLinks(true);
-  };
-
-  const handleSaveLinks = () => {
-    setIsEditingLinks(false);
-    handleUpdateProfile();
-  };
-
   const handleClosePostModal = () => setShowPostModal(false);
 
   const { username, title, bio, links } = profile;
-
-  const getServiceIcon = (url) => {
-    const trustedDomains = {
-      "github.com": <FaGithub />,
-      "instagram.com": <FaInstagram />,
-      "twitter.com": <FaTwitter />,
-      "youtube.com": <FaYoutube />,
-      "linkedin.com": <FaLinkedin />,
-      "facebook.com": <FaFacebook />,
-      "reddit.com": <FaReddit />,
-    };
-
-    if (url.startsWith("https://")) {
-      const domain = new URL(url).hostname;
-      return trustedDomains[domain] || <FaLink />;
-      s;
-    }
-
-    return <FaLink />;
-  };
-
-  const handleFollowersClick = () => {
-    const userId = getUserIdFromToken();
-    navigate(`http://localhost:5000/api/v1/users/${userId}/followers`);
-  };
-
-  const handleFollowingClick = () => {
-    const userId = getUserIdFromToken();
-    navigate(`http://localhost:5000/api/v1/users/${userId}/following`);
-  };
 
   useEffect(() => {
     const fetchPostCount = async () => {
@@ -161,30 +112,30 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
     const userId = getUserIdFromToken();
 
     if (!userId) {
-      console.error("User ID not found in token.");
-      return;
+        console.error("User ID not found in token.");
+        return;
     }
 
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/v1/posts/list/${userId}`
-      );
-      if (response.status === 200) {
-        const sortedPosts = response.data.sort((a, b) => {
-          const dateA = new Date(`${a.postDate}T${a.postTime}`);
-          const dateB = new Date(`${b.postDate}T${b.postTime}`);
-          return dateB - dateA; // Newest posts first
-        });
-        setUserPosts(sortedPosts);
-      } else {
-        console.error("Failed to fetch posts.");
-        setError("Failed to fetch posts.");
-      }
+        const response = await axios.get(
+            `http://localhost:5000/api/v1/posts/list/${userId}`
+        );
+        
+        if (response.status === 200) {
+            const sortedPosts = response.data.sort((a, b) => 
+                new Date(b.postDate) - new Date(a.postDate)
+            );
+            setUserPosts(sortedPosts);
+        } else {
+            console.error("Failed to fetch posts.");
+            setError("Failed to fetch posts.");
+        }
     } catch (error) {
-      console.error("Error fetching posts:", error.message);
-      setError("Error fetching posts. Please try again later.");
+        console.error("Error fetching posts:", error.message);
+        setError("Error fetching posts. Please try again later.");
     }
-  };
+};
+
 
   const handleUpdateProfile = async () => {
     const userId = getUserIdFromToken();
@@ -199,12 +150,11 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
       bio: bioInput,
       title: titleInput,
       email: emailInput,
-      links: linksInput.filter((link) => link.trim() !== ""),
     };
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/v1/users/update/${userId}`, // Updated endpoint
+        `http://localhost:5000/api/v1/users/update/${userId}`,
         updateData
       );
       console.log("Profile update response:", response);
@@ -222,20 +172,6 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
     }
   };
 
-  const getUsernameFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.sub;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
-  };
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     console.log(`Input change - Name: ${name}, Value: ${value}`);
@@ -246,20 +182,6 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
     } else if (name === "email") {
       setEmailInput(value);
     }
-  };
-
-  const handleLinksChange = (event) => {
-    const linksArray = event.target.value
-      .split(",")
-      .map((link) => link.trim())
-      .filter((link) => link !== "");
-    console.log("Links changed:", linksArray);
-    setLinksInput(linksArray);
-  };
-
-  const handleLinkDelete = (index) => {
-    const updatedLinks = linksInput.filter((_, i) => i !== index);
-    setLinksInput(updatedLinks);
   };
 
   const getUserIdFromToken = () => {
@@ -274,53 +196,6 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
       }
     }
     return null;
-  };
-
-  const fetchFollowers = async () => {
-    const userId = getUserIdFromToken();
-    if (!userId) {
-      console.error("User ID not found in token.");
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/v1/users/${userId}/followers/count`
-      );
-      if (response.status === 200) {
-        setFollowersCount(response.data.count);
-        console.log(response.data);
-      } else {
-        console.error("Failed to fetch followers.");
-        setError("Failed to fetch followers.");
-      }
-    } catch (error) {
-      console.error("Error fetching followers:", error.message);
-      setError("Error fetching followers. Please try again later.");
-    }
-  };
-
-  const fetchFollowing = async () => {
-    const userId = getUserIdFromToken();
-    if (!userId) {
-      console.error("User ID not found in token.");
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/v1/users/${userId}/following/count`
-      );
-      if (response.status === 200) {
-        setFollowing(response.data);
-      } else {
-        console.error("Failed to fetch following.");
-        setError("Failed to fetch following.");
-      }
-    } catch (error) {
-      console.error("Error fetching following:", error.message);
-      setError("Error fetching following. Please try again later.");
-    }
   };
 
   const [activeTab, setActiveTab] = useState("posts");
@@ -402,42 +277,6 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
             <strong>{following}</strong> Following
           </div>
         </div>
-      </div>
-      <div style={{ marginTop: "20px" }}>
-        {links.length > 0 && (
-          <div
-            style={{
-              marginBottom: "20px",
-              justifyContent: "center",
-              display: "flex",
-            }}
-          >
-            {links.map((link, index) => (
-              <div
-                key={index}
-                style={{
-                  marginBottom: "10px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    marginRight: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  {getServiceIcon(link)}
-                  {new URL(link).hostname}
-                </a>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
       <div
         onClick={() => handleTabClick("posts")}
@@ -525,75 +364,15 @@ const ProfileHeader = ({ followers, following, posts, profile }) => {
               placeholder="Enter your email"
             />
           </Form.Group>
-          <Form.Group controlId="formLinks">
-            <Form.Label>Links</Form.Label>
-            {isEditingLinks ? (
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="links"
-                value={linksInput.join(", ")}
-                onChange={handleLinksChange}
-              />
-            ) : (
-              <div>
-                {links.length > 0 ? (
-                  links.map((link, index) => (
-                    <div
-                      key={index}
-                      style={{ marginBottom: "10px", display: "flex" }}
-                    >
-                      <a
-                        href={link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          marginRight: "10px",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        {getServiceIcon(link)}
-                        {new URL(link).hostname}
-                      </a>
-                      <Button
-                        variant="link"
-                        onClick={() => handleLinkDelete(index)}
-                        style={{ marginLeft: "auto", color: "red", width: 50 }}
-                      >
-                        <FaRegTrashCan />
-                      </Button>
-                    </div>
-                  ))
-                ) : (
-                  <p>No links available.</p>
-                )}
-                <Button variant="link" onClick={handleEditLinks}>
-                  Edit Links
-                </Button>
-              </div>
-            )}
-          </Form.Group>
         </Modal.Body>
 
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
-          {isEditingLinks ? (
-            <>
-              <Button variant="secondary" onClick={handleSaveLinks}>
-                Save Links
-              </Button>
-              <Button variant="danger" onClick={() => setIsEditingLinks(false)}>
-                Cancel Editing
-              </Button>
-            </>
-          ) : (
-            <Button variant="danger" onClick={handleUpdateProfile}>
-              Update
-            </Button>
-          )}
+          <Button variant="danger" onClick={handleUpdateProfile}>
+            Update
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

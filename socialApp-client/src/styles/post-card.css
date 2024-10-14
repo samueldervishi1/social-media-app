@@ -24,6 +24,20 @@
   border-radius: 20px;
 }
 
+.share-title{
+  color: white;
+  background-color: #14171a;
+}
+
+.icon-name{
+  color: white;
+}
+
+.share-body{
+  background-color: #14171a;
+  color: white;
+}
+
 .list-loader {
   width: 100%;
   transform: translate(-50%, 50%);
@@ -192,7 +206,7 @@
 }
 
 .youtube-icon {
-  width: 90px;
+  width: 100px;
 }
 
 .reddit-icon {
@@ -200,11 +214,10 @@
 }
 
 .x-icon {
-  width: 55px;
+  width: 100px;
 }
-
 .facebook-icon {
-  width: 95px;
+  width: 100px;
 }
 
 .add-comment-button {

@@ -4,13 +4,8 @@ import axios from "axios";
 import "../styles/post.css";
 
 const PostForm = () => {
-  const [postTitle, setPostTitle] = useState("");
   const [postContent, setPostContent] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
-
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
   const isAuthenticated = () => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -33,16 +28,8 @@ const PostForm = () => {
     }
   }, [navigate]);
 
-  const handlePostTitleChange = (event) => {
-    setPostTitle(event.target.value);
-  };
-
   const handlePostContentChange = (event) => {
     setPostContent(event.target.value);
-  };
-
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
   };
 
   const handlePostSubmit = async (event) => {
@@ -56,9 +43,8 @@ const PostForm = () => {
 
     const username = getUsernameFromToken(token);
 
-    // Prepare the data to be sent in JSON format
     const postData = {
-        content: postContent, // Use the post content only
+      content: postContent,
     };
 
     try {
@@ -67,9 +53,9 @@ const PostForm = () => {
         postData,
         {
           headers: {
-            'Content-Type': 'application/json', // Specify JSON content type
-            'Authorization': `Bearer ${token}` // Optionally, send the token if required
-          }
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -78,12 +64,11 @@ const PostForm = () => {
         localStorage.removeItem("cachedPosts");
         window.location.reload();
       }
-      setPostContent(""); // Clear content after successful post
+      setPostContent("");
     } catch (error) {
       console.error("Error creating post:", error.message);
     }
-};
-
+  };
 
   const getUsernameFromToken = (token) => {
     try {

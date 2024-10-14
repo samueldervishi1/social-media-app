@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Spinner, Modal, Button } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import checkMarkgif from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/check.gif";
+import customLoadingGif from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 import "../styles/login.css";
 
 const LoginScript = () => {
@@ -98,7 +99,9 @@ const LoginScript = () => {
       }
     } catch (error) {
       console.error("Error updating password:", error.message);
-      setPasswordUpdateMessage("An error occurred while updating the password.");
+      setPasswordUpdateMessage(
+        "An error occurred while updating the password."
+      );
     } finally {
       setLoadingUpdate(false);
     }
@@ -116,9 +119,11 @@ const LoginScript = () => {
       <form id="loginForm" onSubmit={handleSubmit}>
         {loading ? (
           <div className="spinner-container">
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
+            <img
+              src={customLoadingGif}
+              className="custom-login-loader"
+              alt="Loading..."
+            />
           </div>
         ) : (
           <div className="screen">
@@ -163,7 +168,8 @@ const LoginScript = () => {
                   onClick={() => setShowModal(true)}
                   style={{
                     cursor: "pointer",
-                    color: "black",
+                    color:
+                      "rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1))",
                     padding: "8px 16px",
                     borderRadius: "20px",
                     textDecoration: "underline",
@@ -262,7 +268,7 @@ const LoginScript = () => {
             {passwordUpdateMessage && (
               <p className="password-update-message">{passwordUpdateMessage}</p>
             )}
-            {passwordUpdateSuccess && ( 
+            {passwordUpdateSuccess && (
               <div className="logout-loader">
                 <div className="logout-box">
                   <img src={checkMarkgif} alt="Update successful!" />

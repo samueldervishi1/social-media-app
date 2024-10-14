@@ -103,7 +103,9 @@ const QRCodePage = () => {
               marginBottom: 50,
             }}
           />
-          <p style={{color: "white"}}>Give this QR code to your friends to scan it and follow you.</p>
+          <p style={{ color: "white" }}>
+            Give this QR code to your friends to scan it and follow you.
+          </p>
         </>
       ) : (
         <>

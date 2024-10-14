@@ -87,4 +87,22 @@ public class HistoryService {
         }
     }
 
+    public void deleteHistoryBySessionId(String sessionId) {
+        try {
+            logger.info("Attempting to delete history for sessionId: {}", sessionId);
+            Optional<History> historyOptional = historyRepository.findBySessionId(sessionId);
+
+            if (historyOptional.isPresent()) {
+                historyRepository.delete(historyOptional.get());
+                logger.info("Successfully deleted history for sessionId: {}", sessionId);
+            } else {
+                logger.warn("No history found for sessionId: {}", sessionId);
+                throw new IllegalArgumentException("History does not exist");
+            }
+        } catch (Exception e) {
+            logger.error("Error deleting history for sessionId: {}. Error: {}", sessionId, e.getMessage());
+            throw e;
+        }
+    }
+
 }

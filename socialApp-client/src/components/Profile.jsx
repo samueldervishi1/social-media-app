@@ -18,9 +18,7 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
+  
   const isAuthenticated = () => {
     const token = localStorage.getItem("token");
     if (token) {

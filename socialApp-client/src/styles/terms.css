@@ -39,7 +39,7 @@
 
 h1 {
   margin: 0;
-  color: #14171a;
+  color: white;
   font-size: 70px;
   font-weight: 700;
   display: block;
@@ -57,7 +57,7 @@ h1 .service {
 .term-title {
   font-size: 20px;
   font-weight: 700;
-  color: #14171a;
+  color: white;
   margin-bottom: 10px;
 }
 
@@ -69,7 +69,7 @@ h1 .service {
 
 .bold-text {
   font-weight: bold;
-  color: #14171a;
+  color: white;
 }
 
 ::selection {

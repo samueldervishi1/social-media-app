@@ -1,6 +1,5 @@
 .user-card {
-  background-color: white;
-  border: 0.1em solid lightgrey;
+  background-color: black;
   padding: 20px;
   margin-bottom: 20px;
   flex: 1;
@@ -18,11 +17,16 @@
 .user-card h3 {
   font-size: 18px;
   margin-bottom: 10px;
+  color: white;
+}
+
+.user-card h4{
+  color: white;
 }
 
 .user-card p {
   font-size: 14px;
-  color: #666;
+  color: white;
   text-align: center;
 }
 

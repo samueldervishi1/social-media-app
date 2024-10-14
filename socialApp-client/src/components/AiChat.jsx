@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import ChatHistory from "./ChatHistory";
+import ChatHistoryCard from "../components/ChatHistoryCard";
 import bot from "../assets/bot.svg";
 import user from "../assets/user.svg";
 import send from "../assets/send.svg";
@@ -15,10 +15,7 @@ const AiChat = () => {
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const chatContainerRef = useRef(null);
-  const [showSidebar, setShowSidebar] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
-
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   const getUserIdFromToken = () => {
     const token = localStorage.getItem("token");
@@ -73,19 +70,35 @@ const AiChat = () => {
   };
 
   const formatCodeBlocks = (text) => {
-    let formattedText = text
-      .replace(/```(.*?)```/gs, "<pre><code>$1</code></pre>")
+    const codeBlockRegex = /```(.*?)(\n([\s\S]*?))?```/gs;
+
+    const formattedText = text
+      .replace(codeBlockRegex, (match, lang, _, code) => {
+        const escapedCode = code
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+
+        return `
+              <div class="terminal-block">
+                <div class="terminal-header">${
+                  lang ? lang.trim() : "code"
+                }</div>
+                <pre><code>${escapedCode}</code></pre>
+              </div>
+            `;
+      })
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .split("\n")
       .map((line) =>
-        line.startsWith("- ")
-          ? `<li>${line.substring(2)}</li>`
-          : `<p>${line}</p>`
+        line.startsWith("- ") ? `<li>${line.substring(2)}</li>` : line
       )
-      .join("\n")
+      .join("<br />")
       .replace(/(<li>.*<\/li>\s*){2,}/g, "<ul>$&</ul>");
 
-    return formattedText;
+    return formattedText.includes("<li>")
+      ? `<ul>${formattedText}</ul>`
+      : formattedText;
   };
 
   const handleSubmit = async (e) => {
@@ -108,7 +121,7 @@ const AiChat = () => {
     }
 
     setIsLoading(true);
-    setIsThinking(true); 
+    setIsThinking(true);
 
     const message = { content: userInput, isUser: true };
     setChatMessages((prevMessages) => [...prevMessages, message]);
@@ -229,11 +242,11 @@ const AiChat = () => {
   };
 
   return (
-    <div className="sideb-bar-container">
-      {/* <div className="sidebar" style={{ width: 215 }}>
-        {!showSidebar && <ChatHistory />}
-      </div> */}
-      <div id="app" className="main-content-ai">
+    <div className="sidebar-container">
+      <div className="sidebar">
+        <ChatHistoryCard />
+      </div>
+      <div className="main-content-ai">
         <div
           id="chat_container"
           ref={chatContainerRef}
@@ -258,20 +271,20 @@ const AiChat = () => {
             </div>
           ))}
           {isThinking && (
-  <div className={`wrapper ai`}>
-    <div className="chat">
-      <div className="profile">
-        <img src={bot} alt="bot" />
-      </div>
-      <div className="message thinking-placeholder">
-        Thinking
-        <span className="dot">.</span>
-        <span className="dot">.</span>
-        <span className="dot">.</span>
-      </div>
-    </div>
-  </div>
-)}
+            <div className={`wrapper ai`}>
+              <div className="chat">
+                <div className="profile">
+                  <img src={bot} alt="bot" />
+                </div>
+                <div className="message thinking-placeholder">
+                  Thinking
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <form className="ai-form" onSubmit={handleSubmit}>
           <textarea
@@ -284,7 +297,7 @@ const AiChat = () => {
             onChange={(e) => setUserInput(e.target.value)}
             onKeyUp={handleKeyUp}
             disabled={isRateLimited}
-            maxLength={4000} // Set a maximum character length
+            maxLength={4000}
           ></textarea>
           <button className="ai-submit" type="submit" disabled={isRateLimited}>
             <img src={send} alt="Send" />
@@ -297,14 +310,14 @@ const AiChat = () => {
           <button
             style={{
               border: "none",
-              background: "white",
+              background: "transparent",
               padding: 10,
               borderRadius: 200,
               marginLeft: 10,
               height: 35,
               textAlign: "center",
-              color: "black",
-              textDecoration: "underline"
+              color: "white",
+              textDecoration: "underline",
             }}
             onClick={navigatehome}
           >

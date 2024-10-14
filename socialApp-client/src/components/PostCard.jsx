@@ -11,17 +11,11 @@ import Modal from "react-bootstrap/Modal";
 import defaultUserIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
 import redditIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/reddit.png";
 import whatsapp from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/whatsapp.png";
-import xIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/twitter.jpg";
+import xIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.webp";
 import facebookIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/faceboook.png";
 import "../styles/post-card.css";
 
-const PostCard = ({
-  id,
-  content,
-  postDate,
-  userId,
-  imageUrl,
-}) => {
+const PostCard = ({ id, content, postDate, userId, imageUrl }) => {
   const [expanded, setExpanded] = useState(false);
   const [showNewCommentForm, setShowNewCommentForm] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -41,7 +35,6 @@ const PostCard = ({
   const [savedCount, setSavedCount] = useState(0);
   const [usernames, setUsernames] = useState({});
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
 
   const isAuthenticated = () => {
@@ -509,9 +502,7 @@ const PostCard = ({
             <span className="saved-count">{savedCount}</span>
           </div>
           <AiOutlineShareAlt className="icon" onClick={handleShowShareModal} />
-          <div className="post-date">
-            {formatDate(postDate)}
-          </div>
+          <div className="post-date">{formatDate(postDate)}</div>
         </div>
         {expanded && (
           <div className="post-comments">
@@ -561,28 +552,31 @@ const PostCard = ({
         )}
       </div>
       <Modal show={showShareModal} onHide={handleCloseShareModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Share Post</Modal.Title>
+        <Modal.Header closeButton className="share-title">
+          <Modal.Title className="share-title">Share Post</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="share-body">
           <div className="share-icons">
             <button
               className="share-icon"
               onClick={() => handleShareToPlatform("whatsapp")}
             >
               <img className="youtube-icon" src={whatsapp} alt="Whatsapp" />
+              <p className="icon-name">WhatsApp</p>
             </button>
             <button
               className="share-icon"
               onClick={() => handleShareToPlatform("reddit")}
             >
               <img className="reddit-icon" src={redditIcon} alt="Reddit" />
+              <p className="icon-name">Reddit</p>
             </button>
             <button
               className="share-icon"
               onClick={() => handleShareToPlatform("twitter")}
             >
               <img className="x-icon" src={xIcon} alt="twitter" />
+              <p className="icon-name">𝕏</p>
             </button>
             <button
               className="share-icon"
@@ -593,6 +587,7 @@ const PostCard = ({
                 src={facebookIcon}
                 alt="Facebook"
               />
+              <p className="icon-name">Facebook</p>
             </button>
           </div>
           {shareUrl && (

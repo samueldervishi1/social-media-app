@@ -85,9 +85,9 @@ const NotFound = () => {
       <div className="message-notfound">Page not found</div>
       <a
         href="/home"
-        style={{ textDecoration: "none", marginTop: "20px", color: "#14171a" }}
+        style={{ textDecoration: "none", marginTop: "20px", color: "#16a085" }}
       >
-        Home
+        Go Home
       </a>
     </div>
   );

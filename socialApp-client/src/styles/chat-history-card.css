@@ -13,7 +13,7 @@
   width: 100%;
   transform: translate(-50%, -50%);
   top: 50%;
-  left: 55%;
+  left: 8%;
   position: absolute;
   justify-content: center;
   align-items: center;
@@ -39,6 +39,12 @@
 
 .history-answer {
   margin-left: 10px;
+}
+
+.ac-pg{
+  font-size: 30px;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .terminal {

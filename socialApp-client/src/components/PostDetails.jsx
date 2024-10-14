@@ -13,7 +13,7 @@ import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-clien
 import defaultUserIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
 import redditIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/reddit.png";
 import whatsapp from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/whatsapp.png";
-import xIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/twitter.jpg";
+import xIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.webp";
 import facebookIcon from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/faceboook.png";
 import "../styles/post-details.css";
 
@@ -376,7 +376,6 @@ const PostDetail = () => {
     const date = new Date(postDate);
     return format(date, "MMM dd, yyyy");
   };
-
 
   if (error) {
     return <div style={{ color: "red" }}>{error}</div>;

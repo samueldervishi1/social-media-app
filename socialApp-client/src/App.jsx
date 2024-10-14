@@ -22,10 +22,6 @@ import Contact from "./components/Contact";
 // import ActivityPage from "./components/ActivityPage";
 import AiChat from "./components/AiChat";
 import ChatHistoryCard from "./components/ChatHistoryCard";
-import VideoFeed from "./components/VideoFeed";
-import TopNavbar from "./components/video/TopNavbar";
-import VideoCard from "./components/video/VideoCard";
-import UpdatePassword from "./components/UpdatePassword";
 
 const App = () => {
   const isAuthenticated = () => {
@@ -90,14 +86,6 @@ const App = () => {
           <Route
             path="/history"
             element={isAuthenticated() ? <ChatHistoryCard /> : <LoginScript />}
-          />
-          <Route
-            path="/video"
-            element={isAuthenticated() ? <VideoFeed /> : <LoginScript />}
-          />
-          <Route
-            path="/update-password"
-            element={isAuthenticated() ? <UpdatePassword /> : <LoginScript />}
           />
           <Route path="/premium" element={<PremiumPage />} />
           <Route path="/about" element={<About />} />
