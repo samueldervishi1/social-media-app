@@ -26,7 +26,6 @@ public class RateLimitingFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestUrl = httpRequest.getRequestURI();
 
-        // Determine the appropriate bucket based on the URL
         Bucket bucket = getBucketForUrl(requestUrl);
 
         if (bucket.tryConsume(1)) {

@@ -23,7 +23,6 @@ public class HistoryService {
     @Autowired
     private UserRepository userRepository;
 
-
     public History saveHistory(String sessionId, String userId, List<QuestionAnswerPair> questionAnswerPairs) {
         try {
             logger.info("Attempting to save history for userId: {}, sessionId: {}", userId, sessionId);
@@ -41,9 +40,6 @@ public class HistoryService {
                 logger.info("Appending to existing history for userId: {}", userId);
             } else {
                 history = new History(sessionId, userId, questionAnswerPairs);
-                history.setSessionId(sessionId);
-                history.setUserId(userId);
-                history.setQuestionAnswerPairs(questionAnswerPairs);
                 logger.info("Creating new history for userId: {}", userId);
             }
 
@@ -55,7 +51,6 @@ public class HistoryService {
             throw e;
         }
     }
-
 
     public List<History> getAllHistories() {
         try {
@@ -104,5 +99,4 @@ public class HistoryService {
             throw e;
         }
     }
-
 }

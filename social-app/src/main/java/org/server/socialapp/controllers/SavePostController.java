@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/save/posts")
+@RequestMapping("/api/v2/save/posts")
 public class SavePostController {
 
     @Autowired
     private SavePostService savePostService;
+    
     @Autowired
     private PostService postService;
 

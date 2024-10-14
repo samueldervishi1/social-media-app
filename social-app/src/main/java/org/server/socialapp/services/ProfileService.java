@@ -7,12 +7,12 @@ import org.server.socialapp.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class ProfileService {
@@ -21,67 +21,16 @@ public class ProfileService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     public User updateProfile(String userId, User updatedUser) {
         try {
-            User user = userRepository.findById(userId).orElseThrow(()
-                    -> new NotFoundException("User not found with ID: " + userId)
-            );
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
 
-            if (updatedUser.getBio() != null) {
-                user.setBio(updatedUser.getBio());
-            }
-
-            if (updatedUser.getRole() != null) {
-                user.setRole(updatedUser.getRole());
-            } else {
-                user.setRole("simple_account");
-            }
-
-            if (updatedUser.getTitle() != null) {
-                user.setTitle(updatedUser.getTitle());
-            }
-
-            if (updatedUser.getGivenName() != null) {
-                user.setGivenName(updatedUser.getGivenName());
-            }
-
-            if (updatedUser.getFamilyName() != null) {
-                user.setFamilyName(updatedUser.getFamilyName());
-            }
-
-            if(updatedUser.getEmail() != null) {
-                user.setEmail(updatedUser.getEmail());
-            }
-
-            if (updatedUser.getLinks() != null) {
-                List<String> newLinks = updatedUser.getLinks().stream()
-                        .filter(link -> link != null && !link.trim().isEmpty())
-                        .collect(Collectors.toList());
-
-                List<String> currentLinks = user.getLinks().stream()
-                        .map(String::toLowerCase)
-                        .collect(Collectors.toList());
-                List<String> newLinksLower = newLinks.stream()
-                        .map(String::toLowerCase)
-                        .collect(Collectors.toList());
-
-                List<String> linksToRemove = currentLinks.stream()
-                        .filter(link -> !newLinksLower.contains(link))
-                        .collect(Collectors.toList());
-
-                user.getLinks().removeAll(linksToRemove);
-
-                List<String> linksToAdd = newLinksLower.stream()
-                        .filter(link -> !currentLinks.contains(link))
-                        .collect(Collectors.toList());
-
-                user.getLinks().addAll(linksToAdd.stream()
-                        .map(link -> newLinks.get(newLinksLower.indexOf(link)))
-                        .collect(Collectors.toList()));
-            }
+            updateFields(user, updatedUser);
 
             User updatedUserRecord = userRepository.save(user);
             logger.info("User updated successfully: {}", user.getId());
@@ -96,11 +45,34 @@ public class ProfileService {
         }
     }
 
+    private void updateFields(User user, User updatedUser) {
+        Optional.ofNullable(updatedUser.getBio()).ifPresent(user::setBio);
+        Optional.ofNullable(updatedUser.getRole()).ifPresent(user::setRole);
+        Optional.ofNullable(updatedUser.getTitle()).ifPresent(user::setTitle);
+        Optional.ofNullable(updatedUser.getGivenName()).ifPresent(user::setGivenName);
+        Optional.ofNullable(updatedUser.getFamilyName()).ifPresent(user::setFamilyName);
+        Optional.ofNullable(updatedUser.getEmail()).ifPresent(user::setEmail);
+
+        updateLinks(user, updatedUser.getLinks());
+    }
+
+    private void updateLinks(User user, List<String> newLinks) {
+        if (newLinks != null) {
+            List<String> filteredNewLinks = newLinks.stream()
+                    .filter(link -> link != null && !link.trim().isEmpty())
+                    .map(String::toLowerCase)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            user.getLinks().retainAll(filteredNewLinks);
+            user.getLinks().addAll(filteredNewLinks);
+        }
+    }
+
     public void updatePassword(String userId, String oldPassword, String newPassword) {
         try {
-            User user = userRepository.findById(userId).orElseThrow(()
-                    -> new NotFoundException("User not found with ID: " + userId)
-            );
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
 
             if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
                 throw new IllegalArgumentException("Old password is incorrect");
@@ -120,5 +92,4 @@ public class ProfileService {
             throw new InternalServerErrorException("Error updating password");
         }
     }
-
 }

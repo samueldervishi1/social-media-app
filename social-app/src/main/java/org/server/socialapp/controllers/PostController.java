@@ -3,12 +3,10 @@ package org.server.socialapp.controllers;
 import org.server.socialapp.exceptions.InternalServerErrorException;
 import org.server.socialapp.exceptions.NotFoundException;
 import org.server.socialapp.models.Post;
-import org.server.socialapp.services.ImageService;
 import org.server.socialapp.services.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,51 +15,13 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/v2/posts")
 public class PostController {
 
     private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
-    @Value("${bucketName}")
-    private String bucketName;
-
     @Autowired
     private PostService postService;
-
-    @Autowired
-    private ImageService imageService;
-
-    // If you have Google Cloud Storage activated and running, or Google Console,
-    // use this code to upload images and create posts with images.
-    // The uploaded image URLs will be associated with the post.
-
-//	@PostMapping("/create/{username}")
-//	public ResponseEntity<String> create(
-//			@PathVariable String username ,
-//			@RequestParam("title") String title ,
-//			@RequestParam("content") String content ,
-//			@RequestParam(value = "file", required = false) MultipartFile file) {
-//
-//		try {
-//			String imageUrl = null;
-//			if (file != null && !file.isEmpty()) {
-//				List<String> imageUrls = imageService.uploadImages(bucketName , List.of(file));
-//				if (!imageUrls.isEmpty()) {
-//					imageUrl = imageUrls.get(0);
-//				}
-//			}
-//
-//			Post post = new Post(title , content);
-//			post.setImageUrl(imageUrl);
-//
-//			postService.createPost(username , post);
-//			return ResponseEntity.ok("Post created successfully");
-//
-//		} catch (Exception e) {
-//			logger.error("Error creating post for user {}: {}" , username , e.getMessage() , e);
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating post");
-//		}
-//	}
 
     @PostMapping("/create/{username}")
     public ResponseEntity<String> create(
@@ -148,3 +108,42 @@ public class PostController {
         }
     }
 }
+
+
+    //    @Value("${bucketName}")
+//    private String bucketName;
+
+//    @Autowired
+//    private ImageService imageService;
+
+    // If you have Google Cloud Storage activated and running, or Google Console,
+    // use this code to upload images and create posts with images.
+    // The uploaded image URLs will be associated with the post.
+
+//	@PostMapping("/create/{username}")
+//	public ResponseEntity<String> create(
+//			@PathVariable String username ,
+//			@RequestParam("title") String title ,
+//			@RequestParam("content") String content ,
+//			@RequestParam(value = "file", required = false) MultipartFile file) {
+//
+//		try {
+//			String imageUrl = null;
+//			if (file != null && !file.isEmpty()) {
+//				List<String> imageUrls = imageService.uploadImages(bucketName , List.of(file));
+//				if (!imageUrls.isEmpty()) {
+//					imageUrl = imageUrls.get(0);
+//				}
+//			}
+//
+//			Post post = new Post(title , content);
+//			post.setImageUrl(imageUrl);
+//
+//			postService.createPost(username , post);
+//			return ResponseEntity.ok("Post created successfully");
+//
+//		} catch (Exception e) {
+//			logger.error("Error creating post for user {}: {}" , username , e.getMessage() , e);
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating post");
+//		}
+//	}

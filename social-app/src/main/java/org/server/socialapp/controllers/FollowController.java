@@ -6,45 +6,51 @@ import java.util.List;
 import org.server.socialapp.models.FollowerDTO;
 import org.server.socialapp.services.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v2/users")
 public class FollowController {
 
     @Autowired
     private FollowService followService;
 
-    @PostMapping("/follow/{followerId}/follow/{followingId}")
-    public void followUser(@PathVariable String followerId, @PathVariable String followingId) {
+    @PostMapping("/follow/{followerId}/{followingId}")
+    public ResponseEntity<String> followUser(@PathVariable String followerId, @PathVariable String followingId) {
         followService.followUser(followerId, followingId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Successfully followed user with ID: " + followingId);
     }
 
-    @DeleteMapping("/unfollow/{followerId}/unfollow/{followingId}")
-    public void unfollowUser(@PathVariable String followerId, @PathVariable String followingId) {
+    @DeleteMapping("/unfollow/{followerId}/{followingId}")
+    public ResponseEntity<String> unfollowUser(@PathVariable String followerId, @PathVariable String followingId) {
         followService.unfollowUser(followerId, followingId);
+        return ResponseEntity.ok("Successfully unfollowed user with ID: " + followingId);
     }
 
     @GetMapping("/list/{userId}")
-    public FollowerDTO getUserConnections(@PathVariable String userId) {
-        return followService.getUserConnections(userId);
+    public ResponseEntity<FollowerDTO> getUserConnections(@PathVariable String userId) {
+        FollowerDTO followerDTO = followService.getUserConnections(userId);
+        return ResponseEntity.ok(followerDTO);
     }
 
     @GetMapping("/{userId}/followers/count")
-    public int getFollowersCount(@PathVariable String userId) {
-        return followService.getUserFollowersCount(userId);
+    public ResponseEntity<Integer> getFollowersCount(@PathVariable String userId) {
+        int count = followService.getUserFollowersCount(userId);
+        return ResponseEntity.ok(count);
     }
 
     @GetMapping("/{userId}/following/count")
-    public int getFollowingCount(@PathVariable String userId) {
-        return followService.getUserFollowingCount(userId);
+    public ResponseEntity<Integer> getFollowingCount(@PathVariable String userId) {
+        int count = followService.getUserFollowingCount(userId);
+        return ResponseEntity.ok(count);
     }
 
     @GetMapping("/{userId}/following")
-    public List<String> getFollowing(@PathVariable String userId) {
+    public ResponseEntity<List<String>> getFollowing(@PathVariable String userId) {
         FollowerDTO followerDTO = followService.getUserConnections(userId);
-        return (followerDTO != null) ? followerDTO.getFollowingId() : Collections.emptyList();
+        List<String> followingIds = (followerDTO != null) ? followerDTO.getFollowingId() : Collections.emptyList();
+        return ResponseEntity.ok(followingIds);
     }
-
-
 }

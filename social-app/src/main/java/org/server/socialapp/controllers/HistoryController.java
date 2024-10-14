@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/history")
+@RequestMapping("/api/v2/history")
 public class HistoryController {
 
     private static final Logger logger = LoggerFactory.getLogger(HistoryController.class);
@@ -25,7 +25,7 @@ public class HistoryController {
     private HistoryService historyService;
 
     @PostMapping("/save/{userId}")
-    public ResponseEntity<?> saveChatHistory(@PathVariable String userId, @RequestBody HashMap<String, String> request) {
+    public ResponseEntity<History> saveChatHistory(@PathVariable String userId, @RequestBody HashMap<String, String> request) {
         String sessionId = UUID.randomUUID().toString();
         String message = request.get("message");
         String answer = request.get("answer");
@@ -40,18 +40,18 @@ public class HistoryController {
             return new ResponseEntity<>(savedHistory, HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Error saving chat history for userId: {}, sessionId: {}. Error: {}", userId, sessionId, e.getMessage());
-            return new ResponseEntity<>("Failed to save chat history", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllHistories() {
+    public ResponseEntity<List<History>> getAllHistories() {
         try {
             List<History> histories = historyService.getAllHistories();
             return new ResponseEntity<>(histories, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error fetching all histories. Error: {}", e.getMessage());
-            return new ResponseEntity<>("Failed to fetch histories", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -86,7 +86,7 @@ public class HistoryController {
     }
 
     @DeleteMapping("/delete/{sessionId}")
-    public ResponseEntity<?> deleteChatHistory(@PathVariable String sessionId) {
+    public ResponseEntity<String> deleteChatHistory(@PathVariable String sessionId) {
         logger.info("Received request to delete chat history for sessionId: {}", sessionId);
 
         try {

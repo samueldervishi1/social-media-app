@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/api/v1/ask")
+@RequestMapping("/api/v2/ask")
 public class ChatBotController {
     @Autowired
     private ChatBotService chatBotService;

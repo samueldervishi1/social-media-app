@@ -29,113 +29,76 @@ public class PostService {
 
     @Autowired
     private PostRepository postRepository;
+
     @Autowired
     private ActivityRepository activityRepository;
 
     public Post createPost(String username, Post post) {
-        try {
-            logger.debug("Attempting to find user with username: {}", username);
-            User user = userRepository.findByUsername(username);
-            if (user == null) {
-                String errorMsg = "User not found with username: " + username;
-                logger.warn(errorMsg);
-                throw new NotFoundException(errorMsg);
-            }
-            post.setUserId(user.getId());
-            post.setPostDate(LocalDate.now().toString());
-            post.setPostTime(LocalTime.now().toString());
-            logger.debug("User found with ID: {}", user.getId());
-            logger.info("Preparing to save post with date: {}", post.getPostDate());
+        User user = getUserByUsername(username);
+        preparePost(post, user);
 
-            Post savedPost = postRepository.save(post);
-            logger.info("Post successfully saved with ID: {}", savedPost.getId());
+        Post savedPost = postRepository.save(post);
+        logger.info("Post successfully saved with ID: {}", savedPost.getId());
 
-            String activityDescription = "created post with id " + post.getId();
-            List<ActivityModel> existingActivities = activityRepository.findByUserId(user.getId());
-
-            if (!existingActivities.isEmpty()) {
-                for (ActivityModel activity : existingActivities) {
-                    logger.debug("Updating activity with ID: {}", activity.getId());
-
-                    activity.getActionType().getAllActivity().add(activityDescription);
-                    activityRepository.save(activity);
-                }
-                logger.info("Updated existing activities with new description: {}", activityDescription);
-            } else {
-                ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
-                ActivityModel activity = new ActivityModel(actionType, user.getId(), Instant.now(), "active");
-                activityRepository.save(activity);
-                logger.info("Created new activity with description: {}", activityDescription);
-            }
-
-            return savedPost;
-
-        } catch (NotFoundException e) {
-            logger.error("Error creating post: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred while creating post: {}", e.getMessage(), e);
-            throw new InternalServerErrorException("Error creating post");
-        }
+        updateActivity(user.getId(), post.getId());
+        return savedPost;
     }
 
-
     public List<Post> getUserPosts(String userId) {
-        try {
-            return postRepository.findByUserId(userId);
-        } catch (Exception e) {
-            logger.error("Error fetching posts for user ID {}: {}", userId, e.getMessage());
-            throw new InternalServerErrorException("Error fetching user posts");
-        }
+        return postRepository.findByUserId(userId);
     }
 
     public int getPostCountPerUser(String userId) {
-        try {
-            return postRepository.countByUserId(userId);
-        } catch (Exception e) {
-            logger.error("Error fetching posts for user ID {}: {}", userId, e.getMessage());
-            throw new InternalServerErrorException("Error fetching user posts");
-        }
+        return postRepository.countByUserId(userId);
     }
 
     public List<Post> getAllDBPosts() {
-        try {
-            List<Post> posts = postRepository.findAll();
-            posts.forEach(post -> logger.info("Fetched post with date: {}", post.getPostDate()));
-            return posts;
-        } catch (Exception e) {
-            logger.error("Error fetching all posts: {}", e.getMessage());
-            throw new InternalServerErrorException("Error fetching all posts");
-        }
+        List<Post> posts = postRepository.findAll();
+        posts.forEach(post -> logger.info("Fetched post with date: {}", post.getPostDate()));
+        return posts;
     }
 
     public Post getPostById(String postId) {
-        try {
-            return postRepository.findById(postId)
-                    .orElseThrow(() -> new NotFoundException("Post not found with ID: " + postId));
-        } catch (NotFoundException e) {
-            logger.error("Error fetching post with ID {}: {}", postId, e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred while fetching post with ID {}: {}", postId, e.getMessage());
-            throw new InternalServerErrorException("Error fetching post");
-        }
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("Post not found with ID: " + postId));
     }
 
     public void deletePost(String postId) {
-        try {
-            if (!postRepository.existsById(postId)) {
-                throw new NotFoundException("Post not found with ID: " + postId);
-            }
+        if (!postRepository.existsById(postId)) {
+            throw new NotFoundException("Post not found with ID: " + postId);
+        }
+        postRepository.deleteById(postId);
+        logger.info("Post with ID {} successfully deleted", postId);
+    }
 
-            postRepository.deleteById(postId);
-            logger.info("Post with ID {} successfully deleted", postId);
-        } catch (NotFoundException e) {
-            logger.error("Error deleting post with ID {}: {}", postId, e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred while deleting post with ID {}: {}", postId, e.getMessage());
-            throw new InternalServerErrorException("Error deleting post");
+    private User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
+    }
+
+    private void preparePost(Post post, User user) {
+        post.setUserId(user.getId());
+        post.setPostDate(LocalDate.now().toString());
+        post.setPostTime(LocalTime.now().toString());
+        logger.debug("Preparing to save post with date: {}", post.getPostDate());
+    }
+
+    private void updateActivity(String userId, String postId) {
+        String activityDescription = "created post with id " + postId;
+        List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
+
+        if (!existingActivities.isEmpty()) {
+            for (ActivityModel activity : existingActivities) {
+                logger.debug("Updating activity with ID: {}", activity.getId());
+                activity.getActionType().getAllActivity().add(activityDescription);
+                activityRepository.save(activity);
+            }
+            logger.info("Updated existing activities with new description: {}", activityDescription);
+        } else {
+            ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
+            ActivityModel activity = new ActivityModel(actionType, userId, Instant.now(), "active");
+            activityRepository.save(activity);
+            logger.info("Created new activity with description: {}", activityDescription);
         }
     }
 }

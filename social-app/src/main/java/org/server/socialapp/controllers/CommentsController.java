@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/posts/comments")
+@RequestMapping("/api/v2/posts/comments")
 public class CommentsController {
 
     @Autowired

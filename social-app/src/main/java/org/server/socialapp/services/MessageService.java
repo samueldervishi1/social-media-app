@@ -1,6 +1,5 @@
 package org.server.socialapp.services;
 
-import org.server.socialapp.exceptions.InternalServerErrorException;
 import org.server.socialapp.models.Conversation;
 import org.server.socialapp.models.Message;
 import org.server.socialapp.repositories.ConversationRepository;
@@ -26,26 +25,24 @@ public class MessageService {
     private ConversationRepository conversationRepository;
 
     public Message saveMessage(String senderId, String receiverId, String content) {
-        try {
-            LocalDateTime timeStamp = LocalDateTime.now();
-            String firstUserId = senderId.compareTo(receiverId) < 0 ? senderId : receiverId;
-            String secondUserId = senderId.compareTo(receiverId) < 0 ? receiverId : senderId;
-            Conversation conversation = conversationRepository.findByParticipants(Arrays.asList(firstUserId, secondUserId));
+        LocalDateTime timeStamp = LocalDateTime.now();
+        String firstUserId = senderId.compareTo(receiverId) < 0 ? senderId : receiverId;
+        String secondUserId = senderId.compareTo(receiverId) < 0 ? receiverId : senderId;
 
-            if (conversation != null) {
-                conversation.getMessages().add(new Message(senderId, receiverId, content, timeStamp));
-            } else {
-                conversation = new Conversation(Arrays.asList(firstUserId, secondUserId),
-                        List.of(new Message(senderId, receiverId, content, timeStamp)));
-            }
+        Conversation conversation = conversationRepository.findByParticipants(Arrays.asList(firstUserId, secondUserId));
 
-            conversationRepository.save(conversation);
-            logger.info("Message saved successfully between {} and {}", senderId, receiverId);
+        Message message = new Message(senderId, receiverId, content, timeStamp);
 
-            return new Message(senderId, receiverId, content, timeStamp);
-        } catch (Exception e) {
-            logger.error("Failed to save message from {} to {}: {}", senderId, receiverId, e.getMessage());
-            throw new InternalServerErrorException("Error saving message");
+        if (conversation != null) {
+            conversation.getMessages().add(message);
+        } else {
+            conversation = new Conversation(Arrays.asList(firstUserId, secondUserId),
+                    List.of(message));
         }
+
+        conversationRepository.save(conversation);
+        logger.info("Message saved successfully between {} and {}", senderId, receiverId);
+
+        return message;
     }
 }

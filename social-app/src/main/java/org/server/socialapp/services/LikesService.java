@@ -35,152 +35,118 @@ public class LikesService {
     private ActivityRepository activityRepository;
 
     @Transactional
-    public Like likePost(String userId, String postId) {
+    public Like likePost(String userId, String postId) throws Exception {
+        return likeEntity(userId, postId, true);
+    }
+
+    @Transactional
+    public Like likeComment(String userId, String commentId) throws Exception {
+        return likeEntity(userId, commentId, false);
+    }
+
+    private Like likeEntity(String userId, String entityId, boolean isPost) throws Exception {
         try {
-            List<Like> userLikes = likesRepository.findByUserId(userId);
-            Like like;
+            Like like = getUserLike(userId);
+            List<String> entityIds = isPost ? like.getPostId() : like.getCommentId();
+            String entityType = isPost ? "post" : "comment";
 
-            if (userLikes.isEmpty()) {
-                like = new Like(userId);
-            } else {
-                like = userLikes.get(0);
+            if (entityIds == null) {
+                entityIds = new ArrayList<>();
+                if (isPost) {
+                    like.setPostId(entityIds);
+                } else {
+                    like.setCommentId(entityIds);
+                }
             }
 
-            // Ensure postId is in list or throw exception if not valid
-            if (like.getPostId() == null) {
-                like.setPostId(new ArrayList<>());
-            }
-            if (!like.getPostId().contains(postId)) {
-                like.getPostId().add(postId);
-            } else {
-                throw new BadRequestException("Post is already liked");
+            if (entityIds.contains(entityId)) {
+                throw new BadRequestException(entityType + " is already liked");
             }
 
+            entityIds.add(entityId);
             likesRepository.save(like);
 
-            Post post = postRepository.findById(postId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
-
-            if (!post.getLikes().contains(userId)) {
-                post.getLikes().add(userId);
-            }
-
-            postRepository.save(post);
-
-            String activityDescription = userId + " " + "liked post with id " + postId;
-            List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
-
-            if (!existingActivities.isEmpty()) {
-                for (ActivityModel activity : existingActivities) {
-                    activity.getActionType().getAllActivity().add(activityDescription);
-                    activityRepository.save(activity);
-                }
+            if (isPost) {
+                updatePostLikes(userId, entityId);
             } else {
-                ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
-                ActivityModel activity = new ActivityModel(actionType, userId, Instant.now(), "active");
-                activityRepository.save(activity);
+                updateActivityLog(userId, "liked comment with id " + entityId);
             }
 
             return like;
-        } catch (BadRequestException | ResourceNotFoundException e) {
-            logger.error("Error liking post: {}", e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error while liking post: {}", e.getMessage(), e);
-            throw new InternalServerErrorException("An unexpected error occurred while liking the post");
-        }
-    }
-
-    @Transactional
-    public Like likeComment(String userId, String commentId) {
-        try {
-            List<Like> userLikes = likesRepository.findByUserId(userId);
-            Like like;
-
-            if (userLikes.isEmpty()) {
-                like = new Like(userId);
-            } else {
-                like = userLikes.get(0);
-            }
-
-            if (like.getCommentId() == null) {
-                like.setCommentId(new ArrayList<>());
-            }
-
-            if (!like.getCommentId().contains(commentId)) {
-                like.getCommentId().add(commentId);
-            } else {
-                throw new BadRequestException("Comment is already liked");
-            }
-            String activityDescription = userId + " " + "liked comment with id " + commentId;
-            List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
-
-            if (!existingActivities.isEmpty()) {
-                for (ActivityModel activity : existingActivities) {
-                    activity.getActionType().getAllActivity().add(activityDescription);
-                    activityRepository.save(activity);
-                }
-            } else {
-                ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
-                ActivityModel activity = new ActivityModel(actionType, userId, Instant.now(), "active");
-                activityRepository.save(activity);
-            }
-
-            return likesRepository.save(like);
         } catch (BadRequestException e) {
-            logger.error("Error liking comment: {}", e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error while liking comment: {}", e.getMessage(), e);
-            throw new InternalServerErrorException("An unexpected error occurred while liking the comment");
+            handleException(e, "liking " + (isPost ? "post" : "comment"));
+            return null;
+        }
+    }
+
+    private Like getUserLike(String userId) {
+        List<Like> userLikes = likesRepository.findByUserId(userId);
+        return userLikes.isEmpty() ? new Like(userId) : userLikes.get(0);
+    }
+
+    private void updatePostLikes(String userId, String postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        if (!post.getLikes().contains(userId)) {
+            post.getLikes().add(userId);
+        }
+        postRepository.save(post);
+        updateActivityLog(userId, "liked post with id " + postId);
+    }
+
+    private void updateActivityLog(String userId, String actionDescription) {
+        String activityDescription = userId + " " + actionDescription;
+        List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
+
+        if (!existingActivities.isEmpty()) {
+            existingActivities.forEach(activity -> {
+                activity.getActionType().getAllActivity().add(activityDescription);
+                activityRepository.save(activity);
+            });
+        } else {
+            ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
+            ActivityModel activity = new ActivityModel(actionType, userId, Instant.now(), "active");
+            activityRepository.save(activity);
         }
     }
 
     @Transactional
-    public void unlikePost(String userId, String postId) {
-        try {
-            List<Like> userLikes = likesRepository.findByUserId(userId);
-            if (userLikes.isEmpty()) {
-                throw new ResourceNotFoundException("User has not liked any posts");
-            }
-
-            Like like = userLikes.get(0);
-            if (like.getPostId() != null && like.getPostId().contains(postId)) {
-                like.getPostId().remove(postId);
-                likesRepository.save(like);
-            } else {
-                throw new BadRequestException("Post was not liked");
-            }
-        } catch (ResourceNotFoundException | BadRequestException e) {
-            logger.error("Error unliking post: {}", e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error while unliking post: {}", e.getMessage(), e);
-            throw new InternalServerErrorException("An unexpected error occurred while unliking the post");
-        }
+    public void unlikePost(String userId, String postId) throws Exception {
+        unlikeEntity(userId, postId, true);
     }
 
     @Transactional
-    public void unlikeComment(String userId, String commentId) {
+    public void unlikeComment(String userId, String commentId) throws Exception {
+        unlikeEntity(userId, commentId, false);
+    }
+
+    private void unlikeEntity(String userId, String entityId, boolean isPost) throws Exception {
         try {
             List<Like> userLikes = likesRepository.findByUserId(userId);
             if (userLikes.isEmpty()) {
-                throw new ResourceNotFoundException("User has not liked any comments");
+                throw new ResourceNotFoundException("User has not liked any " + (isPost ? "posts" : "comments"));
             }
 
             Like like = userLikes.get(0);
-            if (like.getCommentId() != null && like.getCommentId().contains(commentId)) {
-                like.getCommentId().remove(commentId);
+            List<String> entityIds = isPost ? like.getPostId() : like.getCommentId();
+
+            if (entityIds != null && entityIds.remove(entityId)) {
                 likesRepository.save(like);
             } else {
-                throw new BadRequestException("Comment was not liked");
+                throw new BadRequestException((isPost ? "Post" : "Comment") + " was not liked");
             }
-        } catch (ResourceNotFoundException | BadRequestException e) {
-            logger.error("Error unliking comment: {}", e.getMessage(), e);
+        } catch (BadRequestException | ResourceNotFoundException e) {
+            handleException(e, "unliking " + (isPost ? "post" : "comment"));
+        }
+    }
+
+    private void handleException(Exception e, String action) throws Exception {
+        if (e instanceof BadRequestException || e instanceof ResourceNotFoundException) {
+            logger.error("Error {}: {}", action, e.getMessage(), e);
             throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error while unliking comment: {}", e.getMessage(), e);
-            throw new InternalServerErrorException("An unexpected error occurred while unliking the comment");
+        } else {
+            logger.error("Unexpected error while {}: {}", action, e.getMessage(), e);
+            throw new InternalServerErrorException("An unexpected error occurred while " + action);
         }
     }
 

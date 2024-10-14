@@ -1,7 +1,7 @@
 package org.server.socialapp.services;
 
+import java.util.Optional;
 import org.server.socialapp.exceptions.BadRequestException;
-import org.server.socialapp.exceptions.InternalServerErrorException;
 import org.server.socialapp.models.User;
 import org.server.socialapp.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -26,65 +26,46 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private static final String DEFAULT_ROLE = "simple_account";
+    private static final String INVALID_EMAIL_FORMAT = "Invalid email format";
+    private static final String EMAIL_ALREADY_EXISTS = "Email already exists";
+    private static final String USERNAME_ALREADY_EXISTS = "Username already exists";
+    private static final String NAME_TOO_SHORT = "Name should be at least 2 characters long";
+    private static final String INVALID_PASSWORD_FORMAT = "Password should be at least 8 characters long, including one letter, one symbol and one number";
+
     public User createUser(User user) {
-        try {
-            if (!isValidEmail(user.getEmail())) {
-                throw new BadRequestException("Invalid email format");
-            }
-            if (userRepository.existsByEmail(user.getEmail())) {
-                throw new BadRequestException("Email already exists");
-            }
-            if (userRepository.existsByUsername(user.getUsername())) {
-                throw new BadRequestException("Username already exists");
-            }
-            if (!isValidLength(user.getGivenName())) {
-                throw new BadRequestException("Name should be at least 2 characters long");
-            }
-            if (!isValidPassword(user.getPassword())) {
-                throw new BadRequestException("Password should be at least 8 characters long, including one letter, one symbol, and one number");
-            }
+        validateUser(user);
 
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            if (user.getRole() == null) {
-                user.setRole("simple_account");
-            }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-            logger.info("Creating user: {}", user.getUsername());
-            return userRepository.save(user);
-
-        } catch (IllegalArgumentException e) {
-            logger.error("Error creating user: {}", e.getMessage());
-            throw e;
-
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred while creating user: {}", e.getMessage());
-            throw new InternalServerErrorException("Error creating user");
-        }
+        user.setRole(Optional.ofNullable(user.getRole()).orElse(DEFAULT_ROLE));
+        logger.info("Creating user: {}", user.getUsername());
+        return userRepository.save(user);
     }
 
     public User getUserInfo(String username) {
-        try {
-            User user = userRepository.findByUsername(username);
-            if (user == null) {
-                throw new NotFoundException("User not found with username: " + username);
-            }
-            return user;
-        } catch (Exception e) {
-            logger.error("Error retrieving user info for username {}: {}", username, e.getMessage());
-            throw new InternalServerErrorException("Error retrieving user info");
-        }
+        return userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found with username: " + username));
     }
 
     public User getUserInfoById(String id) {
-        try {
-            User user = userRepository.findUserById(id);
-            if (user == null) {
-                throw new NotFoundException("User not found with ID: " + id);
-            }
-            return user;
-        } catch (Exception e) {
-            logger.error("Error retrieving user info for ID {}: {}", id, e.getMessage());
-            throw new InternalServerErrorException("Error retrieving user info by ID");
+        return userRepository.findUserById(id).orElseThrow(() -> new NotFoundException("User not found with ID: " + id));
+    }
+
+    private void validateUser(User user) {
+        if (!isValidEmail(user.getEmail())) {
+            throw new BadRequestException(INVALID_EMAIL_FORMAT);
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new BadRequestException(EMAIL_ALREADY_EXISTS);
+        }
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new BadRequestException(USERNAME_ALREADY_EXISTS);
+        }
+        if (!isValidLength(user.getGivenName())) {
+            throw new BadRequestException(NAME_TOO_SHORT);
+        }
+        if (!isValidPassword(user.getPassword())) {
+            throw new BadRequestException(INVALID_PASSWORD_FORMAT);
         }
     }
 

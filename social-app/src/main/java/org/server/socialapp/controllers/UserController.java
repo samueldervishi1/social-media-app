@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v2/users")
 public class UserController {
 
     @Autowired
@@ -44,11 +44,13 @@ public class UserController {
 
     @PutMapping("/update-password")
     public ResponseEntity<String> updatePassword(@RequestParam String username, @RequestParam String newPassword) {
-        boolean isUpdated = updatePassword.updatePassword(username, newPassword);
-        if (isUpdated) {
+        try {
+            updatePassword.updatePassword(username, newPassword);
             return ResponseEntity.ok("Password updated successfully!");
-        } else{
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (NotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with username: " + username);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating password");
         }
     }
 }

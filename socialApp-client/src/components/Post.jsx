@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CiImageOn, CiLocationArrow1 } from "react-icons/ci";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
-// import Picker from "emoji-picker-react";
+ import Picker from "emoji-picker-react";
 import "../styles/post.css";
 
 const PostForm = () => {

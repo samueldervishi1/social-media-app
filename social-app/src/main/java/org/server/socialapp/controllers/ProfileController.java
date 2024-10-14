@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users/update")
+@RequestMapping("/api/v2/users/update")
 public class ProfileController {
 
     @Autowired

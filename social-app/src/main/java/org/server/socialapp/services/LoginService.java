@@ -1,7 +1,6 @@
 package org.server.socialapp.services;
 
 import org.server.socialapp.exceptions.BadRequestException;
-import org.server.socialapp.exceptions.InternalServerErrorException;
 import org.server.socialapp.exceptions.NotFoundException;
 import org.server.socialapp.models.User;
 import org.server.socialapp.repositories.UserRepository;
@@ -27,31 +26,22 @@ public class LoginService {
     private JwtTokenUtil jwtTokenUtil;
 
     public String login(String username, String password) {
-        try {
-            logger.info("Attempting to login with username {}", username);
+        logger.info("Attempting to login with username {}", username);
 
-            User user = userRepository.findByUsername(username);
-            if (user == null) {
-                logger.warn("User with username: {} not found", username);
-                throw new NotFoundException("Username not found");
-            }
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("Username not found"));
 
-            if (!passwordEncoder.matches(password, user.getPassword())) {
-                logger.warn("Password mismatch for username: {}", username);
-                throw new BadRequestException("Invalid username or password");
-            }
+        validatePassword(password, user.getPassword());
 
-            String token = jwtTokenUtil.generateToken(username, user.getId());
-            logger.info("Successfully logged in user: {}", username);
-            return token;
+        String token = jwtTokenUtil.generateToken(username, user.getId());
+        logger.info("Successfully logged in user: {}", username);
+        return token;
+    }
 
-        } catch (NotFoundException | BadRequestException e) {
-            logger.error("Error during login: {}", e.getMessage());
-            throw e;
-
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred during login: {}", e.getMessage());
-            throw new InternalServerErrorException("Error during login");
+    private void validatePassword(String rawPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            logger.warn("Password mismatch for username: {}", encodedPassword);
+            throw new BadRequestException("Invalid username or password");
         }
     }
 }
