@@ -56,7 +56,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const fetchUsername = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/users/${userId}`
+        `http://localhost:5000/api/v2/users/${userId}`
       );
       if (response.status === 200) {
         setUsernames((prevUsernames) => ({
@@ -82,7 +82,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     const fetchUserDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/users/${userId}`
+          `http://localhost:5000/api/v2/users/${userId}`
         );
         if (response.status === 200) {
           console.log(username);
@@ -107,7 +107,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/likes/${userIdFromToken}`
+          `http://localhost:5000/api/v2/likes/${userIdFromToken}`
         );
         if (response.status === 200) {
           const likedPosts = response.data[0]?.postId || [];
@@ -140,7 +140,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     const fetchSavedCount = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/save/posts/${id}/saved-count`
+          `http://localhost:5000/api/v2/save/posts/${id}/saved-count`
         );
         if (response.status === 200) {
           setSavedCount(response.data);
@@ -159,7 +159,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     const fetchLikeCount = async () => {
       try {
         const likeResponse = await axios.get(
-          `http://localhost:5000/api/v1/likes/post/${id}`
+          `http://localhost:5000/api/v2/likes/post/${id}`
         );
         if (likeResponse.status === 200) {
           setLikeCount(likeResponse.data);
@@ -190,16 +190,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const fetchPostDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/posts/${id}`
+        `http://localhost:5000/api/v2/posts/${id}`
       );
       if (response.status === 200) {
         const { commentsList } = response.data;
         if (commentsList) {
-          // Sort comments by date and time to ensure the newest ones are on top
           const sortedComments = commentsList.sort((a, b) => {
             const dateA = new Date(`${a.commentDate}T${a.commentTime}`);
             const dateB = new Date(`${b.commentDate}T${b.commentTime}`);
-            return dateB - dateA; // Newest first
+            return dateB - dateA;
           });
 
           setCommentsList(sortedComments);
@@ -248,7 +247,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/save/posts/${userIdFromToken}`
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`
         );
 
         if (response.status === 200) {
@@ -321,7 +320,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v1/posts/comments/create/${commenterId}/${id}`,
+        `http://localhost:5000/api/v2/posts/comments/create/${commenterId}/${id}`,
         { content: newComment }
       );
       if (response.status === 200) {
@@ -347,12 +346,12 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     try {
       if (!liked) {
         await axios.post(
-          `http://localhost:5000/api/v1/likes/post/${userIdFromToken}/${id}`
+          `http://localhost:5000/api/v2/likes/post/${userIdFromToken}/${id}`
         );
         setLiked(true);
       }
       const likeResponse = await axios.get(
-        `http://localhost:5000/api/v1/likes/post/${id}`
+        `http://localhost:5000/api/v2/likes/post/${id}`
       );
       if (likeResponse.status === 200) {
         setLikeCount(likeResponse.data);
@@ -373,14 +372,14 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     try {
       if (!saved) {
         await axios.post(
-          `http://localhost:5000/api/v1/save/posts/${userIdFromToken}`,
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
           [id]
         );
         setSaved(true);
         window.alert("Post saved successfully!");
       } else {
         await axios.delete(
-          `http://localhost:5000/api/v1/save/posts/${userIdFromToken}/${id}`
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}/${id}`
         );
         setSaved(false);
         window.alert("Post unsaved successfully!");

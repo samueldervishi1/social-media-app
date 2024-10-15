@@ -63,7 +63,7 @@ const MessageComponent = ({ senderId, receiverId }) => {
 
     axios
       .post(
-        `http://localhost:5000/api/v1/message/${senderId}/${receiverId}`,
+        `http://localhost:5000/api/v2/message/${senderId}/${receiverId}`,
         messageData
       )
       .then((response) => {

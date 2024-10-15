@@ -60,7 +60,7 @@ const UserDetail = () => {
   const fetchUserDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/users/${userId}`
+        `http://localhost:5000/api/v2/users/${userId}`
       );
       if (response.status === 200) {
         setUser(response.data);
@@ -93,7 +93,7 @@ const UserDetail = () => {
   const fetchUserPosts = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/posts/list/${userId}`
+        `http://localhost:5000/api/v2/posts/list/${userId}`
       );
       if (response.status === 200) {
         const sortedPosts = response.data.sort(
@@ -114,7 +114,7 @@ const UserDetail = () => {
     if (userId) {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/users/${userId}/followers/count`
+          `http://localhost:5000/api/v2/users/${userId}/followers/count`
         );
         if (response.status === 200) {
           setFollowersCount(response.data);
@@ -131,7 +131,7 @@ const UserDetail = () => {
     if (userId) {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/users/${userId}/following/count`
+          `http://localhost:5000/api/v2/users/${userId}/following/count`
         );
         if (response.status === 200) {
           setFollowingCount(response.data);
@@ -149,7 +149,7 @@ const UserDetail = () => {
     if (loggedInUserId && userId) {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/users/${loggedInUserId}/following`
+          `http://localhost:5000/api/v2/users/${loggedInUserId}/following`
         );
         if (response.status === 200) {
           const isFollowing = response.data.includes(userId);
@@ -168,8 +168,8 @@ const UserDetail = () => {
     if (loggedInUserId && userId) {
       try {
         const apiEndpoint = isFollowing
-          ? `http://localhost:5000/api/v1/users/${loggedInUserId}/unfollow/${userId}`
-          : `http://localhost:5000/api/v1/users/follow/${loggedInUserId}/follow/${userId}`;
+          ? `http://localhost:5000/api/v2/users/${loggedInUserId}/unfollow/${userId}`
+          : `http://localhost:5000/api/v2/users/follow/${loggedInUserId}/follow/${userId}`;
 
         const response = await axios.post(apiEndpoint);
         if (response.status === 200) {

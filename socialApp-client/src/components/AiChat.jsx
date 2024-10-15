@@ -16,6 +16,8 @@ const AiChat = () => {
   const [countdown, setCountdown] = useState(0);
   const chatContainerRef = useRef(null);
   const [isThinking, setIsThinking] = useState(false);
+  const [headingText, setHeadingText] = useState("");
+  const [hideHeading, setHideHeading] = useState(false);
 
   const getUserIdFromToken = () => {
     const token = localStorage.getItem("token");
@@ -52,6 +54,21 @@ const AiChat = () => {
       return false;
     }
   };
+
+  useEffect(() => {
+    const fullHeading = "Ask anything you want!";
+    let currentIndex = 0;
+
+    const typeHeading = () => {
+      if (currentIndex < fullHeading.length) {
+        setHeadingText((prev) => prev + fullHeading[currentIndex]);
+        currentIndex++;
+        setTimeout(typeHeading, 100);
+      }
+    };
+
+    typeHeading();
+  }, []);
 
   const handleRateLimit = () => {
     setIsRateLimited(true);
@@ -108,6 +125,8 @@ const AiChat = () => {
       return;
     }
 
+    setHideHeading(true);
+
     if (isRateLimited) return;
 
     if (userInput.length > 4000) {
@@ -128,7 +147,7 @@ const AiChat = () => {
     setUserInput("");
 
     try {
-      await axios.get(`http://localhost:5000/api/v1/ping`);
+      await axios.get(`http://localhost:5000/api/v2/ping`);
     } catch (error) {
       setIsLoading(false);
       const errorMessage = "Check your internet connection.";
@@ -144,7 +163,7 @@ const AiChat = () => {
     }
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/v1/ask`, {
+      const response = await axios.post(`http://localhost:5000/api/v2/ask`, {
         message: userInput,
       });
 
@@ -156,7 +175,7 @@ const AiChat = () => {
         const userId = getUserIdFromToken();
         if (userId) {
           await axios.post(
-            `http://localhost:5000/api/v1/history/save/${userId}`,
+            `http://localhost:5000/api/v2/history/save/${userId}`,
             {
               message: userInput,
               answer: responseData,
@@ -278,9 +297,7 @@ const AiChat = () => {
                 </div>
                 <div className="message thinking-placeholder">
                   Thinking
-                  <span className="dot">.</span>
-                  <span className="dot">.</span>
-                  <span className="dot">.</span>
+                  <span className="dot">...</span>
                 </div>
               </div>
             </div>

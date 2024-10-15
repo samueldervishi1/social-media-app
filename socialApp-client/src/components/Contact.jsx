@@ -52,7 +52,7 @@ const Contact = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/contact",
+        "http://localhost:5000/api/v2/contact",
         formData
       );
       console.log("Email sent successfully:", response.data);

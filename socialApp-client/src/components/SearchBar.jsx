@@ -18,7 +18,7 @@ const SearchBar = () => {
     }
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/search/users?username=${username}`
+        `http://localhost:5000/api/v2/search/users?username=${username}`
       );
       const data = response.data;
       if (data.length === 0) {

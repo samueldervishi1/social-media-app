@@ -52,7 +52,7 @@ const ChatHistoryCard = () => {
       if (userId) {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/v1/history/get/${userId}`
+            `http://localhost:5000/api/v2/history/get/${userId}`
           );
           const data = response.data;
           if (data && data.questionAnswerPairs.length > 0) {
@@ -94,7 +94,7 @@ const ChatHistoryCard = () => {
   const fetchFullHistory = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/history/get/sessionId/${sessionId}`
+        `http://localhost:5000/api/v2/history/get/sessionId/${sessionId}`
       );
       if (
         response.data &&
@@ -127,7 +127,7 @@ const ChatHistoryCard = () => {
     if (userId && sessionId) {
       try {
         await axios.delete(
-          `http://localhost:5000/api/v1/history/delete/${sessionId}`
+          `http://localhost:5000/api/v2/history/delete/${sessionId}`
         );
         setHistory(null);
         setFirstQuestion(null);

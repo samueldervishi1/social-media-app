@@ -56,10 +56,6 @@
   text-align: left;
 }
 
-.drp-t:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
 .drp-t:last-child {
   border-bottom: none;
 }

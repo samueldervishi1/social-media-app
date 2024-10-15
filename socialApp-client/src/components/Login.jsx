@@ -32,7 +32,7 @@ const LoginScript = () => {
     const password = event.target.password.value;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/users/login`, {
+      const response = await fetch(`http://localhost:5000/api/v2/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ const LoginScript = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/users/update-password?username=${username}&newPassword=${newPassword}`,
+        `http://localhost:5000/api/v2/users/update-password?username=${username}&newPassword=${newPassword}`,
         {
           method: "PUT",
           headers: {

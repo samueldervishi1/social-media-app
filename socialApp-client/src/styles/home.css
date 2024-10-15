@@ -20,7 +20,7 @@
 .sidebar-search{
   flex: 1;
   margin-top: 5%;
-  margin-left: 10%;
+  margin-right: 10%;
   height: 20px;
 }
 
@@ -28,8 +28,6 @@
   flex: 2;
   margin-top: 3%;
   border: 0;
-  border-right: 1px solid grey;
-  border-left: 1px solid grey;
   margin-left: 10%;
 }
 

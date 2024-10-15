@@ -48,7 +48,7 @@ const UserCard = ({ user }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/users/list/${userId}`
+          `http://localhost:5000/api/v2/users/list/${userId}`
         );
         if (response.status === 200) {
           const followerIds = response.data?.followerId || [];
@@ -57,7 +57,7 @@ const UserCard = ({ user }) => {
             const followersData = await Promise.all(
               followerIds.map(async (followerId) => {
                 const followerResponse = await axios.get(
-                  `http://localhost:5000/api/v1/users/${followerId}`
+                  `http://localhost:5000/api/v2/users/${followerId}`
                 );
                 return followerResponse.data;
               })

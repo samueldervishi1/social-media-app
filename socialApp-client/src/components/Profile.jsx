@@ -52,7 +52,7 @@ const Profile = () => {
       const username = getUsernameFromToken();
       if (username) {
         const profileResponse = await axios.get(
-          `http://localhost:5000/api/v1/users/info/${username}`
+          `http://localhost:5000/api/v2/users/info/${username}`
         );
         if (profileResponse.status === 200) {
           setProfileData(profileResponse.data);
@@ -66,7 +66,7 @@ const Profile = () => {
       const userId = getUserIdFromToken();
       if (userId) {
         const followersFollowingResponse = await axios.get(
-          `http://localhost:5000/api/v1/users/list/${userId}`
+          `http://localhost:5000/api/v2/users/list/${userId}`
         );
         if (followersFollowingResponse.status === 200) {
           const { followerId = [], followingId = [] } =
@@ -78,7 +78,7 @@ const Profile = () => {
         }
 
         const userPostsResponse = await axios.get(
-          `http://localhost:5000/api/v1/posts/list/${userId}`
+          `http://localhost:5000/api/v2/posts/list/${userId}`
         );
         if (userPostsResponse.status === 200) {
           setPostsCount(userPostsResponse.data.length);

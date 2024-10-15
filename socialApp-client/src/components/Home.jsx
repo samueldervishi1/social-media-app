@@ -38,9 +38,7 @@ const Home = () => {
       <div className="content-wrapper">
         <div className="main-content">
           <Post />
-          <hr className="post-divider-up" />
           <PostList />
-          <hr className="post-divider" />
         </div>
         <div className="sidebar-search">
           <SearchBar />

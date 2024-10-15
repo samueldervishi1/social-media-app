@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CiImageOn, CiLocationArrow1 } from "react-icons/ci";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
- import Picker from "emoji-picker-react";
+import Picker from "emoji-picker-react";
 import "../styles/post.css";
 
 const PostForm = () => {
   const [postContent, setPostContent] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // To prevent multiple submissions
   const navigate = useNavigate();
 
   const isAuthenticated = () => {
@@ -40,19 +41,26 @@ const PostForm = () => {
 
   const handlePostSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return; // Prevent multiple submissions
+    setIsSubmitting(true);
 
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("Token not found in localStorage.");
+      setIsSubmitting(false);
       return;
     }
 
     const username = getUsernameFromToken(token);
     const postData = { content: postContent };
 
+    // Handle image upload if needed
+    // For simplicity, we'll send the image as a base64 string in the content
+    // You might want to handle it differently based on your backend
+
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v1/posts/create/${username}`,
+        `http://localhost:5000/api/v2/posts/create/${username}`,
         postData,
         {
           headers: {
@@ -70,7 +78,9 @@ const PostForm = () => {
       setPostContent("");
       setSelectedImage(null);
     } catch (error) {
-      console.error("Error creating post:", error.message);
+      console.error("Error creating post:", error.response?.data || error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -80,19 +90,64 @@ const PostForm = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedImage(reader.result);
+        // Optionally, append the image to postContent or handle it separately
+        // For example:
+        // setPostContent(prev => prev + `\n![Image](${reader.result})`);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleEmojiClick = (event, emojiObject) => {
-    console.log("Selected emoji object:", emojiObject);
-    if (emojiObject && emojiObject.emoji) {
-      setPostContent((prevContent) => prevContent + emojiObject.emoji);
+  const handleEmojiClick = (emojiData, event) => {
+    if (emojiData && emojiData.emoji) {
+      setPostContent((prevContent) => prevContent + emojiData.emoji);
       setShowEmojiPicker(false);
     } else {
-      console.error("No valid emoji selected:", emojiObject);
+      console.error("No valid emoji selected:", emojiData);
     }
+  };
+
+  const handleLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        try {
+          // Reverse Geocoding using Nominatim API
+          const response = await axios.get("https://nominatim.openstreetmap.org/reverse", {
+            params: {
+              lat: latitude,
+              lon: longitude,
+              format: "json",
+            },
+            headers: {
+              "Accept-Language": "en", // Ensures the response is in English
+            },
+          });
+
+          const address = response.data.address;
+          const city = address.city || address.town || address.village || address.hamlet || "Unknown City";
+          const country = address.country || "Unknown Country";
+
+          const locationString = `📍 Location: ${city}, ${country}`;
+          setPostContent((prevContent) => `${prevContent} ${locationString}`);
+        } catch (error) {
+          console.error("Error fetching address:", error.message);
+          // Fallback to coordinates if reverse geocoding fails
+          const locationString = `📍 Location: (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`;
+          setPostContent((prevContent) => `${prevContent} ${locationString}`);
+        }
+      },
+      (error) => {
+        console.error("Error fetching location:", error.message);
+        alert("Unable to retrieve your location.");
+      }
+    );
   };
 
   const getUsernameFromToken = (token) => {
@@ -105,15 +160,29 @@ const PostForm = () => {
     }
   };
 
-  const placeholderText = `What's on your mind, today ${getUsernameFromToken(
+  const placeholderText = `What's on your mind, ${getUsernameFromToken(
     localStorage.getItem("token")
   )} ?`;
+
+  const clearSelectedImage = () => {
+    setSelectedImage(null);
+  };
 
   return (
     <div className="post-form">
       <form onSubmit={handlePostSubmit}>
         {selectedImage && (
-          <img src={selectedImage} alt="Selected" className="preview-image" />
+          <div className="selected-image-container">
+            <img src={selectedImage} alt="Selected" className="preview-image" />
+            <button
+              type="button"
+              className="clear-image-button"
+              onClick={clearSelectedImage}
+              title="Clear Image"
+            >
+              &times;
+            </button>
+          </div>
         )}
         <textarea
           placeholder={placeholderText}
@@ -125,8 +194,8 @@ const PostForm = () => {
 
         <div className="post-form-actions">
           <div className="icons-container">
-            <label htmlFor="image-upload">
-              <CiImageOn className="icon" title="Image" />
+            <label htmlFor="image-upload" className="icon-label">
+              <CiImageOn className="icon" title="Add Image" />
               <input
                 type="file"
                 id="image-upload"
@@ -137,13 +206,21 @@ const PostForm = () => {
             </label>
             <MdOutlineEmojiEmotions
               className="icon"
-              title="Emoji"
+              title="Add Emoji"
               onClick={() => setShowEmojiPicker((prev) => !prev)}
             />
-            <CiLocationArrow1 className="icon" title="Location" />
+            <CiLocationArrow1
+              className="icon"
+              title="Add Location"
+              onClick={handleLocation}
+            />
           </div>
-          <button type="submit" className="post-the-post">
-            Post
+          <button
+            type="submit"
+            className="post-the-post"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>
         {showEmojiPicker && (

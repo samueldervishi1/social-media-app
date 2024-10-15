@@ -42,21 +42,32 @@ const PostList = () => {
   const fetchPosts = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/posts/all`
+        `http://localhost:5000/api/v2/posts/all`
       );
 
-      const postsWithDates = response.data.filter(
-        (post) => typeof post.postDate === "string"
-      );
-      const postsWithoutDates = response.data.filter(
-        (post) => !post.postDate || typeof post.postDate !== "string"
+      const postsWithValidDateAndTime = response.data.filter(
+        (post) =>
+          typeof post.postDate === "string" && typeof post.postTime === "string"
       );
 
-      postsWithDates.sort(
-        (a, b) => new Date(b.postDate) - new Date(a.postDate)
+      const postsWithoutValidDateAndTime = response.data.filter(
+        (post) =>
+          !post.postDate ||
+          typeof post.postDate !== "string" ||
+          !post.postTime ||
+          typeof post.postTime !== "string"
       );
 
-      const sortedPosts = [...postsWithDates, ...postsWithoutDates];
+      postsWithValidDateAndTime.sort((a, b) => {
+        const dateA = new Date(`${a.postDate}T${a.postTime}`);
+        const dateB = new Date(`${b.postDate}T${b.postTime}`);
+        return dateB - dateA;
+      });
+
+      const sortedPosts = [
+        ...postsWithValidDateAndTime,
+        ...postsWithoutValidDateAndTime,
+      ];
 
       setPosts(sortedPosts);
     } catch (error) {

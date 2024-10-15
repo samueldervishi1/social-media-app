@@ -67,7 +67,7 @@ const PostDetail = () => {
   const fetchUserDetails = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/users/${userId}`
+        `http://localhost:5000/api/v2/users/${userId}`
       );
       if (response.status === 200) {
         return response.data.username;
@@ -87,7 +87,7 @@ const PostDetail = () => {
         setIsLoading(true);
 
         const postResponse = await axios.get(
-          `http://localhost:5000/api/v1/posts/${postId}`
+          `http://localhost:5000/api/v2/posts/${postId}`
         );
 
         if (postResponse.status === 200) {
@@ -117,7 +117,7 @@ const PostDetail = () => {
         }
 
         const likeResponse = await axios.get(
-          `http://localhost:5000/api/v1/likes/post/${postId}`
+          `http://localhost:5000/api/v2/likes/post/${postId}`
         );
         if (likeResponse.status === 200) {
           setLikeCount(likeResponse.data);
@@ -128,7 +128,7 @@ const PostDetail = () => {
         const userIdFromToken = getUserIdFromToken();
         if (userIdFromToken) {
           const likedPostsResponse = await axios.get(
-            `http://localhost:5000/api/v1/likes/${userIdFromToken}`
+            `http://localhost:5000/api/v2/likes/${userIdFromToken}`
           );
           if (likedPostsResponse.status === 200) {
             const likedPosts = likedPostsResponse.data[0]?.postId || [];
@@ -181,7 +181,7 @@ const PostDetail = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v1/posts/comments/create/${commenterId}/${postId}`,
+        `http://localhost:5000/api/v2/posts/comments/create/${commenterId}/${postId}`,
         {
           content: newComment,
         }
@@ -221,13 +221,13 @@ const PostDetail = () => {
     try {
       if (!saved) {
         await axios.post(
-          `http://localhost:5000/api/v1/save/posts/${userIdFromToken}`,
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
           [postId]
         );
         setSaved(true);
       } else {
         await axios.delete(
-          `http://localhost:5000/api/v1/save/posts/${userIdFromToken}/${postId}`
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}/${postId}`
         );
         setSaved(false);
       }
@@ -247,13 +247,13 @@ const PostDetail = () => {
     try {
       if (!liked) {
         await axios.post(
-          `http://localhost:5000/api/v1/likes/post/${userIdFromToken}/${id}`
+          `http://localhost:5000/api/v2/likes/post/${userIdFromToken}/${id}`
         );
         setLiked(true);
       }
 
       const likeResponse = await axios.get(
-        `http://localhost:5000/api/v1/likes/post/${postId}`
+        `http://localhost:5000/api/v2/likes/post/${postId}`
       );
       if (likeResponse.status === 200) {
         setLikeCount(likeResponse.data);
@@ -279,7 +279,7 @@ const PostDetail = () => {
     const fetchSavedCount = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/save/posts/${postId}/saved-count`
+          `http://localhost:5000/api/v2/save/posts/${postId}/saved-count`
         );
         if (response.status === 200) {
           setSavedCount(response.data);
@@ -305,7 +305,7 @@ const PostDetail = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/save/posts/${userIdFromToken}`
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`
         );
 
         if (response.status === 200) {

@@ -82,7 +82,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v1/posts/list/count/${userId}`
+          `http://localhost:5000/api/v2/posts/list/count/${userId}`
         );
         if (response.status === 200) {
           setPostCount(response.data);
@@ -107,7 +107,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
 
     try {
         const response = await axios.get(
-            `http://localhost:5000/api/v1/posts/list/${userId}`
+            `http://localhost:5000/api/v2/posts/list/${userId}`
         );
         
         if (response.status === 200) {
@@ -143,7 +143,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/v1/users/update/${userId}`,
+        `http://localhost:5000/api/v2/users/update/${userId}`,
         updateData
       );
       console.log("Profile update response:", response);
