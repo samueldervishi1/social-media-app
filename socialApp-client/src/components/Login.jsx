@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import checkMarkgif from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/check.gif";
@@ -196,7 +196,7 @@ const LoginScript = () => {
                 </button>
 
                 <p className="signup">
-                  Don't have an account? <a href="/register">Sign up</a>.
+                  Don't have an account? <Link to="/register">Sign up</Link>.
                 </p>
               </div>
             </div>

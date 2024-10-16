@@ -499,7 +499,7 @@ const PostDetail = () => {
               </button>
             </div>
             <Modal show={showShareModal} onHide={handleCloseShareModal}>
-              <Modal.Header closeButton>
+              <Modal.Header>
                 <Modal.Title>Share Post</Modal.Title>
               </Modal.Header>
               <Modal.Body>

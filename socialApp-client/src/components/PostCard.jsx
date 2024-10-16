@@ -33,6 +33,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [savedCount, setSavedCount] = useState(0);
+  const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
 
   const navigate = useNavigate();
@@ -186,6 +187,12 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     fetchLikeCount();
   }, [id]);
 
+  const formatTime = (postTime) => {
+    // Assuming postTime is in "HH:mm:ss" format
+    const date = new Date(`1970-01-01T${postTime}Z`);
+    return format(date, "hh:mm a"); // Formats to "hh:mm AM/PM"
+  };
+
   const fetchPostDetails = async () => {
     try {
       const response = await axios.get(
@@ -233,8 +240,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     if (interval >= 1) return interval + "min ago";
     return seconds < 10 ? "just now" : seconds + "s ago";
   };
-
   const formattedPostTime = timeSincePost(postDate, postTime);
+
+  const handleShowCommentsModal = () => setShowCommentsModal(true);
+  const handleCloseCommentsModal = () => setShowCommentsModal(false);
+
+  const toggleComments = (e) => {
+    e.stopPropagation();
+    setShowCommentsModal(true);
+  };
 
   useEffect(() => {
     const fetchSavedPosts = async () => {
@@ -269,13 +283,13 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     setCopied(false);
   }, [shareUrl]);
 
-  const toggleComments = (e) => {
-    e.stopPropagation();
-    setExpanded(!expanded);
-    if (!expanded && !showNewCommentForm) {
-      setShowNewCommentForm(true);
-    }
-  };
+  // const toggleComments = (e) => {
+  //   e.stopPropagation();
+  //   setExpanded(!expanded);
+  //   if (!expanded && !showNewCommentForm) {
+  //     setShowNewCommentForm(true);
+  //   }
+  // };
 
   useEffect(() => {
     fetchPostDetails();
@@ -500,7 +514,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           </>
         ) : null}
       </div>
-
       <div className="post-footer">
         <div className="footer-icons">
           <div className="icon-wrapper" onClick={toggleComments}>
@@ -526,15 +539,23 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           </div>
           <AiOutlineShareAlt className="icon" onClick={handleShowShareModal} />
         </div>
-        {expanded && (
-          <div className="post-comments">
-            <h3 className="comment-title">Comments </h3>
+
+        <Modal
+          show={showCommentsModal}
+          onHide={handleCloseCommentsModal}
+          centered
+          className="comments-modal"
+        >
+          <Modal.Header className="share-title">
+            <Modal.Title>Comments</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="share-body">
             <ul className="comment-list">
               {commentsList.map((comment) => (
                 <li key={comment.id} className="comment-item1">
                   <img
                     src={
-                      user
+                      usernames[comment.userId]
                         ? user.profileImage || defaultUserIcon
                         : defaultUserIcon
                     }
@@ -542,39 +563,39 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
                     className="user-icon1"
                   />
                   <strong className="user-id">
-                    @{usernames[comment.userId] || comment.userId}
+                    @{usernames[comment.userId] || comment.userId} •{" "}
+                    <small className="small-timer">
+                      {isValidDate(comment.commentDate)
+                        ? `${formatDate(comment.commentDate)} at ${formatTime(
+                            comment.commentTime
+                          )}`
+                        : "N/A"}
+                    </small>
                   </strong>
                   <p className="user-comment">{comment.content}</p>
-                  <small className="small-timer">
-                    {isValidDate(comment.commentDate)
-                      ? `${formatDate(comment.commentDate)} at ${formatTime(
-                          comment.commentTime
-                        )}`
-                      : "N/A"}
-                  </small>
                 </li>
               ))}
             </ul>
-            {showNewCommentForm && (
-              <div className="new-comment-form">
-                <textarea
-                  value={newComment}
-                  onChange={handleCommentChange}
-                  placeholder="Write your comment..."
-                />
-                <button
-                  className="post-comment-button"
-                  onClick={navigateToAddComment}
-                >
-                  <IoSend />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+
+            <div className="new-comment-form">
+              <textarea
+                value={newComment}
+                onChange={handleCommentChange}
+                placeholder="Write your comment..."
+              />
+              <button
+                className="post-comment-button"
+                onClick={navigateToAddComment}
+                disabled={loading}
+              >
+                <IoSend />
+              </button>
+            </div>
+          </Modal.Body>
+        </Modal>
       </div>
       <Modal show={showShareModal} onHide={handleCloseShareModal}>
-        <Modal.Header closeButton className="share-title">
+        <Modal.Header className="share-title">
           <Modal.Title className="share-title">Share Post</Modal.Title>
         </Modal.Header>
         <Modal.Body className="share-body">
