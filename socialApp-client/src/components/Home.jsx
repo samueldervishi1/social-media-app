@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ChatHistory from "./ChatHistory";
+import Navbar from "./Navbar";
 import Post from "./Post";
 import PostList from "./PostList";
 import SearchBar from "./SearchBar";
 import TrendingList from "./TrendingList";
-import PremiumCard from "./PremiumCard";
+import Offer from "./Offer";
 import "../styles/home.css";
 
 const Home = () => {
@@ -42,12 +42,12 @@ const Home = () => {
         </div>
         <div className="sidebar-search">
           <SearchBar />
-          <PremiumCard />
+          <Offer />
           <TrendingList />
         </div>
       </div>
       <div className="chat-history">
-        <ChatHistory />
+        <Navbar />
       </div>
     </div>
   );

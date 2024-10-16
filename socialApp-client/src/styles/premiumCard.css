@@ -11,6 +11,8 @@
   margin-bottom: 20px;
   transition: transform 0.2s ease-in-out;
   background-image: url("../assets/bckg.png");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .card-title {
@@ -35,4 +37,8 @@
 
 .card-button:hover {
   background-color: rgba(255, 255, 255, 0.8);
+}
+
+.timer {
+  font-size: 1rem;
 }

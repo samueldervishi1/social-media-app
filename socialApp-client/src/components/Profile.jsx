@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createContext } from "react";
 import { Container } from "react-bootstrap";
-import ChatHistory from "./ChatHistory";
+import Navbar from "./Navbar";
 import ProfileHeader from "./ProfileHeader";
 import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
 import "../styles/profile.css";
@@ -128,7 +128,7 @@ const Profile = () => {
     <ProfileContext.Provider value={profileData}>
       <div className="profile-layout">
         <div className="menu">
-          <ChatHistory />
+          <Navbar />
         </div>
         <div className="main-content">
           {isLoading ? (

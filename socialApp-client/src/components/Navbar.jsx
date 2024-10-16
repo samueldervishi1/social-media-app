@@ -22,7 +22,7 @@ import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-clien
 import logo from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/nw3.png";
 import "../styles/history.css";
 
-const ChatHistory = () => {
+const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -86,9 +86,9 @@ const ChatHistory = () => {
                 <span>Messages</span>
               </a>
               <a
-                href="/ai"
+                href="/chirp"
                 className={`history-link ${
-                  location.pathname === "/ai" ? "active" : ""
+                  location.pathname === "/chirp" ? "active" : ""
                 }`}
               >
                 <GiArtificialHive className="icon-p" />
@@ -172,4 +172,4 @@ const ChatHistory = () => {
   );
 };
 
-export default ChatHistory;
+export default Navbar;

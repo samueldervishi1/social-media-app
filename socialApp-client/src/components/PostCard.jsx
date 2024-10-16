@@ -85,7 +85,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           `http://localhost:5000/api/v2/users/${userId}`
         );
         if (response.status === 200) {
-          console.log(username);
           setUser(response.data);
           setUsername(response.data.username);
         }

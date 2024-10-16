@@ -6,7 +6,7 @@ import { AiOutlineComment, AiOutlineShareAlt } from "react-icons/ai";
 import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
-import ChatHistory from "./ChatHistory";
+import Navbar from "./Navbar";
 import Modal from "react-bootstrap/Modal";
 import News from "./News";
 import loaderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
@@ -383,7 +383,7 @@ const PostDetail = () => {
 
   return (
     <div>
-      <ChatHistory />
+      <Navbar />
       {isLoading ? (
         <div className="loading-container">
           <img src={loaderImage} alt="Loading..." className="loading-spinner" />

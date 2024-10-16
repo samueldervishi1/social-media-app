@@ -13,12 +13,12 @@ import PostDetail from "./components/PostDetails";
 import UserDetails from "./components/UserDetails";
 import NotFound from "./components/NotFound";
 import PremiumPage from "./components/PremiumPage";
-import UserCard from "./components/MessageUserCard";
+import Inbox from "./components/Inbox";
 import TermsAndServices from "./components/Terms";
 import About from "./components/About";
 import Contact from "./components/Contact";
-import AiChat from "./components/AiChat";
-import ChatHistoryCard from "./components/ChatHistoryCard";
+import ChirpAI from "./components/ChirpAI";
+import ChripAIHistory from "./components/ChripAIHistory";
 
 const App = () => {
   const isAuthenticated = () => {
@@ -42,8 +42,6 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<LoginScript />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/terms" element={<TermsAndServices />} />
-
           <Route
             path="/home"
             element={isAuthenticated() ? <Home /> : <LoginScript />}
@@ -62,16 +60,17 @@ const App = () => {
           />
           <Route
             path="/messages"
-            element={isAuthenticated() ? <UserCard /> : <LoginScript />}
+            element={isAuthenticated() ? <Inbox /> : <LoginScript />}
           />
           <Route
-            path="/ai"
-            element={isAuthenticated() ? <AiChat /> : <LoginScript />}
+            path="/chirp"
+            element={isAuthenticated() ? <ChirpAI /> : <LoginScript />}
           />
           <Route
             path="/history"
-            element={isAuthenticated() ? <ChatHistoryCard /> : <LoginScript />}
+            element={isAuthenticated() ? <ChripAIHistory /> : <LoginScript />}
           />
+          <Route path="/terms" element={<TermsAndServices />} />
           <Route path="/premium" element={<PremiumPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

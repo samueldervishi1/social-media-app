@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import PostCard from "./PostCard";
 import { Image } from "react-bootstrap";
-import ChatHistory from "./ChatHistory";
+import Navbar from "./Navbar";
 import Button from "react-bootstrap/Button";
 import profileImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/user.webp";
 import placeHolderImage from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/placeholder.png";
@@ -218,7 +218,7 @@ const UserDetail = () => {
 
   return (
     <>
-      <ChatHistory />
+      <Navbar />
       {isLoading ? (
         <div className="loader-overlay">
           <img src={loaderImage} alt="Loading..." className="loader-image" />

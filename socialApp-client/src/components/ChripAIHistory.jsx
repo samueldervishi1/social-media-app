@@ -19,7 +19,7 @@ const formatCodeBlocks = (text) => {
   return formattedText;
 };
 
-const ChatHistoryCard = () => {
+const ChripAIHistory = () => {
   const [firstQuestion, setFirstQuestion] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [showFullHistory, setShowFullHistory] = useState(false);
@@ -28,8 +28,6 @@ const ChatHistoryCard = () => {
   const [delayOver, setDelayOver] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
-
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   const getUserIdFromToken = () => {
     const token = localStorage.getItem("token");
@@ -45,30 +43,35 @@ const ChatHistoryCard = () => {
     return null;
   };
 
+  const toggleChatHistory = () => {
+    setChatHistoryVisible((prev) => !prev);
+  };
+
+  const [isChatHistoryVisible, setChatHistoryVisible] = useState(true);
+
+  const fetchHistory = async () => {
+    const userId = getUserIdFromToken();
+    if (userId) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/v2/history/get/${userId}`
+        );
+        const data = response.data;
+        if (data && data.questionAnswerPairs.length > 0) {
+          setFirstQuestion(data.questionAnswerPairs[0].question);
+          setSessionId(data.sessionId);
+        } else {
+          setFirstQuestion(null);
+          setSessionId("");
+        }
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     let lastFetchTime = Date.now();
-    const fetchHistory = async () => {
-      const userId = getUserIdFromToken();
-      if (userId) {
-        try {
-          const response = await axios.get(
-            `http://localhost:5000/api/v2/history/get/${userId}`
-          );
-          const data = response.data;
-          if (data && data.questionAnswerPairs.length > 0) {
-            setFirstQuestion(data.questionAnswerPairs[0].question);
-            setSessionId(data.sessionId);
-            lastFetchTime = Date.now();
-          } else {
-            setFirstQuestion(null);
-            setSessionId("");
-          }
-        } catch (error) {
-          console.error("Error fetching chat history:", error);
-        }
-      }
-    };
-
     fetchHistory();
 
     const timer = setTimeout(() => {
@@ -89,7 +92,7 @@ const ChatHistoryCard = () => {
       clearInterval(intervalId);
       clearInterval(noNewHistoryTimer);
     };
-  }, [apiUrl]);
+  }, []);
 
   const fetchFullHistory = async () => {
     try {
@@ -146,8 +149,19 @@ const ChatHistoryCard = () => {
     >
       <div style={{ flexGrow: 1 }}>
         <div className="h1-ac-button">
-          <h1 className="ac-pg" style={{ color: "white" }}>
+          <h1
+            className="ac-pg"
+            style={{
+              color: "white",
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
+          >
             ChirpAI History
+            <Button variant="secondary" onClick={fetchHistory}>
+              Refresh
+            </Button>
           </h1>
         </div>
         {isLoading || !delayOver ? (
@@ -223,4 +237,4 @@ const ChatHistoryCard = () => {
   );
 };
 
-export default ChatHistoryCard;
+export default ChripAIHistory;

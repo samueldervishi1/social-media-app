@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import ChatHistoryCard from "../components/ChatHistoryCard";
+import ChripAIHistory from "./ChripAIHistory";
 import bot from "../assets/bot.svg";
 import user from "../assets/user.svg";
 import send from "../assets/send.svg";
+import loaderGif from "/home/samuel/Documents/social-media-app/socialApp-client/src/assets/ZKZg.gif";
+import { FaRegPenToSquare, FaBarsStaggered } from "react-icons/fa6";
 import "../styles/ai.css";
 
-const AiChat = () => {
+const ChirpAI = () => {
   const navigate = useNavigate();
   const [chatMessages, setChatMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
@@ -18,6 +20,7 @@ const AiChat = () => {
   const [isThinking, setIsThinking] = useState(false);
   const [headingText, setHeadingText] = useState("");
   const [hideHeading, setHideHeading] = useState(false);
+  const [isChatHistoryVisible, setChatHistoryVisible] = useState(true);
 
   const getUserIdFromToken = () => {
     const token = localStorage.getItem("token");
@@ -31,6 +34,16 @@ const AiChat = () => {
       }
     }
     return null;
+  };
+
+  const resetChat = () => {
+    setChatMessages([]);
+    setUserInput("");
+    setHideHeading(false);
+  };
+
+  const toggleChatHistory = () => {
+    setChatHistoryVisible((prev) => !prev);
   };
 
   useEffect(() => {
@@ -173,15 +186,15 @@ const AiChat = () => {
         setIsThinking(false);
 
         const userId = getUserIdFromToken();
-        if (userId) {
-          await axios.post(
-            `http://localhost:5000/api/v2/history/save/${userId}`,
-            {
-              message: userInput,
-              answer: responseData,
-            }
-          );
-        }
+        const historyResponse = await axios.post(
+          `http://localhost:5000/api/v2/history/save/${userId}`,
+          {
+            message: userInput,
+            answer: responseData,
+          }
+        );
+
+        console.log("History saved response: ", historyResponse);
       } else {
         console.error("Error: ", response.statusText);
         setIsThinking(false);
@@ -262,10 +275,103 @@ const AiChat = () => {
 
   return (
     <div className="sidebar1-container">
-      <div className="sidebar1">
-        <ChatHistoryCard />
+      <div
+        className="sidebar1"
+        style={{ display: isChatHistoryVisible ? "block" : "none" }}
+      >
+        <ChripAIHistory />
       </div>
+      <div
+        className="button-container"
+        style={{ display: "flex", margin: "10px 0" }}
+      >
+        <div style={{ position: "relative" }}>
+          <button
+            style={{
+              border: "none",
+              background: "transparent",
+              padding: 10,
+              borderRadius: 200,
+              height: 35,
+              textAlign: "center",
+              color: "white",
+              cursor: "pointer",
+            }}
+            onClick={toggleChatHistory}
+            onMouseEnter={(e) =>
+              (e.currentTarget.querySelector(".tooltip").style.display =
+                "block")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.querySelector(".tooltip").style.display = "none")
+            }
+          >
+            <FaBarsStaggered />
+            <span
+              className="tooltip"
+              style={{
+                display: "none",
+                position: "absolute",
+                background: "black",
+                color: "white",
+                borderRadius: 5,
+                padding: "5px",
+                top: "35px",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              Toggle Chat History
+            </span>
+          </button>
+        </div>
+        <div style={{ position: "relative", marginLeft: "10px" }}>
+          <button
+            style={{
+              border: "none",
+              background: "transparent",
+              padding: 10,
+              borderRadius: 200,
+              height: 35,
+              textAlign: "center",
+              color: "white",
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+            onClick={resetChat}
+            onMouseEnter={(e) =>
+              (e.currentTarget.querySelector(".tooltip").style.display =
+                "block")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.querySelector(".tooltip").style.display = "none")
+            }
+          >
+            <FaRegPenToSquare />
+            <span
+              className="tooltip"
+              style={{
+                display: "none",
+                position: "absolute",
+                background: "black",
+                color: "white",
+                borderRadius: 5,
+                padding: "5px",
+                top: "35px",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              New Chat
+            </span>
+          </button>
+        </div>
+      </div>
+
       <div className="main-content-ai">
+        {!hideHeading && (
+          <h1 className="heading-center">What do you need help with?</h1>
+        )}
         <div
           id="chat_container"
           ref={chatContainerRef}
@@ -297,7 +403,9 @@ const AiChat = () => {
                 </div>
                 <div className="message thinking-placeholder">
                   Thinking
-                  <span className="dot">...</span>
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
                 </div>
               </div>
             </div>
@@ -313,11 +421,23 @@ const AiChat = () => {
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             onKeyUp={handleKeyUp}
-            disabled={isRateLimited}
+            disabled={isRateLimited || isThinking}
             maxLength={4000}
           ></textarea>
-          <button className="ai-submit" type="submit" disabled={isRateLimited}>
-            <img src={send} alt="Send" />
+          <button
+            className="ai-submit"
+            type="submit"
+            disabled={isRateLimited || isThinking}
+          >
+            {isThinking ? (
+              <img
+                src={loaderGif}
+                alt="Loading"
+                style={{ width: "20px", height: "20px" }}
+              />
+            ) : (
+              <img src={send} alt="Send" />
+            )}
           </button>
         </form>
         <p className="info-text">
@@ -338,7 +458,6 @@ const AiChat = () => {
             }}
             onClick={navigatehome}
           >
-            {" "}
             Go Home
           </button>
         </p>
@@ -347,4 +466,4 @@ const AiChat = () => {
   );
 };
 
-export default AiChat;
+export default ChirpAI;

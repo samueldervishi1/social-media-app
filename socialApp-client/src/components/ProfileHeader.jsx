@@ -291,6 +291,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
                   title={post.title}
                   content={post.content}
                   postDate={post.postDate}
+                  postTime={post.postTime}
                   userId={post.userId}
                   imageUrl={post.imageUrl}
                 />

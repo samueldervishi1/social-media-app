@@ -46,3 +46,21 @@
 .show-more-button:hover {
     text-decoration: underline;
 }
+
+.trend-card {
+  position: relative;
+  /* Other styling for the card */
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* Adjust based on your card height */
+  width: 100%; /* Make sure it takes the full width of the card */
+}
+
+.loader {
+  width: 50px; /* Adjust loader size as needed */
+  height: 50px;
+}

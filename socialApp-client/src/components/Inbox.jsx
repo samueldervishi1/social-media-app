@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import MessageComponent from "../components/Message";
+import MessageComponent from "./Message";
 import { MdMessage } from "react-icons/md";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import "../styles/user-cards.css";
 
-const UserCard = ({ user }) => {
+const Inbox = ({ user }) => {
   const [showMessageComponent, setShowMessageComponent] = useState(false);
   const [receiverId, setReceiverId] = useState(null);
   const [followers, setFollowers] = useState([]);
@@ -171,4 +171,4 @@ const UserCard = ({ user }) => {
   );
 };
 
-export default UserCard;
+export default Inbox;
