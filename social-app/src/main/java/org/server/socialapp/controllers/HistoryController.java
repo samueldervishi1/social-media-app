@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v2/history")
@@ -24,13 +23,16 @@ public class HistoryController {
     @Autowired
     private HistoryService historyService;
 
-    @PostMapping("/save/{userId}")
-    public ResponseEntity<History> saveChatHistory(@PathVariable String userId, @RequestBody HashMap<String, String> request) {
-        String sessionId = UUID.randomUUID().toString();
+    @PostMapping("/save/{userId}/session/{sessionId}")
+    public ResponseEntity<History> saveChatHistory(
+            @PathVariable String userId,
+            @PathVariable String sessionId,
+            @RequestBody HashMap<String, String> request
+    ) {
         String message = request.get("message");
         String answer = request.get("answer");
 
-        logger.info("Received request to save chat history for userId: {}", userId);
+        logger.info("Received request to save chat history for userId: {}, sessionId: {}", userId, sessionId);
 
         try {
             QuestionAnswerPair questionAnswerPair = new QuestionAnswerPair(message, answer);
@@ -58,9 +60,9 @@ public class HistoryController {
     @GetMapping("/get/{userId}")
     public ResponseEntity<?> getHistoryByUserId(@PathVariable String userId) {
         try {
-            Optional<History> historyOptional = historyService.getHistoryByUserId(userId);
-            if (historyOptional.isPresent()) {
-                return new ResponseEntity<>(historyOptional.get(), HttpStatus.OK);
+            List<History> histories = historyService.getHistoryByUserId(userId);
+            if (!histories.isEmpty()) {
+                return new ResponseEntity<>(histories, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("No history found for userId: " + userId, HttpStatus.NOT_FOUND);
             }

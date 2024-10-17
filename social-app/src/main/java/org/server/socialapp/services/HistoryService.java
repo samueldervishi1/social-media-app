@@ -20,27 +20,20 @@ public class HistoryService {
     @Autowired
     private HistoryRepository historyRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     public History saveHistory(String sessionId, String userId, List<QuestionAnswerPair> questionAnswerPairs) {
         try {
             logger.info("Attempting to save history for userId: {}, sessionId: {}", userId, sessionId);
 
-            if (!userRepository.existsById(userId)) {
-                logger.error("User with ID: {} does not exist", userId);
-                throw new IllegalArgumentException("User does not exist");
-            }
-            Optional<History> existingHistoryOptional = historyRepository.findByUserId(userId);
+            Optional<History> existingHistoryOptional = historyRepository.findBySessionId(sessionId);
             History history;
 
             if (existingHistoryOptional.isPresent()) {
                 history = existingHistoryOptional.get();
                 history.getQuestionAnswerPairs().addAll(questionAnswerPairs);
-                logger.info("Appending to existing history for userId: {}", userId);
+                logger.info("Appending to existing history for sessionId: {}", sessionId);
             } else {
                 history = new History(sessionId, userId, questionAnswerPairs);
-                logger.info("Creating new history for userId: {}", userId);
+                logger.info("Creating new history for sessionId: {}", sessionId);
             }
 
             History savedHistory = historyRepository.save(history);
@@ -62,7 +55,7 @@ public class HistoryService {
         }
     }
 
-    public Optional<History> getHistoryByUserId(String userId) {
+    public List<History> getHistoryByUserId(String userId) {
         try {
             logger.info("Fetching history for userId: {}", userId);
             return historyRepository.findByUserId(userId);

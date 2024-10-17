@@ -180,7 +180,7 @@ const PostForm = () => {
               onClick={clearSelectedImage}
               title="Clear Image"
             >
-              &times;
+             Clear image
             </button>
           </div>
         )}

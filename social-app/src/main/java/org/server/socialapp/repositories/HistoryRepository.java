@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface HistoryRepository extends MongoRepository<History, String> {
 
-    Optional<History> findByUserId(String id);
+    List<History> findByUserId(String id);
 
     List<History> findAll();
 

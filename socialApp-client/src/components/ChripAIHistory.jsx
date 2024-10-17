@@ -27,6 +27,8 @@ const ChripAIHistory = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [delayOver, setDelayOver] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [histories, setHistories] = useState([]);
+  const [selectedSessionId, setSelectedSessionId] = useState(null);
   const navigate = useNavigate();
 
   const getUserIdFromToken = () => {
@@ -43,58 +45,38 @@ const ChripAIHistory = () => {
     return null;
   };
 
-  const toggleChatHistory = () => {
-    setChatHistoryVisible((prev) => !prev);
-  };
-
-  const [isChatHistoryVisible, setChatHistoryVisible] = useState(true);
-
-  const fetchHistory = async () => {
+  const fetchHistories = async () => {
     const userId = getUserIdFromToken();
     if (userId) {
       try {
         const response = await axios.get(
           `http://localhost:5000/api/v2/history/get/${userId}`
         );
-        const data = response.data;
-        if (data && data.questionAnswerPairs.length > 0) {
-          setFirstQuestion(data.questionAnswerPairs[0].question);
-          setSessionId(data.sessionId);
-        } else {
-          setFirstQuestion(null);
-          setSessionId("");
-        }
+        setHistories(response.data);
       } catch (error) {
-        console.error("Error fetching chat history:", error);
+        console.error("Error fetching chat histories:", error);
       }
     }
   };
 
   useEffect(() => {
     let lastFetchTime = Date.now();
-    fetchHistory();
+    fetchHistories();
 
     const timer = setTimeout(() => {
       setDelayOver(true);
       setIsLoading(false);
     }, 2000);
 
-    const intervalId = setInterval(fetchHistory, 60000);
-
-    const noNewHistoryTimer = setInterval(() => {
-      if (Date.now() - lastFetchTime >= 120000) {
-        console.log("No new history");
-      }
-    }, 10000);
+    const intervalId = setInterval(fetchHistories, 60000);
 
     return () => {
       clearTimeout(timer);
       clearInterval(intervalId);
-      clearInterval(noNewHistoryTimer);
     };
   }, []);
 
-  const fetchFullHistory = async () => {
+  const fetchFullHistory = async (sessionId) => {
     try {
       const response = await axios.get(
         `http://localhost:5000/api/v2/history/get/sessionId/${sessionId}`
@@ -114,9 +96,10 @@ const ChripAIHistory = () => {
     }
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = (sessionId) => {
     if (!showFullHistory) {
-      fetchFullHistory();
+      fetchFullHistory(sessionId);
+      setSelectedSessionId(sessionId);
     }
     setShowFullHistory((prev) => !prev);
   };
@@ -159,23 +142,27 @@ const ChripAIHistory = () => {
             }}
           >
             ChirpAI History
-            <Button variant="secondary" onClick={fetchHistory}>
+            <Button variant="secondary" onClick={fetchHistories}>
               Refresh
             </Button>
           </h1>
         </div>
+
         {isLoading || !delayOver ? (
           <div className="text-lader">
             <img src={loaderImage} alt="Loading..." style={{ width: 30 }} />
           </div>
         ) : (
-          <div className="chat-history-card" onClick={handleCardClick}>
-            <div className="card-content">
-              {showFullHistory ? (
-                <div className="full-history">
-                  <h4 style={{ textAlign: "center" }}>Full Chat History</h4>
-                  {history && history.questionAnswerPairs.length > 0 ? (
-                    history.questionAnswerPairs.map((pair, index) => (
+          <div>
+            {histories.length > 0 ? (
+              histories.map((historyItem) => (
+                <div
+                  key={historyItem.sessionId}
+                  className="chat-history-card"
+                  onClick={() => handleCardClick(historyItem.sessionId)}
+                >
+                  <div className="card-content">
+                    {historyItem.questionAnswerPairs.map((pair, index) => (
                       <div key={index}>
                         <div>
                           <p>
@@ -198,18 +185,17 @@ const ChripAIHistory = () => {
                           />
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <p>No full history available.</p>
-                  )}
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <p>{firstQuestion ? firstQuestion : "No History Available"}</p>
-              )}
-            </div>
+              ))
+            ) : (
+              <p>No History Available</p>
+            )}
           </div>
         )}
       </div>
+
       <div
         style={{ marginTop: "20px", textAlign: "center", marginBottom: "20px" }}
       >
@@ -217,6 +203,7 @@ const ChripAIHistory = () => {
           Delete History
         </Button>
       </div>
+
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>

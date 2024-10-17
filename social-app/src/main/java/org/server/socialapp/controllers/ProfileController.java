@@ -28,5 +28,4 @@ public class ProfileController {
         profileService.updatePassword(userId, request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok("Password updated successfully");
     }
-
 }

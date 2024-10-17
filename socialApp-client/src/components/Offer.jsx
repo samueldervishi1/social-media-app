@@ -67,15 +67,29 @@ const GlassCard = () => {
     <div className="glass-card">
       <h3 className="card-title">Expiring Soon!</h3>
       <p className="card-description">Get up to 40% off Chirp Premium</p>
-      <p className="timer">
-        {`${String(timeLeft.hours).padStart(2, "0")} hours : ${String(
-          timeLeft.minutes
-        ).padStart(2, "0")} minutes : ${String(timeLeft.seconds).padStart(
-          2,
-          "0"
-        )} seconds`}
-      </p>
-      <button className="card-button" onClick={navigateToPremium}>
+      {timeLeft.hours === 0 &&
+      timeLeft.minutes === 0 &&
+      timeLeft.seconds === 0 ? (
+        <p className="expired">Offer has expired!</p>
+      ) : (
+        <p className="timer">
+          {`${String(timeLeft.hours).padStart(2, "0")} hours : ${String(
+            timeLeft.minutes
+          ).padStart(2, "0")} minutes : ${String(timeLeft.seconds).padStart(
+            2,
+            "0"
+          )} seconds`}
+        </p>
+      )}
+      <button
+        className="card-button"
+        onClick={navigateToPremium}
+        disabled={
+          timeLeft.hours === 0 &&
+          timeLeft.minutes === 0 &&
+          timeLeft.seconds === 0
+        }
+      >
         Click Me
       </button>
     </div>

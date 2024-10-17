@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import ChripAIHistory from "./ChripAIHistory";
 import bot from "../assets/bot.svg";
@@ -37,6 +38,8 @@ const ChirpAI = () => {
   };
 
   const resetChat = () => {
+    const newSessionId = uuidv4();
+    localStorage.setItem("sessionId", newSessionId);
     setChatMessages([]);
     setUserInput("");
     setHideHeading(false);
@@ -131,6 +134,10 @@ const ChirpAI = () => {
       : formattedText;
   };
 
+  const getSessionId = () => {
+    return localStorage.getItem("sessionId");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated()) {
@@ -186,8 +193,9 @@ const ChirpAI = () => {
         setIsThinking(false);
 
         const userId = getUserIdFromToken();
+        const sessionId = getSessionId();
         const historyResponse = await axios.post(
-          `http://localhost:5000/api/v2/history/save/${userId}`,
+          `http://localhost:5000/api/v2/history/save/${userId}/session/${sessionId}`,
           {
             message: userInput,
             answer: responseData,
