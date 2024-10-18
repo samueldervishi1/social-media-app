@@ -1,6 +1,5 @@
 package org.server.socialapp.services;
 
-import org.server.socialapp.exceptions.InternalServerErrorException;
 import org.server.socialapp.exceptions.NotFoundException;
 import org.server.socialapp.models.ActivityModel;
 import org.server.socialapp.models.Post;

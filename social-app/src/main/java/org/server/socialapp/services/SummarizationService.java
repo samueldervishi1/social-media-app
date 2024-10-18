@@ -59,6 +59,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.web.client.RestClientException;
 
 /**
  * @author samuel
@@ -106,8 +107,7 @@ public class SummarizationService {
             } else {
                 return "Unexpected response format";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IllegalArgumentException | RestClientException e) {
             return "An unexpected error occurred while summarizing content.";
         }
     }

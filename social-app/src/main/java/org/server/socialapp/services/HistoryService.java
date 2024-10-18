@@ -3,7 +3,6 @@ package org.server.socialapp.services;
 import org.server.socialapp.models.History;
 import org.server.socialapp.models.QuestionAnswerPair;
 import org.server.socialapp.repositories.HistoryRepository;
-import org.server.socialapp.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

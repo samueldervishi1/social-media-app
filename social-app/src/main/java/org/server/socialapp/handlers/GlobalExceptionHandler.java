@@ -1,6 +1,5 @@
 package org.server.socialapp.handlers;
 
-import org.server.socialapp.exceptions.ApiException;
 import org.server.socialapp.exceptions.BadRequestException;
 import org.server.socialapp.exceptions.InternalServerErrorException;
 import org.server.socialapp.exceptions.NotFoundException;
