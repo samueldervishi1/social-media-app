@@ -1,6 +1,7 @@
 package com.chirp.server.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -12,24 +13,37 @@ import java.util.Map;
 @Service
 public class SummarizationService {
 
-	@Value("${cohere.api.key}")
+	@Value("${model.api.key}")
 	private String apiKey;
 
-	@Value("${cohere.api.url}")
-	private String cohereApiUrl;
+	@Value("${model.api.url}")
+	private String modelApiUrl;
+
+	@Value("${model.api.temperature}")
+	private double temperature;
+
+	@Value("${model.api.prompt_truncation}")
+	private String promptTruncation;
+
+	@Value("${model.api.model}")
+	private String model;
 
 	private final RestTemplate restTemplate = new RestTemplate();
 
 	public String summarize(String message) {
 		try {
-			if (cohereApiUrl == null || cohereApiUrl.isEmpty()) {
-				throw new IllegalArgumentException("Cohere API URL is not configured properly.");
+			if (modelApiUrl == null || modelApiUrl.isEmpty()) {
+				throw new IllegalArgumentException("Model API URL is not configured properly.");
 			}
+			if (model == null || model.isEmpty()) {
+				throw new IllegalArgumentException("Model is not configured properly.");
+			}
+
 			Map<String, Object> requestBody = new HashMap<>();
-			requestBody.put("model" , "command-r-plus");
+			requestBody.put("model" , model);
 			requestBody.put("message" , message);
-			requestBody.put("temperature" , 0.3);
-			requestBody.put("prompt_truncation" , "AUTO");
+			requestBody.put("temperature" , temperature);
+			requestBody.put("prompt_truncation" , promptTruncation);
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -37,12 +51,14 @@ public class SummarizationService {
 
 			HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody , headers);
 
-			ResponseEntity<Map> responseEntity = restTemplate.exchange(
-					cohereApiUrl ,
+			ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(
+					modelApiUrl ,
 					HttpMethod.POST ,
 					requestEntity ,
-					Map.class
+					new ParameterizedTypeReference<>() {
+					}
 			);
+
 			Map<String, Object> responseBody = responseEntity.getBody();
 			if (responseBody != null) {
 				String text = (String) responseBody.get("text");
