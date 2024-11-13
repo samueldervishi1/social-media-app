@@ -37,18 +37,23 @@ To run this project locally, follow these steps:
 
 ### Backend Setup
 
-1. Ensure you have Java and Maven installed.
+1. Ensure you have Java and Gradle installed.
 2. Clone this repository:
    ```bash
    git clone https://github.com/samueldervishi1/social-media-app.git
    cd social-media-app
    cd server
    ```
-## Run the backend server:
 
-```bash
-mvn spring-boot:run
-```
+## Build the project using Gradle:
+  ```bash
+  ./gradlew build
+  ```
+
+## Run the backend server:
+  ```bash
+  ./gradlew bootRun
+  ```
 
 ## Frontend Setup
 - Ensure you have Node.js and npm installed.
