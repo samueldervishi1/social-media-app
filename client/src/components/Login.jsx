@@ -35,7 +35,6 @@ const LoginScript = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Secret-Code": "I-see-you!",
         },
         body: JSON.stringify({ username, password }),
       });
@@ -87,7 +86,7 @@ const LoginScript = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );

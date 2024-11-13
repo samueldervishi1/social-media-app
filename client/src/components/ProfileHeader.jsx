@@ -77,7 +77,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -109,7 +109,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -152,7 +152,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );

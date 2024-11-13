@@ -65,7 +65,7 @@ const UserDetail = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -105,7 +105,7 @@ const UserDetail = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -133,7 +133,7 @@ const UserDetail = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -157,7 +157,7 @@ const UserDetail = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -182,7 +182,7 @@ const UserDetail = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -214,7 +214,7 @@ const UserDetail = () => {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );

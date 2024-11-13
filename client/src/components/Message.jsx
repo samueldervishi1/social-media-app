@@ -71,7 +71,7 @@ const MessageComponent = ({ senderId, receiverId }) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       )

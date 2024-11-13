@@ -28,17 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		response.setHeader("X-Frame-Options" , "DENY");
 		response.setHeader("X-Content-Type-Options" , "nosniff");
 
-		String justForFunHeader = request.getHeader("X-Secret-Code");
-		if (justForFunHeader == null || !justForFunHeader.equals("I-see-you!")) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST , "Missing or invalid X-Just-For-Fun header");
-			return;
-		}
 		String authorizationHeader = request.getHeader("Authorization");
-		String userAgent = request.getHeader("User-Agent");
-
-		if (userAgent != null) {
-			logger.info("User-Agent is present");
-		}
 
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String token = authorizationHeader.substring(7);

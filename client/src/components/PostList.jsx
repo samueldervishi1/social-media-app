@@ -47,7 +47,7 @@ const PostList = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );

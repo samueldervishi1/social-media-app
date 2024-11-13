@@ -52,7 +52,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -86,7 +86,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -117,7 +117,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -157,7 +157,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -183,7 +183,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -226,7 +226,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -294,7 +294,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -360,7 +360,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -393,7 +393,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -405,7 +405,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -435,7 +435,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -448,7 +448,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );

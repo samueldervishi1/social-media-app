@@ -171,7 +171,7 @@ const ChirpAI = () => {
       const response = await axios.get(`http://localhost:5000/api/v2/ping`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "X-Secret-Code": "I-see-you!",
+          
         },
       });
 
@@ -205,7 +205,7 @@ const ChirpAI = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            "X-Secret-Code": "I-see-you!",
+            
           },
         }
       );
@@ -227,7 +227,7 @@ const ChirpAI = () => {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );

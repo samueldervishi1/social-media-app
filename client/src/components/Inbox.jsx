@@ -52,7 +52,7 @@ const Inbox = ({ user }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "X-Secret-Code": "I-see-you!",
+              
             },
           }
         );
@@ -67,7 +67,7 @@ const Inbox = ({ user }) => {
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,
-                      "X-Secret-Code": "I-see-you!",
+                      
                     },
                   }
                 );
