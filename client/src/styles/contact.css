@@ -1,0 +1,49 @@
+.contact-container {
+  padding: 20px;
+}
+
+.h1-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 40px;
+  color: #333;
+}
+
+.contact-info {
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.social-icon {
+  font-size: 40px;
+  color: #1da1f2;
+  transition: color 0.3s;
+}
+
+.social-icon:hover {
+  color: #0077b5;
+}
+
+.email {
+  margin-top: 20px;
+}
+
+.email a {
+  color: #1da1f2;
+  text-decoration: none;
+}
+
+.email a:hover {
+  text-decoration: underline;
+}

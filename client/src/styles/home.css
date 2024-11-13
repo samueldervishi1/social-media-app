@@ -1,0 +1,40 @@
+.home-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.main-content {
+  flex: 0.7;
+  padding: 10px;
+}
+
+.sidebar {
+  flex: 0.3;
+  padding: 20px;
+  margin-right: 20px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+  }
+
+  .main-content {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .sidebar {
+    display: none;
+  }
+}

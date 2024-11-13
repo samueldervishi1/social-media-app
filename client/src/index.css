@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Afacad+Flux:slnt,wght@-14..14,300&display=swap");
+body {
+  font-family: "Afacad Flux", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  background-color: white;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+  overflow-x: hidden;
+  background-color: #1c1c1d;
+}
+
+::selection {
+  background-color: #b3d4fc;
+  color: #1c1c1d;
+}

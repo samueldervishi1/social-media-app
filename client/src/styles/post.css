@@ -1,0 +1,88 @@
+.post-form {
+  margin: 10px auto;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #252728;
+  border-radius: 20px;
+  box-shadow: none;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.preview-image {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 20px;
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 60px;
+  right: 20px;
+}
+
+.user-image {
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.user-image img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.post-form form {
+  width: 100%;
+}
+
+.post-form textarea {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 0.1px solid lightgrey;
+  border-radius: 20px;
+  background-color: #1c1c1d;
+  color: white;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+}
+
+.post-form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.post-the-post {
+  padding: 10px 20px;
+  background: linear-gradient(to right, #0072ff, #00c6ff);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.icons-container {
+  display: flex;
+  gap: 10px;
+}
+
+.icon {
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.clear-image-button {
+  background: transparent;
+  border: none;
+  margin-right: 5px;
+  margin-bottom: 10px;
+  color: rgb(29, 155, 240);
+}
