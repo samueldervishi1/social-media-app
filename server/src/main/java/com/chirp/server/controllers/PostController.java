@@ -23,24 +23,22 @@ public class PostController {
 	@Autowired
 	private PostService postService;
 
-	@PostMapping("/create/{username}")
-	public ResponseEntity<String> create(
-			@PathVariable String username ,
-			@RequestBody Post post) {
-
-		logger.debug("Received POST request to create a post for user: {}" , username);
-
+	@GetMapping("/{postId}")
+	public ResponseEntity<Post> getPost(@PathVariable String postId) {
 		try {
-			post.setImageUrl(null);
-			postService.createPost(username , post);
-			return ResponseEntity.ok("Post created successfully");
-
+			Post post = postService.getPostById(postId);
+			return ResponseEntity.ok(post);
+		} catch (NotFoundException e) {
+			logError(postId , "Post not found" , e , true);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (InternalServerErrorException e) {
+			logError(postId , "Error retrieving post" , e , false);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		} catch (Exception e) {
-			logger.error("Error creating post for user {}: {}" , username , e.getMessage() , e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating post");
+			logError(postId , "Unexpected error retrieving post" , e , false);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-
 
 	@GetMapping("/list/{userId}")
 	public ResponseEntity<List<Post>> listUserPosts(@PathVariable String userId) {
@@ -74,37 +72,46 @@ public class PostController {
 		}
 	}
 
-	@GetMapping("/{postId}")
-	public ResponseEntity<Post> getPost(@PathVariable String postId) {
+	@PostMapping("/create/{username}")
+	public ResponseEntity<String> create(
+			@PathVariable String username ,
+			@RequestBody Post post) {
+
+		logger.debug("Received POST request to create a post for user: {}" , username);
+
 		try {
-			Post post = postService.getPostById(postId);
-			return ResponseEntity.ok(post);
-		} catch (NotFoundException e) {
-			logger.warn("Post not found with ID {}: {}" , postId , e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		} catch (InternalServerErrorException e) {
-			logger.error("Error retrieving post with ID {}: {}" , postId , e.getMessage() , e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			post.setImageUrl(null);
+			postService.createPost(username , post);
+			return ResponseEntity.ok("Post created successfully");
+
 		} catch (Exception e) {
-			logger.error("Unexpected error retrieving post with ID {}: {}" , postId , e.getMessage() , e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			logger.error("Error creating post for user {}: {}" , username , e.getMessage() , e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating post");
 		}
 	}
 
-	@DeleteMapping("/{postId}")
+	@DeleteMapping("/delete/{postId}")
 	public ResponseEntity<String> deletePost(@PathVariable String postId) {
 		try {
 			postService.deletePost(postId);
-			return ResponseEntity.ok("Post deleted successfully");
+			return ResponseEntity.ok("Post soft deleted successfully!");
 		} catch (NotFoundException e) {
-			logger.warn("Post not found with ID {}: {}" , postId , e.getMessage());
+			logError(postId , "Post not found" , e , true);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
 		} catch (InternalServerErrorException e) {
-			logger.error("Error deleting post with ID {}: {}" , postId , e.getMessage() , e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
+			logError(postId , "Error during soft delete" , e , false);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting post");
 		} catch (Exception e) {
-			logger.error("Unexpected error deleting post with ID {}: {}" , postId , e.getMessage() , e);
+			logError(postId , "Unexpected error during soft delete" , e , false);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred");
+		}
+	}
+
+	private void logError(String postId , String message , Exception e , boolean isWarning) {
+		if (isWarning) {
+			logger.warn("Post with ID {}: {}" , postId , message , e);
+		} else {
+			logger.error("Post with ID {}: {}" , postId , message , e);
 		}
 	}
 }

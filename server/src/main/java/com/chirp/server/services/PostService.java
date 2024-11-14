@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -115,11 +116,10 @@ public class PostService {
 		return postRepository.countByUserId(userId);
 	}
 
-	public void deletePost(String postId) {
-		if (!postRepository.existsById(postId)) {
-			throw new NotFoundException("Post not found with ID: " + postId);
-		}
-		postRepository.deleteById(postId);
-		logger.info("Post with ID {} successfully deleted" , postId);
+	@Transactional
+	public Post deletePost(String postId) {
+		Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+		post.setDeleted(true);
+		return postRepository.save(post);
 	}
 }

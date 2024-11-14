@@ -21,6 +21,7 @@ public class Post {
 	private String postDate;
 	private String postTime;
 	private String imageUrl;
+	private Boolean deleted = false;
 
 	public Post(String content) {
 		this.id = UUID.randomUUID().toString();
@@ -94,5 +95,13 @@ public class Post {
 
 	public String getImageUrl() {
 		return imageUrl;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 }

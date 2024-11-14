@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -25,6 +25,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [savedCount, setSavedCount] = useState(0);
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -43,6 +46,23 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       return false;
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuRef.current && !menuRef.current.contains(event.target) &&
+        buttonRef.current && !buttonRef.current.contains(event.target)
+      ) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   const fetchUsername = async (userId) => {
     try {
@@ -448,8 +468,8 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
+            credentials: 'include'
           }
         );
         setSaved(false);
@@ -461,6 +481,45 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       window.alert("An error occurred. Please try again.");
     }
   };
+
+  const deletePost = async () => {
+    const userIdFromToken = getUserIdFromToken();
+    if (!userIdFromToken) {
+      console.error("User not authenticated or token invalid.");
+      return;
+    }
+
+    if (userIdFromToken !== userId) {
+      console.error("You are not authorized to delete this post.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(
+        `http://localhost:5000/api/v2/posts/delete/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          credentials: 'include'
+        },
+      );
+      if (response.status === 200) {
+        console.log("Post deleted successfully");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error.message);
+    }
+  };
+
+
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  const isUserPostOwner = getUserIdFromToken() === userId;
 
   const handleProfileLinkClick = (e) => {
     e.stopPropagation();
@@ -503,6 +562,18 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
               <span className="post-date">{formattedPostTime}</span>
             </span>
           </h2>
+        </div>
+        <div className="more-options">
+          <button onClick={toggleMenu} className="three-dots">
+            &#8230;
+          </button>
+          {showMenu && isUserPostOwner && (
+            <div className="dropdown-delete">
+              <button onClick={deletePost} className="delete-button">
+                Delete Post
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <div className="post-body">

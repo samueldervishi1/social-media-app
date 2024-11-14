@@ -55,7 +55,7 @@ public class SavePostService {
 				savePost = new SavePost(userId , postIds);
 			}
 
-			String activityDescription = userId + "saved post with id " + postIds;
+			String activityDescription = userId + " saved post with id " + postIds;
 			List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
 
 			if (!existingActivities.isEmpty()) {
@@ -100,7 +100,6 @@ public class SavePostService {
 			throw new InternalServerErrorException("An unexpected error occurred while unsaving the post");
 		}
 	}
-
 
 	public SavePost getSavedPostsForUser(String userId) {
 		try {

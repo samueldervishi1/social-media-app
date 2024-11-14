@@ -47,17 +47,19 @@ const PostList = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
+      const filteredPosts = response.data.filter(
+        (post) => post.deleted !== true
+      );
 
-      const postsWithValidDateAndTime = response.data.filter(
+      const postsWithValidDateAndTime = filteredPosts.filter(
         (post) =>
           typeof post.postDate === "string" && typeof post.postTime === "string"
       );
 
-      const postsWithoutValidDateAndTime = response.data.filter(
+      const postsWithoutValidDateAndTime = filteredPosts.filter(
         (post) =>
           !post.postDate ||
           typeof post.postDate !== "string" ||

@@ -48,6 +48,41 @@
   display: flex;
 }
 
+.three-dots {
+  font-size: 25px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  margin-top: -20px;
+  color: white;
+}
+
+.dropdown-delete {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  background-color: black; 
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 10px;
+  z-index: 10;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  min-width: 100px;
+  border-radius: 10px;
+}
+
+.delete-button {
+  color: red;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 15px;
+  padding: 5px 10px;
+}
+
 .post-header {
   display: flex;
   align-items: center;

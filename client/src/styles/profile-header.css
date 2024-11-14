@@ -1,3 +1,11 @@
+.constructor-container {
+  width: 100%;
+  max-width: 900px;
+  padding: 20px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
 .buttons-style {
   display: flex;
   align-items: center;
@@ -9,17 +17,17 @@
   margin-left: 5px;
   margin-top: -20px;
   margin-bottom: -30px;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 
 .user-links {
   display: flex;
   margin-right: 20px;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 
 .user-links a {
-  color: #1c1c1d;;
+  color: #1c1c1d;
   font-size: 24px;
 }
 
@@ -44,11 +52,11 @@
   font-size: 12px;
   background-color: lightgrey;
   border: none;
-  color: #1c1c1d;;
+  color: #1c1c1d;
 }
 
 .button-edit:hover {
-  color: #1c1c1d;;
+  color: #1c1c1d;
   background-color: lightgrey;
 }
 
@@ -59,10 +67,19 @@
   border-radius: 50%;
 }
 
-.constructor-container {
-  width: 900px;
-  padding: 20px;
-  margin-left: 170px;
+.post-list1 {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.post-list1::-webkit-scrollbar {
+  display: none;
+}
+
+.post-list1 {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @media (max-width: 1024px) {
@@ -110,8 +127,7 @@
   }
 
   .constructor-container {
-    max-width: 900px; 
-    margin: 10px 25px;
+    max-width: 950px;
   }
 }
 
@@ -121,8 +137,8 @@
   }
 
   .constructor-container {
-    max-width: 345px; 
-    margin: 10px 25px;
+    max-width: 345px;
+    margin: 0 5px 0 0;
   }
 
   .button-edit,
@@ -135,7 +151,7 @@
     width: 80px;
   }
 
-  .pst-lst{
+  .pst-lst {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -143,13 +159,12 @@
   }
 
   .post-list1 {
-    width: 450px;
+    width: 400px;
   }
 }
 
 @media (max-width: 360px) {
   .constructor-container {
-    max-width: 90%; 
-    margin: 10px auto;
+    max-width: 90%;
   }
 }

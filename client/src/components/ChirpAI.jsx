@@ -167,15 +167,12 @@ const ChirpAI = () => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log("Token used for request: ", token);
       const response = await axios.get(`http://localhost:5000/api/v2/ping`, {
         headers: {
           Authorization: `Bearer ${token}`,
           
         },
       });
-
-      console.log("Ping response: ", response);
     } catch (error) {
       setIsLoading(false);
       setIsThinking(false);

@@ -77,7 +77,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -109,15 +108,18 @@ const ProfileHeader = ({ followers, following, profile }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
 
       if (response.status === 200) {
-        const sortedPosts = response.data.sort(
+        const filteredPosts = response.data.filter(
+          (post) => post.deleted !== true
+        );
+        const sortedPosts = filteredPosts.sort(
           (a, b) => new Date(b.postDate) - new Date(a.postDate)
         );
+
         setUserPosts(sortedPosts);
       } else {
         console.error("Failed to fetch posts.");
@@ -152,7 +154,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -215,7 +216,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
       className="constructor-container"
       style={{
         border: ".2px solid lightgrey",
-        top: 30,
         position: "relative",
         boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2)",
         background: "#14170a",
@@ -259,7 +259,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
             Edit
           </Button>
         </div>
-        <h6>{profile.title}</h6>
+        <h6 style={{ color: "grey", fontSize: 14 }}>{profile.title}</h6>
         <p>{profile.bio}</p>
         <div style={{ display: "flex", gap: "20px" }}>
           <div>
