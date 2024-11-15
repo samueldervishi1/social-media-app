@@ -16,26 +16,6 @@ public class SavePostController {
 	@Autowired
 	private SavePostService savePostService;
 
-	@PostMapping("/{userId}")
-	public ResponseEntity<SavePost> savePosts(@PathVariable String userId , @RequestBody List<String> postIds) {
-		try {
-			SavePost savedPost = savePostService.savePosts(userId , postIds);
-			return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-	}
-
-	@DeleteMapping("/{userId}/{postId}")
-	public ResponseEntity<String> unsavePost(@PathVariable String userId , @PathVariable String postId) {
-		try {
-			savePostService.unsavePost(userId , postId);
-			return ResponseEntity.ok("Post unsaved successfully");
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
-	}
-
 	@GetMapping("/{userId}")
 	public ResponseEntity<SavePost> getSavedPostsForUser(@PathVariable String userId) {
 		SavePost savedPosts = savePostService.getSavedPostsForUser(userId);
@@ -57,5 +37,24 @@ public class SavePostController {
 		}
 	}
 
+	@PostMapping("/{userId}")
+	public ResponseEntity<SavePost> savePosts(@PathVariable String userId , @RequestBody List<String> postIds) {
+		try {
+			SavePost savedPost = savePostService.savePosts(userId , postIds);
+			return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+	}
+
+	@DeleteMapping("/{userId}/{postId}")
+	public ResponseEntity<String> unsavePost(@PathVariable String userId , @PathVariable String postId) {
+		try {
+			savePostService.unsavePost(userId , postId);
+			return ResponseEntity.ok("Post unsaved successfully");
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
 
 }

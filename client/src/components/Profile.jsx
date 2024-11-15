@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createContext } from "react";
 import { Container } from "react-bootstrap";
@@ -16,29 +15,6 @@ const Profile = () => {
   const [postsCount, setPostsCount] = useState(0);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-  }, [navigate]);
 
   useEffect(() => {
     fetchData();
@@ -56,7 +32,6 @@ const Profile = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -76,7 +51,6 @@ const Profile = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -94,7 +68,6 @@ const Profile = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );

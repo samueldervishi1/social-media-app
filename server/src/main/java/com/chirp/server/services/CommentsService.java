@@ -34,36 +34,6 @@ public class CommentsService {
 	@Autowired
 	private ActivityRepository activityRepository;
 
-	private User getUserById(String userId) {
-		return userRepository.findById(userId).orElseThrow(() -> {
-			logger.warn("User not found with userId: {}" , userId);
-			return new NotFoundException("User not found with userId: " + userId);
-		});
-	}
-
-	private Post getPostById(String postId) {
-		return postRepository.findById(postId).orElseThrow(() -> {
-			logger.warn("Post not found with ID: {}" , postId);
-			return new NotFoundException("Post not found with ID: " + postId);
-		});
-	}
-
-	private void handleActivity(String userId , String postId , Comments comment) {
-		String activityDescription = "created comment with id " + comment.getId() + " on post with id " + postId;
-		List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
-
-		if (!existingActivities.isEmpty()) {
-			for (ActivityModel activity : existingActivities) {
-				activity.getActionType().getAllActivity().add(activityDescription);
-				activityRepository.save(activity);
-			}
-		} else {
-			ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
-			ActivityModel activity = new ActivityModel(actionType , userId , Instant.now() , "active");
-			activityRepository.save(activity);
-		}
-	}
-
 	@Transactional
 	public Comments createComment(String userId , String postId , Comments comment) {
 		try {
@@ -88,6 +58,20 @@ public class CommentsService {
 		}
 	}
 
+	private User getUserById(String userId) {
+		return userRepository.findById(userId).orElseThrow(() -> {
+			logger.warn("User not found with userId: {}" , userId);
+			return new NotFoundException("User not found with userId: " + userId);
+		});
+	}
+
+	private Post getPostById(String postId) {
+		return postRepository.findById(postId).orElseThrow(() -> {
+			logger.warn("Post not found with ID: {}" , postId);
+			return new NotFoundException("Post not found with ID: " + postId);
+		});
+	}
+
 	public Comments getCommentById(String postId , String commentId) {
 		try {
 			Post post = getPostById(postId);
@@ -107,6 +91,22 @@ public class CommentsService {
 		} catch (Exception e) {
 			logger.error("Unexpected error while retrieving comment. Error: {}" , e.getMessage() , e);
 			throw new InternalServerErrorException("An unexpected error occurred while retrieving the comment");
+		}
+	}
+
+	private void handleActivity(String userId , String postId , Comments comment) {
+		String activityDescription = "created comment with id " + comment.getId() + " on post with id " + postId;
+		List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
+
+		if (!existingActivities.isEmpty()) {
+			for (ActivityModel activity : existingActivities) {
+				activity.getActionType().getAllActivity().add(activityDescription);
+				activityRepository.save(activity);
+			}
+		} else {
+			ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
+			ActivityModel activity = new ActivityModel(actionType , userId , Instant.now() , "active");
+			activityRepository.save(activity);
 		}
 	}
 }

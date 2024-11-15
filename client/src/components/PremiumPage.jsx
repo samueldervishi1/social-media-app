@@ -1,34 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import "../styles/premium.css";
 
 const PremiumPage = () => {
-  const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-  }, [navigate]);
 
   const handlePlanSelect = (plan) => {
     setSelectedPlan(plan);
@@ -46,7 +22,6 @@ const PremiumPage = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
-            
           },
         }
       );

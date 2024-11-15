@@ -57,28 +57,6 @@ const ChirpAI = () => {
     resetChat();
   }, []);
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
   const handleRateLimit = () => {
     setIsRateLimited(true);
     setCountdown(120);
@@ -134,11 +112,6 @@ const ChirpAI = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isAuthenticated()) {
-      navigate("/login");
-      return;
-    }
-
     if (!userInput.trim()) {
       return;
     }
@@ -167,10 +140,9 @@ const ChirpAI = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/api/v2/ping`, {
+      await axios.get(`http://localhost:5000/api/v2/ping`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          
         },
       });
     } catch (error) {
@@ -202,7 +174,6 @@ const ChirpAI = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -224,7 +195,6 @@ const ChirpAI = () => {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );

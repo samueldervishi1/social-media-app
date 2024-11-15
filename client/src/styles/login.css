@@ -132,7 +132,7 @@ label {
 
 input[type="text"],
 input[type="password"] {
-  width: calc(100% - 30px);
+  width: calc(100% - 5px);
   padding: 15px;
   margin: 5px 0 22px 0;
   display: inline-block;

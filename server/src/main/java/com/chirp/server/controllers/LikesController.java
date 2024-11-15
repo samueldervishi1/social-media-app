@@ -17,6 +17,24 @@ public class LikesController {
 	@Autowired
 	private LikesService likesService;
 
+	@GetMapping("/post/{postId}")
+	public ResponseEntity<Integer> getLikesCountForPost(@PathVariable String postId) {
+		int count = likesService.getLikesCountForPost(postId);
+		return ResponseEntity.ok(count);
+	}
+
+	@GetMapping("/comment/{commentId}")
+	public ResponseEntity<List<Like>> getLikesForComment(@PathVariable String commentId) {
+		List<Like> likes = likesService.getLikesForComment(commentId);
+		return ResponseEntity.ok(likes);
+	}
+
+	@GetMapping("/{userId}")
+	public ResponseEntity<List<Like>> getLikesForUser(@PathVariable String userId) {
+		List<Like> likes = likesService.getLikesForUser(userId);
+		return ResponseEntity.ok(likes);
+	}
+
 	@PostMapping("/post/{userId}/{postId}")
 	public ResponseEntity<Like> likePost(@PathVariable String userId , @PathVariable String postId) {
 		try {
@@ -43,23 +61,5 @@ public class LikesController {
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().body(null);
 		}
-	}
-
-	@GetMapping("/post/{postId}")
-	public ResponseEntity<Integer> getLikesCountForPost(@PathVariable String postId) {
-		int count = likesService.getLikesCountForPost(postId);
-		return ResponseEntity.ok(count);
-	}
-
-	@GetMapping("/comment/{commentId}")
-	public ResponseEntity<List<Like>> getLikesForComment(@PathVariable String commentId) {
-		List<Like> likes = likesService.getLikesForComment(commentId);
-		return ResponseEntity.ok(likes);
-	}
-
-	@GetMapping("/{userId}")
-	public ResponseEntity<List<Like>> getLikesForUser(@PathVariable String userId) {
-		List<Like> likes = likesService.getLikesForUser(userId);
-		return ResponseEntity.ok(likes);
 	}
 }

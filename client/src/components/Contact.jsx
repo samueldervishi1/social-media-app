@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  FaInstagram,
-  FaFacebook,
-  FaTwitter,
-  FaLinkedin,
-} from "react-icons/fa";
+import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import "../styles/contact.css";
 
 const Contact = () => {
@@ -52,8 +47,7 @@ const Contact = () => {
 
         <div className="email">
           <p style={{ color: "white" }}>
-            Email us at:{" "}
-            <a href="mailto:shefi1@proton.me">shefi1@proton.me</a>
+            Email us at: <a href="mailto:shefi1@proton.me">shefi1@proton.me</a>
           </p>
         </div>
       </div>

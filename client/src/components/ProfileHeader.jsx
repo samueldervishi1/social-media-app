@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Image } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -10,6 +9,9 @@ import PostCard from "./PostCard";
 import profileImage from "../assets/user.webp";
 import placeHolderImage from "../assets/placeholder.png";
 import "../styles/profile-header.css";
+
+import { getUserIdFromToken } from "../auth/authUtils";
+
 
 const ProfileHeader = ({ followers, following, profile }) => {
   const [showModal, setShowModal] = useState(false);
@@ -21,29 +23,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
   const [error, setError] = useState(null);
   const [emailInput, setEmailInput] = useState("");
   const [postCount, setPostCount] = useState(0);
-  const navigate = useNavigate();
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-  }, [navigate]);
 
   useEffect(() => {
     if (profile) {
@@ -181,20 +160,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
     }
   };
 
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.userId;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
-  };
-
   const [activeTab, setActiveTab] = useState("posts");
 
   if (!profile) {
@@ -221,6 +186,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
         background: "#14170a",
         color: "white",
         marginBottom: 40,
+        marginTop: 20
       }}
     >
       <div style={{ position: "relative", width: "100%", height: "300px" }}>

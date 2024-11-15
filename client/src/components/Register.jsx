@@ -26,21 +26,22 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("Form Data:", formData);
+
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v2/users/auth/register`,
+        "http://localhost:5000/api/v2/users/auth/register",
         formData,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            
           },
         }
       );
+
       if (response.status === 200) {
         alert("User registered successfully!");
-        navigate("/home");
+        navigate("/login");
       }
     } catch (error) {
       console.error("Error registering user:", error);

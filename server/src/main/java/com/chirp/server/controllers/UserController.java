@@ -19,12 +19,6 @@ public class UserController {
 	@Autowired
 	private UpdatePassword updatePassword;
 
-	@PostMapping("/auth/register")
-	public User register(@RequestBody User user) {
-		System.out.println("User registering: " + user.getUsername());
-		return userService.createUser(user);
-	}
-
 	@GetMapping("/info/{username}")
 	public User getUserInfo(@PathVariable String username) {
 		return userService.getUserInfo(username);
@@ -40,6 +34,12 @@ public class UserController {
 		} catch (Exception ex) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
+	}
+
+	@PostMapping("/auth/register")
+	public User register(@RequestBody User user) {
+		System.out.println("User registering: " + user.getUsername());
+		return userService.createUser(user);
 	}
 
 	@PutMapping("/update-password")

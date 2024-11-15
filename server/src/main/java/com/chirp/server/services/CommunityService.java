@@ -42,6 +42,14 @@ public class CommunityService {
         return community.get();
     }
 
+    public Community getCommunityByName(String name) {
+        Optional<Community> community = communityRepository.findByName(name);
+        if (community.isEmpty()) {
+            throw new IllegalArgumentException("Community with name " + name + " does not exist");
+        }
+        return community.get();
+    }
+
     public List<Community> getAllCommunities() {
         return communityRepository.findAll();
     }

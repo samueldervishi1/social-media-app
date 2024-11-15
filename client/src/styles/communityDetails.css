@@ -1,0 +1,176 @@
+.community-details-container {
+  padding: 20px;
+}
+
+.community-banner {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.community-banner-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.community-profile-img {
+  position: absolute;
+  bottom: -50px;
+  left: 20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid white;
+}
+
+.community-info {
+  background-color: #1c1c1c;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.community-name {
+  margin-left: 110px;
+  color: white;
+  font-size: 2.2em;
+}
+
+span.members-count {
+  font-size: 0.5em;
+  color: grey;
+  margin-left: 10px;
+  margin-top: 20px;
+}
+
+.community-description {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.community-action-button {
+  position: absolute;
+  top: 360px;
+  right: 70px;
+  padding: 5px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 4;
+  font-size: 14px;
+}
+
+.community-action-button:disabled {
+  background-color: transparent;
+  cursor: not-allowed;
+  border: 1px solid #444;
+}
+
+.community-menu-button {
+  position: absolute;
+  top: 359px;
+  right: 25px;
+  width: 35px;
+  height: 35px;
+  background-color: transparent;
+  border: 1px solid #444;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  color: white;
+  z-index: 5;
+
+  display: flex;
+  justify-content: center;
+  align-items: self-end;
+}
+
+.community-dropdown-menu {
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  right: 20px;
+  bottom: 300px;
+  width: 200px;
+  z-index: 12;
+}
+
+.community-dropdown-menu a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 10px 0;
+}
+
+.community-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.community-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.feed-button,
+.about-button {
+  background-color: transparent;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 20px;
+  padding: 5px 20px;
+  cursor: pointer;
+}
+
+.community-dropdowns {
+  display: flex;
+  gap: 10px;
+}
+
+.view-dropdown,
+.sort-dropdown {
+  position: relative;
+}
+
+.view-dropdown button,
+.sort-dropdown button {
+  background-color: transparent;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 20px;
+  padding: 5px 20px;
+  cursor: pointer;
+}
+
+.view-dropdown-menu,
+.sort-dropdown-menu {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  position: absolute;
+  top: 110%;
+  right: 0;
+  width: 150px;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.view-dropdown-menu a,
+.sort-dropdown-menu a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 10px 0;
+}
+
+.divider {
+  border: 1px solid #444;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}

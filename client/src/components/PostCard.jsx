@@ -11,6 +11,10 @@ import Modal from "react-bootstrap/Modal";
 import defaultUserIcon from "../assets/user.webp";
 import "../styles/post-card.css";
 
+import { getUserIdFromToken } from "../auth/authUtils";
+
+const token = localStorage.getItem("token");
+
 const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [showNewCommentForm, setShowNewCommentForm] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -31,27 +35,13 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   const navigate = useNavigate();
 
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        menuRef.current && !menuRef.current.contains(event.target) &&
-        buttonRef.current && !buttonRef.current.contains(event.target)
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
       ) {
         setShowMenu(false);
       }
@@ -64,6 +54,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     };
   }, []);
 
+  //fetch user username
   const fetchUsername = async (userId) => {
     try {
       const token = localStorage.getItem("token");
@@ -72,7 +63,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -90,12 +80,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     }
   };
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
+  //fetch user details
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -106,7 +91,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -122,6 +106,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     fetchUserDetails();
   }, [userId]);
 
+  //fetch liked posts
   useEffect(() => {
     const fetchLikedPosts = async () => {
       const userIdFromToken = getUserIdFromToken();
@@ -131,13 +116,11 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       }
 
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           `http://localhost:5000/api/v2/likes/${userIdFromToken}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -168,42 +151,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     fetchLikedPosts();
   }, [id]);
 
-  useEffect(() => {
-    const fetchSavedCount = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://localhost:5000/api/v2/save/posts/${id}/saved-count`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              
-            },
-          }
-        );
-        if (response.status === 200) {
-          setSavedCount(response.data);
-        } else {
-          console.error("Failed to fetch saved count");
-        }
-      } catch (error) {
-        console.error("Error fetching saved count:", error.message);
-      }
-    };
-
-    fetchSavedCount();
-  }, [id]);
-
+  //fetch liked count per post
   useEffect(() => {
     const fetchLikeCount = async () => {
       try {
-        const token = localStorage.getItem("token");
         const likeResponse = await axios.get(
           `http://localhost:5000/api/v2/likes/post/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -233,20 +189,14 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     fetchLikeCount();
   }, [id]);
 
-  const formatTime = (postTime) => {
-    const date = new Date(`1970-01-01T${postTime}Z`);
-    return format(date, "hh:mm a");
-  };
-
+  //fetch post details
   const fetchPostDetails = async () => {
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.get(
         `http://localhost:5000/api/v2/posts/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -276,6 +226,201 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     }
   };
 
+  useEffect(() => {
+    fetchPostDetails();
+  }, [id]);
+
+  //fetch saved posts
+  useEffect(() => {
+    const fetchSavedPosts = async () => {
+      const userIdFromToken = getUserIdFromToken();
+      if (!userIdFromToken) {
+        console.error("User not authenticated or token invalid.");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          const savedPostIds = response.data.postIds || [];
+          if (savedPostIds.includes(id)) {
+            setSaved(true);
+          }
+        } else {
+          console.log("No saved posts found.");
+        }
+      } catch (error) {
+        console.error("Error fetching saved posts:", error.message);
+      }
+    };
+
+    fetchSavedPosts();
+  }, [id]);
+
+  //create comment
+  const navigateToAddComment = async () => {
+    const commenterId = getUserIdFromToken();
+    if (!commenterId) {
+      console.error("User not authenticated or token invalid.");
+      return;
+    }
+
+    if (newComment.trim() === "") {
+      console.error("Empty comment cannot be posted.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/v2/posts/comments/create/${commenterId}/${id}`,
+        { content: newComment },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        await fetchPostDetails();
+        setNewComment("");
+        setShowNewCommentForm(false);
+      }
+    } catch (error) {
+      console.error("Error posting comment:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //like a post
+  const toggleLike = async (e) => {
+    e.stopPropagation();
+    const userIdFromToken = getUserIdFromToken();
+    if (!userIdFromToken) {
+      console.error("User not authenticated or token invalid.");
+      return;
+    }
+
+    try {
+      if (!liked) {
+        await axios.post(
+          `http://localhost:5000/api/v2/likes/post/${userIdFromToken}/${id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setLiked(true);
+      }
+
+      const likeResponse = await axios.get(
+        `http://localhost:5000/api/v2/likes/post/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (likeResponse.status === 200) {
+        setLikeCount(likeResponse.data);
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error.message);
+    }
+  };
+
+  //save a post
+  const toggleSave = async (e) => {
+    e.stopPropagation();
+    const userIdFromToken = getUserIdFromToken();
+    if (!userIdFromToken) {
+      console.error("User not authenticated or token invalid.");
+      return;
+    }
+
+    try {
+      if (!saved) {
+        await axios.post(
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
+          [id],
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setSaved(true);
+        window.alert("Post saved successfully!");
+      } else {
+        await axios.delete(
+          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }
+        );
+        setSaved(false);
+        window.alert("Post unsaved successfully!");
+      }
+    } catch (error) {
+      console.error("Error toggling save:", error.message);
+      window.alert("An error occurred. Please try again.");
+    }
+  };
+
+  //delete a post
+  const deletePost = async () => {
+    const userIdFromToken = getUserIdFromToken();
+    if (!userIdFromToken) {
+      console.error("User not authenticated or token invalid.");
+      return;
+    }
+
+    if (userIdFromToken !== userId) {
+      console.error("You are not authorized to delete this post.");
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/v2/posts/delete/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        }
+      );
+      if (response.status === 200) {
+        console.log("Post deleted successfully");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error.message);
+    }
+  };
+
+  const formatTime = (postTime) => {
+    const date = new Date(`1970-01-01T${postTime}Z`);
+    return format(date, "hh:mm a");
+  };
+
   const timeSincePost = (postDate, postTime) => {
     const postDateTime = new Date(`${postDate}T${postTime}`);
     const seconds = Math.floor((new Date() - postDateTime) / 1000);
@@ -299,221 +444,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     setShowCommentsModal(true);
   };
 
-  useEffect(() => {
-    const fetchSavedPosts = async () => {
-      const userIdFromToken = getUserIdFromToken();
-      if (!userIdFromToken) {
-        console.error("User not authenticated or token invalid.");
-        return;
-      }
-
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          const savedPostIds = response.data.postIds || [];
-          if (savedPostIds.includes(id)) {
-            setSaved(true);
-          }
-        } else {
-          console.log("No saved posts found.");
-        }
-      } catch (error) {
-        console.error("Error fetching saved posts:", error.message);
-      }
-    };
-
-    fetchSavedPosts();
-  }, [id]);
-
-  useEffect(() => {
-    fetchPostDetails();
-  }, [id]);
-
   const handleCommentChange = (e) => {
     setNewComment(e.target.value);
   };
-
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.userId;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
-  };
-
-  const navigateToAddComment = async () => {
-    const commenterId = getUserIdFromToken();
-    if (!commenterId) {
-      console.error("User not authenticated or token invalid.");
-      return;
-    }
-
-    if (newComment.trim() === "") {
-      console.error("Empty comment cannot be posted.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:5000/api/v2/posts/comments/create/${commenterId}/${id}`,
-        { content: newComment },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            
-          },
-        }
-      );
-      if (response.status === 200) {
-        await fetchPostDetails();
-        setNewComment("");
-        setShowNewCommentForm(false);
-      }
-    } catch (error) {
-      console.error("Error posting comment:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleLike = async (e) => {
-    e.stopPropagation();
-    const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
-      console.error("User not authenticated or token invalid.");
-      return;
-    }
-
-    try {
-      if (!liked) {
-        const token = localStorage.getItem("token");
-        await axios.post(
-          `http://localhost:5000/api/v2/likes/post/${userIdFromToken}/${id}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              
-            },
-          }
-        );
-        setLiked(true);
-      }
-      const token = localStorage.getItem("token");
-      const likeResponse = await axios.get(
-        `http://localhost:5000/api/v2/likes/post/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            
-          },
-        }
-      );
-      if (likeResponse.status === 200) {
-        setLikeCount(likeResponse.data);
-      }
-    } catch (error) {
-      console.error("Error toggling like:", error.message);
-    }
-  };
-
-  const toggleSave = async (e) => {
-    e.stopPropagation();
-    const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
-      console.error("User not authenticated or token invalid.");
-      return;
-    }
-
-    try {
-      if (!saved) {
-        const token = localStorage.getItem("token");
-        await axios.post(
-          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
-          [id],
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-              
-            },
-          }
-        );
-        setSaved(true);
-        window.alert("Post saved successfully!");
-      } else {
-        const token = localStorage.getItem("token");
-        await axios.delete(
-          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: 'include'
-          }
-        );
-        setSaved(false);
-        window.alert("Post unsaved successfully!");
-      }
-
-    } catch (error) {
-      console.error("Error toggling save:", error.message);
-      window.alert("An error occurred. Please try again.");
-    }
-  };
-
-  const deletePost = async () => {
-    const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
-      console.error("User not authenticated or token invalid.");
-      return;
-    }
-
-    if (userIdFromToken !== userId) {
-      console.error("You are not authorized to delete this post.");
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.delete(
-        `http://localhost:5000/api/v2/posts/delete/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          credentials: 'include'
-        },
-      );
-      if (response.status === 200) {
-        console.log("Post deleted successfully");
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error("Error deleting post:", error.message);
-    }
-  };
-
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);

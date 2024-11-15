@@ -23,29 +23,6 @@ public class HistoryController {
 	@Autowired
 	private HistoryService historyService;
 
-	@PostMapping("/save/{userId}/session/{sessionId}")
-	public ResponseEntity<History> saveChatHistory(
-			@PathVariable String userId ,
-			@PathVariable String sessionId ,
-			@RequestBody HashMap<String, String> request
-	) {
-		String message = request.get("message");
-		String answer = request.get("answer");
-
-		logger.info("Received request to save chat history for userId: {}, sessionId: {}" , userId , sessionId);
-
-		try {
-			QuestionAnswerPair questionAnswerPair = new QuestionAnswerPair(message , answer);
-			History savedHistory = historyService.saveHistory(sessionId , userId , List.of(questionAnswerPair));
-
-			logger.info("Successfully saved chat history for userId: {}, sessionId: {}" , userId , sessionId);
-			return new ResponseEntity<>(savedHistory , HttpStatus.CREATED);
-		} catch (Exception e) {
-			logger.error("Error saving chat history for userId: {}, sessionId: {}. Error: {}" , userId , sessionId , e.getMessage());
-			return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
 	@GetMapping("/all")
 	public ResponseEntity<List<History>> getAllHistories() {
 		try {
@@ -84,6 +61,29 @@ public class HistoryController {
 		} catch (Exception e) {
 			logger.error("Error fetching history for sessionId: {}. Error: {}" , sessionId , e.getMessage());
 			return new ResponseEntity<>("Failed to fetch history" , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping("/save/{userId}/session/{sessionId}")
+	public ResponseEntity<History> saveChatHistory(
+			@PathVariable String userId ,
+			@PathVariable String sessionId ,
+			@RequestBody HashMap<String, String> request
+	) {
+		String message = request.get("message");
+		String answer = request.get("answer");
+
+		logger.info("Received request to save chat history for userId: {}, sessionId: {}" , userId , sessionId);
+
+		try {
+			QuestionAnswerPair questionAnswerPair = new QuestionAnswerPair(message , answer);
+			History savedHistory = historyService.saveHistory(sessionId , userId , List.of(questionAnswerPair));
+
+			logger.info("Successfully saved chat history for userId: {}, sessionId: {}" , userId , sessionId);
+			return new ResponseEntity<>(savedHistory , HttpStatus.CREATED);
+		} catch (Exception e) {
+			logger.error("Error saving chat history for userId: {}, sessionId: {}. Error: {}" , userId , sessionId , e.getMessage());
+			return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

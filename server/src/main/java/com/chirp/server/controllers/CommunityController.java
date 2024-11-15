@@ -1,5 +1,6 @@
 package com.chirp.server.controllers;
 
+import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.Community;
 import com.chirp.server.models.Post;
 import com.chirp.server.services.CommunityService;
@@ -30,6 +31,26 @@ public class CommunityController {
 		return new ResponseEntity<>(communities , HttpStatus.OK);
 	}
 
+	@GetMapping("/c/{communityId}")
+	public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
+		try {
+			Community community = communityService.getCommunityById(communityId);
+			return new ResponseEntity<>(community , HttpStatus.OK);
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@GetMapping("/{name}")
+	public ResponseEntity<Community> getCommunityByName(@PathVariable String name) {
+		try {
+			Community community = communityService.getCommunityByName(name);
+			return ResponseEntity.ok(community);
+		} catch (NotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
+
 	@PostMapping("/create/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {
 		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription());
@@ -50,16 +71,6 @@ public class CommunityController {
 			return new ResponseEntity<>("User has successfully joined the community." , HttpStatus.OK);
 		} catch (IllegalArgumentException e) {
 			return new ResponseEntity<>(e.getMessage() , HttpStatus.NOT_FOUND);
-		}
-	}
-
-	@GetMapping("/r/{communityId}")
-	public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
-		try {
-			Community community = communityService.getCommunityById(communityId);
-			return new ResponseEntity<>(community , HttpStatus.OK);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 }

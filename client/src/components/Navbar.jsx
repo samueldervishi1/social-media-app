@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
@@ -7,8 +8,11 @@ import { IoPersonCircleOutline, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { CiLogout } from "react-icons/ci";
 import { GiArtificialHive } from "react-icons/gi";
+import { CgCommunity } from "react-icons/cg";
 import loaderImage from "../assets/ZKZg.gif";
 import "../styles/navbar.css";
+
+import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -19,6 +23,7 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [showNoResults, setShowNoResults] = useState(false);
+  const navigate = useNavigate();
 
   const searchUsers = async (username) => {
     if (!username) {
@@ -33,7 +38,6 @@ const Navbar = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -62,7 +66,7 @@ const Navbar = () => {
     const timeout = setTimeout(() => {
       searchUsers(query);
       setShowDropdown(true);
-    }, 0);
+    }, 500);
 
     setTypingTimeout(timeout);
   }, [query]);
@@ -93,21 +97,16 @@ const Navbar = () => {
     }, 2000);
   };
 
-  const getUsernameFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.sub;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
-  };
-
+  const userId = getUserIdFromToken();
   const username = getUsernameFromToken();
+
+  const handleUserClick = (clickedUserId) => {
+    if (clickedUserId === userId) {
+      navigate("/profile");
+    } else {
+      navigate(`/u/${clickedUserId}`);
+    }
+  };
 
   return (
     <>
@@ -133,7 +132,11 @@ const Navbar = () => {
                 ) : (
                   <ul className="drpp-rsl">
                     {results.map((user) => (
-                      <li key={user.id} className="drpp-t">
+                      <li
+                        key={user.id}
+                        className="drpp-t"
+                        onClick={() => handleUserClick(user.id)}
+                      >
                         {user.username}
                       </li>
                     ))}
@@ -158,6 +161,9 @@ const Navbar = () => {
             </a>
             <a href="/chirp" className="menu-item">
               <GiArtificialHive className="icon-p" /> ChirpAI
+            </a>
+            <a href="/c/communities" className="menu-item">
+              <CgCommunity className="icon-p" /> Communities
             </a>
             <Dropdown>
               <Dropdown.Toggle variant="link" className="menu-item">
@@ -200,6 +206,9 @@ const Navbar = () => {
               </a>
               <a href="/chirp" className="mobile-menu-item">
                 <GiArtificialHive className="icon-p" /> ChirpAI
+              </a>
+              <a href="/c/communities" className="mobile-menu-item">
+                <CgCommunity className="icon-p" /> Communities
               </a>
               <Dropdown>
                 <Dropdown.Toggle variant="link" className="mobile-menu-item">

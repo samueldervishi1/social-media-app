@@ -1,39 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
 import { CiImageOn, CiLocationArrow1 } from "react-icons/ci";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import Picker from "emoji-picker-react";
 import "../styles/post.css";
 
+import { getUsernameFromToken } from "../auth/authUtils";
+
 const PostForm = () => {
   const [postContent, setPostContent] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-  }, [navigate]);
 
   const handlePostContentChange = (event) => {
     setPostContent(event.target.value);
@@ -62,7 +40,6 @@ const PostForm = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -155,19 +132,7 @@ const PostForm = () => {
     );
   };
 
-  const getUsernameFromToken = (token) => {
-    try {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      return decodedToken.sub;
-    } catch (error) {
-      console.error("Error decoding token:", error.message);
-      return null;
-    }
-  };
-
-  const placeholderText = `What's on your mind, ${getUsernameFromToken(
-    localStorage.getItem("token")
-  )} ?`;
+  const placeholderText = `What's on your mind, ${getUsernameFromToken()} ?`;
 
   const clearSelectedImage = () => {
     setSelectedImage(null);

@@ -80,13 +80,14 @@ const LoginScript = () => {
     setLoadingUpdate(true);
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `http://localhost:5000/api/v2/users/update-password?username=${username}&newPassword=${newPassword}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            
+            Authorization: `Bearer ${token}`,
           },
         }
       );

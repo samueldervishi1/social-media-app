@@ -7,6 +7,8 @@ import { MdMessage } from "react-icons/md";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import "../styles/inbox.css";
 
+import { getUserIdFromToken } from "../auth/authUtils";
+
 const Inbox = ({ user }) => {
   const [showMessageComponent, setShowMessageComponent] = useState(false);
   const [receiverId, setReceiverId] = useState(null);
@@ -14,28 +16,6 @@ const Inbox = ({ user }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-  }, [navigate]);
 
   useEffect(() => {
     const fetchFollowers = async () => {
@@ -52,7 +32,6 @@ const Inbox = ({ user }) => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -67,7 +46,6 @@ const Inbox = ({ user }) => {
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,
-                      
                     },
                   }
                 );
@@ -104,20 +82,6 @@ const Inbox = ({ user }) => {
       setSelectedUser(follower);
       setShowMessageComponent(true);
     }
-  };
-
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.userId;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
   };
 
   const handleBackHome = () => {

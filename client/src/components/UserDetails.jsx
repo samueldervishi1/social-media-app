@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import PostCard from "./PostCard";
 import { Image } from "react-bootstrap";
-import Navbar from "./Navbar";
 import Button from "react-bootstrap/Button";
 import profileImage from "../assets/user.webp";
 import placeHolderImage from "../assets/placeholder.png";
 import loaderImage from "../assets/ZKZg.gif";
 import "../styles/user-details.css";
+
+import { getUserIdFromToken } from "../auth/authUtils";
 
 const UserDetail = () => {
   const { userId } = useParams();
@@ -21,36 +22,11 @@ const UserDetail = () => {
   const [userPosts, setUserPosts] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 3000);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    } else {
-      setCurrentUserId(getUserIdFromToken());
-    }
-  }, [navigate]);
 
   useEffect(() => {
     fetchUserDetails();
@@ -65,7 +41,6 @@ const UserDetail = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -105,7 +80,6 @@ const UserDetail = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            
           },
         }
       );
@@ -133,7 +107,6 @@ const UserDetail = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -157,7 +130,6 @@ const UserDetail = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -182,7 +154,6 @@ const UserDetail = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -214,7 +185,6 @@ const UserDetail = () => {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
-              
             },
           }
         );
@@ -229,20 +199,6 @@ const UserDetail = () => {
         console.error("Error updating follow status:", error.message);
       }
     }
-  };
-
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.userId;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
   };
 
   const getServiceIcon = (url) => {
@@ -265,7 +221,6 @@ const UserDetail = () => {
 
   return (
     <>
-      <Navbar />
       {isLoading ? (
         <div className="loader-overlay">
           <img src={loaderImage} alt="Loading..." className="loader-image" />
@@ -276,7 +231,6 @@ const UserDetail = () => {
             width: "80%",
             maxWidth: "1200px",
             margin: "30px auto",
-            border: "1px solid #e0e0e0",
             padding: 15,
             top: 50,
             position: "relative",

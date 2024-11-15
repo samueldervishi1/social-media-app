@@ -1,8 +1,29 @@
 .terms-container {
   padding: 20px;
 }
+
 .term-section {
   margin-bottom: 40px;
+}
+
+.h1-container {
+  margin: 0 auto 40px auto;
+  background-image: url("../assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+  padding: 40px;
+  border-radius: 4px;
+  text-align: left;
+}
+
+h1 {
+  margin: 0;
+  color: black;
+  font-size: 70px;
+  font-weight: 700;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 .term-title {

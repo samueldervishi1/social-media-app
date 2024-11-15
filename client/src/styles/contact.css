@@ -3,13 +3,23 @@
 }
 
 .h1-container {
-  text-align: center;
-  margin-bottom: 20px;
+  margin: 0 auto 40px auto;
+  background-image: url("../assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+  padding: 40px;
+  border-radius: 4px;
+  text-align: left;
 }
 
 h1 {
-  font-size: 40px;
-  color: #333;
+  margin: 0;
+  color: black;
+  font-size: 70px;
+  font-weight: 700;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 .contact-info {
