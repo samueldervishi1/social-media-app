@@ -496,18 +496,20 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
             </span>
           </h2>
         </div>
-        <div className="more-options">
-          <button onClick={toggleMenu} className="three-dots">
-            &#8230;
-          </button>
-          {showMenu && isUserPostOwner && (
-            <div className="dropdown-delete">
-              <button onClick={deletePost} className="delete-button">
-                Delete Post
-              </button>
-            </div>
-          )}
-        </div>
+        {isUserPostOwner && (
+          <div className="more-options">
+            <button onClick={toggleMenu} className="three-dots">
+              &#8230;
+            </button>
+            {showMenu && (
+              <div className="dropdown-delete">
+                <button onClick={deletePost} className="delete-button">
+                  Delete Post
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <div className="post-body">
         <div>

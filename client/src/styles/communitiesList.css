@@ -164,6 +164,19 @@ span.members-count {
   border-bottom: none;
 }
 
+.loading-community {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+
+.spinner-community {
+  width: 30px;
+  height: 30px;
+}
+
 @media screen and (min-width: 1025px) {
   .card {
     width: calc(33.33% - 20px);

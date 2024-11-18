@@ -51,6 +51,12 @@ public class CommunityController {
 		}
 	}
 
+	@GetMapping("/c/count/{name}")
+	public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
+		int count = communityService.getUserCountForCommunity(name);
+		return ResponseEntity.ok(count);
+	}
+
 	@PostMapping("/create/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {
 		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription());

@@ -1,25 +1,32 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import placeHolderImage from "../assets/placeholder.png";
 import placeHolderLogo from "../assets/logo-placeholder-image.png";
+import loader from "../assets/ZKZg.gif";
 import "../styles/communityDetails.css";
 import { getUserIdFromToken } from "../auth/authUtils";
 
 const CommunityDetails = () => {
   const { name } = useParams();
   const [community, setCommunity] = useState(null);
+  const [membersCount, setMembersCount] = useState(null);
   const [error, setError] = useState(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewDropdownVisible, setViewDropdownVisible] = useState(false);
   const [sortDropdownVisible, setSortDropdownVisible] = useState(false);
   const [currentView, setCurrentView] = useState("Feed");
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const dropdownRef = useRef(null);
   const viewDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
+
+  const getMemberText = (count) => {
+    if (count === 1) return "1 member";
+    if (count >= 0) return `${count} members`;
+    return "Loading...";
+  };
 
   useEffect(() => {
     const fetchCommunityDetails = async () => {
@@ -36,10 +43,39 @@ const CommunityDetails = () => {
         setCommunity(response.data);
       } catch (err) {
         setError("Failed to fetch community details");
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
       }
     };
 
     fetchCommunityDetails();
+  }, [name]);
+
+  useEffect(() => {
+    const fetchMembersCount = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:5000/api/v2/communities/c/count/${encodeURIComponent(
+            name
+          )}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setMembersCount(response.data);
+      } catch (err) {
+        console.error("Error fetching member count:", err.message);
+        setMembersCount("N/A");
+      }
+    };
+
+    if (name) {
+      fetchMembersCount();
+    }
   }, [name]);
 
   const handleJoinCommunity = async (communityId) => {
@@ -93,7 +129,6 @@ const CommunityDetails = () => {
       sortDropdownRef.current &&
       !sortDropdownRef.current.contains(e.target)
     ) {
-      console.log("Closing dropdowns");
       setDropdownVisible(false);
       setViewDropdownVisible(false);
       setSortDropdownVisible(false);
@@ -109,6 +144,15 @@ const CommunityDetails = () => {
   }, []);
 
   if (error) return <div>Error: {error}</div>;
+
+  if (loading) {
+    return (
+      <div className="loading-details">
+        <img src={loader} alt="Loading..." className="spinner-details" />
+      </div>
+    );
+  }
+
   if (!community) return <div>Loading...</div>;
 
   const userId = getUserIdFromToken();
@@ -132,7 +176,9 @@ const CommunityDetails = () => {
       <div className="community-info">
         <h2 className="community-name">
           c/{community.name} <span>-</span>
-          <span className="members-count">5,013,134 members</span>
+          <span className="members-count">
+            {membersCount !== null ? getMemberText(membersCount) : "Loading..."}
+          </span>
         </h2>
 
         <button
