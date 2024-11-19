@@ -41,7 +41,7 @@
 .list-loader {
   width: 100%;
   transform: translate(-50%, 50%);
-  left: 30%;
+  left: 25%;
   position: absolute;
   justify-content: center;
   align-items: center;
@@ -81,6 +81,18 @@
   border: none;
   font-size: 15px;
   padding: 5px 10px;
+}
+
+.delete-comment-button {
+  color: red;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 10px;
+  margin-left: 210px;
+  top: 0px;
+  position: relative;
+  padding: 0;
 }
 
 .post-header {

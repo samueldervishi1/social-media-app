@@ -30,6 +30,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
   const [showMenu, setShowMenu] = useState(false);
+  const [showMenuComment, setShowMenuComment] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -409,10 +410,37 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       );
       if (response.status === 200) {
         console.log("Post deleted successfully");
+        alert("Post deleted successfully!");
         window.location.reload();
       }
     } catch (error) {
       console.error("Error deleting post:", error.message);
+    }
+  };
+
+  //delete comment
+  const deleteComment = async (commentId) => {
+    const userIdFromToken = getUserIdFromToken();
+    if (!userIdFromToken) {
+      console.error("User not authenticated or token invalid.");
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/v2/posts/comments/delete/${id}/${commentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        console.log("Comment deleted successfully");
+        await fetchPostDetails();
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error.message);
     }
   };
 
@@ -591,6 +619,16 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
                             )}`
                           : "N/A"}
                       </small>
+                      {comment.userId === getUserIdFromToken() && (
+                        <div className="more-options">
+                          <button
+                            onClick={() => deleteComment(comment.id)}
+                            className="delete-comment-button"
+                          >
+                            Delete Comment
+                          </button>
+                        </div>
+                      )}
                     </strong>
                     <p className="user-comment">{comment.content}</p>
                   </li>

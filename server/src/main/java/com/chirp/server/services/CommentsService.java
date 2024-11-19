@@ -34,6 +34,19 @@ public class CommentsService {
 	@Autowired
 	private ActivityRepository activityRepository;
 
+	private Comments getCommentFromPost(Post post , String commentId) {
+		Optional<Comments> commentOptional = post.getCommentsList().stream()
+				.filter(comment -> comment.getId().equals(commentId))
+				.findFirst();
+
+		if (commentOptional.isEmpty()) {
+			logger.warn("Comment not found with ID: {} in post with ID: {}" , commentId , post.getId());
+			throw new NotFoundException("Comment not found with ID: " + commentId);
+		}
+
+		return commentOptional.get();
+	}
+
 	@Transactional
 	public Comments createComment(String userId , String postId , Comments comment) {
 		try {
@@ -75,16 +88,7 @@ public class CommentsService {
 	public Comments getCommentById(String postId , String commentId) {
 		try {
 			Post post = getPostById(postId);
-			Optional<Comments> commentOptional = post.getCommentsList().stream()
-					.filter(comment -> comment.getId().equals(commentId))
-					.findFirst();
-
-			if (commentOptional.isEmpty()) {
-				logger.warn("Comment not found with ID: {} in post with ID: {}" , commentId , postId);
-				throw new NotFoundException("Comment not found with ID: " + commentId);
-			}
-
-			return commentOptional.get();
+			return getCommentFromPost(post , commentId); // Using the helper method
 		} catch (NotFoundException e) {
 			logger.error("Error retrieving comment: {}" , e.getMessage() , e);
 			throw e;
@@ -107,6 +111,26 @@ public class CommentsService {
 			ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
 			ActivityModel activity = new ActivityModel(actionType , userId , Instant.now() , "active");
 			activityRepository.save(activity);
+		}
+	}
+
+	@Transactional
+	public void deleteComment(String postId , String commentId) {
+		try {
+			Post post = getPostById(postId);
+			Comments comment = getCommentFromPost(post , commentId);
+
+			post.getCommentsList().remove(comment);
+
+			postRepository.save(post);
+
+			logger.info("Comment with ID: {} has been deleted from post with ID: {}" , commentId , postId);
+		} catch (NotFoundException e) {
+			logger.error("Error deleting comment: {}" , e.getMessage() , e);
+			throw e;
+		} catch (Exception e) {
+			logger.error("Unexpected error while deleting comment. Error: {}" , e.getMessage() , e);
+			throw new InternalServerErrorException("An unexpected error occurred while deleting the comment");
 		}
 	}
 }

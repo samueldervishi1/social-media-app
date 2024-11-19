@@ -53,9 +53,16 @@ public class CommunityController {
 
 	@GetMapping("/c/count/{name}")
 	public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
-		int count = communityService.getUserCountForCommunity(name);
-		return ResponseEntity.ok(count);
+		try {
+			int count = communityService.getUserCountForCommunity(name);
+			return ResponseEntity.ok(count);
+		} catch (NotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
+		}
 	}
+
 
 	@PostMapping("/create/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {

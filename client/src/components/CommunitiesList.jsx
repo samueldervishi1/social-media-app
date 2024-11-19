@@ -99,12 +99,12 @@ const CommunitiesList = () => {
     try {
       const token = localStorage.getItem("token");
       const userId = getUserIdFromToken();
-
+  
       if (!userId) {
         alert("User is not authenticated");
         return;
       }
-
+  
       const response = await axios.post(
         `http://localhost:5000/api/v2/communities/join/${communityId}/${userId}`,
         {},
@@ -114,7 +114,7 @@ const CommunitiesList = () => {
           },
         }
       );
-
+  
       if (response.status === 200) {
         setJoinedCommunities((prev) => [...prev, communityId]);
         alert("You joined the community successfully!");
@@ -123,6 +123,7 @@ const CommunitiesList = () => {
       setError(err.message);
     }
   };
+  
 
   const toggleDropdown = (communityId) => {
     setDropdownVisible(dropdownVisible === communityId ? null : communityId);

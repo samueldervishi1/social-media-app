@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 @Document(collection = "communities")
@@ -20,6 +21,7 @@ public class Community {
     private List<String> userIds = new ArrayList<>();
 
     public Community(String name, String ownerId, String description) {
+        this.communityId = UUID.randomUUID().toString();
         this.ownerId = ownerId;
         this.name = name;
         this.description = description;

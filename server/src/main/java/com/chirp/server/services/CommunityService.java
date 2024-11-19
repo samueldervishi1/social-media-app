@@ -33,12 +33,22 @@ public class CommunityService {
 	public int getUserCountForCommunity(String name) {
 		try {
 			List<Community> communities = communityRepository.findByNameContaining(name);
-			return communities.size();
+
+			if (communities.isEmpty()) {
+				return 0;
+			}
+			Community community = communities.get(0);
+			if (community.getUserIds() != null) {
+				return community.getUserIds().size();
+			} else {
+				return 0;
+			}
 		} catch (Exception e) {
-			logger.error("Error fetching likes count for post ID {}: {}" , name , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while fetching likes count for the post");
+			logger.error("Error fetching user count for community {}: {}" , name , e.getMessage() , e);
+			throw new InternalServerErrorException("An unexpected error occurred while fetching user count.");
 		}
 	}
+
 
 	public void joinCommunity(String communityId , String userId) {
 		Community community = communityRepository.findById(communityId)

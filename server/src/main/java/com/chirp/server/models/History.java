@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Document
 public class History {
@@ -19,6 +20,7 @@ public class History {
 	private List<QuestionAnswerPair> questionAnswerPairs;
 
 	public History(String sessionId , String userId , List<QuestionAnswerPair> questionAnswerPairs) {
+		this.id = UUID.randomUUID().toString();
 		this.sessionId = sessionId;
 		this.userId = userId;
 		this.questionAnswerPairs = questionAnswerPairs;
