@@ -14,34 +14,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
+	private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 
-    public String login(String username, String password) {
-        logger.info("Attempting to login with username {}", username);
+	public String login(String username , String password) {
+		logger.info("Attempting to login with username {}" , username);
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("Username not found"));
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new NotFoundException("Username not found"));
 
-        validatePassword(password, user.getPassword());
+		if (user.isDeleted()) {
+            logger.info("User does not exist");
+			throw new NotFoundException("This user does not exist.");
+		}
 
-        String token = jwtTokenUtil.generateToken(username, user.getId());
-        logger.info("Successfully logged in user: {}", username);
-        return token;
-    }
+		validatePassword(password , user.getPassword());
 
-    private void validatePassword(String rawPassword, String encodedPassword) {
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            logger.warn("Password mismatch for username: {}", encodedPassword);
-            throw new BadRequestException("Invalid username or password");
-        }
-    }
+		String token = jwtTokenUtil.generateToken(username , user.getId());
+		logger.info("Successfully logged in user: {}" , username);
+		return token;
+	}
+
+	private void validatePassword(String rawPassword , String encodedPassword) {
+		if (!passwordEncoder.matches(rawPassword , encodedPassword)) {
+			logger.warn("Password mismatch for username: {}" , encodedPassword);
+			throw new BadRequestException("Invalid username or password");
+		}
+	}
 }

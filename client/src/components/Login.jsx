@@ -40,15 +40,21 @@ const LoginScript = () => {
       });
 
       if (response.ok) {
-        const token = await response.text();
-        localStorage.setItem("token", token);
-        setTimeout(() => {
+        const data = await response.text();
+
+        if (data && data.startsWith("eyJhbGciOi")) {
+          const token = data;
+          localStorage.setItem("token", token);
+          setTimeout(() => {
+            setLoading(false);
+            window.location.href = "/home";
+          }, 3000);
+        } else {
+          setError("Unexpected response from the server.");
           setLoading(false);
-          window.location.href = "/home";
-        }, 3000);
+        }
       } else {
         const errorMessage = await response.text();
-
         if (
           errorMessage.includes("SocketTimeoutException") ||
           errorMessage.includes("Read timed out")
@@ -57,7 +63,6 @@ const LoginScript = () => {
         } else {
           setError("An unexpected error occurred. Please try again later.");
         }
-
         setLoading(false);
       }
     } catch (error) {

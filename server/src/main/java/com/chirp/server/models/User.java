@@ -20,6 +20,7 @@ public class User {
 	private String bio;
 	private String title;
 	private String role = "simple_account";
+	private boolean deleted;
 
 	@Override
 	public boolean equals(Object o) {
@@ -108,5 +109,13 @@ public class User {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 }

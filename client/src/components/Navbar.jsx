@@ -9,10 +9,12 @@ import { AiOutlineMessage } from "react-icons/ai";
 import { CiLogout } from "react-icons/ci";
 import { GiArtificialHive } from "react-icons/gi";
 import { CgCommunity } from "react-icons/cg";
+import { MdDeleteForever } from "react-icons/md";
 import loaderImage from "../assets/ZKZg.gif";
 import "../styles/navbar.css";
 
 import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
+import { Modal, Button } from "react-bootstrap";
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -23,6 +25,8 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [showNoResults, setShowNoResults] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   const searchUsers = async (username) => {
@@ -108,6 +112,30 @@ const Navbar = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `http://localhost:5000/api/v2/users/update/delete/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setIsDeleting(false);
+      localStorage.removeItem("token");
+      setShowDeleteModal(false);
+      window.location.reload();
+      navigate("/login");
+    } catch (error) {
+      setIsDeleting(false);
+      console.error("Error deleting account:", error);
+      alert("Failed to delete account. Please try again later.");
+    }
+  };
+
   return (
     <>
       <div className="chat-history1">
@@ -174,7 +202,7 @@ const Navbar = () => {
                   See your profile {username}
                 </Dropdown.Item>
                 <Dropdown.Item href="#">Add another account</Dropdown.Item>
-                <Dropdown.Divider />
+                <Dropdown.Divider className="divider-logout"/>
                 <Dropdown.Item onClick={handleLogout}>
                   <CiLogout className="icon-p" /> Logout
                 </Dropdown.Item>
@@ -192,55 +220,39 @@ const Navbar = () => {
                 </Dropdown.Item>
                 <Dropdown.Item href="/contact">Contact</Dropdown.Item>
                 <Dropdown.Item href="/help">Help</Dropdown.Item>
+                <Dropdown.Divider className="divider-delete"/>
+                <Dropdown.Item onClick={() => setShowDeleteModal(true)} className="delete-name">
+                  {" "}
+                  <MdDeleteForever className="name-delete"/> Delete Account
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
-
-          {isMenuOpen && (
-            <div className="mobile-menu">
-              <a href="/home" className="mobile-menu-item">
-                <GoHome className="icon-p" /> Home
-              </a>
-              <a href="/messages" className="mobile-menu-item">
-                <AiOutlineMessage className="icon-p" /> Messages
-              </a>
-              <a href="/chirp" className="mobile-menu-item">
-                <GiArtificialHive className="icon-p" /> ChirpAI
-              </a>
-              <a href="/c/communities" className="mobile-menu-item">
-                <CgCommunity className="icon-p" /> Communities
-              </a>
-              <Dropdown>
-                <Dropdown.Toggle variant="link" className="mobile-menu-item">
-                  <IoPersonCircleOutline className="icon-p" /> Profile
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="/profile">
-                    See your profile {username}
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#">Add another account</Dropdown.Item>
-                  <Dropdown.Divider className="divider-dp" />
-                  <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <Dropdown>
-                <Dropdown.Toggle variant="link" className="mobile-menu-item">
-                  <IoSettingsOutline className="icon-p" /> Settings
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="/premium">Premium</Dropdown.Item>
-                  <Dropdown.Item href="/about">About</Dropdown.Item>
-                  <Dropdown.Item href="/terms">
-                    Terms &amp; Services
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/contact">Contact</Dropdown.Item>
-                  <Dropdown.Item href="/help">Help</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-          )}
         </div>
       </div>
+
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Account</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete your account? This action cannot be
+          undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete Account"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {isLoggingOut && (
         <div className="logout-loader">
           <div className="logout-box">

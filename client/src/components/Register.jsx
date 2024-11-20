@@ -11,6 +11,13 @@ const Register = () => {
     username: "",
     password: "",
   });
+
+  const [errorMessages, setErrorMessages] = useState({
+    email: "",
+    username: "",
+    password: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -21,13 +28,15 @@ const Register = () => {
       ...prevData,
       [name]: value,
     }));
-  };
 
+    setErrorMessages((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log("Form Data:", formData);
-
+  
     try {
       const response = await axios.post(
         "http://localhost:5000/api/v2/users/auth/register",
@@ -38,24 +47,43 @@ const Register = () => {
           },
         }
       );
-
+  
       if (response.status === 200) {
         alert("User registered successfully!");
         navigate("/login");
       }
     } catch (error) {
       console.error("Error registering user:", error);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setError(error.response.data.message);
-      } else {
-        setError("An unexpected error occurred. Please try again later.");
+  
+      if (error.response && error.response.data) {
+        console.log("Backend Error Response:", error.response.data); // Log the error response
+  
+        const { message } = error.response.data;
+  
+        if (message === "Email already exists") {
+          setErrorMessages((prev) => ({
+            ...prev,
+            email: "This email is already registered.",
+          }));
+        } else if (message === "Username already exists") {
+          setErrorMessages((prev) => ({
+            ...prev,
+            username: "This username is already taken.",
+          }));
+        } else if (message === "Invalid password format") {
+          setErrorMessages((prev) => ({
+            ...prev,
+            password:
+              "Password must be at least 8 characters long, including one letter, one symbol, and one number.",
+          }));
+        } else {
+          setError("An unexpected error occurred. Please try again later.");
+        }
       }
     }
   };
+  
+  
 
   useEffect(() => {
     document.body.classList.add("register-page");
@@ -99,6 +127,9 @@ const Register = () => {
               onChange={handleChange}
               required
             />
+            {errorMessages.email && (
+              <p className="error-message">{errorMessages.email}</p>
+            )}
 
             <label htmlFor="username">
               <b className="name-register">Username</b>
@@ -112,6 +143,9 @@ const Register = () => {
               onChange={handleChange}
               required
             />
+            {errorMessages.username && (
+              <p className="error-message">{errorMessages.username}</p>
+            )}
 
             <label htmlFor="password">
               <b className="name-register">Password</b>
@@ -133,6 +167,9 @@ const Register = () => {
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </span>
             </div>
+            {errorMessages.password && (
+              <p className="error-message">{errorMessages.password}</p>
+            )}
 
             <button
               style={{

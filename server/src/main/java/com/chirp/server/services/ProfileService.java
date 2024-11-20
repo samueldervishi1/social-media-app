@@ -40,13 +40,32 @@ public class ProfileService {
 		}
 	}
 
-	private void updateFields(User user , User updatedUser) {
-		Optional.ofNullable(updatedUser.getBio()).ifPresent(user::setBio);
-		Optional.ofNullable(updatedUser.getRole()).ifPresent(user::setRole);
-		Optional.ofNullable(updatedUser.getTitle()).ifPresent(user::setTitle);
-		Optional.ofNullable(updatedUser.getEmail()).ifPresent(user::setEmail);
+	public void updatePassword(String userId , String oldPassword , String newPassword) throws Exception {
+		try {
+			User user = findUserById(userId);
 
-		updateLinks(user , updatedUser.getLinks());
+			if (!passwordEncoder.matches(oldPassword , user.getPassword())) {
+				throw new IllegalArgumentException("Old password is incorrect");
+			}
+
+			user.setPassword(passwordEncoder.encode(newPassword));
+			userRepository.save(user);
+			logger.info("Password updated successfully for user ID: {}" , userId);
+		} catch (Exception e) {
+			handleException("updating password" , userId , e);
+		}
+	}
+
+	public void softDeleteUser(String userId) throws Exception {
+		try {
+			User user = findUserById(userId);
+			user.setDeleted(true);
+
+			userRepository.save(user);
+			logger.info("User deleted for user ID: {}" , userId);
+		} catch (Exception e) {
+			handleException("soft deleting user" , userId , e);
+		}
 	}
 
 	private void updateLinks(User user , List<String> newLinks) {
@@ -62,20 +81,13 @@ public class ProfileService {
 		}
 	}
 
-	public void updatePassword(String userId , String oldPassword , String newPassword) throws Exception {
-		try {
-			User user = findUserById(userId);
+	private void updateFields(User user , User updatedUser) {
+		Optional.ofNullable(updatedUser.getBio()).ifPresent(user::setBio);
+		Optional.ofNullable(updatedUser.getRole()).ifPresent(user::setRole);
+		Optional.ofNullable(updatedUser.getTitle()).ifPresent(user::setTitle);
+		Optional.ofNullable(updatedUser.getEmail()).ifPresent(user::setEmail);
 
-			if (!passwordEncoder.matches(oldPassword , user.getPassword())) {
-				throw new IllegalArgumentException("Old password is incorrect");
-			}
-
-			user.setPassword(passwordEncoder.encode(newPassword));
-			userRepository.save(user);
-			logger.info("Password updated successfully for user ID: {}" , userId);
-		} catch (Exception e) {
-			handleException("updating password" , userId , e);
-		}
+		updateLinks(user , updatedUser.getLinks());
 	}
 
 	private User findUserById(String userId) {

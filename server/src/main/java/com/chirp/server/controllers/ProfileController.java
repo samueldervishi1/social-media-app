@@ -28,4 +28,14 @@ public class ProfileController {
 		profileService.updatePassword(userId , request.getOldPassword() , request.getNewPassword());
 		return ResponseEntity.ok("Password updated successfully");
 	}
+
+	@DeleteMapping("/delete/{userId}")
+	public ResponseEntity<String> deleteUser(@PathVariable String userId) throws Exception {
+		try {
+			profileService.softDeleteUser(userId);
+			return ResponseEntity.ok("User deleted successfully");
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body("Error soft deleting the user: " + e.getMessage());
+		}
+	}
 }

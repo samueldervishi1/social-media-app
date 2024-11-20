@@ -55,9 +55,11 @@ public class UserService {
 			throw new BadRequestException(INVALID_EMAIL_FORMAT);
 		}
 		if (userRepository.existsByEmail(user.getEmail())) {
+			logger.error("Email already exists: {}", user.getEmail());
 			throw new BadRequestException(EMAIL_ALREADY_EXISTS);
 		}
 		if (userRepository.existsByUsername(user.getUsername())) {
+			logger.error("Username already exists: {}", user.getUsername());
 			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
 		}
 		if (!isValidLength(user.getFullName())) {

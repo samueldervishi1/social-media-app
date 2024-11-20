@@ -1,4 +1,3 @@
-/* General styling for sticky header */
 .chat-history1 {
   display: flex;
   align-items: center;
@@ -102,7 +101,6 @@
   margin-right: 5px;
 }
 
-/* Hamburger menu styles */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -130,13 +128,12 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Mobile menu styles */
 .mobile-menu {
   display: none;
   flex-direction: column;
   background-color: #252728;
   position: absolute;
-  top: 60px; /* Adjusted to eliminate any unwanted margin-top */
+  top: 60px;
   right: 0;
   width: 100%;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -161,7 +158,6 @@
   color: white;
 }
 
-/* Search bar container */
 .search-bar-container1 {
   position: relative;
 }
@@ -223,6 +219,24 @@
 
 .drpp-t:last-child {
   border-bottom: none;
+}
+
+.divider-delete{
+  color: white !important;
+  border: 0.1px solid white !important;
+}
+
+.divider-logout{
+  color: white !important;
+  border: 0.1px solid white !important;
+}
+
+.name-delete{
+  color: red;
+}
+
+.delete-name{
+  color: red !important;
 }
 
 @media (max-width: 768px) {

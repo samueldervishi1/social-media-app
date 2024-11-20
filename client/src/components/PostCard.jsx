@@ -26,11 +26,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
-  const [savedCount, setSavedCount] = useState(0);
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
   const [showMenu, setShowMenu] = useState(false);
-  const [showMenuComment, setShowMenuComment] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
