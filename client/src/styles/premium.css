@@ -29,7 +29,7 @@
 }
 
 .panel {
-  background-color: black;
+  background-color: white;
   border-radius: 10px;
   padding: 15px 25px;
   position: relative;
@@ -46,7 +46,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 30px;
-  color: white;
+  color: black;
   text-decoration: underline;
 }
 
@@ -69,7 +69,7 @@
 }
 
 .pricing-plan {
-  border-bottom: 1px solid #e1f1ff;
+  border-bottom: 1px solid black;
   padding: 25px;
 }
 
@@ -80,7 +80,7 @@
 @media (min-width: 900px) {
   .pricing-plan {
     border-bottom: none;
-    border-right: 1px solid #e1f1ff;
+    border-right: 1px solid black;
     flex-basis: 100%;
     padding: 25px 50px;
   }
@@ -96,7 +96,7 @@
 }
 
 .pricing-header {
-  color: white;
+  color: black;
   font-weight: 600;
   letter-spacing: 1px;
 }
@@ -110,18 +110,18 @@
 }
 
 .pricing-features-item {
-  border-top: 1px solid #e1f1ff;
+  border-top: 1px solid black;
   font-size: 12px;
   line-height: 1.5;
   padding: 15px 0;
   position: relative;
   padding-left: 30px;
-  color: white;
+  color: black;
 }
 
 .pricing-features-item::before {
   content: "\2713";
-  color: white;
+  color: #00c6ff;
   font-size: 16px;
   position: absolute;
   left: 0;
@@ -130,11 +130,11 @@
 }
 
 .pricing-features-item:last-child {
-  border-bottom: 1px solid #e1f1ff;
+  border-bottom: 1px solid black;
 }
 
 .pricing-price {
-  color: white;
+  color: black;
   display: block;
   font-size: 32px;
   font-weight: 700;
@@ -189,7 +189,7 @@
     transform: translate(-50%, -50%);
   }
   .-plan-title {
-    color: white;;
+    color: white;
     z-index: 100;
     position: relative;
     font-size: 25px;

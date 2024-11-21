@@ -4,11 +4,10 @@ body {
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
-  background-color: white;
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
   overflow-x: hidden;
-  background-color: #1c1c1d;
+  background-color: #f2f4f7;
 }
 
 ::selection {

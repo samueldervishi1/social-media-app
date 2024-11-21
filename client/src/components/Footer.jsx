@@ -26,11 +26,17 @@ const footerStyles = {
   position: "fixed",
   bottom: 0,
   width: "100%",
-  backgroundColor: "#282c34",
   color: "dodgerblue",
   textAlign: "center",
   padding: "10px 0",
   zIndex: 10,
+  boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.2)",
+  background: "rgba(255, 255, 255, 0.02)",
+  borderRadius: "16px",
+  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+  backdropFilter: "blur(8.6px)",
+  WebkitBackdropFilter: "blur(8.6px)",
+  border: "1px solid rgba(255, 255, 255, 0.45)",
 };
 
 const linkStyles = {

@@ -18,7 +18,7 @@
   text-align: center;
   margin-top: 20px;
   font-size: 20px;
-  color: white;
+  color: black;
 }
 
 .sidebar1 {
@@ -36,7 +36,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #1c1c1d;
 }
 
 #chat_container {
@@ -105,10 +104,6 @@
   padding: 15px;
 }
 
-.ai {
-  background: #1c1c1d;
-}
-
 .chat {
   width: 100%;
   max-width: 1280px;
@@ -141,9 +136,12 @@
 
 .message {
   flex: 1;
-  color: white;
+  color: black;
   font-size: 20px;
   max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: pre-wrap;
 }
 
 .message strong {
@@ -208,7 +206,7 @@
 
 .info-text {
   margin-top: 10px;
-  color: white;
+  color: black;
   font-size: 12px;
   text-align: center;
   margin-bottom: 7px;
@@ -229,4 +227,3 @@
     height: auto;
   }
 }
-

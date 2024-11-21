@@ -390,7 +390,7 @@ const ChirpAI = () => {
             style={{
               border: "none",
               background: "transparent",
-              color: "white",
+              color: "black",
               textDecoration: "underline",
             }}
             onClick={navigatehome}

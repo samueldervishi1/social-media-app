@@ -1,9 +1,10 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
+  useNavigate,
 } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -41,61 +42,78 @@ const App = () => {
 
   return (
     <Router>
-      <div className="App">
-        {isAuthenticated() && <Navbar />}
-
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/login" element={<LoginScript />} />
-            <Route path="/register" element={<Register />} />
-            <Route
-              path="/home"
-              element={isAuthenticated() ? <Home /> : <LoginScript />}
-            />
-            <Route
-              path="/profile"
-              element={isAuthenticated() ? <Profile /> : <LoginScript />}
-            />
-            <Route
-              path="/users/:userId"
-              element={isAuthenticated() ? <UserDetails /> : <LoginScript />}
-            />
-            <Route
-              path="/messages"
-              element={isAuthenticated() ? <Inbox /> : <LoginScript />}
-            />
-            <Route
-              path="/chirp"
-              element={isAuthenticated() ? <ChirpAI /> : <LoginScript />}
-            />
-            <Route
-              path="/u/:userId"
-              element={isAuthenticated() ? <UserDetails /> : <LoginScript />}
-            />
-            <Route
-              path="/c/communities"
-              element={
-                isAuthenticated() ? <CommunitiesList /> : <LoginScript />
-              }
-            />
-            <Route
-              path="/c/community/:name"
-              element={
-                isAuthenticated() ? <CommunityDetails /> : <LoginScript />
-              }
-            />
-            <Route path="/terms" element={<TermsAndServices />} />
-            <Route path="/premium" element={<PremiumPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<Navigate to="/home" replace />} />
-          </Routes>
-        </Suspense>
-
-        {!isAuthenticated() && <Footer />}
-      </div>
+      <AuthWrapper isAuthenticated={isAuthenticated} />
     </Router>
+  );
+};
+
+const AuthWrapper = ({ isAuthenticated }) => {
+  const navigate = useNavigate();
+
+  const handleTokenExpiry = () => {
+    if (!isAuthenticated()) {
+      localStorage.removeItem("token");
+      navigate("/login", { replace: true });
+    }
+  };
+
+  useEffect(() => {
+    handleTokenExpiry();
+  }, []);
+
+  return (
+    <div className="App">
+      {isAuthenticated() && <Navbar />}
+
+      <Suspense
+        fallback={<div style={{ textAlign: "center" }}>Loading...</div>}
+      >
+        <Routes>
+          <Route path="/login" element={<LoginScript />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/home"
+            element={isAuthenticated() ? <Home /> : <LoginScript />}
+          />
+          <Route
+            path="/profile"
+            element={isAuthenticated() ? <Profile /> : <LoginScript />}
+          />
+          <Route
+            path="/users/:userId"
+            element={isAuthenticated() ? <UserDetails /> : <LoginScript />}
+          />
+          <Route
+            path="/messages"
+            element={isAuthenticated() ? <Inbox /> : <LoginScript />}
+          />
+          <Route
+            path="/chirp"
+            element={isAuthenticated() ? <ChirpAI /> : <LoginScript />}
+          />
+          <Route
+            path="/u/:userId"
+            element={isAuthenticated() ? <UserDetails /> : <LoginScript />}
+          />
+          <Route
+            path="/c/communities"
+            element={isAuthenticated() ? <CommunitiesList /> : <LoginScript />}
+          />
+          <Route
+            path="/c/community/:name"
+            element={isAuthenticated() ? <CommunityDetails /> : <LoginScript />}
+          />
+          <Route path="/terms" element={<TermsAndServices />} />
+          <Route path="/premium" element={<PremiumPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
+        </Routes>
+      </Suspense>
+
+      {!isAuthenticated() && <Footer />}
+    </div>
   );
 };
 

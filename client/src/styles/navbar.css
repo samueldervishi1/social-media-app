@@ -6,7 +6,7 @@
   top: 0;
   width: 100%;
   z-index: 1001;
-  background: #252728;
+  background: white;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10.1px);
   -webkit-backdrop-filter: blur(10.1px);
@@ -25,7 +25,7 @@
   top: 0;
   height: 60px;
   z-index: 1002;
-  background-color: #252728;
+  background-color: white;
 }
 
 .left-section,
@@ -54,7 +54,7 @@
 .history-links .dropdown-toggle {
   display: flex;
   align-items: center;
-  color: white;
+  color: black;
   text-decoration: none;
   transition: none;
   cursor: pointer;
@@ -62,15 +62,15 @@
 }
 
 .dropdown-menu {
-  background-color: #252728;
-  color: white;
+  background-color: white;
+  color: black;
   padding: 10px;
   width: 200px;
 }
 
 .dropdown-item {
-  color: white !important;
-  background-color: #252728 !important;
+  color: black !important;
+  background-color: white !important;
 }
 
 .logout-loader {
@@ -111,7 +111,7 @@
 .bar {
   height: 3px;
   width: 25px;
-  background-color: white;
+  background-color: black;
   margin: 3px 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
@@ -131,7 +131,7 @@
 .mobile-menu {
   display: none;
   flex-direction: column;
-  background-color: #252728;
+  background-color: white;
   position: absolute;
   top: 60px;
   right: 0;
@@ -142,7 +142,7 @@
 
 .mobile-menu-item {
   padding: 10px 15px;
-  color: white;
+  color: black;
   text-decoration: none;
   background-color: transparent;
   transition: background-color 0.3s;
@@ -155,7 +155,11 @@
 .mobile-menu-item:focus,
 .mobile-menu-item.active {
   background-color: transparent;
-  color: white;
+  color: black;
+}
+
+.mobile-menu.open {
+  display: flex;
 }
 
 .search-bar-container1 {
@@ -166,7 +170,7 @@
   margin-bottom: 20px;
   position: relative;
   top: 20px;
-  right: 5px;
+  left: 1%;
   width: 100%;
 }
 
@@ -174,8 +178,8 @@
   padding: 5px !important;
   border: 1px solid grey !important;
   border-radius: 30px !important;
-  background-color: black !important;
-  color: white !important;
+  background-color: white !important;
+  color: black !important;
   outline: none !important;
 }
 
@@ -186,12 +190,13 @@
 
 .drpp {
   position: absolute;
-  top: 70%;
-  right: 5px;
-  background-color: black;
+  width: 95%;
+  top: 95%;
+  left:1%;
+  background-color: white;
   border-radius: 15px;
   border: 1px solid grey;
-  color: white;
+  color: black;
   max-height: 100px;
   overflow-y: auto;
   z-index: 10;
@@ -200,7 +205,7 @@
 
 .drpp-hld {
   text-align: center;
-  color: white;
+  color: black;
   padding: 10px 0;
 }
 
@@ -222,13 +227,13 @@
 }
 
 .divider-delete{
-  color: white !important;
-  border: 0.1px solid white !important;
+  color: black !important;
+  border: 0.1px solid black !important;
 }
 
 .divider-logout{
-  color: white !important;
-  border: 0.1px solid white !important;
+  color: black !important;
+  border: 0.1px solid black !important;
 }
 
 .name-delete{
@@ -250,22 +255,23 @@
 
   .mobile-menu {
     display: flex;
+    border-radius: 20px;
   }
 
   .search-container input {
-    width: 250px !important;
+    width: 95% !important;
   }
 
   .mobile-menu-item {
     padding: 10px 15px;
-    color: white;
+    color: black;
     text-decoration: none;
     background-color: transparent;
     transition: background-color 0.3s;
   }
 
   .mobile-menu-item:hover {
-    background-color: #333;
+    background-color: none !important;
   }
 }
 

@@ -46,11 +46,20 @@ const Navbar = () => {
         }
       );
       const data = response.data;
+
+      // Check if there are any results or if the deleted field is true for any user
       if (data.length === 0) {
         setShowNoResults(true);
       } else {
-        setResults(data);
-        setShowNoResults(false);
+        // Filter out users that have deleted = true in case backend doesn't handle this correctly
+        const filteredResults = data.filter((user) => !user.deleted);
+
+        if (filteredResults.length === 0) {
+          setShowNoResults(true);
+        } else {
+          setResults(filteredResults);
+          setShowNoResults(false);
+        }
       }
     } catch (error) {
       console.error("Error searching users: ", error.message);
@@ -105,6 +114,7 @@ const Navbar = () => {
   const username = getUsernameFromToken();
 
   const handleUserClick = (clickedUserId) => {
+    setIsMenuOpen(false);
     if (clickedUserId === userId) {
       navigate("/profile");
     } else {
@@ -140,45 +150,97 @@ const Navbar = () => {
     <>
       <div className="chat-history1">
         <div className="history-div-2">
-          <div className="search-bar-container1" ref={searchBarRef}>
-            <div className="search-container">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setShowDropdown(true)}
-              />
-            </div>
-
-            {showDropdown && (
-              <div className="drpp">
-                {showNoResults ? (
-                  <p className="drpp-hld">Nothing found</p>
-                ) : results.length === 0 ? (
-                  <p className="drpp-hld">Search for friends and more...</p>
-                ) : (
-                  <ul className="drpp-rsl">
-                    {results.map((user) => (
-                      <li
-                        key={user.id}
-                        className="drpp-t"
-                        onClick={() => handleUserClick(user.id)}
-                      >
-                        {user.username}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </div>
-
           <div className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <div className={`bar ${isMenuOpen ? "open" : ""}`} />
             <div className={`bar ${isMenuOpen ? "open" : ""}`} />
             <div className={`bar ${isMenuOpen ? "open" : ""}`} />
           </div>
+          {isMenuOpen && (
+            <div className="mobile-menu">
+              <div className="search-bar-container1" ref={searchBarRef}>
+                <div className="search-container">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setShowDropdown(true)}
+                  />
+                </div>
+
+                {showDropdown && (
+                  <div className="drpp">
+                    {showNoResults ? (
+                      <p className="drpp-hld">Nothing found</p>
+                    ) : results.length === 0 ? (
+                      <p className="drpp-hld">Search for friends and more...</p>
+                    ) : (
+                      <ul className="drpp-rsl">
+                        {results.map((user) => (
+                          <li
+                            key={user.id}
+                            className="drpp-t"
+                            onClick={() => handleUserClick(user.id)}
+                          >
+                            {user.username}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+              <a href="/home" className="mobile-menu-item">
+                <GoHome className="icon-p" /> Home
+              </a>
+              <a href="/messages" className="mobile-menu-item">
+                <AiOutlineMessage className="icon-p" /> Messages
+              </a>
+              <a href="/chirp" className="mobile-menu-item">
+                <GiArtificialHive className="icon-p" /> ChirpAI
+              </a>
+              <a href="/c/communities" className="mobile-menu-item">
+                <CgCommunity className="icon-p" /> Communities
+              </a>
+              <Dropdown>
+                <Dropdown.Toggle variant="link" className="mobile-menu-item">
+                  <IoPersonCircleOutline className="icon-p" /> Profile
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="/profile">
+                    See your profile {username}
+                  </Dropdown.Item>
+                  <Dropdown.Item href="#">Add another account</Dropdown.Item>
+                  <Dropdown.Divider className="divider-dp" />
+                  <Dropdown.Item onClick={handleLogout}>
+                    <CiLogout className="icon-p" /> Logout
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+              <Dropdown>
+                <Dropdown.Toggle variant="link" className="mobile-menu-item">
+                  <IoSettingsOutline className="icon-p" /> Settings
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="/premium">Premium</Dropdown.Item>
+                  <Dropdown.Item href="/about">About</Dropdown.Item>
+                  <Dropdown.Item href="/terms">
+                    Terms &amp; Services
+                  </Dropdown.Item>
+                  <Dropdown.Item href="/contact">Contact</Dropdown.Item>
+                  <Dropdown.Item href="/help">Help</Dropdown.Item>
+                  <Dropdown.Divider className="divider-dp" />
+                  <Dropdown.Item
+                    onClick={() => setShowDeleteModal(true)}
+                    className="delete-name"
+                  >
+                    {" "}
+                    <MdDeleteForever className="name-delete" /> Delete Account
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+          )}
 
           <div className="history-links">
             <a href="/home" className="menu-item">
@@ -202,7 +264,7 @@ const Navbar = () => {
                   See your profile {username}
                 </Dropdown.Item>
                 <Dropdown.Item href="#">Add another account</Dropdown.Item>
-                <Dropdown.Divider className="divider-logout"/>
+                <Dropdown.Divider className="divider-dp" />
                 <Dropdown.Item onClick={handleLogout}>
                   <CiLogout className="icon-p" /> Logout
                 </Dropdown.Item>
@@ -220,10 +282,13 @@ const Navbar = () => {
                 </Dropdown.Item>
                 <Dropdown.Item href="/contact">Contact</Dropdown.Item>
                 <Dropdown.Item href="/help">Help</Dropdown.Item>
-                <Dropdown.Divider className="divider-delete"/>
-                <Dropdown.Item onClick={() => setShowDeleteModal(true)} className="delete-name">
+                <Dropdown.Divider className="divider-delete" />
+                <Dropdown.Item
+                  onClick={() => setShowDeleteModal(true)}
+                  className="delete-name"
+                >
                   {" "}
-                  <MdDeleteForever className="name-delete"/> Delete Account
+                  <MdDeleteForever className="name-delete" /> Delete Account
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

@@ -25,9 +25,9 @@ body.register-page::before {
 }
 
 .container-sign {
-  background: #1c1c1d;
-  color: white;
-  box-shadow: 0 6px 12px rgb(255, 255, 255);
+  background: white;
+  color: black;
+  box-shadow: 0 6px 12px rgb(0, 0, 0);
   border-radius: 15px;
   width: 600px;
   padding: 20px;

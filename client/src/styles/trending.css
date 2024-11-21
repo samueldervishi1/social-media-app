@@ -3,7 +3,7 @@
   border-radius: 20px;
   padding: 10px;
   width: 450px;
-  color: white;
+  color: black;
 }
 
 .trend-item {
@@ -25,7 +25,7 @@
 }
 
 .post-count {
-  color: lightgrey;
+  color: black;
   margin: 0;
   font-size: 10px;
 }

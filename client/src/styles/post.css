@@ -2,7 +2,7 @@
   margin: 10px auto;
   margin-top: 15px;
   padding: 10px;
-  background-color: #252728;
+  background-color: #ffffff;
   border-radius: 20px;
   box-shadow: none;
   max-width: 650px;
@@ -42,10 +42,10 @@
 .post-form textarea {
   margin-bottom: 10px;
   padding: 10px;
-  border: 0.1px solid lightgrey;
+  border: 0.1px solid lightgray;
   border-radius: 20px;
-  background-color: #1c1c1d;
-  color: white;
+  background-color: #f0f2f5;
+  color: black;
   font-size: 16px;
   outline: none;
   width: 100%;
@@ -74,7 +74,7 @@
 }
 
 .icon {
-  color: white;
+  color: black;
   cursor: pointer;
   font-size: 20px;
 }

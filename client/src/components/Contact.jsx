@@ -10,7 +10,7 @@ const Contact = () => {
       </div>
 
       <div className="contact-info">
-        <p style={{ color: "white" }}>
+        <p style={{ color: "black" }}>
           You can contact us via the following platforms:
         </p>
 
@@ -46,7 +46,7 @@ const Contact = () => {
         </div>
 
         <div className="email">
-          <p style={{ color: "white" }}>
+          <p style={{ color: "black" }}>
             Email us at: <a href="mailto:shefi1@proton.me">shefi1@proton.me</a>
           </p>
         </div>
