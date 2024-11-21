@@ -57,6 +57,7 @@ const ChirpAI = () => {
     resetChat();
   }, []);
 
+  //handle the limit for the model
   const handleRateLimit = () => {
     setIsRateLimited(true);
     setCountdown(120);
@@ -73,6 +74,7 @@ const ChirpAI = () => {
     }, 1000);
   };
 
+  //format the code block provided by the model
   const formatCodeBlocks = (text) => {
     const codeBlockRegex = /```(.*?)(\n([\s\S]*?))?```/gs;
 
@@ -109,6 +111,7 @@ const ChirpAI = () => {
     return localStorage.getItem("sessionId");
   };
 
+  //send the question to the model 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -228,6 +231,7 @@ const ChirpAI = () => {
     setIsLoading(false);
   };
 
+  //simulate a typing effect
   const simulateTypingEffect = (text) => {
     const chunks = text.split(/(\s+)/);
     let currentContent = "";

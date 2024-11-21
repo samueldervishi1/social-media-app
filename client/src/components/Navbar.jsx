@@ -2,19 +2,27 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Dropdown from "react-bootstrap/Dropdown";
+import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import { GoHome } from "react-icons/go";
 import { IoPersonCircleOutline, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
-import { CiLogout } from "react-icons/ci";
+import { CiLogout, CiCircleInfo } from "react-icons/ci";
 import { GiArtificialHive } from "react-icons/gi";
 import { CgCommunity } from "react-icons/cg";
-import { MdDeleteForever } from "react-icons/md";
+import {
+  MdDeleteForever,
+  MdOutlinePrivacyTip,
+  MdOutlineEmail,
+  MdOutlineHelpOutline,
+} from "react-icons/md";
+import { BiPlusCircle } from "react-icons/bi";
+import { TbPremiumRights } from "react-icons/tb";
 import loaderImage from "../assets/ZKZg.gif";
+import logo from "../assets/logo.png";
 import "../styles/navbar.css";
 
 import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
-import { Modal, Button } from "react-bootstrap";
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -29,6 +37,10 @@ const Navbar = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
+  const userId = getUserIdFromToken();
+  const username = getUsernameFromToken();
+
+  // Search for users by username
   const searchUsers = async (username) => {
     if (!username) {
       setResults([]);
@@ -47,11 +59,10 @@ const Navbar = () => {
       );
       const data = response.data;
 
-      // Check if there are any results or if the deleted field is true for any user
+      // Handle no results or filter out deleted users
       if (data.length === 0) {
         setShowNoResults(true);
       } else {
-        // Filter out users that have deleted = true in case backend doesn't handle this correctly
         const filteredResults = data.filter((user) => !user.deleted);
 
         if (filteredResults.length === 0) {
@@ -68,60 +79,7 @@ const Navbar = () => {
     }
   };
 
-  useEffect(() => {
-    if (query.trim() === "") {
-      setShowDropdown(false);
-      return;
-    }
-
-    if (typingTimeout) clearTimeout(typingTimeout);
-
-    const timeout = setTimeout(() => {
-      searchUsers(query);
-      setShowDropdown(true);
-    }, 500);
-
-    setTypingTimeout(timeout);
-  }, [query]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        searchBarRef.current &&
-        !searchBarRef.current.contains(event.target)
-      ) {
-        setShowDropdown(false);
-        setQuery("");
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleLogout = () => {
-    setIsLoggingOut(true);
-    setTimeout(() => {
-      localStorage.removeItem("token");
-      setIsLoggingOut(false);
-      window.location.reload();
-    }, 2000);
-  };
-
-  const userId = getUserIdFromToken();
-  const username = getUsernameFromToken();
-
-  const handleUserClick = (clickedUserId) => {
-    setIsMenuOpen(false);
-    if (clickedUserId === userId) {
-      navigate("/profile");
-    } else {
-      navigate(`/u/${clickedUserId}`);
-    }
-  };
-
+  // Delete the current user's account and navigate to login
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {
@@ -146,10 +104,70 @@ const Navbar = () => {
     }
   };
 
+  // Trigger user search with debounce to optimize API calls
+  useEffect(() => {
+    if (query.trim() === "") {
+      setShowDropdown(false);
+      return;
+    }
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    const timeout = setTimeout(() => {
+      searchUsers(query);
+      setShowDropdown(true);
+    }, 500);
+
+    setTypingTimeout(timeout);
+  }, [query]);
+
+  // Handle clicks outside the search bar to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(event.target)
+      ) {
+        setShowDropdown(false);
+        setQuery("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle user logout with a delay for UI feedback
+  const handleLogout = () => {
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      localStorage.removeItem("token");
+      setIsLoggingOut(false);
+      window.location.reload();
+    }, 2000);
+  };
+
+  // Navigate to user profile or another user's profile
+  const handleUserClick = (clickedUserId) => {
+    setIsMenuOpen(false);
+    if (clickedUserId === userId) {
+      navigate("/profile");
+    } else {
+      navigate(`/u/${clickedUserId}`);
+    }
+  };
+
   return (
     <>
       <div className="chat-history1">
         <div className="history-div-2">
+          <div>
+            <a href="/home">
+              <img src={logo} alt="Logo" style={{ width: 70 }} />
+            </a>
+          </div>
           <div className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <div className={`bar ${isMenuOpen ? "open" : ""}`} />
             <div className={`bar ${isMenuOpen ? "open" : ""}`} />
@@ -208,9 +226,17 @@ const Navbar = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item href="/profile">
+                    <IoPersonCircleOutline className="icon-p" />
                     See your profile {username}
                   </Dropdown.Item>
-                  <Dropdown.Item href="#">Add another account</Dropdown.Item>
+                  <Dropdown.Item href="#">
+                    <BiPlusCircle className="icon-p" />
+                    Add another account
+                  </Dropdown.Item>
+                  <Dropdown.Item href="/c/user/communities">
+                    <CgCommunity className="icon-p" />
+                    Your communities
+                  </Dropdown.Item>
                   <Dropdown.Divider className="divider-dp" />
                   <Dropdown.Item onClick={handleLogout}>
                     <CiLogout className="icon-p" /> Logout
@@ -222,13 +248,25 @@ const Navbar = () => {
                   <IoSettingsOutline className="icon-p" /> Settings
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item href="/premium">Premium</Dropdown.Item>
-                  <Dropdown.Item href="/about">About</Dropdown.Item>
+                  <Dropdown.Item href="/premium">
+                    <TbPremiumRights className="icon-p" /> Premium
+                  </Dropdown.Item>
+                  <Dropdown.Item href="/about">
+                    <CiCircleInfo className="icon-p" /> About
+                  </Dropdown.Item>
                   <Dropdown.Item href="/terms">
+                    {" "}
+                    <MdOutlinePrivacyTip className="icon-p" />
                     Terms &amp; Services
                   </Dropdown.Item>
-                  <Dropdown.Item href="/contact">Contact</Dropdown.Item>
-                  <Dropdown.Item href="/help">Help</Dropdown.Item>
+                  <Dropdown.Item href="/contact">
+                    <MdOutlineEmail className="icon-p" />
+                    Contact
+                  </Dropdown.Item>
+                  <Dropdown.Item href="/help">
+                    <MdOutlineHelpOutline className="icon-p" />
+                    Help
+                  </Dropdown.Item>
                   <Dropdown.Divider className="divider-dp" />
                   <Dropdown.Item
                     onClick={() => setShowDeleteModal(true)}
@@ -275,13 +313,24 @@ const Navbar = () => {
                 <IoSettingsOutline className="icon-p" /> Settings
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item href="/premium">Premium</Dropdown.Item>
-                <Dropdown.Item href="/about">About</Dropdown.Item>
+                <Dropdown.Item href="/premium">
+                  <TbPremiumRights className="icon-p" /> Premium
+                </Dropdown.Item>
+                <Dropdown.Item href="/about">
+                  <CiCircleInfo className="icon-p" /> About
+                </Dropdown.Item>
                 <Dropdown.Item href="/terms">
+                  {" "}
+                  <MdOutlinePrivacyTip className="icon-p" />
                   Terms &amp; Services
                 </Dropdown.Item>
-                <Dropdown.Item href="/contact">Contact</Dropdown.Item>
-                <Dropdown.Item href="/help">Help</Dropdown.Item>
+                <Dropdown.Item href="/contact">
+                  <MdOutlineEmail className="icon-p" /> Contact
+                </Dropdown.Item>
+                <Dropdown.Item href="/help">
+                  <MdOutlineHelpOutline className="icon-p" />
+                  Help
+                </Dropdown.Item>
                 <Dropdown.Divider className="divider-delete" />
                 <Dropdown.Item
                   onClick={() => setShowDeleteModal(true)}

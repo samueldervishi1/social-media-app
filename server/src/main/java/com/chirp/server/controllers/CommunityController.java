@@ -63,6 +63,18 @@ public class CommunityController {
 		}
 	}
 
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<List<Community>> getCommunitiesByUserId(@PathVariable String userId) {
+		try {
+			List<Community> communities = communityService.getCommunitiesByUserId(userId);
+			if (communities.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<>(communities , HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	@PostMapping("/create/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {

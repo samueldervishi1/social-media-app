@@ -447,6 +447,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     return format(date, "hh:mm a");
   };
 
+  //calculate time of the post
   const timeSincePost = (postDate, postTime) => {
     const postDateTime = new Date(`${postDate}T${postTime}`);
     const seconds = Math.floor((new Date() - postDateTime) / 1000);
@@ -463,6 +464,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     if (interval >= 1) return interval + "min ago";
     return seconds < 10 ? "just now" : seconds + "s ago";
   };
+  
   const formattedPostTime = timeSincePost(postDate, postTime);
 
   const toggleComments = (e) => {

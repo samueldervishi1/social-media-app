@@ -28,6 +28,7 @@ const CommunityDetails = () => {
     return "Loading...";
   };
 
+  //fetch community details
   useEffect(() => {
     const fetchCommunityDetails = async () => {
       try {
@@ -53,6 +54,7 @@ const CommunityDetails = () => {
     fetchCommunityDetails();
   }, [name]);
 
+  //fetch members count for communities
   useEffect(() => {
     const fetchMembersCount = async () => {
       try {
@@ -78,6 +80,7 @@ const CommunityDetails = () => {
     }
   }, [name]);
 
+  //join community
   const handleJoinCommunity = async (communityId) => {
     try {
       const token = localStorage.getItem("token");

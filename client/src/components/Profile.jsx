@@ -6,6 +6,8 @@ import ProfileHeader from "./ProfileHeader";
 import loaderImage from "../assets/ZKZg.gif";
 import "../styles/profile.css";
 
+import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
+
 export const ProfileContext = createContext(null);
 
 const Profile = () => {
@@ -16,16 +18,20 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Runs on component mount to fetch data and manage loading state
   useEffect(() => {
-    fetchData();
+    fetchData(); // Fetches profile, followers, and posts data
     const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
+  // Fetches user profile, followers, following, and posts data
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
       const username = getUsernameFromToken();
+
+      // Fetches user profile information
       if (username) {
         const profileResponse = await axios.get(
           `http://localhost:5000/api/v2/users/info/${username}`,
@@ -45,6 +51,8 @@ const Profile = () => {
       }
 
       const userId = getUserIdFromToken();
+
+      // Fetches followers and following counts
       if (userId) {
         const followersFollowingResponse = await axios.get(
           `http://localhost:5000/api/v2/users/list/${userId}`,
@@ -63,6 +71,7 @@ const Profile = () => {
           console.error("Failed to fetch followers and following counts");
         }
 
+        // Fetches the count of user's posts
         const userPostsResponse = await axios.get(
           `http://localhost:5000/api/v2/posts/list/${userId}`,
           {
@@ -83,36 +92,8 @@ const Profile = () => {
       console.error("Error fetching data:", error.message);
       setError(
         "Something went wrong. Please check your internet connection or try again later."
-      );
+      ); // Sets an error message for display
     }
-  };
-
-  const getUsernameFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.sub;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
-  };
-
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.userId;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
   };
 
   return (

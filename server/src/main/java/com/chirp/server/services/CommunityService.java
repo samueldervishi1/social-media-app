@@ -76,6 +76,15 @@ public class CommunityService {
 		return community.get();
 	}
 
+	public List<Community> getCommunitiesByUserId(String userId) {
+		try {
+			return communityRepository.findByUserIdsContaining(userId);
+		} catch (Exception e) {
+			logger.error("Error fetching communities for user {}: {}" , userId , e.getMessage() , e);
+			throw new InternalServerErrorException("An unexpected error occurred while fetching communities.");
+		}
+	}
+
 	public List<Community> getAllCommunities() {
 		return communityRepository.findAll();
 	}

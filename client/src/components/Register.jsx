@@ -34,6 +34,7 @@ const Register = () => {
       [name]: "",
     }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -82,8 +83,6 @@ const Register = () => {
       }
     }
   };
-  
-  
 
   useEffect(() => {
     document.body.classList.add("register-page");

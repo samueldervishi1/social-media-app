@@ -13,10 +13,7 @@ const PostForm = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handlePostContentChange = (event) => {
-    setPostContent(event.target.value);
-  };
-
+  // Submits a new post to the server
   const handlePostSubmit = async (event) => {
     event.preventDefault();
     if (isSubmitting) return;
@@ -61,6 +58,12 @@ const PostForm = () => {
     }
   };
 
+  // Handles changes to the post content input field
+  const handlePostContentChange = (event) => {
+    setPostContent(event.target.value);
+  };
+
+  // Handles image selection for the post
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -72,6 +75,7 @@ const PostForm = () => {
     }
   };
 
+  // Adds a selected emoji to the post content
   const handleEmojiClick = (emojiData) => {
     if (emojiData && emojiData.emoji) {
       setPostContent((prevContent) => prevContent + emojiData.emoji);
@@ -81,6 +85,7 @@ const PostForm = () => {
     }
   };
 
+  // Retrieves the user's location and adds it to the post content
   const handleLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation is not supported by your browser.");
@@ -132,11 +137,12 @@ const PostForm = () => {
     );
   };
 
-  const placeholderText = `What's on your mind, ${getUsernameFromToken()} ?`;
-
+  // Clears the currently selected image
   const clearSelectedImage = () => {
     setSelectedImage(null);
   };
+
+  const placeholderText = `What's on your mind, ${getUsernameFromToken()} ?`;
 
   return (
     <div className="post-form">

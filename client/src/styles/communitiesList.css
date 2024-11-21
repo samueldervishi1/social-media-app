@@ -115,6 +115,7 @@ span.members-count {
   background-color: transparent;
   cursor: not-allowed;
   border: 1px solid #444;
+  color: black;
 }
 
 .menu-button {

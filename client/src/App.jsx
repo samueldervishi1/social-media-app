@@ -23,6 +23,7 @@ const Contact = lazy(() => import("./components/Contact"));
 const ChirpAI = lazy(() => import("./components/ChirpAI"));
 const CommunitiesList = lazy(() => import("./components/CommunitiesList"));
 const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
+const UserCommunities = lazy(() => import("./components/UserCommunities"));
 
 const App = () => {
   const isAuthenticated = () => {
@@ -102,6 +103,10 @@ const AuthWrapper = ({ isAuthenticated }) => {
           <Route
             path="/c/community/:name"
             element={isAuthenticated() ? <CommunityDetails /> : <LoginScript />}
+          />
+          <Route
+            path="/c/user/communities"
+            element={isAuthenticated() ? <UserCommunities /> : <LoginScript />}
           />
           <Route path="/terms" element={<TermsAndServices />} />
           <Route path="/premium" element={<PremiumPage />} />

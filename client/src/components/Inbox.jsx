@@ -17,6 +17,7 @@ const Inbox = ({ user }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
+  //fetch user followers list
   useEffect(() => {
     const fetchFollowers = async () => {
       const userId = getUserIdFromToken();

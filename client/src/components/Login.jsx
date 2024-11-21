@@ -20,6 +20,7 @@ const LoginScript = () => {
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState(false);
 
+  //handle the login process
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -74,6 +75,7 @@ const LoginScript = () => {
     }
   };
 
+  //hanlde the update password flow if the user has forgotten his password
   const handlePasswordUpdate = async (event) => {
     event.preventDefault();
 

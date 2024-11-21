@@ -15,6 +15,7 @@ const PostList = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Fetches posts from the server and processes them
   const fetchPosts = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -26,10 +27,13 @@ const PostList = () => {
           },
         }
       );
+
+      // Filters out deleted posts
       const filteredPosts = response.data.filter(
         (post) => post.deleted !== true
       );
 
+      // Separates posts with valid date and time from those without
       const postsWithValidDateAndTime = filteredPosts.filter(
         (post) =>
           typeof post.postDate === "string" && typeof post.postTime === "string"
@@ -43,28 +47,31 @@ const PostList = () => {
           typeof post.postTime !== "string"
       );
 
+      // Sorts posts with valid dates and times in descending order
       postsWithValidDateAndTime.sort((a, b) => {
         const dateA = new Date(`${a.postDate}T${a.postTime}`);
         const dateB = new Date(`${b.postDate}T${b.postTime}`);
         return dateB - dateA;
       });
 
+      // Combines sorted posts with those lacking valid date and time
       const sortedPosts = [
         ...postsWithValidDateAndTime,
         ...postsWithoutValidDateAndTime,
       ];
 
-      setPosts(sortedPosts);
+      setPosts(sortedPosts); // Updates the state with sorted posts
     } catch (error) {
       console.error("Error fetching posts:", error.message);
       setError(
         "Something went wrong. Please check your internet connection or try again later."
       );
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Ends the loading state
     }
   };
 
+  // Renders an error message if there's an error
   if (error) {
     return (
       <div className="error-message">
@@ -73,6 +80,7 @@ const PostList = () => {
     );
   }
 
+  // Renders a loading spinner if data is still being fetched or during the delay
   if (isLoading || !delayOver) {
     return (
       <div className="text-loader">
@@ -86,6 +94,7 @@ const PostList = () => {
     );
   }
 
+  // Renders a message if no posts are available
   if (posts.length === 0) {
     return (
       <div

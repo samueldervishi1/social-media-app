@@ -23,6 +23,7 @@ const CommunitiesList = () => {
     return "Loading...";
   };
 
+  //fetch all communities from the database
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
@@ -48,6 +49,7 @@ const CommunitiesList = () => {
     fetchCommunities();
   }, []);
 
+  //fetch memebers count for each community
   useEffect(() => {
     const fetchMembersCount = async () => {
       try {
@@ -95,16 +97,17 @@ const CommunitiesList = () => {
     }
   }, [communities]);
 
+  //handle join community
   const handleJoinCommunity = async (communityId) => {
     try {
       const token = localStorage.getItem("token");
       const userId = getUserIdFromToken();
-  
+
       if (!userId) {
         alert("User is not authenticated");
         return;
       }
-  
+
       const response = await axios.post(
         `http://localhost:5000/api/v2/communities/join/${communityId}/${userId}`,
         {},
@@ -114,16 +117,16 @@ const CommunitiesList = () => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         setJoinedCommunities((prev) => [...prev, communityId]);
         alert("You joined the community successfully!");
+        window.location.reload();
       }
     } catch (err) {
       setError(err.message);
     }
   };
-  
 
   const toggleDropdown = (communityId) => {
     setDropdownVisible(dropdownVisible === communityId ? null : communityId);
