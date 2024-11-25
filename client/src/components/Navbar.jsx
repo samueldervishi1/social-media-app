@@ -17,7 +17,7 @@ import {
   MdOutlineHelpOutline,
 } from "react-icons/md";
 import { BiPlusCircle } from "react-icons/bi";
-import { TbPremiumRights } from "react-icons/tb";
+import { TbPremiumRights, TbAuth2Fa } from "react-icons/tb";
 import loaderImage from "../assets/ZKZg.gif";
 import logo from "../assets/logo.png";
 import "../styles/navbar.css";
@@ -121,7 +121,6 @@ const Navbar = () => {
     setTypingTimeout(timeout);
   }, [query]);
 
-  // Handle clicks outside the search bar to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -139,7 +138,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Handle user logout with a delay for UI feedback
   const handleLogout = () => {
     setIsLoggingOut(true);
     setTimeout(() => {
@@ -149,7 +147,6 @@ const Navbar = () => {
     }, 2000);
   };
 
-  // Navigate to user profile or another user's profile
   const handleUserClick = (clickedUserId) => {
     setIsMenuOpen(false);
     if (clickedUserId === userId) {
@@ -248,6 +245,9 @@ const Navbar = () => {
                   <IoSettingsOutline className="icon-p" /> Settings
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
+                  <Dropdown.Item href="/security/2fa/enable">
+                    <TbAuth2Fa className="icon-p" /> Enable 2FA
+                  </Dropdown.Item>
                   <Dropdown.Item href="/premium">
                     <TbPremiumRights className="icon-p" /> Premium
                   </Dropdown.Item>
@@ -299,9 +299,13 @@ const Navbar = () => {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item href="/profile">
+                  <IoPersonCircleOutline className="icon-p" />
                   See your profile {username}
                 </Dropdown.Item>
-                <Dropdown.Item href="#">Add another account</Dropdown.Item>
+                <Dropdown.Item href="#">
+                  <BiPlusCircle className="icon-p" />
+                  Add another account
+                </Dropdown.Item>
                 <Dropdown.Divider className="divider-dp" />
                 <Dropdown.Item onClick={handleLogout}>
                   <CiLogout className="icon-p" /> Logout
@@ -312,7 +316,11 @@ const Navbar = () => {
               <Dropdown.Toggle variant="link" className="menu-item">
                 <IoSettingsOutline className="icon-p" /> Settings
               </Dropdown.Toggle>
+
               <Dropdown.Menu>
+                <Dropdown.Item href="/security/2fa/enable">
+                  <TbAuth2Fa className="icon-p" /> Enable 2FA
+                </Dropdown.Item>
                 <Dropdown.Item href="/premium">
                   <TbPremiumRights className="icon-p" /> Premium
                 </Dropdown.Item>

@@ -55,11 +55,11 @@ public class UserService {
 			throw new BadRequestException(INVALID_EMAIL_FORMAT);
 		}
 		if (userRepository.existsByEmail(user.getEmail())) {
-			logger.error("Email already exists: {}", user.getEmail());
+			logger.error("Email already exists: {}" , user.getEmail());
 			throw new BadRequestException(EMAIL_ALREADY_EXISTS);
 		}
 		if (userRepository.existsByUsername(user.getUsername())) {
-			logger.error("Username already exists: {}", user.getUsername());
+			logger.error("Username already exists: {}" , user.getUsername());
 			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
 		}
 		if (!isValidLength(user.getFullName())) {
@@ -82,5 +82,9 @@ public class UserService {
 	private boolean isValidPassword(String password) {
 		String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
 		return Pattern.matches(passwordRegex , password);
+	}
+
+	public Optional<User> findById(String userId) {
+		return userRepository.findById(userId);
 	}
 }

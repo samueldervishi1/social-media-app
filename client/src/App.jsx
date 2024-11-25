@@ -24,6 +24,8 @@ const ChirpAI = lazy(() => import("./components/ChirpAI"));
 const CommunitiesList = lazy(() => import("./components/CommunitiesList"));
 const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
 const UserCommunities = lazy(() => import("./components/UserCommunities"));
+const Enable2FA = lazy(() => import("./components/Enable2FA"));
+const Verify2FA = lazy(() => import("./components/Verify2FA"));
 
 const App = () => {
   const isAuthenticated = () => {
@@ -107,6 +109,14 @@ const AuthWrapper = ({ isAuthenticated }) => {
           <Route
             path="/c/user/communities"
             element={isAuthenticated() ? <UserCommunities /> : <LoginScript />}
+          />
+          <Route
+            path="/security/2fa/enable"
+            element={isAuthenticated() ? <Enable2FA /> : <LoginScript />}
+          />
+          <Route
+            path="/security/2fa/verify"
+            element={isAuthenticated() ? <Verify2FA /> : <LoginScript />}
           />
           <Route path="/terms" element={<TermsAndServices />} />
           <Route path="/premium" element={<PremiumPage />} />

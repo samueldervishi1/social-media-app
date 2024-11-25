@@ -21,6 +21,7 @@ public class User {
 	private String title;
 	private String role = "simple_account";
 	private boolean deleted;
+	private String twoFa;
 
 	@Override
 	public boolean equals(Object o) {
@@ -117,5 +118,12 @@ public class User {
 
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getTwoFa() {
+		return twoFa;
+	}
+	public void setTwoFa(String twoFa) {
+		this.twoFa = twoFa;
 	}
 }

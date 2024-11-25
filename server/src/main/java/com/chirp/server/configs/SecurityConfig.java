@@ -40,6 +40,7 @@ public class SecurityConfig {
 				.authorizeRequests(auth -> auth
 						.requestMatchers("/api/v2/ping").permitAll()
 						.requestMatchers("/api/v2/auth/login" , "/api/v2/users/auth/register").permitAll()
+						.requestMatchers("/api/v2/auth/2fa-status/**").permitAll()
 						.requestMatchers("/api/v2/users/update-password").permitAll()
 						.requestMatchers("/api/v2/**").authenticated()
 						.anyRequest().permitAll()

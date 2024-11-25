@@ -6,13 +6,15 @@
   top: 0;
   width: 100%;
   z-index: 1001;
-  background: white;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10.1px);
-  -webkit-backdrop-filter: blur(10.1px);
   padding: 10px 20px;
   margin: 0;
   max-width: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.6px);
+  -webkit-backdrop-filter: blur(7.6px);
+  border: 1px solid rgba(255, 255, 255, 0.46);
 
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -28,7 +30,6 @@
   top: 0;
   height: 60px;
   z-index: 1002;
-  background-color: white;
 }
 
 .left-section,
@@ -195,7 +196,7 @@
   position: absolute;
   width: 95%;
   top: 95%;
-  left:1%;
+  left: 1%;
   background-color: white;
   border-radius: 15px;
   border: 1px solid grey;
@@ -229,21 +230,21 @@
   border-bottom: none;
 }
 
-.divider-delete{
+.divider-delete {
   color: black !important;
   border: 0.1px solid black !important;
 }
 
-.divider-logout{
+.divider-logout {
   color: black !important;
   border: 0.1px solid black !important;
 }
 
-.name-delete{
+.name-delete {
   color: red;
 }
 
-.delete-name{
+.delete-name {
   color: red !important;
 }
 

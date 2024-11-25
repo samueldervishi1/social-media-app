@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import checkMarkgif from "../assets/check.gif";
 import customLoadingGif from "../assets/ZKZg.gif";
 import "../styles/login.css";
+
+import { getUserIdFromToken } from "../auth/authUtils";
 
 const LoginScript = () => {
   const [error, setError] = useState(null);
@@ -19,6 +21,7 @@ const LoginScript = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState(false);
+  const navigate = useNavigate();
 
   //handle the login process
   const handleSubmit = async (event) => {
@@ -46,24 +49,32 @@ const LoginScript = () => {
         if (data && data.startsWith("eyJhbGciOi")) {
           const token = data;
           localStorage.setItem("token", token);
-          setTimeout(() => {
+
+          const userId = getUserIdFromToken();
+
+          const statusResponse = await fetch(
+            `http://localhost:5000/api/v2/auth/2fa-status/${userId}`
+          );
+
+          if (statusResponse.ok) {
+            const status = await statusResponse.text();
+
+            if (status === "redirect-to-2fa") {
+              navigate("/security/2fa/verify");
+            } else if (status === "redirect-to-home") {
+              navigate("/home");
+            }
+          } else {
+            setError("Failed to verify 2FA status. Please try again.");
             setLoading(false);
-            window.location.href = "/home";
-          }, 3000);
+          }
         } else {
           setError("Unexpected response from the server.");
           setLoading(false);
         }
       } else {
         const errorMessage = await response.text();
-        if (
-          errorMessage.includes("SocketTimeoutException") ||
-          errorMessage.includes("Read timed out")
-        ) {
-          setError("Server timeout, please try again later.");
-        } else {
-          setError("An unexpected error occurred. Please try again later.");
-        }
+        setError(errorMessage || "Login failed. Please try again.");
         setLoading(false);
       }
     } catch (error) {
@@ -75,7 +86,6 @@ const LoginScript = () => {
     }
   };
 
-  //hanlde the update password flow if the user has forgotten his password
   const handlePasswordUpdate = async (event) => {
     event.preventDefault();
 
