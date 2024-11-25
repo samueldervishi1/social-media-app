@@ -49,6 +49,7 @@ const LoginScript = () => {
         if (data && data.startsWith("eyJhbGciOi")) {
           const token = data;
           localStorage.setItem("token", token);
+          localStorage.setItem("2fa_complete", "no");
 
           const userId = getUserIdFromToken();
 

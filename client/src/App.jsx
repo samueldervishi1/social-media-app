@@ -30,17 +30,16 @@ const Verify2FA = lazy(() => import("./components/Verify2FA"));
 const App = () => {
   const isAuthenticated = () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        return Date.now() < expirationTime;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        return false;
-      }
+    if (!token) return false;
+
+    try {
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const expirationTime = decodedToken.exp * 1000;
+      return Date.now() < expirationTime;
+    } catch (error) {
+      console.error("Error decoding token: ", error.message);
+      return false;
     }
-    return false;
   };
 
   return (
@@ -52,6 +51,12 @@ const App = () => {
 
 const AuthWrapper = ({ isAuthenticated }) => {
   const navigate = useNavigate();
+
+  const requires2FA = () => {
+    const token = localStorage.getItem("token");
+    const twoFaComplete = localStorage.getItem("2fa_complete");
+    return token && twoFaComplete === "no";
+  };
 
   const handleTokenExpiry = () => {
     if (!isAuthenticated()) {
@@ -66,7 +71,7 @@ const AuthWrapper = ({ isAuthenticated }) => {
 
   return (
     <div className="App">
-      {isAuthenticated() && <Navbar />}
+      {isAuthenticated() && !requires2FA() && <Navbar />}
 
       <Suspense
         fallback={<div style={{ textAlign: "center" }}>Loading...</div>}

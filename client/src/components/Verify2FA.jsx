@@ -25,6 +25,7 @@ const Verify2FA = () => {
       );
 
       if (response.data.valid) {
+        localStorage.setItem("2fa_complete", "yes");
         navigate("/home");
       } else {
         setError("Invalid 2FA code. Please try again.");

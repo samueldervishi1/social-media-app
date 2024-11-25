@@ -2,7 +2,7 @@ import pyotp
 import qrcode
 import io
 import base64
-from typing import Dict
+from typing import Dict, Any
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
@@ -57,7 +57,7 @@ class TOTPAuthenticator:
         totp = pyotp.TOTP(secret)
         return totp.verify(code)
 
-    def _get_secret_from_db(self, user_id: str) -> str:
+    def _get_secret_from_db(self, user_id: str) -> Any | None:
         """
         Retrieve the TOTP secret for a user from MongoDB.
         """
