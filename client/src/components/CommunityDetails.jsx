@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { Modal } from "react-bootstrap";
 import placeHolderImage from "../assets/placeholder.png";
 import placeHolderLogo from "../assets/logo-placeholder-image.png";
 import loader from "../assets/ZKZg.gif";
 import "../styles/communityDetails.css";
+import { IoCreateOutline } from "react-icons/io5";
 import { getUserIdFromToken } from "../auth/authUtils";
 
 const CommunityDetails = () => {
@@ -17,6 +19,9 @@ const CommunityDetails = () => {
   const [sortDropdownVisible, setSortDropdownVisible] = useState(false);
   const [currentView, setCurrentView] = useState("Feed");
   const [loading, setLoading] = useState(true);
+
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [postContent, setPostContent] = useState("");
 
   const dropdownRef = useRef(null);
   const viewDropdownRef = useRef(null);
@@ -146,6 +151,39 @@ const CommunityDetails = () => {
     };
   }, []);
 
+  const handleCreatePost = async () => {
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+    if (!postContent.trim()) {
+      alert("Post content cannot be empty");
+      return;
+    }
+
+    const postData = { content: postContent };
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/v2/posts/create/${username}`,
+        postData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Post created successfully!");
+        setPostContent("");
+        setShowPostModal(false); // Close the modal
+        window.location.reload();
+      }
+    } catch (err) {
+      alert("Error creating post: " + err.message);
+    }
+  };
+
   if (error) return <div>Error: {error}</div>;
 
   if (loading) {
@@ -183,6 +221,13 @@ const CommunityDetails = () => {
             {membersCount !== null ? getMemberText(membersCount) : "Loading..."}
           </span>
         </h2>
+
+        <button
+          className="community-post-button"
+          onClick={() => setShowPostModal(true)} // Open the modal
+        >
+          <IoCreateOutline />
+        </button>
 
         <button
           className="community-action-button"
@@ -248,14 +293,40 @@ const CommunityDetails = () => {
       <div className="content-container">
         {currentView === "Feed" ? (
           <div>
-            <h1 style={{ color: "white" }}>Feed Content</h1>
+            <h1 style={{ color: "black" }}>Feed Content</h1>
           </div>
         ) : (
           <div>
-            <h1 style={{ color: "white" }}>About Content</h1>
+            <h1 style={{ color: "black" }}>About Content</h1>
           </div>
         )}
       </div>
+
+      <Modal show={showPostModal} onHide={() => setShowPostModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <textarea
+            className="form-control"
+            rows="5"
+            placeholder="What's on your mind?"
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+          ></textarea>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-primary" onClick={handleCreatePost}>
+            Post
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowPostModal(false)}
+          >
+            Close
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

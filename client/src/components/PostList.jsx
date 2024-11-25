@@ -101,7 +101,7 @@ const PostList = () => {
         className="no-posts-message"
         style={{ textAlign: "center", marginTop: "20px", color: "white" }}
       >
-        <p>No more posts.</p>
+        <p style={{color: "black"}}>No more posts.</p>
       </div>
     );
   }
