@@ -38,6 +38,12 @@ const Verify2FA = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleVerify2FA();
+    }
+  };
+
   return (
     <div className="container">
       <h3 style={{ textAlign: "center", marginTop: 20 }}>
@@ -61,6 +67,7 @@ const Verify2FA = () => {
                 id="twoFACode"
                 value={twoFACode}
                 onChange={(e) => setTwoFACode(e.target.value)}
+                onKeyDown={handleKeyDown}
                 required
                 className="form-control"
               />

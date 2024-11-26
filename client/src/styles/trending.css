@@ -18,6 +18,8 @@
 .trend-hashtag {
   font-weight: bold;
   cursor: pointer;
+  background: transparent;
+  text-decoration: underline;
 }
 
 .trend-hashtag:hover {
@@ -47,6 +49,35 @@
 
 .trend-card {
   position: relative;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.trending-card {
+  background-color: transparent;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.join-home-button {
+  position: absolute;
+  right: 20px;
+  background-color: rgb(29, 155, 240);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 4;
+  font-size: 14px;
+}
+
+.join-home-button:disabled {
+  background-color: transparent;
+  cursor: not-allowed;
+  border: 1px solid #444;
+  color: black;
 }
 
 .loader-container {
