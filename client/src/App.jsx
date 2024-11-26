@@ -35,6 +35,8 @@ const App = () => {
     try {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
       const expirationTime = decodedToken.exp * 1000;
+      console.log("Token Expiration Time:", expirationTime);
+      console.log("Current Time:", Date.now());
       return Date.now() < expirationTime;
     } catch (error) {
       console.error("Error decoding token: ", error.message);
@@ -61,6 +63,7 @@ const AuthWrapper = ({ isAuthenticated }) => {
   const handleTokenExpiry = () => {
     if (!isAuthenticated()) {
       localStorage.removeItem("token");
+      localStorage.removeItem("2fa_complete");
       navigate("/login", { replace: true });
     }
   };
