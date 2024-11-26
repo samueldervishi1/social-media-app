@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -33,23 +35,9 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(new ErrorResponse("Internal Server Error" , HttpStatus.INTERNAL_SERVER_ERROR.value()) , HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	public static class ErrorResponse {
-
-		private final String message;
-		private final int statusCode;
-
+	public record ErrorResponse(String message , int statusCode , LocalDateTime timestamp) {
 		public ErrorResponse(String message , int statusCode) {
-			this.message = message;
-			this.statusCode = statusCode;
-		}
-
-		public String getMessage() {
-			return message;
-		}
-
-		public int getStatusCode() {
-			return statusCode;
+			this(message , statusCode , LocalDateTime.now());
 		}
 	}
 }
-

@@ -32,7 +32,7 @@ public class LoginService {
 				.orElseThrow(() -> new NotFoundException("Username not found"));
 
 		if (user.isDeleted()) {
-            logger.info("User does not exist");
+			logger.info("User does not exist");
 			throw new NotFoundException("This user does not exist.");
 		}
 

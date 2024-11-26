@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface CommunityRepository extends MongoRepository<Community, String> {
 	Optional<Community> findByName(String name);
+
 	List<Community> findByNameContaining(String name);
+
 	List<Community> findByUserIdsContaining(String userId);
 }

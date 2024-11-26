@@ -2,7 +2,6 @@ package com.chirp.server.services;
 
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.ActivityModel;
-import com.chirp.server.models.Community;
 import com.chirp.server.models.Post;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.ActivityRepository;
@@ -74,24 +73,6 @@ public class PostService {
 		}
 	}
 
-	public Post createPostForCommunity(String communityId , String userId , Post post) {
-
-		Community community = communityRepository.findById(communityId)
-				.orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " does not exist"));
-
-		post.setPostDate(LocalDate.now().toString());
-		post.setPostTime(LocalTime.now().toString());
-
-		post.setUserId(userId);
-
-		post = postRepository.save(post);
-
-		community.getPostIds().add(post.getId());
-		communityRepository.save(community);
-
-		return post;
-	}
-
 	public List<Post> getAllDBPosts() {
 		List<Post> posts = postRepository.findAll();
 		posts.forEach(post -> logger.info("Fetched post with date: {}" , post.getPostDate()));
@@ -117,9 +98,9 @@ public class PostService {
 	}
 
 	@Transactional
-	public Post deletePost(String postId) {
+	public void deletePost(String postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
 		post.setDeleted(true);
-		return postRepository.save(post);
+		postRepository.save(post);
 	}
 }

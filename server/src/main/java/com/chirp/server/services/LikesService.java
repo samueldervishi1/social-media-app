@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LikesService {
@@ -44,44 +45,38 @@ public class LikesService {
 		return likeEntity(userId , commentId , false);
 	}
 
-	private Like likeEntity(String userId , String entityId , boolean isPost) throws Exception {
-		try {
-			Like like = getUserLike(userId);
-			List<String> entityIds = isPost ? like.getPostId() : like.getCommentId();
-			String entityType = isPost ? "post" : "comment";
+	public Like likeEntity(String userId , String entityId , boolean isPost) throws Exception {
+		Like like = getUserLike(userId);
+		List<String> entityIds = isPost ? like.getPostId() : like.getCommentId();
+		String entityType = isPost ? "post" : "comment";
 
-			if (entityIds == null) {
-				entityIds = new ArrayList<>();
-				if (isPost) {
-					like.setPostId(entityIds);
-				} else {
-					like.setCommentId(entityIds);
-				}
-			}
-
-			if (entityIds.contains(entityId)) {
-				throw new BadRequestException(entityType + " is already liked");
-			}
-
-			entityIds.add(entityId);
-			likesRepository.save(like);
-
+		if (entityIds == null) {
+			entityIds = new ArrayList<>();
 			if (isPost) {
-				updatePostLikes(userId , entityId);
+				like.setPostId(entityIds);
 			} else {
-				updateActivityLog(userId , "liked comment with id " + entityId);
+				like.setCommentId(entityIds);
 			}
-
-			return like;
-		} catch (BadRequestException e) {
-			handleException(e , "liking " + (isPost ? "post" : "comment"));
-			return null;
 		}
+
+		if (entityIds.contains(entityId)) {
+			throw new BadRequestException(entityType + " is already liked");
+		}
+
+		entityIds.add(entityId);
+		likesRepository.save(like);
+
+		if (isPost) {
+			updatePostLikes(userId , entityId);
+		} else {
+			updateActivityLog(userId , "liked comment with id " + entityId);
+		}
+
+		return like;
 	}
 
 	private void updatePostLikes(String userId , String postId) {
-		Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+		Post post = getEntityById(postRepository.findById(postId) , postId , "Post");
 		if (!post.getLikes().contains(userId)) {
 			post.getLikes().add(userId);
 		}
@@ -106,36 +101,38 @@ public class LikesService {
 	}
 
 	public int getLikesCountForPost(String postId) {
-		try {
-			List<Like> likes = likesRepository.findByPostIdContaining(postId);
-			return likes.size();
-		} catch (Exception e) {
-			logger.error("Error fetching likes count for post ID {}: {}" , postId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while fetching likes count for the post");
-		}
-	}
-
-	private Like getUserLike(String userId) {
-		List<Like> userLikes = likesRepository.findByUserId(userId);
-		return userLikes.isEmpty() ? new Like(userId) : userLikes.get(0);
+		return getCountForEntity(likesRepository.findByPostIdContaining(postId) , postId , "post");
 	}
 
 	public List<Like> getLikesForComment(String commentId) {
-		try {
-			return likesRepository.findByCommentIdContaining(commentId);
-		} catch (Exception e) {
-			logger.error("Error fetching likes for comment ID {}: {}" , commentId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while fetching likes for the comment");
-		}
+		return getLikesForEntity(likesRepository.findByCommentIdContaining(commentId) , commentId , "comment");
 	}
 
 	public List<Like> getLikesForUser(String userId) {
-		try {
-			return likesRepository.findByUserId(userId);
-		} catch (Exception e) {
-			logger.error("Error fetching likes for user ID {}: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while fetching likes for the user");
+		return getLikesForEntity(likesRepository.findByUserId(userId) , userId , "user");
+	}
+
+	private <T> T getEntityById(Optional<T> entity , String identifier , String entityType) {
+		return entity.orElseThrow(() -> new ResourceNotFoundException(entityType + " with ID " + identifier + " not found"));
+	}
+
+	private List<Like> getLikesForEntity(List<Like> likes , String entityId , String entityType) {
+		if (likes.isEmpty()) {
+			logger.info("No likes found for " + entityType + " with ID {}" , entityId);
 		}
+		return likes;
+	}
+
+	private int getCountForEntity(List<Like> likes , String entityId , String entityType) {
+		int count = likes.size();
+		logger.info("{} count for {} with ID {}: {}" , entityType , entityType , entityId , count);
+		return count;
+	}
+
+	private Like getUserLike(String userId) {
+		return likesRepository.findByUserId(userId).stream()
+				.findFirst()
+				.orElse(new Like(userId));
 	}
 
 	private void handleException(Exception e , String action) throws Exception {

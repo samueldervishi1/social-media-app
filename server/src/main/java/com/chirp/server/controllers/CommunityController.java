@@ -2,9 +2,13 @@ package com.chirp.server.controllers;
 
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.Community;
+import com.chirp.server.models.CommunityPost;
+import com.chirp.server.models.Like;
 import com.chirp.server.models.Post;
 import com.chirp.server.services.CommunityService;
 import com.chirp.server.services.PostService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v2/communities")
 public class CommunityController {
+
+	private static final Logger logger = LoggerFactory.getLogger(CommunityController.class);
 
 	@Autowired
 	private CommunityService communityService;
@@ -76,6 +82,22 @@ public class CommunityController {
 		}
 	}
 
+	@GetMapping("/post/{postId}")
+	public ResponseEntity<CommunityPost> getCommunityPostById(@PathVariable String postId) {
+		logger.info("Attempting to fetch community post with ID: {}" , postId);
+		try {
+			CommunityPost post = communityService.getCommunityPostById(postId);
+			logger.info("Successfully retrieved community post with ID: {}" , postId);
+			return new ResponseEntity<>(post , HttpStatus.OK);
+		} catch (IllegalArgumentException e) {
+			logger.warn("Post with ID: {} not found" , postId);
+			return new ResponseEntity<>(null , HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			logger.error("Error retrieving post with ID: {}: {}" , postId , e.getMessage() , e);
+			return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@PostMapping("/create/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {
 		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription());
@@ -83,10 +105,11 @@ public class CommunityController {
 		return new ResponseEntity<>(community , HttpStatus.CREATED);
 	}
 
-	@PostMapping("/create/post/{communityId}/{userId}")
-	public ResponseEntity<Post> createPost(@PathVariable String communityId , @PathVariable String userId , @RequestBody Post post) {
-		Post createdPost = postService.createPostForCommunity(communityId , userId , post);
-		return new ResponseEntity<>(createdPost , HttpStatus.CREATED);
+	@PostMapping("/{communityName}/posts")
+	public CommunityPost createPostForCommunity(
+			@PathVariable String communityName ,
+			@RequestBody CommunityPost communityPost) {
+		return communityService.createCommunityPost(communityName , communityPost.getUserId() , communityPost.getContent());
 	}
 
 	@PostMapping("/join/{communityId}/{userId}")
@@ -97,5 +120,25 @@ public class CommunityController {
 		} catch (IllegalArgumentException e) {
 			return new ResponseEntity<>(e.getMessage() , HttpStatus.NOT_FOUND);
 		}
+	}
+
+	@PostMapping("/{communityName}/posts/{postId}/like")
+	public ResponseEntity<Like> likePost(
+			@PathVariable String communityName ,
+			@PathVariable String postId ,
+			@RequestParam String userId) throws Exception {
+
+		Like like = communityService.likePostForCommunity(userId , postId);
+		return ResponseEntity.ok(like);
+	}
+
+	@PostMapping("/{communityName}/comments/{commentId}/like")
+	public ResponseEntity<Like> likeComment(
+			@PathVariable String communityName ,
+			@PathVariable String commentId ,
+			@RequestParam String userId) throws Exception {
+
+		Like like = communityService.likeCommentForCommunity(userId , commentId);
+		return ResponseEntity.ok(like);
 	}
 }

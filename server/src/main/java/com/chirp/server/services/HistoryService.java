@@ -1,6 +1,5 @@
 package com.chirp.server.services;
 
-
 import com.chirp.server.models.History;
 import com.chirp.server.models.QuestionAnswerPair;
 import com.chirp.server.repositories.HistoryRepository;
@@ -114,20 +113,20 @@ public class HistoryService {
 	}
 
 	@Scheduled(fixedRate = 86400000)
-    public void deleteOldHistory() {
-        try {
-            LocalDate oneDayAgo = LocalDate.now().minusDays(1);
-            List<History> historiesToDelete = historyRepository.findByHistoryDateBefore(oneDayAgo);
+	public void deleteOldHistory() {
+		try {
+			LocalDate oneDayAgo = LocalDate.now().minusDays(1);
+			List<History> historiesToDelete = historyRepository.findByHistoryDateBefore(oneDayAgo);
 
-            if (!historiesToDelete.isEmpty()) {
-                historyRepository.deleteAll(historiesToDelete);
-                logger.info("Successfully deleted histories older than 1 day");
-            } else {
-                logger.info("No histories older than 1 day found");
-            }
-        } catch (Exception e) {
-            logger.error("Error deleting old histories. Error: {}", e.getMessage());
-            throw e;
-        }
-    }
+			if (!historiesToDelete.isEmpty()) {
+				historyRepository.deleteAll(historiesToDelete);
+				logger.info("Successfully deleted histories older than 1 day");
+			} else {
+				logger.info("No histories older than 1 day found");
+			}
+		} catch (Exception e) {
+			logger.error("Error deleting old histories. Error: {}" , e.getMessage());
+			throw e;
+		}
+	}
 }

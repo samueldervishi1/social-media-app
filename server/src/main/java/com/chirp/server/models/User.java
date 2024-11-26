@@ -123,6 +123,7 @@ public class User {
 	public String getTwoFa() {
 		return twoFa;
 	}
+
 	public void setTwoFa(String twoFa) {
 		this.twoFa = twoFa;
 	}

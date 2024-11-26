@@ -1,4 +1,99 @@
 package com.chirp.server.models;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Document("communityPost")
 public class CommunityPost {
+
+	@Id
+	private String id;
+	private String userId;
+	private String communityName;
+	private String content;
+	private LocalDateTime createTime;
+	private List<Like> likes = new ArrayList<>();
+	private List<Comments> comments = new ArrayList<>();
+	private boolean deleted;
+
+	public CommunityPost() {
+	}
+
+	public CommunityPost(String userId , String communityName , String content , LocalDateTime createTime) {
+		this.userId = userId;
+		this.communityName = communityName;
+		this.content = content;
+		this.createTime = createTime;
+		this.likes = new ArrayList<>();
+		this.comments = new ArrayList<>();
+		this.deleted = false;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getCommunityName() {
+		return communityName;
+	}
+
+	public void setCommunityName(String communityName) {
+		this.communityName = communityName;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public LocalDateTime getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(LocalDateTime createTime) {
+		this.createTime = createTime;
+	}
+
+	public List<Like> getLikes() {
+		return likes;
+	}
+
+	public void setLikes(List<Like> likes) {
+		this.likes = likes;
+	}
+
+	public List<Comments> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comments> comments) {
+		this.comments = comments;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 }
