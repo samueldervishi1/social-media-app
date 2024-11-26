@@ -46,6 +46,12 @@
   gap: 15px;
 }
 
+.name-logo{
+  font-size: 25px;
+  text-decoration: none;
+  color: black;
+}
+
 .divider-dp {
   height: 0;
   margin: var(--bs-dropdown-divider-margin-y) 0;

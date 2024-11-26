@@ -161,8 +161,9 @@ const Navbar = () => {
       <div className="chat-history1">
         <div className="history-div-2">
           <div>
-            <a href="/home">
-              <img src={logo} alt="Logo" style={{ width: 70 }} />
+            <a href="/home" className="name-logo">
+              {/* <img src={logo} alt="Logo" style={{ width: 70 }} /> */}
+              AЯYHƆ{" "}
             </a>
           </div>
           <div className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>

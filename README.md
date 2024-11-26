@@ -1,4 +1,4 @@
-# Simple Social Media App | Chirp
+# Simple Social Media App | CHYRA (stylized as AЯYHƆ)
 
 This is a simple social media application that is still under development. It combines a Java backend with a ReactJS frontend built using Vite.
 
