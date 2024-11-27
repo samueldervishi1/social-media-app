@@ -147,7 +147,8 @@ const TrendingList = () => {
                 <span className="members-count">
                   {membersCounts[community.name] !== undefined
                     ? getMemberText(membersCounts[community.name])
-                    : "Loading..."}
+                    : "Loading..."}{" "}
+                  members
                 </span>
                 <button
                   className="join-home-button"

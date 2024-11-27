@@ -109,7 +109,7 @@ public class CommunityController {
 	public CommunityPost createPostForCommunity(
 			@PathVariable String communityName ,
 			@RequestBody CommunityPost communityPost) {
-		return communityService.createCommunityPost(communityName , communityPost.getUserId() , communityPost.getContent());
+		return communityService.createCommunityPost(communityName , communityPost.getOwnerId() , communityPost.getContent());
 	}
 
 	@PostMapping("/join/{communityId}/{userId}")

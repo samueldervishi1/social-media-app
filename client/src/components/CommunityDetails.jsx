@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Modal } from "react-bootstrap";
+import { IoCreateOutline } from "react-icons/io5";
+import { TiArrowDownThick, TiArrowUpThick } from "react-icons/ti";
 import placeHolderImage from "../assets/placeholder.png";
 import placeHolderLogo from "../assets/logo-placeholder-image.png";
+import defaultUserIcon from "../assets/user.webp";
 import loader from "../assets/ZKZg.gif";
 import "../styles/communityDetails.css";
-import { IoCreateOutline } from "react-icons/io5";
+
 import { getUserIdFromToken } from "../auth/authUtils";
 
 const CommunityDetails = () => {
@@ -14,14 +17,18 @@ const CommunityDetails = () => {
   const [community, setCommunity] = useState(null);
   const [membersCount, setMembersCount] = useState(null);
   const [error, setError] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewDropdownVisible, setViewDropdownVisible] = useState(false);
   const [sortDropdownVisible, setSortDropdownVisible] = useState(false);
   const [currentView, setCurrentView] = useState("Feed");
   const [loading, setLoading] = useState(true);
+  const [likeStatus, setLikeStatus] = useState({});
+  const [activeQuestion, setActiveQuestion] = useState(null);
 
   const [showPostModal, setShowPostModal] = useState(false);
   const [postContent, setPostContent] = useState("");
+  const navigate = useNavigate();
 
   const dropdownRef = useRef(null);
   const viewDropdownRef = useRef(null);
@@ -47,6 +54,7 @@ const CommunityDetails = () => {
           }
         );
         setCommunity(response.data);
+        fetchPosts(response.data.postIds);
       } catch (err) {
         setError("Failed to fetch community details");
       } finally {
@@ -58,6 +66,47 @@ const CommunityDetails = () => {
 
     fetchCommunityDetails();
   }, [name]);
+
+  const fetchPosts = async (postIds) => {
+    if (!postIds || postIds.length === 0) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const postDetailsPromises = postIds.map((postId) =>
+        axios.get(`http://localhost:5000/api/v2/communities/post/${postId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      );
+
+      const postResponses = await Promise.all(postDetailsPromises);
+      const postDetails = await Promise.all(
+        postResponses.map(async (res) => {
+          const post = res.data;
+          try {
+            const userResponse = await axios.get(
+              `http://localhost:5000/api/v2/users/${post.ownerId}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            post.author = userResponse.data.username;
+          } catch (userError) {
+            console.error(
+              `Failed to fetch user details for ownerId ${post.ownerId}:`,
+              userError.message
+            );
+            post.author = "Unknown";
+          }
+          return post;
+        })
+      );
+
+      setPosts(postDetails);
+    } catch (err) {
+      console.error("Error fetching posts:", err.message);
+      setError("Failed to load posts");
+    }
+  };
 
   //fetch members count for communities
   useEffect(() => {
@@ -114,6 +163,16 @@ const CommunityDetails = () => {
     }
   };
 
+  const handleProfileLinkClick = (e) => {
+    e.stopPropagation();
+    const loggedInUserId = getUserIdFromToken();
+    if (userId === loggedInUserId) {
+      navigate("/profile");
+    } else {
+      navigate(`/users/${userId}`);
+    }
+  };
+
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
@@ -153,17 +212,21 @@ const CommunityDetails = () => {
 
   const handleCreatePost = async () => {
     const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
+    const userId = getUserIdFromToken();
+
     if (!postContent.trim()) {
       alert("Post content cannot be empty");
       return;
     }
 
-    const postData = { content: postContent };
+    const postData = {
+      content: postContent,
+      ownerId: userId,
+    };
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v2/posts/create/${username}`,
+        `http://localhost:5000/api/v2/communities/${name}/posts`,
         postData,
         {
           headers: {
@@ -176,13 +239,73 @@ const CommunityDetails = () => {
       if (response.status === 200) {
         alert("Post created successfully!");
         setPostContent("");
-        setShowPostModal(false); // Close the modal
+        setShowPostModal(false);
         window.location.reload();
       }
     } catch (err) {
       alert("Error creating post: " + err.message);
     }
   };
+
+  //calculate time of the post
+  const timeSincePost = (createTime) => {
+    const postDateTime = new Date(createTime);
+    const seconds = Math.floor((new Date() - postDateTime) / 1000);
+    let interval = Math.floor(seconds / 31536000);
+
+    if (interval >= 1) return interval + "y ago";
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval + "mo ago";
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval + "d ago";
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval + "h ago";
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval + "min ago";
+    return seconds < 10 ? "just now" : seconds + "s ago";
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", options);
+  };
+
+  const handleLike = (postId) => {
+    setLikeStatus((prev) => ({
+      ...prev,
+      [postId]: prev[postId] === "like" ? null : "like",
+    }));
+  };
+
+  const handleDislike = (postId) => {
+    setLikeStatus((prev) => ({
+      ...prev,
+      [postId]: prev[postId] === "dislike" ? null : "dislike",
+    }));
+  };
+
+  const toggleAnswer = (index) => {
+    setActiveQuestion(activeQuestion === index ? null : index);
+  };
+
+  const questionsAndAnswers = [
+    {
+      question: "No songs from the Hall of Fame",
+      answer:
+        "Songs listed in our Hall of Fame will be automatically removed. ",
+    },
+    {
+      question: "No discussions `about, of, or` for the author",
+      answer:
+        "Please ensure that all discussion posts are `for` the community. Sharing your own story is fine, so long as it's part of a larger discussion post that's conducive to discussion.",
+    },
+    {
+      question: "Don't post your own music ",
+      answer:
+        "It is your responsibility to read and understand Reddit's guidelines on self-promotion before submitting your own music. Famous musical celebrities are exempt. For verification, contact the staff privately. For original music, double-check your submission after 2-3 minutes. Ensure the flair is set to 'I Made This'",
+    },
+  ];
 
   if (error) return <div>Error: {error}</div>;
 
@@ -224,7 +347,7 @@ const CommunityDetails = () => {
 
         <button
           className="community-post-button"
-          onClick={() => setShowPostModal(true)} // Open the modal
+          onClick={() => setShowPostModal(true)}
         >
           <IoCreateOutline />
         </button>
@@ -249,6 +372,7 @@ const CommunityDetails = () => {
           </div>
         )}
       </div>
+
       <div className="community-actions">
         <div className="community-buttons">
           <button
@@ -256,12 +380,6 @@ const CommunityDetails = () => {
             onClick={() => setCurrentView("Feed")}
           >
             Feed
-          </button>
-          <button
-            className="about-button"
-            onClick={() => setCurrentView("About")}
-          >
-            About
           </button>
         </div>
         <div className="community-dropdowns">
@@ -290,16 +408,106 @@ const CommunityDetails = () => {
         </div>
       </div>
       <hr className="divider" />
+
       <div className="content-container">
-        {currentView === "Feed" ? (
-          <div>
-            <h1 style={{ color: "black" }}>Feed Content</h1>
+        <div className="left-side">
+          {currentView === "Feed" &&
+            posts.map((post) => (
+              <div
+                key={post.id}
+                className={`post-community-card ${
+                  likeStatus[post.id] === "like"
+                    ? "liked"
+                    : likeStatus[post.id] === "dislike"
+                    ? "disliked"
+                    : ""
+                }`}
+              >
+                <div onClick={handleProfileLinkClick}>
+                  <img
+                    src={defaultUserIcon}
+                    alt="User Icon"
+                    className="user-community-icon"
+                  />
+                  @{post.author}{" "}
+                  <span className="post-community-time">
+                    • {timeSincePost(post.createTime)}
+                  </span>
+                </div>
+                <h3>{post.title}</h3>
+                <p className="community-content">{post.content}</p>
+                <div className="community-action">
+                  <div
+                    className={`like-buttons ${
+                      likeStatus[post.id] === "like"
+                        ? "liked"
+                        : likeStatus[post.id] === "dislike"
+                        ? "disliked"
+                        : ""
+                    }`}
+                  >
+                    <button
+                      className={`like-button ${
+                        likeStatus[post.id] === "like" ? "active" : ""
+                      }`}
+                      onClick={() => handleLike(post.id)}
+                    >
+                      <TiArrowUpThick />
+                    </button>
+                    <span className="community-count">12K</span>
+                    <button
+                      className={`dislike-button ${
+                        likeStatus[post.id] === "dislike" ? "active" : ""
+                      }`}
+                      onClick={() => handleDislike(post.id)}
+                    >
+                      <TiArrowDownThick />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+
+        <div className="right-side">
+          <div className="community-card">
+            <div className="community-description">
+              <h3>{community.name}</h3>
+              <p>{community.about}</p>
+            </div>
+
+            <div className="community-info-details">
+              <div className="community-created">
+                <strong>Created on:</strong> {formatDate(community.createTime)}
+              </div>
+              <div className="community-members">
+                <strong>Members:</strong>{" "}
+                {membersCount !== null
+                  ? getMemberText(membersCount)
+                  : "Loading..."}
+              </div>
+            </div>
+            <div className="community-faq">
+              <h4>Frequently Asked Questions</h4>
+              {questionsAndAnswers.map((qa, index) => (
+                <div key={index} className="faq-item">
+                  <div
+                    className="faq-question"
+                    onClick={() => toggleAnswer(index)}
+                  >
+                    <strong>{qa.question}</strong>
+                    <span>{activeQuestion === index ? "−" : "+"}</span>{" "}
+                  </div>
+                  {activeQuestion === index && (
+                    <div className="faq-answer">
+                      <p>{qa.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        ) : (
-          <div>
-            <h1 style={{ color: "black" }}>About Content</h1>
-          </div>
-        )}
+        </div>
       </div>
 
       <Modal show={showPostModal} onHide={() => setShowPostModal(false)}>

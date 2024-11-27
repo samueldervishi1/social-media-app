@@ -3,6 +3,7 @@ package com.chirp.server.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,7 @@ public class Community {
 	private String name;
 	private String description;
 	private String ownerId;
+	private LocalDateTime createTime;
 
 	private List<String> postIds = new ArrayList<>();
 	private List<String> userIds = new ArrayList<>();
@@ -25,6 +27,7 @@ public class Community {
 		this.ownerId = ownerId;
 		this.name = name;
 		this.description = description;
+		this.createTime = LocalDateTime.now();
 	}
 
 	public String getCommunityId() {
@@ -73,5 +76,11 @@ public class Community {
 
 	public void setUserIds(List<String> userIds) {
 		this.userIds = userIds;
+	}
+	public LocalDateTime getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(LocalDateTime createTime) {
+		this.createTime = createTime;
 	}
 }

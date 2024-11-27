@@ -213,7 +213,7 @@ const Navbar = () => {
                 <AiOutlineMessage className="icon-p" /> Messages
               </a>
               <a href="/chirp" className="mobile-menu-item">
-                <GiArtificialHive className="icon-p" /> ChirpAI
+                <GiArtificialHive className="icon-p" /> AЯYHƆ
               </a>
               <a href="/c/communities" className="mobile-menu-item">
                 <CgCommunity className="icon-p" /> Communities

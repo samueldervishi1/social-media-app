@@ -1,3 +1,5 @@
 websocket/.env
 /websocket
 websocket/.env
+ws-auth/.idea/dataSources.xml
+ws-auth/.idea/sqldialects.xml

@@ -92,3 +92,9 @@
   width: 20px;
   height: 20px;
 }
+
+.members-count {
+  font-size: 13px;
+  color: grey;
+  margin-top: 3px;
+}

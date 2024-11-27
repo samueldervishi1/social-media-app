@@ -87,9 +87,9 @@ span.members-count {
   margin: 10px 0;
   color: black;
   position: relative;
-  top: 40px;
+  top: 15px;
   display: flex;
-  font-size: 22px;
+  font-size: 10px;
 }
 
 .members {

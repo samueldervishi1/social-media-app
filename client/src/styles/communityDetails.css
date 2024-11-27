@@ -36,11 +36,193 @@
   font-size: 2.2em;
 }
 
+.community-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.community-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.content-container {
+  display: flex;
+  margin-top: 20px;
+}
+
+.left-side {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.right-side {
+  flex: 1;
+  padding-left: 20px;
+}
+
+.community-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border: 1px solid grey;
+}
+
+.community-description h3 {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: #333;
+}
+
+.community-description p {
+  font-size: 1.1em;
+  color: #555;
+  margin-top: 10px;
+}
+
+.community-info-details {
+  margin-top: 20px;
+}
+
+.community-info-details div {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.community-info-details strong {
+  color: #444;
+}
+
+.community-created,
+.community-members {
+  color: #666;
+}
+
+.post-community-card {
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+  position: relative;
+  max-width: 100%;
+  cursor: pointer;
+  color: black;
+  border: 0.2px solid grey;
+}
+
+.user-community-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.post-community-time {
+  font-size: 13px;
+  color: grey;
+}
+
+.community-content {
+  margin-left: 10px;
+  margin-top: 20px;
+}
+
+.like-buttons {
+  display: flex;
+  background: #e5f0f5;
+  width: 100px;
+  height: 30px;
+  border-radius: 20px;
+  justify-content: space-evenly;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.like-buttons.liked {
+  background-color: rgb(180, 14, 14);
+}
+
+.like-buttons.disliked {
+  background-color: rgb(19, 100, 155);
+}
+
+.like-button,
+.dislike-button {
+  background: transparent;
+  border: none;
+  color: grey;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.like-button.active {
+  color: white;
+}
+
+.dislike-button.active {
+  color: white;
+}
+
+.community-action {
+  display: flex;
+  gap: 20px;
+}
+
 span.members-count {
   font-size: 0.5em;
   color: grey;
   margin-left: 10px;
   margin-top: 20px;
+}
+
+.community-count {
+  margin-right: 10px;
+  margin-top: 1px;
+  color: rgb(0, 0, 0);
+  font-size: 17px;
+}
+
+.community-faq {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+}
+
+.faq-item {
+  margin-bottom: 15px;
+}
+
+.faq-question {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1em;
+  color: #333;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.faq-answer {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  margin-top: 5px;
+  font-size: 1em;
+  color: #555;
+  display: block;
+}
+
+.faq-question span {
+  font-size: 1.5em;
+  color: #007bff;
+}
+
+.faq-question:hover {
+  color: #007bff;
 }
 
 .community-description {
@@ -54,7 +236,7 @@ span.members-count {
   right: 70px;
   padding: 5px 20px;
   background-color: #007bff;
-  color: black;
+  color: white;
   border: none;
   border-radius: 20px;
   cursor: pointer;

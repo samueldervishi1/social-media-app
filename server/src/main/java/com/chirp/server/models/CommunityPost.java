@@ -12,7 +12,7 @@ public class CommunityPost {
 
 	@Id
 	private String id;
-	private String userId;
+	private String ownerId;
 	private String communityName;
 	private String content;
 	private LocalDateTime createTime;
@@ -23,8 +23,8 @@ public class CommunityPost {
 	public CommunityPost() {
 	}
 
-	public CommunityPost(String userId , String communityName , String content , LocalDateTime createTime) {
-		this.userId = userId;
+	public CommunityPost(String ownerId , String communityName , String content , LocalDateTime createTime) {
+		this.ownerId = ownerId;
 		this.communityName = communityName;
 		this.content = content;
 		this.createTime = createTime;
@@ -41,12 +41,12 @@ public class CommunityPost {
 		this.id = id;
 	}
 
-	public String getUserId() {
-		return userId;
+	public String getOwnerId() {
+		return ownerId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 
 	public String getCommunityName() {

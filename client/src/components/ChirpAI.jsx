@@ -363,7 +363,7 @@ const ChirpAI = () => {
             name="message"
             rows="1"
             cols="1"
-            placeholder="Ask ChirpAI..."
+            placeholder="Ask AЯYHƆ..."
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             onKeyUp={handleKeyUp}

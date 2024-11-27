@@ -30,9 +30,9 @@ public class CommunityService {
 	@Autowired
 	private LikesService likeService;
 
-	private CommunityPost createPostForCommunity(String userId , String content , String communityName) {
+	private CommunityPost createPostForCommunity(String ownerId , String content , String communityName) {
 		CommunityPost post = new CommunityPost();
-		post.setUserId(userId);
+		post.setOwnerId(ownerId);
 		post.setCommunityName(communityName);
 		post.setContent(content);
 		post.setCreateTime(LocalDateTime.now());
