@@ -38,7 +38,7 @@ public class LoginService {
 
 		validatePassword(password , user.getPassword());
 
-		String token = jwtTokenUtil.generateToken(username , user.getId());
+		String token = jwtTokenUtil.generateToken(username, user.getId(), user.isTwoFa());
 		logger.info("Successfully logged in user: {}" , username);
 		return token;
 	}

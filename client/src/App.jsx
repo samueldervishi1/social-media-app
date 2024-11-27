@@ -35,8 +35,8 @@ const App = () => {
     try {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
       const expirationTime = decodedToken.exp * 1000;
-      console.log("Token Expiration Time:", expirationTime);
-      console.log("Current Time:", Date.now());
+      const twoFaStatus = decodedToken.twoFa;
+      console.log(twoFaStatus);
       return Date.now() < expirationTime;
     } catch (error) {
       console.error("Error decoding token: ", error.message);
@@ -56,8 +56,15 @@ const AuthWrapper = ({ isAuthenticated }) => {
 
   const requires2FA = () => {
     const token = localStorage.getItem("token");
-    const twoFaComplete = localStorage.getItem("2fa_complete");
-    return token && twoFaComplete === "no";
+    if (!token) return false;
+
+    try {
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      return decodedToken.twoFa === true;
+    } catch (error) {
+      console.error("Error decoding token:", error.message);
+      return false;
+    }
   };
 
   const handleTokenExpiry = () => {

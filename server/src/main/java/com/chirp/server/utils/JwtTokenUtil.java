@@ -19,6 +19,7 @@ public class JwtTokenUtil {
 	private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
 	private static final String CLAIM_SUBJECT = "sub";
 	private static final String CLAIM_USER_ID = "userId";
+	private static final String CLAIM_TWOFACTORAUTHENTICATION = "twoFa";
 
 	private SecretKey secretKey;
 
@@ -30,7 +31,7 @@ public class JwtTokenUtil {
 		this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 	}
 
-	public String generateToken(String username , String userId) {
+	public String generateToken(String username , String userId , boolean twoFa) {
 		try {
 			logger.info("Generating token for username: {}" , username);
 			Date now = new Date();
@@ -39,6 +40,7 @@ public class JwtTokenUtil {
 			String token = Jwts.builder()
 					.claim(CLAIM_SUBJECT , username)
 					.claim(CLAIM_USER_ID , userId)
+					.claim(CLAIM_TWOFACTORAUTHENTICATION , twoFa)
 					.setIssuedAt(now)
 					.setExpiration(expiryDate)
 					.signWith(secretKey)

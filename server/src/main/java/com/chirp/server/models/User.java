@@ -21,7 +21,7 @@ public class User {
 	private String title;
 	private String role = "simple_account";
 	private boolean deleted;
-	private String twoFa;
+	private boolean twoFa = false;
 
 	@Override
 	public boolean equals(Object o) {
@@ -120,11 +120,11 @@ public class User {
 		this.deleted = deleted;
 	}
 
-	public String getTwoFa() {
+	public boolean isTwoFa() {
 		return twoFa;
 	}
 
-	public void setTwoFa(String twoFa) {
+	public void setTwoFa(boolean twoFa) {
 		this.twoFa = twoFa;
 	}
 }

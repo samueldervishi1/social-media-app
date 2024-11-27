@@ -23,7 +23,7 @@ public class AuthController {
 		User user = userService.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		if (Objects.equals(user.getTwoFa() , "active")) {
+		if (user.isTwoFa()) {
 			return "redirect-to-2fa";
 		} else {
 			return "redirect-to-home";

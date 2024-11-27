@@ -29,7 +29,7 @@ public class ProfileService {
 			User user = findUserById(userId);
 
 			Optional.ofNullable(updatedUser.getFullName()).ifPresent(user::setFullName);
-			Optional.ofNullable(updatedUser.getTwoFa()).ifPresent(user::setTwoFa);
+			user.setTwoFa(updatedUser.isTwoFa());
 			updateFields(user , updatedUser);
 
 			User updatedUserRecord = userRepository.save(user);
@@ -87,7 +87,7 @@ public class ProfileService {
 		Optional.ofNullable(updatedUser.getRole()).ifPresent(user::setRole);
 		Optional.ofNullable(updatedUser.getTitle()).ifPresent(user::setTitle);
 		Optional.ofNullable(updatedUser.getEmail()).ifPresent(user::setEmail);
-		Optional.ofNullable(updatedUser.getTwoFa()).ifPresent(user::setTwoFa);
+		user.setTwoFa(updatedUser.isTwoFa());
 
 		updateLinks(user , updatedUser.getLinks());
 	}
