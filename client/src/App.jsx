@@ -7,7 +7,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 
 const LoginScript = lazy(() => import("./components/Login"));
 const Register = lazy(() => import("./components/Register"));
@@ -70,7 +69,6 @@ const AuthWrapper = ({ isAuthenticated }) => {
   const handleTokenExpiry = () => {
     if (!isAuthenticated()) {
       localStorage.removeItem("token");
-      localStorage.removeItem("2fa_complete");
       navigate("/login", { replace: true });
     }
   };
@@ -141,8 +139,6 @@ const AuthWrapper = ({ isAuthenticated }) => {
           <Route path="/" element={<Navigate to="/home" replace />} />
         </Routes>
       </Suspense>
-
-      {!isAuthenticated() && <Footer />}
     </div>
   );
 };

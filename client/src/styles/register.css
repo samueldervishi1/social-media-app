@@ -3,7 +3,10 @@ body.register-page {
   margin: 0;
   padding: 0;
   height: 100vh;
-  overflow: hidden;
+  height: auto;
+  margin: 10px auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 body.register-page::before {
@@ -38,7 +41,7 @@ body.register-page::before {
 }
 
 .regTitle {
-  color: #1c1c1d;;
+  color: #1c1c1d;
 }
 
 .fill {
