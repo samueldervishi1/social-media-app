@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -24,7 +24,7 @@ const CommunitiesList = lazy(() => import("./components/CommunitiesList"));
 const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
 const UserCommunities = lazy(() => import("./components/UserCommunities"));
 const Enable2FA = lazy(() => import("./components/Enable2FA"));
-const Verify2FA = lazy(() => import("./components/Verify2FA"));
+// const Verify2FA = lazy(() => import("./components/Verify2FA"));
 
 const App = () => {
   const isAuthenticated = () => {
@@ -51,6 +51,9 @@ const App = () => {
 };
 
 const AuthWrapper = ({ isAuthenticated }) => {
+  const [isTwoFaVerified, setTwoFaVerified] = useState(
+    () => JSON.parse(localStorage.getItem("isTwoFaVerified")) || false
+  );
   const navigate = useNavigate();
 
   const requires2FA = () => {
@@ -69,17 +72,26 @@ const AuthWrapper = ({ isAuthenticated }) => {
   const handleTokenExpiry = () => {
     if (!isAuthenticated()) {
       localStorage.removeItem("token");
+      localStorage.removeItem("isTwoFaVerified");
       navigate("/login", { replace: true });
     }
+  };
+
+  const handle2FAVerification = () => {
+    setTwoFaVerified(true);
+    localStorage.setItem("isTwoFaVerified", true);
   };
 
   useEffect(() => {
     handleTokenExpiry();
   }, []);
 
+  const shouldShowNavbar =
+    isAuthenticated() && (!requires2FA() || handle2FAVerification);
+
   return (
     <div className="App">
-      {isAuthenticated() && !requires2FA() && <Navbar />}
+      {shouldShowNavbar && <Navbar />}
 
       <Suspense
         fallback={<div style={{ textAlign: "center" }}>Loading...</div>}
@@ -127,10 +139,17 @@ const AuthWrapper = ({ isAuthenticated }) => {
             path="/security/2fa/enable"
             element={isAuthenticated() ? <Enable2FA /> : <LoginScript />}
           />
-          <Route
+          {/* <Route
             path="/security/2fa/verify"
-            element={isAuthenticated() ? <Verify2FA /> : <LoginScript />}
-          />
+            element={
+              isAuthenticated() && requires2FA() && !isTwoFaVerified ? (
+                <Verify2FA onVerify={handle2FAVerification} />
+              ) : (
+                <Navigate to="/home" replace />
+              )
+            }
+          /> */}
+
           <Route path="/terms" element={<TermsAndServices />} />
           <Route path="/premium" element={<PremiumPage />} />
           <Route path="/about" element={<About />} />

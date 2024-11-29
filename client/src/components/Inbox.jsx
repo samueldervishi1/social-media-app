@@ -94,20 +94,6 @@ const Inbox = ({ user }) => {
       <div className="user-card">
         <h4 style={{ textAlign: "center" }}>
           {" "}
-          <IoIosArrowRoundBack
-            className="back-icon1"
-            onClick={handleBackHome}
-            style={{
-              backgroundColor: "lightgrey",
-              borderRadius: "50%",
-              width: 30,
-              height: 30,
-              gap: 20,
-              transition: "background-color 0.3s ease",
-              marginRight: 10,
-              cursor: "pointer",
-            }}
-          />
           Followers
         </h4>
         {user?.username && <h3>{user.username}</h3>}

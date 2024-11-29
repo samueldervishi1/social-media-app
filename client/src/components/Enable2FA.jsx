@@ -27,11 +27,8 @@ function Enable2FA() {
           }
         );
 
-        if (response.data.twoFa === "active") {
-          setUserTwoFAStatus("active");
-        } else {
-          setUserTwoFAStatus("inactive");
-        }
+        // Update userTwoFAStatus based on the boolean value
+        setUserTwoFAStatus(response.data.twoFa);
       } catch (error) {
         console.error("Error fetching 2FA status", error);
       }
@@ -63,7 +60,7 @@ function Enable2FA() {
 
         await axios.put(
           `http://localhost:5000/api/v2/users/update/${userId}`,
-          { twoFa: "active" },
+          { twoFa: true }, // Update twoFa to boolean true
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -73,7 +70,7 @@ function Enable2FA() {
 
         alert("2FA is now enabled");
         setIsVerified(true);
-        navigate.push("/home");
+        navigate("/home");
       } else {
         alert("Invalid code. Please try again.");
       }
@@ -84,18 +81,18 @@ function Enable2FA() {
 
   return (
     <div className="container mt-4">
-      {userTwoFAStatus !== "active" && (
+      {userTwoFAStatus === false && (
         <h2>Enable Two-Factor Authentication (2FA)</h2>
       )}
 
-      {userTwoFAStatus === "active" ? (
+      {userTwoFAStatus === true ? (
         <div
           className="alert alert-success mt-4"
           style={{ textAlign: "center" }}
         >
           <strong>Success!</strong> 2FA is already enabled on your account.
         </div>
-      ) : userTwoFAStatus === "inactive" ? (
+      ) : userTwoFAStatus === false ? (
         <div className="alert alert-warning mt-4">
           <strong>Info:</strong> 2FA is not yet enabled. Please follow the steps
           below to enable it.
@@ -104,12 +101,12 @@ function Enable2FA() {
         <div>Loading 2FA status...</div>
       )}
 
-      {!isVerified && userTwoFAStatus !== "active" && !qrCode ? (
+      {!isVerified && userTwoFAStatus === false && !qrCode ? (
         <button className="btn btn-primary" onClick={handleEnable2FA}>
           Enable 2FA
         </button>
       ) : (
-        userTwoFAStatus !== "active" && (
+        userTwoFAStatus === false && (
           <div>
             <h4>Scan the QR code or enter the secret manually</h4>
             <div className="mb-4">

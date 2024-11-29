@@ -52,22 +52,24 @@ const LoginScript = () => {
 
           const userId = getUserIdFromToken();
 
-          const statusResponse = await fetch(
-            `http://localhost:5000/api/v2/auth/2fa-status/${userId}`
-          );
+          navigate("/home");
 
-          if (statusResponse.ok) {
-            const status = await statusResponse.text();
+          // const statusResponse = await fetch(
+          //   `http://localhost:5000/api/v2/auth/2fa-status/${userId}`
+          // );
 
-            if (status === "redirect-to-2fa") {
-              navigate("/security/2fa/verify");
-            } else if (status === "redirect-to-home") {
-              navigate("/home");
-            }
-          } else {
-            setError("Failed to verify 2FA status. Please try again.");
-            setLoading(false);
-          }
+          // if (statusResponse.ok) {
+          //   const status = await statusResponse.text();
+
+          //   // if (status === "redirect-to-2fa") {
+          //   //   navigate("/security/2fa/verify");
+          //   // } else if (status === "redirect-to-home") {
+          //   //   navigate("/home");
+          //   // }
+          // } else {
+          //   setError("Failed to verify 2FA status. Please try again.");
+          //   setLoading(false);
+          // }
         } else {
           setError("Unexpected response from the server.");
           setLoading(false);

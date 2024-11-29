@@ -224,15 +224,10 @@ const Navbar = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item href="/profile">
-                    <IoPersonCircleOutline className="icon-p" />
                     See your profile {username}
                   </Dropdown.Item>
-                  <Dropdown.Item href="#">
-                    <BiPlusCircle className="icon-p" />
-                    Add another account
-                  </Dropdown.Item>
+                  <Dropdown.Item href="#">Add another account</Dropdown.Item>
                   <Dropdown.Item href="/c/user/communities">
-                    <CgCommunity className="icon-p" />
                     Your communities
                   </Dropdown.Item>
                   <Dropdown.Divider className="divider-dp" />
@@ -300,12 +295,11 @@ const Navbar = () => {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item href="/profile">
-                  <IoPersonCircleOutline className="icon-p" />
                   See your profile {username}
                 </Dropdown.Item>
-                <Dropdown.Item href="#">
-                  <BiPlusCircle className="icon-p" />
-                  Add another account
+                <Dropdown.Item href="#">Add another account</Dropdown.Item>
+                <Dropdown.Item href="/c/user/communities">
+                  Your communities
                 </Dropdown.Item>
                 <Dropdown.Divider className="divider-dp" />
                 <Dropdown.Item onClick={handleLogout}>

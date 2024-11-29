@@ -3,3 +3,5 @@ websocket/.env
 websocket/.env
 ws-auth/.idea/dataSources.xml
 ws-auth/.idea/sqldialects.xml
+ws-auth/.idea/websocket.iml
+ws-auth/.idea/websocket.iml

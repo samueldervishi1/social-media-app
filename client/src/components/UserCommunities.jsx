@@ -39,7 +39,6 @@ const UserCommunities = () => {
     fetchCommunities();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
@@ -68,6 +67,7 @@ const styles = {
     gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
     gap: "20px",
     padding: "20px",
+    textAlign: "center"
   },
   card: {
     border: "1px solid #ccc",
