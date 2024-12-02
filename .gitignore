@@ -5,3 +5,7 @@ ws-auth/.idea/dataSources.xml
 ws-auth/.idea/sqldialects.xml
 ws-auth/.idea/websocket.iml
 ws-auth/.idea/websocket.iml
+ws-auth/model/bot.py
+/ws-auth/model
+ws-auth/model/model.py
+*.py

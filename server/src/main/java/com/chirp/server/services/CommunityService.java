@@ -1,11 +1,11 @@
 package com.chirp.server.services;
 
 import com.chirp.server.exceptions.InternalServerErrorException;
-import com.chirp.server.models.Community;
-import com.chirp.server.models.CommunityPost;
-import com.chirp.server.models.Like;
+import com.chirp.server.models.*;
+import com.chirp.server.repositories.CommunityLikePostRepository;
 import com.chirp.server.repositories.CommunityPostRepository;
 import com.chirp.server.repositories.CommunityRepository;
+import com.chirp.server.repositories.LikesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ public class CommunityService {
 	private CommunityPostRepository communityPostRepository;
 
 	@Autowired
-	private LikesService likeService;
+	private CommunityLikePostRepository communityLikePostRepository;
 
 	private CommunityPost createPostForCommunity(String ownerId , String content , String communityName) {
 		CommunityPost post = new CommunityPost();
@@ -68,12 +69,73 @@ public class CommunityService {
 		return savedPost;
 	}
 
-	public Like likePostForCommunity(String userId , String postId) throws Exception {
-		return likeService.likeEntity(userId , postId , true);
-	}
+	public CommunityLikePost likePostForCommunity(String userId , String postId , String communityName) throws Exception {
+		logger.info("Starting the like process for userId: {} and postId: {} in community: {}" , userId , postId , communityName);
 
-	public Like likeCommentForCommunity(String userId , String commentId) throws Exception {
-		return likeService.likeEntity(userId , commentId , false);
+		Optional<Community> communityOptional = communityRepository.findByName(communityName);
+		if (communityOptional.isEmpty()) {
+			logger.error("Community with name: {} not found." , communityName);
+			throw new Exception("Community does not exist");
+		}
+		logger.info("Community with name: {} found." , communityName);
+
+		Community community = communityOptional.get();
+
+		if (!community.getUserIds().contains(userId)) {
+			logger.warn("User with userId: {} is not part of the community: {}" , userId , communityName);
+			throw new Exception("User is not part of the community");
+		}
+		logger.info("User with userId: {} is part of the community: {}" , userId , communityName);
+
+		if (!community.getPostIds().contains(postId)) {
+			logger.error("Post with postId: {} does not exist in community: {}" , postId , communityName);
+			throw new Exception("Post does not exist in the community");
+		}
+		logger.info("Post with postId: {} exists in the community: {}" , postId , communityName);
+
+		if (communityLikePostRepository.existsByUserIdAndCommunityNameAndPostIdsContaining(userId , communityName , postId)) {
+			logger.warn("User with userId: {} has already liked post with postId: {} in community: {}" , userId , postId , communityName);
+			throw new Exception("User has already liked the post in the community");
+		}
+
+		CommunityLikePost communityLikePost = communityLikePostRepository.findByUserIdAndCommunityName(userId , communityName);
+		if (communityLikePost == null) {
+			communityLikePost = new CommunityLikePost();
+			communityLikePost.setUserId(userId);
+			communityLikePost.setCommunityName(communityName);
+			communityLikePost.setPostIds(new ArrayList<>());
+			communityLikePost.setCreatedAt(LocalDateTime.now());
+		}
+
+		List<String> postIds = communityLikePost.getPostIds();
+		postIds.add(postId);
+		communityLikePost.setPostIds(postIds);
+
+		communityLikePostRepository.save(communityLikePost);
+		logger.info("New like added for userId: {} and postId: {} in community: {}" , userId , postId , communityName);
+
+		Optional<CommunityPost> communityPostOptional = communityPostRepository.findById(postId);
+		if (communityPostOptional.isPresent()) {
+			CommunityPost communityPost = communityPostOptional.get();
+			List<Like> likes = communityPost.getLikes();
+
+			Like newPostLike = new Like();
+			newPostLike.setUserId(userId);
+
+			if (!likes.contains(newPostLike)) {
+				likes.add(newPostLike);
+				communityPost.setLikes(likes);
+				communityPostRepository.save(communityPost);
+				logger.info("Updated the likes array in the communityPost for postId: {}" , postId);
+			} else {
+				logger.warn("User with userId: {} has already liked post with postId: {} in the community post's likes array." , userId , postId);
+			}
+		} else {
+			logger.error("CommunityPost with postId: {} not found." , postId);
+			throw new Exception("Post does not exist in the communityPost collection");
+		}
+
+		return communityLikePost;
 	}
 
 	public int getUserCountForCommunity(String name) {
@@ -146,6 +208,12 @@ public class CommunityService {
 		List<Community> communities = communityRepository.findAll();
 		logger.info("Retrieved {} communities" , communities.size());
 		return communities;
+	}
+
+	public List<CommunityPost> getAllDBPosts() {
+		List<CommunityPost> posts = communityPostRepository.findAll();
+		posts.forEach(post -> logger.info("Fetched post with date: {}" , post.getCreateTime()));
+		return posts;
 	}
 
 	private void logAndThrowNotFound(String identifier) {

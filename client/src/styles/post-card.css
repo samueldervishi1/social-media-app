@@ -56,6 +56,14 @@
   display: flex;
 }
 
+.community-name-card {
+  top: -33px;
+  margin-left: 65px;
+  position: relative;
+  text-decoration: underline;
+  color: #00c6ff;
+}
+
 .three-dots {
   font-size: 25px;
   cursor: pointer;

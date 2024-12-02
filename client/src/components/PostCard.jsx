@@ -26,6 +26,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
+  const [communityName, setCommunityName] = useState("");
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
   const [showMenu, setShowMenu] = useState(false);
@@ -442,6 +443,28 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchCommunityName = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/v2/communities/post/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setCommunityName(response.data.communityName);
+        }
+      } catch (error) {
+        console.error("Error fetching community name:", error.message);
+      }
+    };
+
+    fetchCommunityName();
+  }, [id]);
+
   const formatTime = (postTime) => {
     const date = new Date(`1970-01-01T${postTime}Z`);
     return format(date, "hh:mm a");
@@ -464,7 +487,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     if (interval >= 1) return interval + "min ago";
     return seconds < 10 ? "just now" : seconds + "s ago";
   };
-  
+
   const formattedPostTime = timeSincePost(postDate, postTime);
 
   const toggleComments = (e) => {
@@ -539,6 +562,16 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           </div>
         )}
       </div>
+      {communityName && (
+        <span
+          className="community-name-card"
+          onClick={() => navigate(`/c/community/${communityName}`)}
+          style={{ cursor: "pointer" }}
+        >
+          c/{communityName}
+        </span>
+      )}
+
       <div className="post-body">
         <div>
           <p className="post-content">{content}</p>

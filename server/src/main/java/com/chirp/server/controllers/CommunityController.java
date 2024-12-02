@@ -1,10 +1,7 @@
 package com.chirp.server.controllers;
 
 import com.chirp.server.exceptions.NotFoundException;
-import com.chirp.server.models.Community;
-import com.chirp.server.models.CommunityPost;
-import com.chirp.server.models.Like;
-import com.chirp.server.models.Post;
+import com.chirp.server.models.*;
 import com.chirp.server.services.CommunityService;
 import com.chirp.server.services.PostService;
 import org.slf4j.Logger;
@@ -35,6 +32,17 @@ public class CommunityController {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(communities , HttpStatus.OK);
+	}
+
+	@GetMapping("/posts/all")
+	public ResponseEntity<List<CommunityPost>> getAllPosts() {
+		try {
+			List<CommunityPost> posts = communityService.getAllDBPosts();
+			return ResponseEntity.ok(posts);
+		} catch (Exception e) {
+			logger.error("Error retrieving all posts: {}" , e.getMessage() , e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 	@GetMapping("/c/{communityId}")
@@ -123,22 +131,15 @@ public class CommunityController {
 	}
 
 	@PostMapping("/{communityName}/posts/{postId}/like")
-	public ResponseEntity<Like> likePost(
+	public ResponseEntity<CommunityLikePost> likePost(
 			@PathVariable String communityName ,
 			@PathVariable String postId ,
 			@RequestParam String userId) throws Exception {
-
-		Like like = communityService.likePostForCommunity(userId , postId);
-		return ResponseEntity.ok(like);
-	}
-
-	@PostMapping("/{communityName}/comments/{commentId}/like")
-	public ResponseEntity<Like> likeComment(
-			@PathVariable String communityName ,
-			@PathVariable String commentId ,
-			@RequestParam String userId) throws Exception {
-
-		Like like = communityService.likeCommentForCommunity(userId , commentId);
-		return ResponseEntity.ok(like);
+		try {
+			CommunityLikePost newLike = communityService.likePostForCommunity(userId , postId , communityName);
+			return new ResponseEntity<>(newLike , HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null , HttpStatus.BAD_REQUEST);
+		}
 	}
 }
