@@ -35,7 +35,6 @@ const App = () => {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
       const expirationTime = decodedToken.exp * 1000;
       const twoFaStatus = decodedToken.twoFa;
-      console.log(twoFaStatus);
       return Date.now() < expirationTime;
     } catch (error) {
       console.error("Error decoding token: ", error.message);

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import MessageComponent from "./Message";
-import { MdMessage } from "react-icons/md";
-import { IoIosArrowRoundBack } from "react-icons/io";
 import "../styles/inbox.css";
+import defaultUserIcon from "../assets/user.webp";
 
 import { getUserIdFromToken } from "../auth/authUtils";
 
@@ -15,9 +13,8 @@ const Inbox = ({ user }) => {
   const [followers, setFollowers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
 
-  //fetch user followers list
+  // Fetch followers
   useEffect(() => {
     const fetchFollowers = async () => {
       const userId = getUserIdFromToken();
@@ -38,7 +35,6 @@ const Inbox = ({ user }) => {
         );
         if (response.status === 200) {
           const followerIds = response.data?.followerId || [];
-
           if (followerIds.length > 0) {
             const followersData = await Promise.all(
               followerIds.map(async (followerId) => {
@@ -85,41 +81,8 @@ const Inbox = ({ user }) => {
     }
   };
 
-  const handleBackHome = () => {
-    navigate("/home");
-  };
-
   return (
-    <div style={{ display: "flex", position: "relative" }}>
-      <div className="user-card">
-        <h4 style={{ textAlign: "center" }}>
-          {" "}
-          Followers
-        </h4>
-        {user?.username && <h3>{user.username}</h3>}
-        {user?.email && <p>Email: {user.email}</p>}
-        {errorMessage ? (
-          <p>{errorMessage}</p>
-        ) : followers.length > 0 ? (
-          <div className="followers-list">
-            <ul>
-              {followers.map((follower) => (
-                <li key={follower.id}>
-                  {follower.username}
-                  <button
-                    className="sheno"
-                    onClick={() => handleMessageClick(follower)}
-                  >
-                    <MdMessage />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p>No followers yet. Follow people to start chatting!</p>
-        )}
-      </div>
+    <div className="inbox-container">
       <div
         className={`message-container ${showMessageComponent ? "open" : ""}`}
       >
@@ -128,6 +91,26 @@ const Inbox = ({ user }) => {
             senderId={getUserIdFromToken()}
             receiverId={receiverId}
           />
+        )}
+      </div>
+
+      <div className="bottom-navbar">
+        {errorMessage ? (
+          <p>{errorMessage}</p>
+        ) : followers.length > 0 ? (
+          <div className="followers-list">
+            {followers.map((follower) => (
+              <button
+                key={follower.id}
+                className="follower-btn"
+                onClick={() => handleMessageClick(follower)}
+              >
+                <img src={defaultUserIcon} className="follower-avatar" />
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p>No followers yet. Follow people to start chatting!</p>
         )}
       </div>
     </div>

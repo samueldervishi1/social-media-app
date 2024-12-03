@@ -135,7 +135,7 @@ const CommunitiesList = () => {
   return (
     <div className="container">
       <h1 className="title">Popular Communities</h1>
-      {error && <p className="error">Error: {error}</p>}
+      {error && <p className="error">Something went wrong. Please try again later.</p>}
 
       {loading ? (
         <div className="loading-community">
@@ -206,7 +206,6 @@ const CommunitiesList = () => {
                         : "Loading..."}
                     </span>
                   </h2>
-                  <p>{community.description}</p>
                 </div>
               </div>
             );

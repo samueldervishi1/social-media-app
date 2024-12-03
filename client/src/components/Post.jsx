@@ -3,6 +3,7 @@ import axios from "axios";
 import { CiImageOn, CiLocationArrow1 } from "react-icons/ci";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import Picker from "emoji-picker-react";
+import { Snackbar, Alert } from "@mui/material";
 import "../styles/post.css";
 
 import { getUsernameFromToken } from "../auth/authUtils";
@@ -12,6 +13,13 @@ const PostForm = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   // Submits a new post to the server
   const handlePostSubmit = async (event) => {
@@ -22,6 +30,9 @@ const PostForm = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("Token not found in localStorage.");
+      setSnackbarMessage("Token not found. Please log in again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
       setIsSubmitting(false);
       return;
     }
@@ -42,7 +53,9 @@ const PostForm = () => {
       );
 
       if (response.status === 200) {
-        alert("Post created successfully!");
+        setSnackbarMessage("Post created successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
         localStorage.removeItem("cachedPosts");
         window.location.reload();
       }
@@ -53,6 +66,9 @@ const PostForm = () => {
         "Error creating post:",
         error.response?.data || error.message
       );
+      setSnackbarMessage("Error creating post. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +104,7 @@ const PostForm = () => {
   // Retrieves the user's location and adds it to the post content
   const handleLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+      console.error("Geolocation is not supported by your browser.");
       return;
     }
 
@@ -132,7 +148,9 @@ const PostForm = () => {
       },
       (error) => {
         console.error("Error fetching location:", error.message);
-        alert("Unable to retrieve your location.");
+        setSnackbarMessage("Unable to retrieve your location.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       }
     );
   };
@@ -205,6 +223,21 @@ const PostForm = () => {
           </div>
         )}
       </form>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

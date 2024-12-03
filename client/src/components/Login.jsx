@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import checkMarkgif from "../assets/check.gif";
+import { Snackbar } from "@mui/material";
 import customLoadingGif from "../assets/ZKZg.gif";
 import "../styles/login.css";
-
 import { getUserIdFromToken } from "../auth/authUtils";
 
 const LoginScript = () => {
@@ -21,9 +20,13 @@ const LoginScript = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState(false);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarType, setSnackbarType] = useState("success");
+
   const navigate = useNavigate();
 
-  //handle the login process
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -53,23 +56,6 @@ const LoginScript = () => {
           const userId = getUserIdFromToken();
 
           navigate("/home");
-
-          // const statusResponse = await fetch(
-          //   `http://localhost:5000/api/v2/auth/2fa-status/${userId}`
-          // );
-
-          // if (statusResponse.ok) {
-          //   const status = await statusResponse.text();
-
-          //   // if (status === "redirect-to-2fa") {
-          //   //   navigate("/security/2fa/verify");
-          //   // } else if (status === "redirect-to-home") {
-          //   //   navigate("/home");
-          //   // }
-          // } else {
-          //   setError("Failed to verify 2FA status. Please try again.");
-          //   setLoading(false);
-          // }
         } else {
           setError("Unexpected response from the server.");
           setLoading(false);
@@ -106,31 +92,39 @@ const LoginScript = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       if (response.ok) {
         setPasswordUpdateSuccess(true);
-        setPasswordUpdateMessage("Password updated successfully!");
+        setSnackbarMessage("Password updated successfully!");
+        setSnackbarType("success");
+        setOpenSnackbar(true);
+        setShowModal(false);
+
         setTimeout(() => {
-          setShowModal(false);
           setUsername("");
           setNewPassword("");
           setConfirmPassword("");
           setPasswordUpdateMessage("");
           setPasswordUpdateSuccess(false);
-        }, 2000);
+        }, 5000);
       } else {
         const errorMessage = await response.text();
         setPasswordUpdateMessage(errorMessage);
+        setSnackbarMessage(errorMessage);
+        setSnackbarType("error");
+        setOpenSnackbar(true);
       }
     } catch (error) {
       console.error("Error updating password:", error.message);
       setPasswordUpdateMessage(
         "An error occurred while updating the password."
       );
+      setSnackbarMessage("An error occurred while updating the password.");
+      setSnackbarType("error");
+      setOpenSnackbar(true);
     } finally {
       setLoadingUpdate(false);
     }
@@ -296,32 +290,48 @@ const LoginScript = () => {
               </div>
             </div>
             {passwordUpdateMessage && (
-              <p className="password-update-message">{passwordUpdateMessage}</p>
+              <p
+                className={
+                  passwordUpdateSuccess ? "text-success" : "text-danger"
+                }
+              >
+                {passwordUpdateMessage}
+              </p>
             )}
-            {passwordUpdateSuccess && (
-              <div className="logout-loader">
-                <div className="logout-box">
-                  <img src={checkMarkgif} alt="Update successful!" />
-                  <p>Password updated successfully!</p>
-                </div>
-              </div>
-            )}
+            <button
+              type="submit"
+              disabled={loadingUpdate}
+              className="btn btn-primary"
+            >
+              {loadingUpdate ? (
+                <img
+                  src={customLoadingGif}
+                  className="custom-login-loader"
+                  alt="Loading..."
+                />
+              ) : (
+                "Update Password"
+              )}
+            </button>
           </form>
         </Modal.Body>
-
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handlePasswordUpdate}
-            disabled={loadingUpdate}
-          >
-            {loadingUpdate ? "Updating..." : "Update Password"}
-          </Button>
-        </Modal.Footer>
       </Modal>
+
+      <Snackbar
+        open={openSnackbar}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        message={snackbarMessage}
+        autoHideDuration={5000}
+        ContentProps={{
+          style: {
+            backgroundColor: snackbarType === "success" ? "green" : "red",
+          },
+        }}
+      />
     </div>
   );
 };

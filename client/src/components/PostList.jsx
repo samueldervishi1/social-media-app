@@ -28,14 +28,7 @@ const PostList = () => {
         }
       );
 
-      const communityPostsResponse = await axios.get(
-        `http://localhost:5000/api/v2/communities/posts/all`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const allPosts = [...userPostsResponse.data, ...communityPostsResponse.data];
+      const allPosts = [...userPostsResponse.data];
 
       const filteredPosts = allPosts.filter((post) => !post.deleted);
 

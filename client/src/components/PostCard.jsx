@@ -8,6 +8,7 @@ import { AiOutlineComment } from "react-icons/ai";
 import { IoSend } from "react-icons/io5";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import Modal from "react-bootstrap/Modal";
+import { Snackbar, Alert } from "@mui/material";
 import defaultUserIcon from "../assets/user.webp";
 import "../styles/post-card.css";
 
@@ -33,7 +34,17 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const navigate = useNavigate();
+
+  const isUserPostOwner = getUserIdFromToken() === userId;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -307,10 +318,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const toggleLike = async (e) => {
     e.stopPropagation();
     const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
-      console.error("User not authenticated or token invalid.");
-      return;
-    }
 
     try {
       if (!liked) {
@@ -389,11 +396,17 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     const userIdFromToken = getUserIdFromToken();
     if (!userIdFromToken) {
       console.error("User not authenticated or token invalid.");
+      setSnackbarMessage("Authentication error. Please log in again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
       return;
     }
 
     if (userIdFromToken !== userId) {
       console.error("You are not authorized to delete this post.");
+      setSnackbarMessage("You are not authorized to delete this post.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
       return;
     }
 
@@ -404,16 +417,20 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          credentials: "include",
         }
       );
+
       if (response.status === 200) {
-        console.log("Post deleted successfully");
-        alert("Post deleted successfully!");
+        setSnackbarMessage("Post deleted successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
         window.location.reload();
       }
     } catch (error) {
       console.error("Error deleting post:", error.message);
+      setSnackbarMessage("Error deleting post. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -502,8 +519,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
-
-  const isUserPostOwner = getUserIdFromToken() === userId;
 
   const handleProfileLinkClick = (e) => {
     e.stopPropagation();
@@ -686,6 +701,20 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           </Modal.Body>
         </Modal>
       </div>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

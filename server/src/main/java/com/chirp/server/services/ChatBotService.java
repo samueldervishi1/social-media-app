@@ -2,7 +2,6 @@ package com.chirp.server.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -11,9 +10,11 @@ import java.util.HashMap;
 public class ChatBotService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ChatBotService.class);
+	private final SummarizationService summarizationService;
 
-	@Autowired
-	private SummarizationService summarizationService;
+	public ChatBotService(SummarizationService summarizationService) {
+		this.summarizationService = summarizationService;
+	}
 
 	public HashMap<String, Object> getResponses(String input) {
 		logger.info("Input received: {}" , input);

@@ -45,6 +45,12 @@ public class CommunityController {
 		}
 	}
 
+	@GetMapping("/count/{postId}")
+	public ResponseEntity<Integer> getLikesCountForPost(@PathVariable String postId) {
+		int count = communityService.getLikesCountForPost(postId);
+		return ResponseEntity.ok(count);
+	}
+
 	@GetMapping("/c/{communityId}")
 	public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
 		try {

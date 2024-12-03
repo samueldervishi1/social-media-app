@@ -76,7 +76,7 @@ public class LikesService {
 	}
 
 	private void updatePostLikes(String userId , String postId) {
-		Post post = getEntityById(postRepository.findById(postId) , postId , "Post");
+		Post post = getEntityById(postRepository.findById(postId) , postId);
 		if (!post.getLikes().contains(userId)) {
 			post.getLikes().add(userId);
 		}
@@ -101,7 +101,7 @@ public class LikesService {
 	}
 
 	public int getLikesCountForPost(String postId) {
-		return getCountForEntity(likesRepository.findByPostIdContaining(postId) , postId , "post");
+		return getCountForEntity(likesRepository.findByPostIdContaining(postId) , postId);
 	}
 
 	public List<Like> getLikesForComment(String commentId) {
@@ -112,8 +112,8 @@ public class LikesService {
 		return getLikesForEntity(likesRepository.findByUserId(userId) , userId , "user");
 	}
 
-	private <T> T getEntityById(Optional<T> entity , String identifier , String entityType) {
-		return entity.orElseThrow(() -> new ResourceNotFoundException(entityType + " with ID " + identifier + " not found"));
+	private <T> T getEntityById(Optional<T> entity , String identifier) {
+		return entity.orElseThrow(() -> new ResourceNotFoundException("Post" + " with ID " + identifier + " not found"));
 	}
 
 	private List<Like> getLikesForEntity(List<Like> likes , String entityId , String entityType) {
@@ -123,9 +123,9 @@ public class LikesService {
 		return likes;
 	}
 
-	private int getCountForEntity(List<Like> likes , String entityId , String entityType) {
+	private int getCountForEntity(List<Like> likes , String entityId) {
 		int count = likes.size();
-		logger.info("{} count for {} with ID {}: {}" , entityType , entityType , entityId , count);
+		logger.info("{} count for {} with ID {}: {}" , "post" , "post" , entityId , count);
 		return count;
 	}
 

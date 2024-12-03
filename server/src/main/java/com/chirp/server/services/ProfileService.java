@@ -26,6 +26,13 @@ public class ProfileService {
 
 	public User updateProfile(String userId , User updatedUser) throws Exception {
 		try {
+			if (userId == null || userId.isEmpty()) {
+				throw new IllegalArgumentException("User ID cannot be null or empty");
+			}
+
+			logger.info("Updating profile for user ID: {}" , userId);
+			logger.info("Received updated user details: {}" , updatedUser);
+
 			User user = findUserById(userId);
 
 			Optional.ofNullable(updatedUser.getFullName()).ifPresent(user::setFullName);
@@ -33,6 +40,7 @@ public class ProfileService {
 			updateFields(user , updatedUser);
 
 			User updatedUserRecord = userRepository.save(user);
+
 			logger.info("User updated successfully: {}" , user.getId());
 			return updatedUserRecord;
 
@@ -43,6 +51,10 @@ public class ProfileService {
 
 	public void updatePassword(String userId , String oldPassword , String newPassword) throws Exception {
 		try {
+			if (userId == null || userId.isEmpty()) {
+				throw new IllegalArgumentException("User ID cannot be null or empty");
+			}
+
 			User user = findUserById(userId);
 
 			if (!passwordEncoder.matches(oldPassword , user.getPassword())) {
@@ -52,6 +64,7 @@ public class ProfileService {
 			user.setPassword(passwordEncoder.encode(newPassword));
 			userRepository.save(user);
 			logger.info("Password updated successfully for user ID: {}" , userId);
+
 		} catch (Exception e) {
 			handleException("updating password" , userId , e);
 		}
@@ -59,11 +72,15 @@ public class ProfileService {
 
 	public void softDeleteUser(String userId) throws Exception {
 		try {
+			if (userId == null || userId.isEmpty()) {
+				throw new IllegalArgumentException("User ID cannot be null or empty");
+			}
+
 			User user = findUserById(userId);
 			user.setDeleted(true);
 
 			userRepository.save(user);
-			logger.info("User deleted for user ID: {}" , userId);
+			logger.info("User soft deleted for user ID: {}" , userId);
 		} catch (Exception e) {
 			handleException("soft deleting user" , userId , e);
 		}
@@ -79,6 +96,8 @@ public class ProfileService {
 
 			user.getLinks().clear();
 			user.getLinks().addAll(filteredNewLinks);
+
+			logger.info("User links updated for user ID: {}" , user.getId());
 		}
 	}
 
@@ -90,9 +109,16 @@ public class ProfileService {
 		user.setTwoFa(updatedUser.isTwoFa());
 
 		updateLinks(user , updatedUser.getLinks());
+
+		logger.info("Fields updated for user ID: {}" , user.getId());
 	}
 
 	private User findUserById(String userId) {
+		if (userId == null || userId.isEmpty()) {
+			throw new IllegalArgumentException("User ID cannot be null or empty");
+		}
+
+		logger.info("Fetching user by ID: {}" , userId);
 		return userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
 	}

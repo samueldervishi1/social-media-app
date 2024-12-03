@@ -34,9 +34,6 @@ public class PostService {
 	@Autowired
 	private ActivityRepository activityRepository;
 
-	@Autowired
-	private CommunityRepository communityRepository;
-
 	public void createPost(String username , Post post) {
 		User user = getUserByUsername(username);
 		preparePost(post , user);

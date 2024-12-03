@@ -216,6 +216,16 @@ public class CommunityService {
 		return posts;
 	}
 
+	public int getLikesCountForPost(String postId) {
+		return getCountForEntity(communityLikePostRepository.findByPostIdsContaining(postId) , postId);
+	}
+
+	private int getCountForEntity(List<CommunityLikePost> likes , String entityId) {
+		int count = likes.size();
+		logger.info("{} count for {} with ID {}: {}" , "post" , "post" , entityId , count);
+		return count;
+	}
+
 	private void logAndThrowNotFound(String identifier) {
 		logger.warn("{} with {} does not exist" , "Community" , identifier);
 		throw new IllegalArgumentException("Community" + " with " + identifier + " does not exist");

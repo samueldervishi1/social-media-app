@@ -25,6 +25,7 @@ const CommunityDetails = () => {
   const [loading, setLoading] = useState(true);
   const [likeStatus, setLikeStatus] = useState({});
   const [activeQuestion, setActiveQuestion] = useState(null);
+  const [likeCount, setLikeCount] = useState(0);
 
   const [showPostModal, setShowPostModal] = useState(false);
   const [postContent, setPostContent] = useState("");
@@ -67,40 +68,51 @@ const CommunityDetails = () => {
     fetchCommunityDetails();
   }, [name]);
 
+  //fetch posts per community
   const fetchPosts = async (postIds) => {
     if (!postIds || postIds.length === 0) return;
 
     try {
       const token = localStorage.getItem("token");
-      const postDetailsPromises = postIds.map((postId) =>
-        axios.get(`http://localhost:5000/api/v2/communities/post/${postId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-      );
+      const postDetailsPromises = postIds.map(async (postId) => {
+        const postResponse = await axios.get(
+          `http://localhost:5000/api/v2/communities/post/${postId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const post = postResponse.data;
 
-      const postResponses = await Promise.all(postDetailsPromises);
-      const postDetails = await Promise.all(
-        postResponses.map(async (res) => {
-          const post = res.data;
-          try {
-            const userResponse = await axios.get(
-              `http://localhost:5000/api/v2/users/${post.ownerId}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            );
-            post.author = userResponse.data.username;
-          } catch (userError) {
-            console.error(
-              `Failed to fetch user details for ownerId ${post.ownerId}:`,
-              userError.message
-            );
-            post.author = "Unknown";
-          }
-          return post;
-        })
-      );
+        try {
+          const likesResponse = await axios.get(
+            `http://localhost:5000/api/v2/communities/count/${postId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          post.likesCount = likesResponse.data;
+        } catch (likesError) {
+          console.error(
+            `Failed to fetch likes count for postId ${postId}:`,
+            likesError.message
+          );
+          post.likesCount = 0;
+        }
 
+        try {
+          const userResponse = await axios.get(
+            `http://localhost:5000/api/v2/users/${post.ownerId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          post.author = userResponse.data.username;
+        } catch (userError) {
+          console.error(
+            `Failed to fetch user details for ownerId ${post.ownerId}:`,
+            userError.message
+          );
+          post.author = "Unknown";
+        }
+
+        return post;
+      });
+
+      const postDetails = await Promise.all(postDetailsPromises);
       setPosts(postDetails);
     } catch (err) {
       console.error("Error fetching posts:", err.message);
@@ -163,6 +175,44 @@ const CommunityDetails = () => {
     }
   };
 
+  //handle create community post
+  const handleCreatePost = async () => {
+    const token = localStorage.getItem("token");
+    const userId = getUserIdFromToken();
+
+    if (!postContent.trim()) {
+      alert("Post content cannot be empty");
+      return;
+    }
+
+    const postData = {
+      content: postContent,
+      ownerId: userId,
+    };
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/v2/communities/${name}/posts`,
+        postData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Post created successfully!");
+        setPostContent("");
+        setShowPostModal(false);
+        window.location.reload();
+      }
+    } catch (err) {
+      alert("Error creating post: " + err.message);
+    }
+  };
+
   const handleProfileLinkClick = (e) => {
     e.stopPropagation();
     const loggedInUserId = getUserIdFromToken();
@@ -210,43 +260,6 @@ const CommunityDetails = () => {
     };
   }, []);
 
-  const handleCreatePost = async () => {
-    const token = localStorage.getItem("token");
-    const userId = getUserIdFromToken();
-
-    if (!postContent.trim()) {
-      alert("Post content cannot be empty");
-      return;
-    }
-
-    const postData = {
-      content: postContent,
-      ownerId: userId,
-    };
-
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/api/v2/communities/${name}/posts`,
-        postData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        alert("Post created successfully!");
-        setPostContent("");
-        setShowPostModal(false);
-        window.location.reload();
-      }
-    } catch (err) {
-      alert("Error creating post: " + err.message);
-    }
-  };
-
   //calculate time of the post
   const timeSincePost = (createTime) => {
     const postDateTime = new Date(createTime);
@@ -271,12 +284,33 @@ const CommunityDetails = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
-  const handleLike = (postId) => {
-    setLikeStatus((prev) => ({
-      ...prev,
-      [postId]: prev[postId] === "like" ? null : "like",
-    }));
+  const handleLike = async (postId) => {
+    const token = localStorage.getItem("token");
+    const userId = getUserIdFromToken(token); 
+    const communityName = name; 
+  
+    try {
+      const likeResponse = await axios.get(
+        `{{url}}api/v2/communities/${communityName}/posts/${postId}/like?userId=${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (likeResponse.status === 200) {
+        setLikeCount(likeResponse.data); 
+        setLikeStatus((prev) => ({
+          ...prev,
+          [postId]: prev[postId] === "like" ? null : "like",
+        }));
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error.message);
+    }
   };
+  
 
   const handleDislike = (postId) => {
     setLikeStatus((prev) => ({
@@ -454,7 +488,9 @@ const CommunityDetails = () => {
                     >
                       <TiArrowUpThick />
                     </button>
-                    <span className="community-count">12K</span>
+                    <span className="community-count">
+                      {post.likesCount || 0}
+                    </span>
                     <button
                       className={`dislike-button ${
                         likeStatus[post.id] === "dislike" ? "active" : ""
