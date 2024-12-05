@@ -5,7 +5,7 @@
 
 // import { getUserIdFromToken } from "../auth/authUtils";
 
-// const Verify2FA = ({onVerify}) => {
+// const Verify2FA = ({ onVerify }) => {
 //   const [twoFACode, setTwoFACode] = useState("");
 //   const [error, setError] = useState(null);
 //   const [loading, setLoading] = useState(false);

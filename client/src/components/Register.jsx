@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import "../styles/register.css";
+import styles from "../styles/register.module.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -37,7 +37,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/v2/users/auth/register",
@@ -48,19 +48,19 @@ const Register = () => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         alert("User registered successfully!");
         navigate("/login");
       }
     } catch (error) {
       console.error("Error registering user:", error);
-  
+
       if (error.response && error.response.data) {
         console.log("Backend Error Response:", error.response.data); // Log the error response
-  
+
         const { message } = error.response.data;
-  
+
         if (message === "Email already exists") {
           setErrorMessages((prev) => ({
             ...prev,
@@ -93,16 +93,18 @@ const Register = () => {
 
   return (
     <div id="main">
-      <div className="screen">
+      <div className={styles.screen}>
         <form id="registrationForm" onSubmit={handleSubmit}>
-          <div className="container-sign">
-            <p className="fill">Enter details below to create an account.</p>
+          <div className={styles.container_sign}>
+            <p className={styles.fill}>
+              Enter details below to create an account.
+            </p>
             <hr />
 
-            {error && <p className="error-message-register">{error}</p>}
+            {error && <p className={styles.error_message_register}>{error}</p>}
 
             <label htmlFor="fullName">
-              <b className="name-register">Full Name</b>
+              <b className={styles.name_register}>Full Name</b>
             </label>
             <input
               type="text"
@@ -115,7 +117,7 @@ const Register = () => {
             />
 
             <label htmlFor="email">
-              <b className="name-register">Email</b>
+              <b className={styles.name_register}>Email</b>
             </label>
             <input
               type="text"
@@ -127,11 +129,11 @@ const Register = () => {
               required
             />
             {errorMessages.email && (
-              <p className="error-message">{errorMessages.email}</p>
+              <p className={styles.error_message}>{errorMessages.email}</p>
             )}
 
             <label htmlFor="username">
-              <b className="name-register">Username</b>
+              <b className={styles.name_register}>Username</b>
             </label>
             <input
               type="text"
@@ -143,13 +145,13 @@ const Register = () => {
               required
             />
             {errorMessages.username && (
-              <p className="error-message">{errorMessages.username}</p>
+              <p className={styles.error_message}>{errorMessages.username}</p>
             )}
 
             <label htmlFor="password">
-              <b className="name-register">Password</b>
+              <b className={styles.name_register}>Password</b>
             </label>
-            <div className="password-input-container">
+            <div className={styles.password_input_container}>
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter Password"
@@ -160,17 +162,18 @@ const Register = () => {
                 required
               />
               <span
-                className="password-toggle-icon"
+                className={styles.password_toggle_icon}
                 onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </span>
             </div>
             {errorMessages.password && (
-              <p className="error-message">{errorMessages.password}</p>
+              <p className={styles.error_message}>{errorMessages.password}</p>
             )}
 
             <button
+              type="submit"
               style={{
                 background: "linear-gradient(to right, #0072ff, #00c6ff)",
                 color: "white",
@@ -182,11 +185,10 @@ const Register = () => {
                 opacity: "0.9",
                 borderRadius: "20px",
               }}
-              type="submit"
             >
               Register
             </button>
-            <p className="signin">
+            <p className={styles.signin}>
               Already have an account? <Link to="/login">Sign in</Link>.
             </p>
           </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import loaderGif from "../assets/ZKZg.gif";
-import "../styles/trending.css";
+import styles from "../styles/trending.module.css";
 
 import { getUserIdFromToken } from "../auth/authUtils";
 
@@ -19,10 +19,10 @@ const TrendingList = () => {
   const getMemberText = (count) => {
     if (count === 1) return "1 member";
     if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}M`;
+      return `${Math.floor(count / 1000000)}M members`;
     }
     if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}k`;
+      return `${Math.floor(count / 1000)}k members`;
     }
     return `${count} members`;
   };
@@ -128,30 +128,29 @@ const TrendingList = () => {
   const hasUserJoined = (userIds) => userIds?.includes(userId);
 
   return (
-    <div className="trending-list">
+    <div className={styles.trending_list}>
       <h3 style={{ textAlign: "center" }}>Trending communities</h3>
-      <div className="trend-card">
+      <div className={styles.trend_card}>
         {loading ? (
-          <div className="loader-container">
-            <img src={loaderGif} alt="Loading..." className="loader" />
+          <div className={styles.loader_container}>
+            <img src={loaderGif} alt="Loading..." className={styles.loader} />
           </div>
         ) : communities.length > 0 ? (
           <>
             {communities.slice(0, 6).map((community) => (
               <div
                 key={community.communityId}
-                className="trending-card"
+                className={styles.trending_card}
                 onClick={() => navigate(`/c/community/${community.name}`)}
               >
-                <span className="trend-hashtag">{community.name}</span> -
-                <span className="members-count">
+                <span className={styles.trend_hashtag}>{community.name}</span> -
+                <span className={styles.members_count}>
                   {membersCounts[community.name] !== undefined
                     ? getMemberText(membersCounts[community.name])
                     : "Loading..."}{" "}
-                  members
                 </span>
                 <button
-                  className="join-home-button"
+                  className={styles.join_home_button}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (!hasUserJoined(community.userIds)) {
@@ -165,14 +164,14 @@ const TrendingList = () => {
               </div>
             ))}
             <button
-              className="show-more-button"
+              className={styles.show_more_button}
               onClick={() => navigate("/c/communities")}
             >
               Show More
             </button>
           </>
         ) : (
-          <p className="no-data">No communities available</p>
+          <p className={styles.no_data}>No communities available</p>
         )}
       </div>
     </div>

@@ -1,4 +1,4 @@
-.constructor-container {
+.constructor_container {
   width: 100%;
   max-width: 900px;
   padding: 20px;
@@ -6,13 +6,13 @@
   box-sizing: border-box;
 }
 
-.buttons-style {
+.buttons_style {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.following-followers {
+.following_followers {
   display: flex;
   margin-left: 5px;
   margin-top: -20px;
@@ -20,23 +20,23 @@
   flex-wrap: wrap;
 }
 
-.user-links {
+.user_links {
   display: flex;
   margin-right: 20px;
   flex-wrap: wrap;
 }
 
-.user-links a {
+.user_links a {
   color: #1c1c1d;
   font-size: 24px;
 }
 
-.user-title {
+.user_title {
   display: flex;
   justify-content: center;
 }
 
-.user-bio {
+.user_bio {
   display: flex;
   justify-content: center;
 }
@@ -46,16 +46,16 @@
   justify-content: center;
 }
 
-.button-edit,
-.button-posts,
-.button-settings {
+.button_edit,
+.button_posts,
+.button_settings {
   font-size: 12px;
   background-color: lightgrey;
   border: none;
   color: #1c1c1d;
 }
 
-.button-edit:hover {
+.button_edit:hover {
   color: #1c1c1d;
   background-color: lightgrey;
 }
@@ -67,23 +67,23 @@
   border-radius: 50%;
 }
 
-.post-list1 {
+.post_list1 {
   width: 100%;
   max-height: 400px;
   overflow-y: scroll;
 }
 
-.post-list1::-webkit-scrollbar {
+.post_list1::-webkit-scrollbar {
   display: none;
 }
 
-.post-list1 {
+.post_list1 {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
 @media (max-width: 1024px) {
-  .constructor-container {
+  .constructor_container {
     max-width: 800px;
   }
 }
@@ -95,14 +95,14 @@
     margin-right: auto;
   }
 
-  .username-p {
+  .username_p {
     margin-right: auto;
     justify-content: center;
     display: flex;
     margin-bottom: 10px;
   }
 
-  .buttons-style {
+  .buttons_style {
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -110,40 +110,40 @@
     font-size: 1em;
   }
 
-  .user-links {
+  .user_links {
     margin-left: 0;
     align-content: center;
     justify-content: center;
   }
 
-  .following-followers {
+  .following_followers {
     justify-content: center;
   }
 
-  .user-bio,
-  .user-title {
+  .user_bio,
+  .user_title {
     justify-content: center;
     text-align: center;
   }
 
-  .constructor-container {
+  .constructor_container {
     max-width: 950px;
   }
 }
 
 @media (max-width: 480px) {
-  .user-links a {
+  .user_links a {
     font-size: 18px;
   }
 
-  .constructor-container {
+  .constructor_container {
     max-width: 345px;
     margin: 0 5px 0 0;
   }
 
-  .button-edit,
-  .button-posts,
-  .button-settings {
+  .button_edit,
+  .button_posts,
+  .button_settings {
     font-size: 10px;
   }
 
@@ -151,20 +151,20 @@
     width: 80px;
   }
 
-  .pst-lst {
+  .pst_lst {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-right: 70px;
   }
 
-  .post-list1 {
+  .post_list1 {
     width: 400px;
   }
 }
 
 @media (max-width: 360px) {
-  .constructor-container {
+  .constructor_container {
     max-width: 90%;
   }
 }

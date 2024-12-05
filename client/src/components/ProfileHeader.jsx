@@ -5,17 +5,15 @@ import { Image } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import PostCard from "./PostCard";
 import profileImage from "../assets/user.webp";
 import placeHolderImage from "../assets/placeholder.png";
-import "../styles/profile-header.css";
+import styles from "../styles/profile-header.module.css";
 
+const PostCard = React.lazy(() => import("./PostCard"));
 import { getUserIdFromToken } from "../auth/authUtils";
-
 
 const ProfileHeader = ({ followers, following, profile }) => {
   const [showModal, setShowModal] = useState(false);
-  const [showPostModal, setShowPostModal] = useState(false);
   const [bioInput, setBioInput] = useState("");
   const [titleInput, setTitleInput] = useState("");
   const [userPosts, setUserPosts] = useState([]);
@@ -178,7 +176,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
 
   return (
     <div
-      className="constructor-container"
+      className={styles.constructor_container}
       style={{
         border: ".2px solid lightgrey",
         position: "relative",
@@ -186,7 +184,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
         background: "white",
         color: "black",
         marginBottom: 40,
-        marginTop: 20
+        marginTop: 20,
       }}
     >
       <div style={{ position: "relative", width: "100%", height: "300px" }}>
@@ -218,7 +216,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 style={{ margin: 0 }}>{profile.username}</h3>
           <Button
-            className="light me-1 button-edit"
+            className={`${styles.light} ${styles.me_1} ${styles.button_edit}`}
             onClick={handleShowModal}
             style={{ marginLeft: "10px" }}
           >
@@ -252,9 +250,9 @@ const ProfileHeader = ({ followers, following, profile }) => {
       >
         Posts
       </div>
-      <div style={{ marginTop: "20px" }} className="pst-lst">
+      <div style={{ marginTop: "20px" }} className={styles.pst_lst}>
         {activeTab === "posts" && (
-          <div className="post-list1">
+          <div className={styles.post_list1}>
             {userPosts.length > 0 ? (
               userPosts.map((post) => (
                 <PostCard

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import PostCard from "./PostCard";
 import loaderImage from "../assets/ZKZg.gif";
+
+const PostCard = React.lazy(() => import("./PostCard"));
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [delayOver, setDelayOver] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => setDelayOver(true), 2000);
@@ -49,7 +48,7 @@ const PostList = () => {
 
   if (error) {
     return (
-      <div className="error-message">
+      <div className={styles.error_message}>
         <p>{error}</p>
       </div>
     );

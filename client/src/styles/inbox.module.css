@@ -1,4 +1,4 @@
-.inbox-container {
+.inbox_container {
   position: relative;
   height: 100vh;
   display: flex;
@@ -6,7 +6,7 @@
   justify-content: flex-end;
 }
 
-.message-container {
+.message_container {
   position: fixed;
   bottom: 60px;
   left: 0;
@@ -21,11 +21,11 @@
   transform: translateY(100%);
 }
 
-.message-container.open {
+.message_container.open {
   transform: translateY(0);
 }
 
-.bottom-navbar {
+.bottom_navbar {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -39,32 +39,32 @@
   z-index: 1000;
 }
 
-.followers-list {
+.followers_list {
   display: flex;
   gap: 10px;
   overflow-x: auto;
 }
 
-.follower-btn {
+.follower_btn {
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
 }
 
-.follower-avatar {
+.follower_avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.message-input-container {
+.message_input_container {
   display: flex;
   gap: 10px;
 }
 
-.message-input {
+.message_input {
   flex-grow: 1;
   padding: 10px;
   border-radius: 20px;
@@ -74,11 +74,11 @@
   transition: border 0.2s ease;
 }
 
-.message-input:focus {
+.message_input:focus {
   border: 1px solid #0072ff;
 }
 
-.send-button {
+.send_button {
   background: linear-gradient(to right, #0072ff, #00c6ff);
   color: white;
   padding: 10px 15px;
@@ -91,16 +91,16 @@
   justify-content: center;
 }
 
-.send-button:hover {
+.send_button:hover {
   opacity: 0.9;
 }
 
-.send-button:disabled {
+.send_button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.message-list {
+.message_list {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -110,7 +110,7 @@
   border-radius: 10px;
 }
 
-.message-item {
+.message_item {
   display: inline-block;
   max-width: 75%;
   padding: 10px;
@@ -132,14 +132,14 @@
   align-self: flex-start;
 }
 
-.message-input-container {
+.message_input_container {
   display: flex;
   gap: 10px;
   padding: 10px;
   background-color: #fff;
 }
 
-.message-input {
+.message_input {
   flex-grow: 1;
   padding: 10px;
   border-radius: 20px;
@@ -149,11 +149,11 @@
   transition: border 0.2s ease;
 }
 
-.message-input:focus {
+.message_input:focus {
   border: 1px solid #0072ff;
 }
 
-.send-button {
+.send_button {
   background: linear-gradient(to right, #0072ff, #00c6ff);
   color: white;
   padding: 10px 15px;
@@ -166,11 +166,11 @@
   justify-content: center;
 }
 
-.send-button:hover {
+.send_button:hover {
   opacity: 0.9;
 }
 
-.send-button:disabled {
+.send_button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }

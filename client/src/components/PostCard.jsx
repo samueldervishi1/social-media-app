@@ -460,28 +460,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchCommunityName = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/v2/communities/post/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          setCommunityName(response.data.communityName);
-        }
-      } catch (error) {
-        console.error("Error fetching community name:", error.message);
-      }
-    };
-
-    fetchCommunityName();
-  }, [id]);
-
   const formatTime = (postTime) => {
     const date = new Date(`1970-01-01T${postTime}Z`);
     return format(date, "hh:mm a");

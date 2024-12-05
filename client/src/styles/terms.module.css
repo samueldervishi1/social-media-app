@@ -1,8 +1,12 @@
-.about-container {
+.terms_container {
   padding: 20px;
 }
 
-.h1-container {
+.term_section {
+  margin-bottom: 40px;
+}
+
+.h1_container {
   margin: 0 auto 40px auto;
   background-image: url("../assets/background.jpg");
   background-size: cover;
@@ -10,12 +14,6 @@
   padding: 40px;
   border-radius: 4px;
   text-align: left;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 h1 {
@@ -28,52 +26,25 @@ h1 {
   display: flex;
 }
 
-.about-section {
-  margin-bottom: 40px;
-}
-
-.about-title {
+.term_title {
   font-size: 20px;
   font-weight: 700;
   color: black;
   margin-bottom: 10px;
 }
 
-.about-content p {
+.term_content p {
   font-size: 16px;
   line-height: 1.5;
   color: #657786;
 }
 
-.bold-text {
+.bold_text {
   font-weight: bold;
-  color: white;
+  color: black;
 }
 
 ::selection {
   background-color: #b3d4fc;
   color: #1c1c1d;;
-}
-
-.bottom-links {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.bottom-link {
-  margin: 0 15px;
-  text-decoration: none;
-  color: #1da1f2;
-  font-weight: bold;
-}
-
-.bottom-link:hover {
-  text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-  .bottom-link {
-    display: block;
-    margin: 10px 0;
-  }
 }

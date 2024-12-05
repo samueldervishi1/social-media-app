@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import "../styles/inbox.css";
+import styles from "../styles/inbox.module.css";
 
 const MessageComponent = ({ senderId, receiverId }) => {
   const [messages, setMessages] = useState([]);
@@ -37,53 +37,40 @@ const MessageComponent = ({ senderId, receiverId }) => {
 
     ws.current.send(JSON.stringify(messageData));
 
-    const token = localStorage.getItem("token");
-
-    axios
-      .post(
-        `http://localhost:5000/api/v2/message/${senderId}/${receiverId}`,
-        messageData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        setMessages((prevMessages) => [...prevMessages, response.data]);
-      })
-      .catch((error) => {
-        console.error("Error sending message:", error);
-      });
-
     setMessageInput("");
   };
 
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
+
   return (
-    <div className="message-component">
-      <div className="message-list">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`message-item ${
-              msg.sender_id === senderId ? "sent" : "received"
-            }`}
-          >
-            {msg.message}
-          </div>
-        ))}
+    <div className={styles.message_component}>
+      <div className={styles.message_list}>
+        {messages.map(
+          (msg, index) =>
+            msg.content !== null && (
+              <div
+                key={index}
+                className={`${styles.message_item} ${
+                  msg.sender_id === senderId ? styles.sent : styles.received
+                }`}
+              >
+                {msg.message}
+              </div>
+            )
+        )}
       </div>
 
-      <div className="message-input-container">
+      <div className={styles.message_input_container}>
         <input
           type="text"
-          className="message-input"
+          className={styles.message_input}
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           placeholder="Type a message..."
         />
-        <button onClick={sendMessage} className="send-button">
+        <button onClick={sendMessage} className={styles.send_button}>
           Send
         </button>
       </div>

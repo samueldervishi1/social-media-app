@@ -1,4 +1,4 @@
-.trending-list {
+.trending_list {
   border: 1px solid grey;
   border-radius: 20px;
   padding: 10px;
@@ -6,33 +6,33 @@
   color: black;
 }
 
-.trend-item {
+.trend_item {
   margin: 5px 0;
 }
 
-.trend-text {
+.trend_text {
   margin: 0;
   font-size: 15px;
 }
 
-.trend-hashtag {
+.trend_hashtag {
   font-weight: bold;
   cursor: pointer;
   background: transparent;
   text-decoration: underline;
 }
 
-.trend-hashtag:hover {
+.trend_hashtag:hover {
   text-decoration: underline;
 }
 
-.post-count {
+.post_count {
   color: black;
   margin: 0;
   font-size: 10px;
 }
 
-.show-more-button {
+.show_more_button {
   background-color: transparent;
   text-decoration: none;
   color: rgb(29, 155, 240);
@@ -43,25 +43,25 @@
   font-size: 12px;
 }
 
-.show-more-button:hover {
+.show_more_button:hover {
   text-decoration: underline;
 }
 
-.trend-card {
+.trend_card {
   position: relative;
   gap: 20px;
   display: flex;
   flex-direction: column;
 }
 
-.trending-card {
+.trending_card {
   background-color: transparent;
   display: flex;
   flex-direction: row;
   gap: 10px;
 }
 
-.join-home-button {
+.join_home_button {
   position: absolute;
   right: 20px;
   background-color: rgb(29, 155, 240);
@@ -73,14 +73,14 @@
   font-size: 14px;
 }
 
-.join-home-button:disabled {
+.join_home_button:disabled {
   background-color: transparent;
   cursor: not-allowed;
   border: 1px solid #444;
   color: black;
 }
 
-.loader-container {
+.loader_container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -93,7 +93,7 @@
   height: 20px;
 }
 
-.members-count {
+.members_count {
   font-size: 13px;
   color: grey;
   margin-top: 3px;

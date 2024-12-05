@@ -1,4 +1,4 @@
-.post-form {
+.post_form {
   margin: 10px auto;
   margin-top: 15px;
   padding: 10px;
@@ -10,35 +10,35 @@
   border: 1px solid grey;
 }
 
-.preview-image {
+.preview_image {
   width: 100%;
   height: auto;
   margin-bottom: 10px;
   border-radius: 20px;
 }
 
-.emoji-picker {
+.emoji_picker {
   position: absolute;
   bottom: 60px;
   right: 20px;
 }
 
-.user-image {
+.user_image {
   cursor: pointer;
   margin-bottom: 10px;
 }
 
-.user-image img {
+.user_image img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
 }
 
-.post-form form {
+.post_form form {
   width: 100%;
 }
 
-.post-form textarea {
+.post_form textarea {
   margin-bottom: 10px;
   padding: 10px;
   border: 0.1px solid lightgray;
@@ -50,14 +50,14 @@
   width: 100%;
 }
 
-.post-form-actions {
+.post_form_actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
 }
 
-.post-the-post {
+.post_the_post {
   padding: 10px 20px;
   background: linear-gradient(to right, #0072ff, #00c6ff);
   color: white;
@@ -67,7 +67,7 @@
   font-size: 16px;
 }
 
-.icons-container {
+.icons_container {
   display: flex;
   gap: 10px;
 }
@@ -78,7 +78,7 @@
   font-size: 20px;
 }
 
-.clear-image-button {
+.clear_image_button {
   background: transparent;
   border: none;
   margin-right: 5px;

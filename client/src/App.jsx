@@ -1,11 +1,11 @@
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-  useNavigate,
 } from "react-router-dom";
+import { useAuth } from "./auth/AuthContext";
 import Navbar from "./components/Navbar";
 
 const LoginScript = lazy(() => import("./components/Login"));
@@ -27,137 +27,83 @@ const Enable2FA = lazy(() => import("./components/Enable2FA"));
 // const Verify2FA = lazy(() => import("./components/Verify2FA"));
 
 const App = () => {
-  const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return false;
-
-    try {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      const expirationTime = decodedToken.exp * 1000;
-      const twoFaStatus = decodedToken.twoFa;
-      return Date.now() < expirationTime;
-    } catch (error) {
-      console.error("Error decoding token: ", error.message);
-      return false;
-    }
-  };
+  const { isAuthenticated } = useAuth();
 
   return (
     <Router>
-      <AuthWrapper isAuthenticated={isAuthenticated} />
+      <div className="App">
+        {isAuthenticated && <Navbar />}
+
+        <Suspense
+          fallback={<div style={{ textAlign: "center" }}>Loading...</div>}
+        >
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<LoginScript />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/home"
+              element={isAuthenticated ? <Home /> : <LoginScript />}
+            />
+            <Route
+              path="/profile"
+              element={isAuthenticated ? <Profile /> : <LoginScript />}
+            />
+            <Route
+              path="/users/:userId"
+              element={isAuthenticated ? <UserDetails /> : <LoginScript />}
+            />
+            <Route
+              path="/messages"
+              element={isAuthenticated ? <Inbox /> : <LoginScript />}
+            />
+            <Route
+              path="/chirp"
+              element={isAuthenticated ? <ChirpAI /> : <LoginScript />}
+            />
+            <Route
+              path="/u/:userId"
+              element={isAuthenticated ? <UserDetails /> : <LoginScript />}
+            />
+            <Route
+              path="/c/communities"
+              element={isAuthenticated ? <CommunitiesList /> : <LoginScript />}
+            />
+            <Route
+              path="/c/community/:name"
+              element={isAuthenticated ? <CommunityDetails /> : <LoginScript />}
+            />
+            <Route
+              path="/c/user/communities"
+              element={isAuthenticated ? <UserCommunities /> : <LoginScript />}
+            />
+            <Route
+              path="/security/2fa/enable"
+              element={isAuthenticated ? <Enable2FA /> : <LoginScript />}
+            />
+
+            {/* <Route
+              path="/security/2fa/verify"
+              element={isAuthenticated ? <Verify2FA onVerify={isTwoFaVerified}/> : <Home />}
+            /> */}
+
+            {/* Static Pages */}
+            <Route path="/terms" element={<TermsAndServices />} />
+            <Route path="/premium" element={<PremiumPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+
+            {/* Not Found Route */}
+            <Route path="*" element={<NotFound />} />
+
+            {/* Default Route */}
+            <Route path="/" element={<Navigate to="/home" replace />} />
+          </Routes>
+        </Suspense>
+      </div>
     </Router>
-  );
-};
-
-const AuthWrapper = ({ isAuthenticated }) => {
-  const [isTwoFaVerified, setTwoFaVerified] = useState(
-    () => JSON.parse(localStorage.getItem("isTwoFaVerified")) || false
-  );
-  const navigate = useNavigate();
-
-  const requires2FA = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return false;
-
-    try {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      return decodedToken.twoFa === true;
-    } catch (error) {
-      console.error("Error decoding token:", error.message);
-      return false;
-    }
-  };
-
-  const handleTokenExpiry = () => {
-    if (!isAuthenticated()) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("isTwoFaVerified");
-      navigate("/login", { replace: true });
-    }
-  };
-
-  const handle2FAVerification = () => {
-    setTwoFaVerified(true);
-    localStorage.setItem("isTwoFaVerified", true);
-  };
-
-  useEffect(() => {
-    handleTokenExpiry();
-  }, []);
-
-  const shouldShowNavbar =
-    isAuthenticated() && (!requires2FA() || handle2FAVerification);
-
-  return (
-    <div className="App">
-      {shouldShowNavbar && <Navbar />}
-
-      <Suspense
-        fallback={<div style={{ textAlign: "center" }}>Loading...</div>}
-      >
-        <Routes>
-          <Route path="/login" element={<LoginScript />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/home"
-            element={isAuthenticated() ? <Home /> : <LoginScript />}
-          />
-          <Route
-            path="/profile"
-            element={isAuthenticated() ? <Profile /> : <LoginScript />}
-          />
-          <Route
-            path="/users/:userId"
-            element={isAuthenticated() ? <UserDetails /> : <LoginScript />}
-          />
-          <Route
-            path="/messages"
-            element={isAuthenticated() ? <Inbox /> : <LoginScript />}
-          />
-          <Route
-            path="/chirp"
-            element={isAuthenticated() ? <ChirpAI /> : <LoginScript />}
-          />
-          <Route
-            path="/u/:userId"
-            element={isAuthenticated() ? <UserDetails /> : <LoginScript />}
-          />
-          <Route
-            path="/c/communities"
-            element={isAuthenticated() ? <CommunitiesList /> : <LoginScript />}
-          />
-          <Route
-            path="/c/community/:name"
-            element={isAuthenticated() ? <CommunityDetails /> : <LoginScript />}
-          />
-          <Route
-            path="/c/user/communities"
-            element={isAuthenticated() ? <UserCommunities /> : <LoginScript />}
-          />
-          <Route
-            path="/security/2fa/enable"
-            element={isAuthenticated() ? <Enable2FA /> : <LoginScript />}
-          />
-          {/* <Route
-            path="/security/2fa/verify"
-            element={
-              isAuthenticated() && requires2FA() && !isTwoFaVerified ? (
-                <Verify2FA onVerify={handle2FAVerification} />
-              ) : (
-                <Navigate to="/home" replace />
-              )
-            }
-          /> */}
-
-          <Route path="/terms" element={<TermsAndServices />} />
-          <Route path="/premium" element={<PremiumPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="*" element={<NotFound />} />
-          <Route path="/" element={<Navigate to="/home" replace />} />
-        </Routes>
-      </Suspense>
-    </div>
   );
 };
 

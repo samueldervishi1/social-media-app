@@ -4,7 +4,7 @@ import { CiImageOn, CiLocationArrow1 } from "react-icons/ci";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import Picker from "emoji-picker-react";
 import { Snackbar, Alert } from "@mui/material";
-import "../styles/post.css";
+import styles from "../styles/post.module.css";
 
 import { getUsernameFromToken } from "../auth/authUtils";
 
@@ -163,14 +163,18 @@ const PostForm = () => {
   const placeholderText = `What's on your mind, ${getUsernameFromToken()} ?`;
 
   return (
-    <div className="post-form">
+    <div className={styles.post_form}>
       <form onSubmit={handlePostSubmit}>
         {selectedImage && (
-          <div className="selected-image-container">
-            <img src={selectedImage} alt="Selected" className="preview-image" />
+          <div className={styles.selected_image_container}>
+            <img
+              src={selectedImage}
+              alt="Selected"
+              className={styles.preview_image}
+            />
             <button
               type="button"
-              className="clear-image-button"
+              className={styles.clear_image_button}
               onClick={clearSelectedImage}
               title="Clear Image"
             >
@@ -184,12 +188,13 @@ const PostForm = () => {
           onChange={handlePostContentChange}
           rows={4}
           required
+          className={styles.textarea}
         />
 
-        <div className="post-form-actions">
-          <div className="icons-container">
-            <label htmlFor="image-upload" className="icon-label">
-              <CiImageOn className="icon" title="Add Image" />
+        <div className={styles.post_form_actions}>
+          <div className={styles.icons_container}>
+            <label htmlFor="image-upload" className={styles.icon_label}>
+              <CiImageOn className={styles.icon} title="Add Image" />
               <input
                 type="file"
                 id="image-upload"
@@ -199,26 +204,26 @@ const PostForm = () => {
               />
             </label>
             <MdOutlineEmojiEmotions
-              className="icon"
+              className={styles.icon}
               title="Add Emoji"
               onClick={() => setShowEmojiPicker((prev) => !prev)}
             />
             <CiLocationArrow1
-              className="icon"
+              className={styles.icon}
               title="Add Location"
               onClick={handleLocation}
             />
           </div>
           <button
             type="submit"
-            className="post-the-post"
+            className={styles.post_the_post}
             disabled={isSubmitting}
           >
             {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>
         {showEmojiPicker && (
-          <div className="emoji-picker">
+          <div className={styles.emoji_picker}>
             <Picker onEmojiClick={handleEmojiClick} />
           </div>
         )}

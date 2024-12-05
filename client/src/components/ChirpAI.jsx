@@ -7,7 +7,7 @@ import user from "../assets/user.svg";
 import send from "../assets/send.svg";
 import loaderGif from "../assets/ZKZg.gif";
 import { FaRegPenToSquare } from "react-icons/fa6";
-import "../styles/ai.css";
+import styles from "../styles/ai.module.css";
 
 const ChirpAI = () => {
   const navigate = useNavigate();
@@ -86,8 +86,8 @@ const ChirpAI = () => {
           .replace(/>/g, "&gt;");
 
         return `
-              <div class="terminal-block">
-                <div class="terminal-header">${
+              <div class="terminal_block">
+                <div class="terminal_header">${
                   lang ? lang.trim() : "code"
                 }</div>
                 <pre><code>${escapedCode}</code></pre>
@@ -111,7 +111,7 @@ const ChirpAI = () => {
     return localStorage.getItem("sessionId");
   };
 
-  //send the question to the model 
+  //send the question to the model
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -277,63 +277,61 @@ const ChirpAI = () => {
     scrollToBottom();
   }, [chatMessages, isLoading]);
 
-  const navigatehome = () => {
-    navigate("/home");
-  };
-
   return (
-    <div className="sidebar1-container">
+    <div className={styles.sidebar1_container}>
       <div
-        className="button-container"
+        className={styles.button_container}
         style={{ display: "flex", margin: "6px 0", background: "#1c1c1d" }}
       >
         {/* <div style={{ position: "relative"}}>
-          <button
-            style={{
-              border: "none",
-              background: "transparent",
-              padding: 10,
-              borderRadius: 200,
-              height: 35,
-              textAlign: "center",
-              color: "white",
-              textDecoration: "underline",
-              cursor: "pointer",
-            }}
-            onClick={resetChat}
-            onMouseEnter={(e) =>
-              (e.currentTarget.querySelector(".tooltip").style.display =
-                "block")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.querySelector(".tooltip").style.display = "none")
-            }
-          >
-            New chat
-          </button>
-        </div> */}
+        <button
+          style={{
+            border: "none",
+            background: "transparent",
+            padding: 10,
+            borderRadius: 200,
+            height: 35,
+            textAlign: "center",
+            color: "white",
+            textDecoration: "underline",
+            cursor: "pointer",
+          }}
+          onClick={resetChat}
+          onMouseEnter={(e) =>
+            (e.currentTarget.querySelector(".tooltip").style.display =
+              "block")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.querySelector(".tooltip").style.display = "none")
+          }
+        >
+          New chat
+        </button>
+      </div> */}
       </div>
 
-      <div className="main-content-ai">
+      <div className={styles.main_content_ai}>
         {!hideHeading && (
-          <h1 className="heading-center">What do you need help with?</h1>
+          <h1 className={styles.heading_center}>What do you need help with?</h1>
         )}
         <div
-          id="chat_container"
+          id={styles.chat_container}
           ref={chatContainerRef}
           style={{ flex: 1, overflowY: "auto" }}
         >
           {chatMessages.map((message, index) => (
             <div
               key={index}
-              className={`wrapper ${!message.isUser ? "ai" : "user"}`}
+              className={`${styles.wrapper} ${
+                !message.isUser ? styles.ai : styles.user
+              }`}
             >
-              <div className="chat">
-                <div className="profile">
+              <div className={styles.chat}>
+                <div className={styles.profile}>
                   <img src={!message.isUser ? bot : user} alt="bot" />
                 </div>
                 <div
-                  className="message"
+                  className={styles.message}
                   dangerouslySetInnerHTML={{
                     __html: formatCodeBlocks(message.content),
                   }}
@@ -342,24 +340,26 @@ const ChirpAI = () => {
             </div>
           ))}
           {isThinking && (
-            <div className={`wrapper ai`}>
-              <div className="chat">
-                <div className="profile">
+            <div className={`${styles.wrapper} ${styles.ai}`}>
+              <div className={styles.chat}>
+                <div className={styles.profile}>
                   <img src={bot} alt="bot" />
                 </div>
-                <div className="message thinking-placeholder">
+                <div
+                  className={styles.message + " " + styles.thinking_placeholder}
+                >
                   Thinking
-                  <span className="dot">.</span>
-                  <span className="dot">.</span>
-                  <span className="dot">.</span>
+                  <span className={styles.dot}>.</span>
+                  <span className={styles.dot}>.</span>
+                  <span className={styles.dot}>.</span>
                 </div>
               </div>
             </div>
           )}
         </div>
-        <form className="ai-form" onSubmit={handleSubmit}>
+        <form className={styles.ai_form} onSubmit={handleSubmit}>
           <textarea
-            className="ai-textArea"
+            className={styles.ai_textArea}
             name="message"
             rows="1"
             cols="1"
@@ -371,7 +371,7 @@ const ChirpAI = () => {
             maxLength={4000}
           ></textarea>
           <button
-            className="ai-submit"
+            className={styles.ai_submit}
             type="submit"
             disabled={isRateLimited || isThinking}
           >
@@ -386,21 +386,10 @@ const ChirpAI = () => {
             )}
           </button>
         </form>
-        <p className="info-text">
+        <p className={styles.info_text}>
           {isRateLimited
             ? `You have reached your limit. It will be reset after ${countdown} seconds.`
-            : "ChirpAI can make mistakes. Check important info."}
-          <button
-            style={{
-              border: "none",
-              background: "transparent",
-              color: "black",
-              textDecoration: "underline",
-            }}
-            onClick={navigatehome}
-          >
-            Go Home
-          </button>
+            : "AЯYHƆ can make mistakes. Check important info."}
         </p>
       </div>
     </div>

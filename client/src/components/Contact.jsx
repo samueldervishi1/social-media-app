@@ -1,51 +1,30 @@
 import React from "react";
-import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
-import "../styles/contact.css";
+import { FaInstagram } from "react-icons/fa";
+import styles from "../styles/contact.module.css";
 
 const Contact = () => {
   return (
-    <div className="contact-container">
-      <div className="h1-container">
+    <div className={styles.contact_container}>
+      <div className={styles.h1_container}>
         <h1>Contact Us</h1>
       </div>
 
-      <div className="contact-info">
+      <div className={styles.contact_info}>
         <p style={{ color: "black" }}>
           You can contact us via the following platforms:
         </p>
 
-        <div className="social-icons">
+        <div className={styles.social_icons}>
           <a
             href="https://www.instagram.com/samueldervishi_"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaInstagram className="social-icon" />
-          </a>
-          <a
-            href="https://www.facebook.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaFacebook className="social-icon" />
-          </a>
-          <a
-            href="https://twitter.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaTwitter className="social-icon" />
-          </a>
-          <a
-            href="https://www.linkedin.com/samueldervishi"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaLinkedin className="social-icon" />
+            <FaInstagram className={styles.social_icon} />
           </a>
         </div>
 
-        <div className="email">
+        <div className={styles.email}>
           <p style={{ color: "black" }}>
             Email us at: <a href="mailto:shefi1@proton.me">shefi1@proton.me</a>
           </p>

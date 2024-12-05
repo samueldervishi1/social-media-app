@@ -19,7 +19,6 @@ import {
 import { BiPlusCircle } from "react-icons/bi";
 import { TbPremiumRights, TbAuth2Fa } from "react-icons/tb";
 import loaderImage from "../assets/ZKZg.gif";
-import logo from "../assets/logo.png";
 import "../styles/navbar.css";
 
 import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
@@ -162,7 +161,6 @@ const Navbar = () => {
         <div className="history-div-2">
           <div>
             <a href="/home" className="name-logo">
-              {/* <img src={logo} alt="Logo" style={{ width: 70 }} /> */}
               AЯYHƆ{" "}
             </a>
           </div>
@@ -284,7 +282,7 @@ const Navbar = () => {
               <AiOutlineMessage className="icon-p" /> Messages
             </a>
             <a href="/chirp" className="menu-item">
-              <GiArtificialHive className="icon-p" /> ChirpAI
+              <GiArtificialHive className="icon-p" /> AЯYHƆ
             </a>
             <a href="/c/communities" className="menu-item">
               <CgCommunity className="icon-p" /> Communities

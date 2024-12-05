@@ -43,7 +43,7 @@ const UserCommunities = () => {
 
   return (
     <div>
-      <h2 style={{textAlign: "center", marginTop: 10}}>Your Communities</h2>
+      <h2 style={{ textAlign: "center", marginTop: 10 }}>Your Communities</h2>
       <div style={styles.container}>
         {communities.length > 0 ? (
           communities.map((community) => (
@@ -67,7 +67,7 @@ const styles = {
     gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
     gap: "20px",
     padding: "20px",
-    textAlign: "center"
+    textAlign: "center",
   },
   card: {
     border: "1px solid #ccc",

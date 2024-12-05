@@ -8,7 +8,7 @@ import placeHolderImage from "../assets/placeholder.png";
 import placeHolderLogo from "../assets/logo-placeholder-image.png";
 import defaultUserIcon from "../assets/user.webp";
 import loader from "../assets/ZKZg.gif";
-import "../styles/communityDetails.css";
+import styles from "../styles/communityDetails.module.css";
 
 import { getUserIdFromToken } from "../auth/authUtils";
 
@@ -286,9 +286,9 @@ const CommunityDetails = () => {
 
   const handleLike = async (postId) => {
     const token = localStorage.getItem("token");
-    const userId = getUserIdFromToken(token); 
-    const communityName = name; 
-  
+    const userId = getUserIdFromToken(token);
+    const communityName = name;
+
     try {
       const likeResponse = await axios.get(
         `{{url}}api/v2/communities/${communityName}/posts/${postId}/like?userId=${userId}`,
@@ -300,7 +300,7 @@ const CommunityDetails = () => {
       );
 
       if (likeResponse.status === 200) {
-        setLikeCount(likeResponse.data); 
+        setLikeCount(likeResponse.data);
         setLikeStatus((prev) => ({
           ...prev,
           [postId]: prev[postId] === "like" ? null : "like",
@@ -310,7 +310,6 @@ const CommunityDetails = () => {
       console.error("Error toggling like:", error.message);
     }
   };
-  
 
   const handleDislike = (postId) => {
     setLikeStatus((prev) => ({
@@ -357,49 +356,52 @@ const CommunityDetails = () => {
   const isUserJoined = community.userIds && community.userIds.includes(userId);
 
   return (
-    <div className="community-details-container">
-      <div className="community-banner">
+    <div className={styles.community_details_container}>
+      <div className={styles.community_banner}>
         <img
           src={placeHolderImage}
           alt={`${community.name} banner`}
-          className="community-banner-img"
+          className={styles.community_banner_img}
         />
         <img
           src={placeHolderLogo}
           alt={`${community.name} profile`}
-          className="community-profile-img"
+          className={styles.community_profile_img}
         />
       </div>
 
-      <div className="community-info">
-        <h2 className="community-name">
+      <div className={styles.community_info}>
+        <h2 className={styles.community_name}>
           c/{community.name} <span>-</span>
-          <span className="members-count">
+          <span className={styles.members_count}>
             {membersCount !== null ? getMemberText(membersCount) : "Loading..."}
           </span>
         </h2>
 
         <button
-          className="community-post-button"
+          className={styles.community_post_button}
           onClick={() => setShowPostModal(true)}
         >
           <IoCreateOutline />
         </button>
 
         <button
-          className="community-action-button"
+          className={styles.community_action_button}
           onClick={() => handleJoinCommunity(community.communityId)}
           disabled={isUserJoined}
         >
           {isUserJoined ? "Joined" : "Join"}
         </button>
 
-        <button className="community-menu-button" onClick={toggleDropdown}>
+        <button
+          className={styles.community_menu_button}
+          onClick={toggleDropdown}
+        >
           &#8230;
         </button>
 
         {dropdownVisible && (
-          <div ref={dropdownRef} className="community-dropdown-menu">
+          <div ref={dropdownRef} className={styles.community_dropdown_menu}>
             <a href="#">Add to favourites</a>
             <a href="#">Add to custom feed</a>
             <a href="#">Share community</a>
@@ -407,33 +409,33 @@ const CommunityDetails = () => {
         )}
       </div>
 
-      <div className="community-actions">
-        <div className="community-buttons">
+      <div className={styles.community_actions}>
+        <div className={styles.community_buttons}>
           <button
-            className="feed-button"
+            className={styles.feed_button}
             onClick={() => setCurrentView("Feed")}
           >
             Feed
           </button>
         </div>
-        <div className="community-dropdowns">
-          <div className="view-dropdown">
+        <div className={styles.community_dropdowns}>
+          <div className={styles.view_dropdown}>
             <button onClick={toggleViewDropdown} ref={viewDropdownRef}>
               View &#x25BC;
             </button>
             {viewDropdownVisible && (
-              <div className="view-dropdown-menu">
+              <div className={styles.view_dropdown_menu}>
                 <a href="#">View 1</a>
                 <a href="#">View 2</a>
               </div>
             )}
           </div>
-          <div className="sort-dropdown">
+          <div className={styles.sort_dropdown}>
             <button onClick={toggleSortDropdown} ref={sortDropdownRef}>
               Sort &#x25BC;
             </button>
             {sortDropdownVisible && (
-              <div className="sort-dropdown-menu">
+              <div className={styles.sort_dropdown_menu}>
                 <a href="#">Sort A-Z</a>
                 <a href="#">Sort Z-A</a>
               </div>
@@ -441,15 +443,17 @@ const CommunityDetails = () => {
           </div>
         </div>
       </div>
-      <hr className="divider" />
+      <hr className={styles.divider} />
 
-      <div className="content-container">
-        <div className="left-side">
-          {currentView === "Feed" &&
+      <div className={styles.content_container}>
+        <div className={styles.left_side}>
+          {currentView === "Feed" && posts.length === 0 ? (
+            <div className={styles.no_posts_message}>No posts</div>
+          ) : (
             posts.map((post) => (
               <div
                 key={post.id}
-                className={`post-community-card ${
+                className={`${styles.post_community_card} ${
                   likeStatus[post.id] === "like"
                     ? "liked"
                     : likeStatus[post.id] === "dislike"
@@ -461,18 +465,18 @@ const CommunityDetails = () => {
                   <img
                     src={defaultUserIcon}
                     alt="User Icon"
-                    className="user-community-icon"
+                    className={styles.user_community_icon}
                   />
                   @{post.author}{" "}
-                  <span className="post-community-time">
+                  <span className={styles.post_community_time}>
                     • {timeSincePost(post.createTime)}
                   </span>
                 </div>
                 <h3>{post.title}</h3>
-                <p className="community-content">{post.content}</p>
-                <div className="community-action">
+                <p className={styles.community_content}>{post.content}</p>
+                <div className={styles.community_action}>
                   <div
-                    className={`like-buttons ${
+                    className={`${styles.like_buttons} ${
                       likeStatus[post.id] === "like"
                         ? "liked"
                         : likeStatus[post.id] === "dislike"
@@ -481,18 +485,18 @@ const CommunityDetails = () => {
                     }`}
                   >
                     <button
-                      className={`like-button ${
+                      className={`${styles.like_button} ${
                         likeStatus[post.id] === "like" ? "active" : ""
                       }`}
                       onClick={() => handleLike(post.id)}
                     >
                       <TiArrowUpThick />
                     </button>
-                    <span className="community-count">
+                    <span className={styles.community_count}>
                       {post.likesCount || 0}
                     </span>
                     <button
-                      className={`dislike-button ${
+                      className={`${styles.dislike_button} ${
                         likeStatus[post.id] === "dislike" ? "active" : ""
                       }`}
                       onClick={() => handleDislike(post.id)}
@@ -502,40 +506,41 @@ const CommunityDetails = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
 
-        <div className="right-side">
-          <div className="community-card">
-            <div className="community-description">
+        <div className={styles.right_side}>
+          <div className={styles.community_card}>
+            <div className={styles.community_description}>
               <h3>{community.name}</h3>
               <p>{community.about}</p>
             </div>
 
-            <div className="community-info-details">
-              <div className="community-created">
+            <div className={styles.community_info_details}>
+              <div className={styles.community_created}>
                 <strong>Created on:</strong> {formatDate(community.createTime)}
               </div>
-              <div className="community-members">
+              <div className={styles.community_members}>
                 <strong>Members:</strong>{" "}
                 {membersCount !== null
                   ? getMemberText(membersCount)
                   : "Loading..."}
               </div>
             </div>
-            <div className="community-faq">
+            <div className={styles.community_faq}>
               <h4>Frequently Asked Questions</h4>
               {questionsAndAnswers.map((qa, index) => (
-                <div key={index} className="faq-item">
+                <div key={index} className={styles.faq_item}>
                   <div
-                    className="faq-question"
+                    className={styles.faq_question}
                     onClick={() => toggleAnswer(index)}
                   >
                     <strong>{qa.question}</strong>
                     <span>{activeQuestion === index ? "−" : "+"}</span>{" "}
                   </div>
                   {activeQuestion === index && (
-                    <div className="faq-answer">
+                    <div className={styles.faq_answer}>
                       <p>{qa.answer}</p>
                     </div>
                   )}

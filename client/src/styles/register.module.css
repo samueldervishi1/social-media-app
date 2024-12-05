@@ -1,4 +1,8 @@
-body.register-page {
+* {
+  box-sizing: border-box;
+}
+
+body.register_page {
   position: relative;
   margin: 0;
   padding: 0;
@@ -9,7 +13,7 @@ body.register-page {
   overflow-x: hidden;
 }
 
-body.register-page::before {
+body.register_page::before {
   content: "";
   position: absolute;
   top: 0;
@@ -21,13 +25,13 @@ body.register-page::before {
   z-index: -1;
 }
 
-.error-message-register {
+.error_message_register {
   color: red;
   text-align: center;
   font-size: 13px;
 }
 
-.container-sign {
+.container_sign {
   background: white;
   color: black;
   box-shadow: 0 6px 12px rgb(0, 0, 0);
@@ -48,7 +52,7 @@ body.register-page::before {
   text-align: center;
 }
 
-.name-register {
+.name_register {
   display: flex;
   text-align: start;
   justify-content: start;
@@ -76,6 +80,15 @@ input[type="password"]:focus {
   outline: none;
 }
 
+.password_toggle_icon {
+  position: absolute;
+  top: 72%;
+  color: #1c1c1d;
+  right: 35px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
 hr {
   border: 1px solid #f1f1f1;
   margin-bottom: 25px;
@@ -99,7 +112,7 @@ a {
 }
 
 @media (max-width: 768px) {
-  .container-sign {
+  .container_sign {
     width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -107,7 +120,7 @@ a {
 }
 
 @media (max-width: 468px) {
-  .container-sign {
+  .container_sign {
     width: 380px;
     margin-left: auto;
     margin-right: auto;
@@ -115,7 +128,7 @@ a {
 }
 
 @media (min-width: 1024px) {
-  .container-sign {
+  .container_sign {
     width: 800px;
     margin-left: auto;
     margin-right: auto;

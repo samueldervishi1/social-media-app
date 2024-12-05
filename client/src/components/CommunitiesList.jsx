@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import placeHolderImage from "../assets/placeholder.png";
 import placeHolderLogo from "../assets/logo-placeholder-image.png";
 import loader from "../assets/ZKZg.gif";
-import "../styles/communitiesList.css";
+import styles from "../styles/communitiesList.module.css";
 
 import { getUserIdFromToken } from "../auth/authUtils";
+
+import { Snackbar, Alert } from "@mui/material";
 
 const CommunitiesList = () => {
   const [communities, setCommunities] = useState([]);
@@ -15,6 +17,10 @@ const CommunitiesList = () => {
   const [joinedCommunities, setJoinedCommunities] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
   const navigate = useNavigate();
 
   const getMemberText = (count) => {
@@ -23,7 +29,6 @@ const CommunitiesList = () => {
     return "Loading...";
   };
 
-  //fetch all communities from the database
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
@@ -49,7 +54,6 @@ const CommunitiesList = () => {
     fetchCommunities();
   }, []);
 
-  //fetch memebers count for each community
   useEffect(() => {
     const fetchMembersCount = async () => {
       try {
@@ -97,14 +101,15 @@ const CommunitiesList = () => {
     }
   }, [communities]);
 
-  //handle join community
   const handleJoinCommunity = async (communityId) => {
     try {
       const token = localStorage.getItem("token");
       const userId = getUserIdFromToken();
 
       if (!userId) {
-        alert("User is not authenticated");
+        setSnackbarMessage("User is not authenticated.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
         return;
       }
 
@@ -120,11 +125,15 @@ const CommunitiesList = () => {
 
       if (response.status === 200) {
         setJoinedCommunities((prev) => [...prev, communityId]);
-        alert("You joined the community successfully!");
-        window.location.reload();
+        setSnackbarMessage("You joined the community successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
       }
     } catch (err) {
       setError(err.message);
+      setSnackbarMessage("Something went wrong. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -132,17 +141,29 @@ const CommunitiesList = () => {
     setDropdownVisible(dropdownVisible === communityId ? null : communityId);
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
-    <div className="container">
-      <h1 className="title">Popular Communities</h1>
-      {error && <p className="error">Something went wrong. Please try again later.</p>}
+    <div className={styles.container}>
+      <h1 className={styles.title}>Popular Communities</h1>
+      {error && (
+        <p className={styles.error}>
+          Something went wrong. Please try again later.
+        </p>
+      )}
 
       {loading ? (
-        <div className="loading-community">
-          <img src={loader} alt="Loading..." className="spinner-community" />
+        <div className={styles.loading_community}>
+          <img
+            src={loader}
+            alt="Loading..."
+            className={styles.spinner_community}
+          />
         </div>
       ) : (
-        <div className="card-container">
+        <div className={styles.card_container}>
           {communities.map((community) => {
             const userId = getUserIdFromToken();
             const isUserJoined =
@@ -151,22 +172,22 @@ const CommunitiesList = () => {
             return (
               <div
                 key={community.communityId}
-                className="card"
+                className={styles.card}
                 onClick={() => navigate(`/c/community/${community.name}`)}
               >
-                <div className="banner">
+                <div className={styles.banner}>
                   <img
                     src={placeHolderImage}
                     alt={`${community.name} banner`}
-                    className="banner-img"
+                    className={styles.banner_img}
                   />
                   <img
                     src={placeHolderLogo}
                     alt={`${community.name} profile`}
-                    className="profile-img"
+                    className={styles.profile_img}
                   />
                   <button
-                    className="join-button"
+                    className={styles.join_button}
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!isUserJoined) {
@@ -179,7 +200,7 @@ const CommunitiesList = () => {
                   </button>
 
                   <button
-                    className="menu-button"
+                    className={styles.menu_button}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleDropdown(community.communityId);
@@ -189,7 +210,7 @@ const CommunitiesList = () => {
                   </button>
 
                   {dropdownVisible === community.communityId && (
-                    <div className="dropdown-community">
+                    <div className={styles.dropdown_community}>
                       <a href="#">Add to favourites</a>
                       <a href="#">Add to custom feed</a>
                       <a href="#">Share community</a>
@@ -197,10 +218,10 @@ const CommunitiesList = () => {
                   )}
                 </div>
 
-                <div className="card-content">
+                <div className={styles.card_content}>
                   <h2>
                     c/{community.name} <span>-</span>
-                    <span className="members-count">
+                    <span className={styles.members_count}>
                       {membersCounts[community.name] !== undefined
                         ? getMemberText(membersCounts[community.name])
                         : "Loading..."}
@@ -212,6 +233,21 @@ const CommunitiesList = () => {
           })}
         </div>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

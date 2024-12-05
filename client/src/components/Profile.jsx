@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { createContext } from "react";
 import { Container } from "react-bootstrap";
-import ProfileHeader from "./ProfileHeader";
 import loaderImage from "../assets/ZKZg.gif";
-import "../styles/profile.css";
+import styles from "../styles/profile.module.css";
 
 import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
+const ProfileHeader = React.lazy(() => import("./ProfileHeader"));
 
 export const ProfileContext = createContext(null);
 
@@ -98,18 +98,18 @@ const Profile = () => {
 
   return (
     <ProfileContext.Provider value={profileData}>
-      <div className="profile-layout">
-        <div className="main-content">
+      <div className={styles.profile_layout}>
+        <div className={styles.main_content}>
           {isLoading ? (
-            <div className="loader-overlay">
+            <div className={styles.loader_overlay}>
               <img
                 src={loaderImage}
                 alt="Loading..."
-                className="loader-image"
+                className={styles.loader_image}
               />
             </div>
           ) : (
-            <Container className="classname">
+            <Container className={styles.classname}>
               {profileData ? (
                 <ProfileHeader
                   followers={followersCount}
@@ -118,7 +118,7 @@ const Profile = () => {
                   profile={profileData}
                 />
               ) : (
-                <div className="profile-error">
+                <div className={styles.profile_error}>
                   {error || "Profile data could not be loaded"}
                 </div>
               )}

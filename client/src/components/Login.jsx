@@ -4,8 +4,9 @@ import { Modal } from "react-bootstrap";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Snackbar } from "@mui/material";
 import customLoadingGif from "../assets/ZKZg.gif";
-import "../styles/login.css";
-import { getUserIdFromToken } from "../auth/authUtils";
+import styles from "../styles/login.module.css";
+
+import { useAuth } from "../auth/AuthContext";
 
 const LoginScript = () => {
   const [error, setError] = useState(null);
@@ -25,6 +26,7 @@ const LoginScript = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("success");
 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -47,15 +49,23 @@ const LoginScript = () => {
       });
 
       if (response.ok) {
-        const data = await response.text();
+        const token = await response.text();
 
-        if (data && data.startsWith("eyJhbGciOi")) {
-          const token = data;
-          localStorage.setItem("token", token);
+        if (token && token.startsWith("eyJhbGciOi")) {
+          login(token);
 
-          const userId = getUserIdFromToken();
+          const decodedToken = JSON.parse(atob(token.split(".")[1]));
 
-          navigate("/home");
+          if (decodedToken.twoFa !== undefined) {
+            if (decodedToken.twoFa === true) {
+              // navigate("/security/2fa/verify");
+              navigate("/home");
+            } else {
+              navigate("/home");
+            }
+          } else {
+            console.log("twoFa field is not present in the token.");
+          }
         } else {
           setError("Unexpected response from the server.");
           setLoading(false);
@@ -85,7 +95,6 @@ const LoginScript = () => {
     setLoadingUpdate(true);
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `http://localhost:5000/api/v2/users/update-password?username=${username}&newPassword=${newPassword}`,
         {
@@ -131,33 +140,39 @@ const LoginScript = () => {
   };
 
   useEffect(() => {
-    document.body.classList.add("login-page");
+    document.body.classList.add("login_page");
     return () => {
-      document.body.classList.remove("login-page");
+      document.body.classList.remove("login_page");
     };
   }, []);
 
   return (
     <div>
-      <form id="loginForm" onSubmit={handleSubmit}>
+      <form
+        id="loginForm"
+        onSubmit={handleSubmit}
+        className={styles.login_form}
+      >
         {loading ? (
-          <div className="spinner-container">
+          <div className={styles.spinner_container}>
             <img
               src={customLoadingGif}
-              className="custom-login-loader"
+              className={styles.custom_login_loader}
               alt="Loading..."
             />
           </div>
         ) : (
-          <div className="screen">
-            <div className="glass-effect">
-              <div className="container-login">
-                <p className="fill">Enter username and password to login.</p>
+          <div className={styles.screen}>
+            <div className={styles.glass_effect}>
+              <div className={styles.container_login}>
+                <p className={styles.fill}>
+                  Enter username and password to login.
+                </p>
                 <hr />
-                {error && <p className="error-message-login">{error}</p>}
+                {error && <p className={styles.error_message_login}>{error}</p>}
 
                 <label htmlFor="username">
-                  <b className="username-login">Username</b>
+                  <b className={styles.username_login}>Username</b>
                 </label>
                 <input
                   type="text"
@@ -165,21 +180,23 @@ const LoginScript = () => {
                   name="username"
                   id="username"
                   required
+                  className={styles.input}
                 />
 
                 <label htmlFor="password">
-                  <b className="password-login">Password</b>
+                  <b className={styles.password_login}>Password</b>
                 </label>
-                <div className="password-input-container">
+                <div className={styles.password_input_container}>
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter Password"
                     name="password"
                     id="password"
                     required
+                    className={styles.input}
                   />
                   <span
-                    className="password-toggle-icon"
+                    className={styles.password_toggle_icon}
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -187,16 +204,8 @@ const LoginScript = () => {
                 </div>
 
                 <p
-                  className="forgot-password"
+                  className={styles.forgot_password}
                   onClick={() => setShowModal(true)}
-                  style={{
-                    cursor: "pointer",
-                    color:
-                      "rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1))",
-                    padding: "8px 16px",
-                    borderRadius: "20px",
-                    textDecoration: "underline",
-                  }}
                 >
                   Forgot Password?
                 </p>
@@ -218,7 +227,7 @@ const LoginScript = () => {
                   Login
                 </button>
 
-                <p className="signup">
+                <p className={styles.signup}>
                   Don&apos;t have an account?{" "}
                   <Link to="/register">Sign up</Link>.
                 </p>
@@ -251,7 +260,7 @@ const LoginScript = () => {
               <label htmlFor="modalNewPassword" className="form-label">
                 New Password:
               </label>
-              <div className="password-input-container">
+              <div className={styles.password_input_container}>
                 <input
                   type={showNewPassword ? "text" : "password"}
                   id="modalNewPassword"
@@ -261,7 +270,7 @@ const LoginScript = () => {
                   className="form-control"
                 />
                 <span
-                  className="password-toggle-icon"
+                  className={styles.password_toggle_icon}
                   onClick={() => setShowNewPassword((prev) => !prev)}
                 >
                   {showNewPassword ? <VisibilityOff /> : <Visibility />}
@@ -272,7 +281,7 @@ const LoginScript = () => {
               <label htmlFor="modalConfirmPassword" className="form-label">
                 Confirm Password:
               </label>
-              <div className="password-input-container">
+              <div className={styles.password_input_container}>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   id="modalConfirmPassword"
@@ -282,7 +291,7 @@ const LoginScript = () => {
                   className="form-control"
                 />
                 <span
-                  className="password-toggle-icon"
+                  className={styles.password_toggle_icon}
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                 >
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
@@ -292,7 +301,9 @@ const LoginScript = () => {
             {passwordUpdateMessage && (
               <p
                 className={
-                  passwordUpdateSuccess ? "text-success" : "text-danger"
+                  passwordUpdateSuccess
+                    ? styles.text_success
+                    : styles.text_danger
                 }
               >
                 {passwordUpdateMessage}
@@ -301,12 +312,12 @@ const LoginScript = () => {
             <button
               type="submit"
               disabled={loadingUpdate}
-              className="btn btn-primary"
+              className={styles.custom_update_password_btn}
             >
               {loadingUpdate ? (
                 <img
                   src={customLoadingGif}
-                  className="custom-login-loader"
+                  className={styles.custom_login_loader}
                   alt="Loading..."
                 />
               ) : (

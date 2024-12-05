@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import PostCard from "./PostCard";
 import { Image } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import profileImage from "../assets/user.webp";
@@ -9,6 +8,7 @@ import placeHolderImage from "../assets/placeholder.png";
 import loaderImage from "../assets/ZKZg.gif";
 import "../styles/user-details.css";
 
+const PostCard = React.lazy(() => import("./PostCard"));
 import { getUserIdFromToken } from "../auth/authUtils";
 
 const UserDetail = () => {

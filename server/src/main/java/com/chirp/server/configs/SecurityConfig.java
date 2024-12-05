@@ -25,12 +25,16 @@ public class SecurityConfig {
 	@Value("${frontend.url}")
 	private String frontendUrl;
 
+	@Value("${build.url}")
+	private String buildUrl;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				.cors(cors -> cors.configurationSource(request -> {
 					CorsConfiguration config = new CorsConfiguration();
 					config.addAllowedOrigin(frontendUrl);
+					config.addAllowedOrigin(buildUrl);
 					config.setAllowedMethods(List.of("GET" , "POST" , "PUT" , "DELETE" , "OPTIONS"));
 					config.setAllowedHeaders(List.of("Authorization" , "*"));
 					config.setAllowCredentials(true);

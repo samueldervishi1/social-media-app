@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
-import MessageComponent from "./Message";
-import "../styles/inbox.css";
+import styles from "../styles/inbox.module.css";
 import defaultUserIcon from "../assets/user.webp";
+
+const MessageComponent = React.lazy(() => import("./Message"));
 
 import { getUserIdFromToken } from "../auth/authUtils";
 
@@ -82,9 +83,11 @@ const Inbox = ({ user }) => {
   };
 
   return (
-    <div className="inbox-container">
+    <div className={styles.inbox_container}>
       <div
-        className={`message-container ${showMessageComponent ? "open" : ""}`}
+        className={`${styles.message_container} ${
+          showMessageComponent ? styles.open : ""
+        }`}
       >
         {showMessageComponent && receiverId && selectedUser && (
           <MessageComponent
@@ -94,18 +97,18 @@ const Inbox = ({ user }) => {
         )}
       </div>
 
-      <div className="bottom-navbar">
+      <div className={styles.bottom_navbar}>
         {errorMessage ? (
           <p>{errorMessage}</p>
         ) : followers.length > 0 ? (
-          <div className="followers-list">
+          <div className={styles.followers_list}>
             {followers.map((follower) => (
               <button
                 key={follower.id}
-                className="follower-btn"
+                className={styles.follower_btn}
                 onClick={() => handleMessageClick(follower)}
               >
-                <img src={defaultUserIcon} className="follower-avatar" />
+                <img src={defaultUserIcon} className={styles.follower_avatar} />
               </button>
             ))}
           </div>

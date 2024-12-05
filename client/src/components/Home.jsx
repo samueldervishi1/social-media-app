@@ -1,18 +1,23 @@
 import React from "react";
-import Post from "./Post";
-import PostList from "./PostList";
-import TrendingList from "./TrendingList";
-import "../styles/home.css";
+import styles from "../styles/home.module.css";
+
+const Post = React.lazy(() => import("./Post"));
+const PostList = React.lazy(() => import("./PostList"));
+const TrendingList = React.lazy(() => import("./TrendingList"));
 
 const Home = () => {
   return (
-    <div className="home-container">
-      <div className="main-content">
-        <Post />
-        <PostList />
+    <div className={styles.home_container}>
+      <div className={styles.main_content}>
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <Post />
+          <PostList />
+        </React.Suspense>
       </div>
-      <div className="sidebar">
-        <TrendingList />
+      <div className={styles.sidebar}>
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <TrendingList />
+        </React.Suspense>
       </div>
     </div>
   );

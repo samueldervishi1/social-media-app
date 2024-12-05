@@ -1,4 +1,4 @@
-.profile-layout {
+.profile_layout {
   display: flex;
   justify-content: space-evenly;
   margin-left: 20px;
@@ -11,7 +11,7 @@
   width: 100%;
 }
 
-.profile-error {
+.profile_error {
   color: red;
   text-align: center;
   display: flex;
@@ -21,7 +21,7 @@
   justify-content: center;
 }
 
-.loader-overlay {
+.loader_overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -33,12 +33,12 @@
   z-index: 9999;
 }
 
-.loader-image {
+.loader_image {
   width: 30px;
   transform: translate(-0%, -50%);
 }
 
-.loader-text {
+.loader_text {
   font-size: 12px;
   margin-top: 10px;
   font-size: 12;

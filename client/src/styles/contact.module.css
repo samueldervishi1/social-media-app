@@ -1,8 +1,8 @@
-.contact-container {
+.contact_container {
   padding: 20px;
 }
 
-.h1-container {
+.h1_container {
   margin: 0 auto 40px auto;
   background-image: url("../assets/background.jpg");
   background-size: cover;
@@ -22,26 +22,26 @@ h1 {
   display: flex;
 }
 
-.contact-info {
+.contact_info {
   text-align: center;
   font-size: 18px;
   color: #333;
 }
 
-.social-icons {
+.social_icons {
   display: flex;
   justify-content: center;
   gap: 20px;
   margin-top: 20px;
 }
 
-.social-icon {
+.social_icon {
   font-size: 40px;
   color: #1da1f2;
   transition: color 0.3s;
 }
 
-.social-icon:hover {
+.social_icon:hover {
   color: #0077b5;
 }
 
