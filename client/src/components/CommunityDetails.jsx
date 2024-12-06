@@ -344,8 +344,8 @@ const CommunityDetails = () => {
 
   if (loading) {
     return (
-      <div className="loading-details">
-        <img src={loader} alt="Loading..." className="spinner-details" />
+      <div className={styles.loading_details}>
+        <img src={loader} alt="Loading..." className={styles.spinner_details} />
       </div>
     );
   }

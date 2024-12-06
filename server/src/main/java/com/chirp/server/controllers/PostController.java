@@ -52,7 +52,7 @@ public class PostController {
 	}
 
 	@GetMapping("/list/count/{userId}")
-	public int getUserPostCount(@PathVariable String userId) {
+	public long getUserPostCount(@PathVariable String userId) {
 		try {
 			return postService.getPostCountPerUser(userId);
 		} catch (Exception e) {

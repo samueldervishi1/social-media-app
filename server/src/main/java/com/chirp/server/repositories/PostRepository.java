@@ -8,5 +8,5 @@ import java.util.List;
 public interface PostRepository extends MongoRepository<Post, String> {
 	List<Post> findByUserId(String userId);
 
-	int countByUserId(String userId);
+	long countByUserIdAndDeletedFalse(String userId);
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import loaderImage from "../assets/ZKZg.gif";
+import "../styles/post-card.css";
 
 const PostCard = React.lazy(() => import("./PostCard"));
 
@@ -48,7 +49,7 @@ const PostList = () => {
 
   if (error) {
     return (
-      <div className={styles.error_message}>
+      <div className="error-message">
         <p>{error}</p>
       </div>
     );

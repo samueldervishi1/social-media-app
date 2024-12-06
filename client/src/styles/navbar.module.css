@@ -1,4 +1,4 @@
-.chat-history1 {
+.chat_history1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,7 +20,7 @@
   border-bottom-right-radius: 15px;
 }
 
-.history-div-2 {
+.history_div_2 {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -32,27 +32,27 @@
   z-index: 1002;
 }
 
-.left-section,
-.right-section {
+.left_section,
+.right_section {
   display: flex;
   flex-direction: row;
   gap: 20px;
 }
 
-.history-links {
+.history_links {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 15px;
 }
 
-.name-logo{
+.name_logo {
   font-size: 25px;
   text-decoration: none;
   color: black;
 }
 
-.divider-dp {
+.divider_dp {
   height: 0;
   margin: var(--bs-dropdown-divider-margin-y) 0;
   overflow: hidden;
@@ -60,8 +60,8 @@
   background-color: white;
 }
 
-.history-links a,
-.history-links .dropdown-toggle {
+.history_links a,
+.history_links .dropdown_toggle {
   display: flex;
   align-items: center;
   color: black;
@@ -71,19 +71,19 @@
   gap: 4px;
 }
 
-.dropdown-menu {
+.dropdown_menu {
   background-color: white;
   color: black;
   padding: 10px;
   width: 200px;
 }
 
-.dropdown-item {
+.dropdown_item {
   color: black !important;
   background-color: white !important;
 }
 
-.logout-loader {
+.logout_loader {
   position: fixed;
   top: 0;
   left: 0;
@@ -96,7 +96,7 @@
   z-index: 2000;
 }
 
-.logout-box {
+.logout_box {
   background-color: white;
   padding: 20px 50px;
   border-radius: 10px;
@@ -106,7 +106,7 @@
   align-items: center;
 }
 
-.icon-p {
+.icon_p {
   font-size: 20px;
   margin-right: 5px;
 }
@@ -138,7 +138,7 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-.mobile-menu {
+.mobile_menu {
   display: none;
   flex-direction: column;
   background-color: white;
@@ -150,7 +150,7 @@
   z-index: 10;
 }
 
-.mobile-menu-item {
+.mobile_menu_item {
   padding: 10px 15px;
   color: black;
   text-decoration: none;
@@ -158,25 +158,27 @@
   transition: background-color 0.3s;
 }
 
-.mobile-menu-item:hover {
+.mobile_menu_item:hover {
   background-color: transparent;
 }
 
-.mobile-menu-item:focus,
-.mobile-menu-item.active {
+.mobile_menu_item:focus,
+.mobile_menu_item:active {
   background-color: transparent;
   color: black;
+  outline: none;
+  box-shadow: none;
 }
 
-.mobile-menu.open {
+.mobile_menu.open {
   display: flex;
 }
 
-.search-bar-container1 {
+.search_bar_container1 {
   position: relative;
 }
 
-.search-container {
+.search_container {
   margin-bottom: 20px;
   position: relative;
   top: 20px;
@@ -184,7 +186,7 @@
   width: 100%;
 }
 
-.search-container input {
+.search_container input {
   padding: 5px !important;
   border: 1px solid grey !important;
   border-radius: 30px !important;
@@ -193,7 +195,7 @@
   outline: none !important;
 }
 
-.search-container input:focus {
+.search_container input:focus {
   background-color: black;
   border-color: grey;
 }
@@ -213,44 +215,43 @@
   padding: 6px 0;
 }
 
-.drpp-hld {
+.drpp_hld {
   text-align: center;
   color: black;
   padding: 10px 0;
 }
 
-.drpp-rsl {
+.drpp_rsl {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
-.drpp-t {
+.drpp_t {
   padding: 10px;
   border-bottom: 1px solid grey;
   cursor: pointer;
   text-align: left;
 }
 
-.drpp-t:last-child {
+.drpp_t:last-child {
   border-bottom: none;
 }
 
-.divider-delete {
+.divider_delete {
+  color: black !important;
+}
+
+.divider_logout {
   color: black !important;
   border: 0.1px solid black !important;
 }
 
-.divider-logout {
-  color: black !important;
-  border: 0.1px solid black !important;
-}
-
-.name-delete {
+.name_delete {
   color: red;
 }
 
-.delete-name {
+.delete_name {
   color: red !important;
 }
 
@@ -259,20 +260,20 @@
     display: flex;
   }
 
-  .history-links {
+  .history_links {
     display: none;
   }
 
-  .mobile-menu {
+  .mobile_menu {
     display: flex;
     border-radius: 20px;
   }
 
-  .search-container input {
+  .search_container input {
     width: 95% !important;
   }
 
-  .mobile-menu-item {
+  .mobile_menu_item {
     padding: 10px 15px;
     color: black;
     text-decoration: none;
@@ -280,19 +281,19 @@
     transition: background-color 0.3s;
   }
 
-  .mobile-menu-item:hover {
+  .mobile_menu_item:hover {
     background-color: none !important;
   }
 }
 
 @media (min-width: 769px) {
-  .history-links {
+  .history_links {
     display: flex;
     flex-direction: row;
     margin-left: auto;
   }
 
-  .mobile-menu {
+  .mobile_menu {
     display: none;
   }
 

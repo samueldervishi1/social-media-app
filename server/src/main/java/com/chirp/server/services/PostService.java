@@ -90,8 +90,8 @@ public class PostService {
 		return postRepository.findByUserId(userId);
 	}
 
-	public int getPostCountPerUser(String userId) {
-		return postRepository.countByUserId(userId);
+	public long getPostCountPerUser(String userId) {
+		return postRepository.countByUserIdAndDeletedFalse(userId);
 	}
 
 	@Transactional

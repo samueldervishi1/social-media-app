@@ -356,7 +356,6 @@
 @media (max-width: 1024px) {
   .post-card {
     width: 100%;
-    margin-right: 10px;
   }
   .error-message {
     margin-left: 0;

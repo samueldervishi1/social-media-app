@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom";
 import bot from "../assets/bot.svg";
 import user from "../assets/user.svg";
 import send from "../assets/send.svg";
@@ -10,7 +9,6 @@ import { FaRegPenToSquare } from "react-icons/fa6";
 import styles from "../styles/ai.module.css";
 
 const ChirpAI = () => {
-  const navigate = useNavigate();
   const [chatMessages, setChatMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +17,7 @@ const ChirpAI = () => {
   const chatContainerRef = useRef(null);
   const [isThinking, setIsThinking] = useState(false);
   const [hideHeading, setHideHeading] = useState(false);
+  const [isMobileView, setIsMobileView] = useState();
 
   const getUserIdFromToken = () => {
     const token = localStorage.getItem("token");

@@ -57,6 +57,9 @@ const ProfileHeader = ({ followers, following, profile }) => {
             },
           }
         );
+
+        console.log("Backend response: ", response.data);      
+
         if (response.status === 200) {
           setPostCount(response.data);
         } else {
@@ -178,7 +181,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
     <div
       className={styles.constructor_container}
       style={{
-        border: ".2px solid lightgrey",
+        border: "0.2px solid lightgrey",
         position: "relative",
         boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2)",
         background: "white",
@@ -242,7 +245,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
         style={{
           fontWeight: activeTab === "posts" ? "bold" : "normal",
           padding: "10px",
-          borderBottom: activeTab === "posts" ? "2px solid grey" : "none",
+          borderBottom: activeTab === "posts" ? "2px solid #1c1c1d" : "none",
           cursor: "pointer",
           textAlign: "center",
           marginTop: "20px",

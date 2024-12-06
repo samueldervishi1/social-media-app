@@ -269,7 +269,11 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           console.log("No saved posts found.");
         }
       } catch (error) {
-        console.error("Error fetching saved posts:", error.message);
+        if (error.response && error.response.status === 404) {
+          console.log("No saved posts for this user.");
+        } else {
+          console.error("Error fetching saved posts:", error.message);
+        }
       }
     };
 

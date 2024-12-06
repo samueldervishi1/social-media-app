@@ -19,7 +19,7 @@ import {
 import { BiPlusCircle } from "react-icons/bi";
 import { TbPremiumRights, TbAuth2Fa } from "react-icons/tb";
 import loaderImage from "../assets/ZKZg.gif";
-import "../styles/navbar.css";
+import styles from "../styles/navbar.module.css";
 
 import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
 
@@ -157,22 +157,25 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="chat-history1">
-        <div className="history-div-2">
+      <div className={styles.chat_history1}>
+        <div className={styles.history_div_2}>
           <div>
-            <a href="/home" className="name-logo">
+            <a href="/home" className={styles.name_logo}>
               AЯYHƆ{" "}
             </a>
           </div>
-          <div className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            <div className={`bar ${isMenuOpen ? "open" : ""}`} />
-            <div className={`bar ${isMenuOpen ? "open" : ""}`} />
-            <div className={`bar ${isMenuOpen ? "open" : ""}`} />
+          <div
+            className={styles.hamburger}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <div className={`${styles.bar} ${isMenuOpen ? "open" : ""}`} />
+            <div className={`${styles.bar} ${isMenuOpen ? "open" : ""}`} />
+            <div className={`${styles.bar} ${isMenuOpen ? "open" : ""}`} />
           </div>
           {isMenuOpen && (
-            <div className="mobile-menu">
-              <div className="search-bar-container1" ref={searchBarRef}>
-                <div className="search-container">
+            <div className={styles.mobile_menu}>
+              <div className={styles.search_bar_container1} ref={searchBarRef}>
+                <div className={styles.search_container}>
                   <input
                     type="text"
                     placeholder="Search..."
@@ -183,17 +186,19 @@ const Navbar = () => {
                 </div>
 
                 {showDropdown && (
-                  <div className="drpp">
+                  <div className={styles.drpp}>
                     {showNoResults ? (
-                      <p className="drpp-hld">Nothing found</p>
+                      <p className={styles.drpp_hld}>Nothing found</p>
                     ) : results.length === 0 ? (
-                      <p className="drpp-hld">Search for friends and more...</p>
+                      <p className={styles.drpp_hld}>
+                        Search for friends and more...
+                      </p>
                     ) : (
-                      <ul className="drpp-rsl">
+                      <ul className={styles.drpp_rsl}>
                         {results.map((user) => (
                           <li
                             key={user.id}
-                            className="drpp-t"
+                            className={styles.drpp_t}
                             onClick={() => handleUserClick(user.id)}
                           >
                             {user.username}
@@ -204,21 +209,24 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
-              <a href="/home" className="mobile-menu-item">
-                <GoHome className="icon-p" /> Home
+              <a href="/home" className={styles.mobile_menu_item}>
+                <GoHome className={styles.icon_p} /> Home
               </a>
-              <a href="/messages" className="mobile-menu-item">
-                <AiOutlineMessage className="icon-p" /> Messages
+              <a href="/messages" className={styles.mobile_menu_item}>
+                <AiOutlineMessage className={styles.icon_p} /> Messages
               </a>
-              <a href="/chirp" className="mobile-menu-item">
-                <GiArtificialHive className="icon-p" /> AЯYHƆ
+              <a href="/chirp" className={styles.mobile_menu_item}>
+                <GiArtificialHive className={styles.icon_p} /> AЯYHƆ
               </a>
-              <a href="/c/communities" className="mobile-menu-item">
-                <CgCommunity className="icon-p" /> Communities
+              <a href="/c/communities" className={styles.mobile_menu_item}>
+                <CgCommunity className={styles.icon_p} /> Communities
               </a>
               <Dropdown>
-                <Dropdown.Toggle variant="link" className="mobile-menu-item">
-                  <IoPersonCircleOutline className="icon-p" /> Profile
+                <Dropdown.Toggle
+                  variant="link"
+                  className={styles.mobile_menu_item}
+                >
+                  <IoPersonCircleOutline className={styles.icon_p} /> Profile
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item href="/profile">
@@ -228,68 +236,72 @@ const Navbar = () => {
                   <Dropdown.Item href="/c/user/communities">
                     Your communities
                   </Dropdown.Item>
-                  <Dropdown.Divider className="divider-dp" />
+                  <Dropdown.Divider className={styles.divider_dp} />
                   <Dropdown.Item onClick={handleLogout}>
-                    <CiLogout className="icon-p" /> Logout
+                    <CiLogout className={styles.icon_p} /> Logout
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
               <Dropdown>
-                <Dropdown.Toggle variant="link" className="mobile-menu-item">
-                  <IoSettingsOutline className="icon-p" /> Settings
+                <Dropdown.Toggle
+                  variant="link"
+                  className={styles.mobile_menu_item}
+                >
+                  <IoSettingsOutline className={styles.icon_p} /> Settings
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item href="/security/2fa/enable">
-                    <TbAuth2Fa className="icon-p" /> Enable 2FA
+                    <TbAuth2Fa className={styles.icon_p} /> Enable 2FA
                   </Dropdown.Item>
                   <Dropdown.Item href="/premium">
-                    <TbPremiumRights className="icon-p" /> Premium
+                    <TbPremiumRights className={styles.icon_p} /> Premium
                   </Dropdown.Item>
                   <Dropdown.Item href="/about">
-                    <CiCircleInfo className="icon-p" /> About
+                    <CiCircleInfo className={styles.icon_p} /> About
                   </Dropdown.Item>
                   <Dropdown.Item href="/terms">
                     {" "}
-                    <MdOutlinePrivacyTip className="icon-p" />
+                    <MdOutlinePrivacyTip className={styles.icon_p} />
                     Terms &amp; Services
                   </Dropdown.Item>
                   <Dropdown.Item href="/contact">
-                    <MdOutlineEmail className="icon-p" />
+                    <MdOutlineEmail className={styles.icon_p} />
                     Contact
                   </Dropdown.Item>
                   <Dropdown.Item href="/help">
-                    <MdOutlineHelpOutline className="icon-p" />
+                    <MdOutlineHelpOutline className={styles.icon_p} />
                     Help
                   </Dropdown.Item>
-                  <Dropdown.Divider className="divider-dp" />
+                  <Dropdown.Divider className={styles.divider_dp} />
                   <Dropdown.Item
                     onClick={() => setShowDeleteModal(true)}
                     className="delete-name"
                   >
                     {" "}
-                    <MdDeleteForever className="name-delete" /> Delete Account
+                    <MdDeleteForever className={styles.name_delete} /> Delete
+                    Account
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
           )}
 
-          <div className="history-links">
-            <a href="/home" className="menu-item">
-              <GoHome className="icon-p" /> Home
+          <div className={styles.history_links}>
+            <a href="/home" className={styles.menu_item}>
+              <GoHome className={styles.icon_p} /> Home
             </a>
-            <a href="/messages" className="menu-item">
-              <AiOutlineMessage className="icon-p" /> Messages
+            <a href="/messages" className={styles.menu_item}>
+              <AiOutlineMessage className={styles.icon_p} /> Messages
             </a>
-            <a href="/chirp" className="menu-item">
-              <GiArtificialHive className="icon-p" /> AЯYHƆ
+            <a href="/chirp" className={styles.menu_item}>
+              <GiArtificialHive className={styles.icon_p} /> AЯYHƆ
             </a>
-            <a href="/c/communities" className="menu-item">
-              <CgCommunity className="icon-p" /> Communities
+            <a href="/c/communities" className={styles.menu_item}>
+              <CgCommunity className={styles.icon_p} /> Communities
             </a>
             <Dropdown>
-              <Dropdown.Toggle variant="link" className="menu-item">
-                <IoPersonCircleOutline className="icon-p" /> Profile
+              <Dropdown.Toggle variant="link" className={styles.mobile_menu_item}>
+                <IoPersonCircleOutline className={styles.icon_p} /> Profile
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item href="/profile">
@@ -299,46 +311,47 @@ const Navbar = () => {
                 <Dropdown.Item href="/c/user/communities">
                   Your communities
                 </Dropdown.Item>
-                <Dropdown.Divider className="divider-dp" />
+                <Dropdown.Divider className={styles.divider_dp} />
                 <Dropdown.Item onClick={handleLogout}>
-                  <CiLogout className="icon-p" /> Logout
+                  <CiLogout className={styles.icon_p} /> Logout
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <Dropdown>
-              <Dropdown.Toggle variant="link" className="menu-item">
-                <IoSettingsOutline className="icon-p" /> Settings
+              <Dropdown.Toggle variant="link" className={styles.mobile_menu_item}>
+                <IoSettingsOutline className={styles.icon_p} /> Settings
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
                 <Dropdown.Item href="/security/2fa/enable">
-                  <TbAuth2Fa className="icon-p" /> Enable 2FA
+                  <TbAuth2Fa className={styles.icon_p} /> Enable 2FA
                 </Dropdown.Item>
                 <Dropdown.Item href="/premium">
-                  <TbPremiumRights className="icon-p" /> Premium
+                  <TbPremiumRights className={styles.icon_p} /> Premium
                 </Dropdown.Item>
                 <Dropdown.Item href="/about">
-                  <CiCircleInfo className="icon-p" /> About
+                  <CiCircleInfo className={styles.icon_p} /> About
                 </Dropdown.Item>
                 <Dropdown.Item href="/terms">
                   {" "}
-                  <MdOutlinePrivacyTip className="icon-p" />
+                  <MdOutlinePrivacyTip className={styles.icon_p} />
                   Terms &amp; Services
                 </Dropdown.Item>
                 <Dropdown.Item href="/contact">
-                  <MdOutlineEmail className="icon-p" /> Contact
+                  <MdOutlineEmail className={styles.icon_p} /> Contact
                 </Dropdown.Item>
                 <Dropdown.Item href="/help">
-                  <MdOutlineHelpOutline className="icon-p" />
+                  <MdOutlineHelpOutline className={styles.icon_p} />
                   Help
                 </Dropdown.Item>
-                <Dropdown.Divider className="divider-delete" />
+                <Dropdown.Divider className={styles.divider_delete} />
                 <Dropdown.Item
                   onClick={() => setShowDeleteModal(true)}
-                  className="delete-name"
+                  className={styles.delete_name}
                 >
                   {" "}
-                  <MdDeleteForever className="name-delete" /> Delete Account
+                  <MdDeleteForever className={styles.name_delete} /> Delete
+                  Account
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
@@ -369,8 +382,8 @@ const Navbar = () => {
       </Modal>
 
       {isLoggingOut && (
-        <div className="logout-loader">
-          <div className="logout-box">
+        <div className={styles.logout_loader}>
+          <div className={styles.logout_box}>
             <h2>Logging Out...</h2>
             <img
               src={loaderImage}

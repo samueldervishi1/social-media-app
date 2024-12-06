@@ -1,4 +1,4 @@
-.butt-style {
+.butt_style {
   display: flex;
   gap: 15px;
 }
@@ -6,27 +6,36 @@
   display: flex;
   justify-content: flex-start;
 }
-.use-links {
+.use_links {
   display: flex;
   margin-right: 20px;
 }
-.use-title {
+.use_title {
   display: flex;
 }
-.use-bio {
+.use_bio {
   display: flex;
 }
-.butt-edit {
+.butt_edit {
   font-size: 12px;
   background-color: lightgrey;
   border: none;
   color: #1c1c1d;;
   width: 150px;
 }
-.butt-edit:hover {
+.butt_edit:hover {
   color: #1c1c1d;;
   background-color: lightgrey;
 }
+
+.loader_image{
+  width: 30px;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, 50%);
+}
+
 .again {
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -41,7 +50,7 @@
   margin-top: 20;
   border-radius: 100%;
 }
-.usernam-p {
+.usernam_p {
   margin-top: 5px;
 }
 
@@ -54,18 +63,18 @@
     margin-top: 10px;
     margin-right: 20px;
   }
-  .usernam-p {
+  .usernam_p {
     margin-right: 10px;
     justify-content: center;
     display: flex;
   }
-  .butt-style {
+  .butt_style {
     display: flex;
     height: 30px;
     font-size: 1em;
     gap: 0;
   }
-  .butt-edit {
+  .butt_edit {
     font-size: 12px;
     background-color: lightgrey;
     border: none;
@@ -84,11 +93,11 @@
     margin-right: auto;
     margin-left: 70px;
   }
-  .use-bio {
+  .use_bio {
     display: flex;
     justify-content: center;
   }
-  .use-title {
+  .use_title {
     display: flex;
     margin-left: 20px;
     margin-top: -20px;
@@ -102,7 +111,7 @@
     margin-bottom: -10px;
     margin-top: -15px;
   }
-  .use-links {
+  .use_links {
     margin-left: -15px;
   }
 }

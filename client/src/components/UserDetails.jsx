@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import profileImage from "../assets/user.webp";
 import placeHolderImage from "../assets/placeholder.png";
 import loaderImage from "../assets/ZKZg.gif";
-import "../styles/user-details.css";
+import styles from "../styles/user-details.module.css";
 
 const PostCard = React.lazy(() => import("./PostCard"));
 import { getUserIdFromToken } from "../auth/authUtils";
@@ -22,9 +22,10 @@ const UserDetail = () => {
   const [userPosts, setUserPosts] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [postCount, setPostCount] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 3000);
+    const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -97,6 +98,39 @@ const UserDetail = () => {
       console.error("Error fetching user posts:", error.message);
     }
   };
+
+  useEffect(() => {
+    const fetchPostCount = async () => {
+      if (!userId) {
+        console.error("User ID not found in token.");
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:5000/api/v2/posts/list/count/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("Backend response:", response.data);
+
+        if (response.status === 200) {
+          setPostCount(response.data);
+        } else {
+          console.error("Failed to fetch post count.");
+        }
+      } catch (error) {
+        console.error("Error fetching post count:", error.message);
+      }
+    };
+
+    fetchPostCount();
+  }, []);
 
   const fetchUserFollowers = async () => {
     if (userId) {
@@ -223,7 +257,7 @@ const UserDetail = () => {
     <>
       {isLoading ? (
         <div className="loader-overlay">
-          <img src={loaderImage} alt="Loading..." className="loader-image" />
+          <img src={loaderImage} alt="Loading..." className={styles.loader_image} />
         </div>
       ) : (
         <div
@@ -269,7 +303,7 @@ const UserDetail = () => {
             <div style={{ display: "flex", alignItems: "center" }}>
               <h3 style={{ margin: 0 }}>{user?.username}</h3>
               <Button
-                className="light me-1 button-edit"
+                className={`${styles.light} ${styles.me_1} ${styles.button_edit}`}
                 onClick={handleFollowToggle}
                 style={{ marginLeft: "10px" }}
               >
@@ -280,7 +314,7 @@ const UserDetail = () => {
             <p>{user?.bio}</p>
             <div style={{ display: "flex", gap: "20px" }}>
               <div>
-                <strong>{user?.postsCount || 0}</strong> Posts
+                <strong>{postCount}</strong> Posts
               </div>
               <div>
                 <strong>{followersCount}</strong> Followers
@@ -342,7 +376,7 @@ const UserDetail = () => {
           </div>
           <div style={{ marginTop: "20px" }}>
             {activeTab === "posts" && (
-              <div className="post-list">
+              <div className={styles.post_list}>
                 {userPosts.length > 0 ? (
                   userPosts.map((post) => (
                     <PostCard

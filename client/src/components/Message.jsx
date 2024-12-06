@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import styles from "../styles/inbox.module.css";
 
