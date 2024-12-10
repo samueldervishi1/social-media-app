@@ -1,17 +1,31 @@
 package com.chirp.server.services;
 
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class SummarizationService {
+
+	private static final Logger logger = LoggerFactory.getLogger(SummarizationService.class);
+
+	private static final String ERROR_MODEL_API_URL = "Model API URL is not configured properly.";
+	private static final String ERROR_MODEL = "Model is not configured properly.";
+	private static final String ERROR_UNEXPECTED = "An unexpected error occurred while summarizing content.";
+	private static final String ERROR_NO_TEXT = "No response text available";
+	private static final String ERROR_UNEXPECTED_FORMAT = "Unexpected response format";
 
 	@Value("${model.api.key}")
 	private String apiKey;
@@ -30,15 +44,19 @@ public class SummarizationService {
 
 	private final RestTemplate restTemplate = new RestTemplate();
 
+	@PostConstruct
+	private void validateConfigs() {
+		if (!StringUtils.hasText(modelApiUrl)) {
+			throw new IllegalArgumentException(ERROR_MODEL_API_URL);
+		}
+
+		if (!StringUtils.hasText(model)) {
+			throw new IllegalArgumentException(ERROR_MODEL);
+		}
+	}
+
 	public String summarize(String message) {
 		try {
-			if (modelApiUrl == null || modelApiUrl.isEmpty()) {
-				throw new IllegalArgumentException("Model API URL is not configured properly.");
-			}
-			if (model == null || model.isEmpty()) {
-				throw new IllegalArgumentException("Model is not configured properly.");
-			}
-
 			Map<String, Object> requestBody = new HashMap<>();
 			requestBody.put("model" , model);
 			requestBody.put("message" , message);
@@ -59,15 +77,24 @@ public class SummarizationService {
 					}
 			);
 
-			Map<String, Object> responseBody = responseEntity.getBody();
-			if (responseBody != null) {
-				String text = (String) responseBody.get("text");
-				return text != null ? text : "No response text available";
-			} else {
-				return "Unexpected response format";
+			if (responseEntity.getBody() == null || !responseEntity.getBody().containsKey("text")) {
+				logger.error("Unexpected response format received: {}" , responseEntity.getBody());
+				return ERROR_UNEXPECTED_FORMAT;
 			}
-		} catch (IllegalArgumentException | RestClientException e) {
-			return "An unexpected error occurred while summarizing content.";
+
+			return Optional.ofNullable(responseEntity.getBody())
+					.map(responseBody -> (String) responseBody.get("text"))
+					.orElse(ERROR_NO_TEXT);
+
+		} catch (HttpStatusCodeException e) {
+			logger.error("HTTP Status: {} - Error Response: {}" , e.getStatusCode() , e.getResponseBodyAsString() , e);
+			return ERROR_UNEXPECTED;
+		} catch (RestClientException e) {
+			logger.error("RestClientException occurred: {}" , e.getMessage() , e);
+			return ERROR_UNEXPECTED;
+		} catch (Exception e) {
+			logger.error("Unexpected error: {}" , e.getMessage() , e);
+			return ERROR_UNEXPECTED;
 		}
 	}
 }

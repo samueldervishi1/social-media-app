@@ -5,7 +5,6 @@ import com.chirp.server.models.QuestionAnswerPair;
 import com.chirp.server.services.HistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +19,12 @@ public class HistoryController {
 
 	private static final Logger logger = LoggerFactory.getLogger(HistoryController.class);
 
-	@Autowired
-	private HistoryService historyService;
+	private final HistoryService historyService;
+
+	public HistoryController(HistoryService historyService) {
+		this.historyService = historyService;
+	}
+
 
 	@GetMapping("/all")
 	public ResponseEntity<List<History>> getAllHistories() {

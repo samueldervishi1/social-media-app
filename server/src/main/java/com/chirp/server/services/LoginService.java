@@ -5,6 +5,7 @@ import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import com.chirp.server.utils.JwtTokenUtil;
+import io.jsonwebtoken.security.Password;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,15 @@ public class LoginService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtTokenUtil jwtTokenUtil;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+	public LoginService(UserRepository userRepository , PasswordEncoder passwordEncoder , JwtTokenUtil jwtTokenUtil) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtTokenUtil = jwtTokenUtil;
+	}
 
 	public String login(String username , String password) {
 		logger.info("Attempting to login with username {}" , username);
@@ -38,7 +40,7 @@ public class LoginService {
 
 		validatePassword(password , user.getPassword());
 
-		String token = jwtTokenUtil.generateToken(username, user.getId(), user.isTwoFa());
+		String token = jwtTokenUtil.generateToken(username , user.getId() , user.isTwoFa());
 		logger.info("Successfully logged in user: {}" , username);
 		return token;
 	}

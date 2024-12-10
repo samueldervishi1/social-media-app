@@ -4,7 +4,6 @@ import com.chirp.server.exceptions.BadRequestException;
 import com.chirp.server.exceptions.ResourceNotFoundException;
 import com.chirp.server.models.Like;
 import com.chirp.server.services.LikesService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +13,11 @@ import java.util.List;
 @RequestMapping("/api/v2/likes")
 public class LikesController {
 
-	@Autowired
-	private LikesService likesService;
+	private final LikesService likesService;
+
+	public LikesController(LikesService likesService) {
+		this.likesService = likesService;
+	}
 
 	@GetMapping("/post/{postId}")
 	public ResponseEntity<Integer> getLikesCountForPost(@PathVariable String postId) {

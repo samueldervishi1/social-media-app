@@ -6,10 +6,10 @@ import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,10 +17,18 @@ public class SearchUserService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchUserService.class);
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+
+	public SearchUserService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
 	public List<User> searchUser(String username) {
+		if (username == null || username.trim().isEmpty()) {
+			logger.warn("Search request with null or empty username");
+			throw new IllegalArgumentException("Username must not be empty or null.");
+		}
+
 		try {
 			List<User> users = userRepository.findByUsernameContaining(username);
 
@@ -34,9 +42,12 @@ public class SearchUserService {
 			}
 
 			return activeUsers;
-		} catch (Exception e) {
-			logger.error("Error searching for user by username: {}" , e.getMessage());
+		} catch (InternalServerErrorException e) {
+			logger.error("Internal error while searching for user by username: {}. Error: {}" , username , e.getMessage());
 			throw new InternalServerErrorException("Error searching for user by username");
+		} catch (Exception e) {
+			logger.error("Unexpected error while searching for user by username: {}. Error: {}" , username , e.getMessage());
+			throw new InternalServerErrorException("Unexpected error occurred.");
 		}
 	}
 }

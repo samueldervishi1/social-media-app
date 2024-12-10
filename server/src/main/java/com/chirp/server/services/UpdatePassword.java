@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class UpdatePassword {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	public UpdatePassword(UserRepository userRepository , PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
+
 
 	public void updatePassword(String username , String newPassword) {
 		User user = getUserByUsername(username);

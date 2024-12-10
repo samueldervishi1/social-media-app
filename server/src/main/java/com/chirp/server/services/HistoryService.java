@@ -18,8 +18,11 @@ public class HistoryService {
 
 	private static final Logger logger = LoggerFactory.getLogger(HistoryService.class);
 
-	@Autowired
-	private HistoryRepository historyRepository;
+	private final HistoryRepository historyRepository;
+
+	public HistoryService(HistoryRepository historyRepository) {
+		this.historyRepository = historyRepository;
+	}
 
 	public History saveHistory(String sessionId , String userId , List<QuestionAnswerPair> questionAnswerPairs) {
 		try {

@@ -29,6 +29,7 @@ function Enable2FA() {
 
         // Update userTwoFAStatus based on the boolean value
         setUserTwoFAStatus(response.data.twoFa);
+        console.log(response.data.twoFa)
       } catch (error) {
         console.error("Error fetching 2FA status", error);
       }

@@ -2,7 +2,6 @@ package com.chirp.server.controllers;
 
 import com.chirp.server.models.FollowerDTO;
 import com.chirp.server.services.FollowService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +13,11 @@ import java.util.List;
 @RequestMapping("/api/v2/users")
 public class FollowController {
 
-	@Autowired
-	private FollowService followService;
+	private final FollowService followService;
+
+	public FollowController(FollowService followService) {
+		this.followService = followService;
+	}
 
 	@GetMapping("/list/{userId}")
 	public ResponseEntity<FollowerDTO> getUserConnections(@PathVariable String userId) {

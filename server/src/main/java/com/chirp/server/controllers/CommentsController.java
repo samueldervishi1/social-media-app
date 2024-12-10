@@ -3,7 +3,6 @@ package com.chirp.server.controllers;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.Comments;
 import com.chirp.server.services.CommentsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +11,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/posts/comments")
 public class CommentsController {
 
-	@Autowired
-	private CommentsService commentsService;
+	private final CommentsService commentsService;
+
+	public CommentsController(CommentsService commentsService) {
+		this.commentsService = commentsService;
+	}
 
 	@GetMapping("/get/{postId}/{commentId}")
 	public Comments getCommentById(@PathVariable String postId , @PathVariable String commentId) {

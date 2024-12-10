@@ -3,69 +3,44 @@ package com.chirp.server.services;
 import com.chirp.server.exceptions.BadRequestException;
 import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.NotFoundException;
-import com.chirp.server.models.ActivityModel;
 import com.chirp.server.models.FollowerDTO;
-import com.chirp.server.repositories.ActivityRepository;
 import com.chirp.server.repositories.FollowRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 public class FollowService {
 
 	private static final Logger logger = LoggerFactory.getLogger(FollowService.class);
 
-	@Autowired
-	private FollowRepository followRepository;
-	@Autowired
-	private ActivityRepository activityRepository;
+	private final FollowRepository followRepository;
 
+	public FollowService(FollowRepository followRepository) {
+		this.followRepository = followRepository;
+	}
+
+	@Transactional
 	public void followUser(String followerId , String followingId) {
 		try {
 			logger.info("Attempting to follow: {} by {}" , followingId , followerId);
 
-			FollowerDTO followerDTO = followRepository.findByUserId(followerId);
-			if (followerDTO == null) {
-				followerDTO = new FollowerDTO(followerId);
-			}
-
-			List<String> followingIds = followerDTO.getFollowingId();
-			if (!followingIds.contains(followingId)) {
-				followingIds.add(followingId);
+			FollowerDTO followerDTO = followRepository.findByUserId(followerId)
+					.orElseGet(() -> new FollowerDTO(followerId));
+			if (!followerDTO.getFollowingId().contains(followingId)) {
+				followerDTO.getFollowingId().add(followingId);
 				followRepository.save(followerDTO);
 				logger.info("{} started following {}" , followerId , followingId);
-
-				String activityDescription = followerId + "followed user with id " + followingId;
-				List<ActivityModel> existingActivities = activityRepository.findByUserId(followerId);
-
-				if (!existingActivities.isEmpty()) {
-					for (ActivityModel activity : existingActivities) {
-						activity.getActionType().getAllActivity().add(activityDescription);
-						activityRepository.save(activity);
-					}
-				} else {
-					ActivityModel.ActionType actionType = new ActivityModel.ActionType(Collections.singletonList(activityDescription));
-					ActivityModel activity = new ActivityModel(actionType , followerDTO.getId() , Instant.now() , "active");
-					activityRepository.save(activity);
-				}
 			} else {
 				logger.warn("{} is already following {}" , followerId , followingId);
 			}
 
-			FollowerDTO followingDTO = followRepository.findByUserId(followingId);
-			if (followingDTO == null) {
-				followingDTO = new FollowerDTO(followingId);
-			}
-
-			List<String> followerIds = followingDTO.getFollowerId();
-			if (!followerIds.contains(followerId)) {
-				followerIds.add(followerId);
+			FollowerDTO followingDTO = followRepository.findByUserId(followingId)
+					.orElseGet(() -> new FollowerDTO(followingId));
+			if (!followingDTO.getFollowerId().contains(followerId)) {
+				followingDTO.getFollowerId().add(followerId);
 				followRepository.save(followingDTO);
 				logger.info("{} followed by {}" , followingId , followerId);
 			}
@@ -75,33 +50,26 @@ public class FollowService {
 		}
 	}
 
+	@Transactional
 	public void unfollowUser(String followerId , String followingId) {
 		try {
 			logger.info("Attempting to unfollow: {} by {}" , followingId , followerId);
 
-			FollowerDTO followerDTO = followRepository.findByUserId(followerId);
-			if (followerDTO != null) {
-				List<String> followingIds = followerDTO.getFollowingId();
-				if (followingIds.contains(followingId)) {
-					followingIds.remove(followingId);
-					followRepository.save(followerDTO);
-					logger.info("{} unfollowed {}" , followerId , followingId);
-				} else {
-					throw new BadRequestException("User " + followerId + " is not following " + followingId);
-				}
+			FollowerDTO followerDTO = followRepository.findByUserId(followerId)
+					.orElseThrow(() -> new NotFoundException("Follower user not found: " + followerId));
+			if (followerDTO.getFollowingId().remove(followingId)) {
+				followRepository.save(followerDTO);
+				logger.info("{} unfollowed {}" , followerId , followingId);
 			} else {
-				throw new NotFoundException("Follower user not found: " + followerId);
+				throw new BadRequestException("User " + followerId + " is not following " + followingId);
 			}
 
-			FollowerDTO followingDTO = followRepository.findByUserId(followingId);
-			if (followingDTO != null) {
-				List<String> followerIds = followingDTO.getFollowerId();
-				if (followerIds.contains(followerId)) {
-					followerIds.remove(followerId);
+			followRepository.findByUserId(followingId).ifPresent(followingDTO -> {
+				if (followingDTO.getFollowerId().remove(followerId)) {
 					followRepository.save(followingDTO);
 					logger.info("{} removed from followers of {}" , followerId , followingId);
 				}
-			}
+			});
 		} catch (BadRequestException | NotFoundException e) {
 			logger.warn("Error in unfollowing user: {} by {}. Error: {}" , followingId , followerId , e.getMessage() , e);
 			throw e;
@@ -112,31 +80,19 @@ public class FollowService {
 	}
 
 	public FollowerDTO getUserConnections(String userId) {
-		try {
-			return followRepository.findByUserId(userId);
-		} catch (Exception e) {
-			logger.error("Error fetching connections for user: {}. Error: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("An error occurred while fetching user connections");
-		}
+		return followRepository.findByUserId(userId)
+				.orElseThrow(() -> new NotFoundException("User connections not found for: " + userId));
 	}
 
 	public int getUserFollowersCount(String userId) {
-		try {
-			FollowerDTO followerDTO = followRepository.findByUserId(userId);
-			return (followerDTO != null) ? followerDTO.getFollowerId().size() : 0;
-		} catch (Exception e) {
-			logger.error("Error fetching followers count for user: {}. Error: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("An error occurred while fetching user followers count");
-		}
+		return followRepository.findByUserId(userId)
+				.map(followerDTO -> followerDTO.getFollowerId().size())
+				.orElse(0);
 	}
 
 	public int getUserFollowingCount(String userId) {
-		try {
-			FollowerDTO followerDTO = followRepository.findByUserId(userId);
-			return (followerDTO != null) ? followerDTO.getFollowingId().size() : 0;
-		} catch (Exception e) {
-			logger.error("Error fetching following count for user: {}. Error: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("An error occurred while fetching user following count");
-		}
+		return followRepository.findByUserId(userId)
+				.map(followerDTO -> followerDTO.getFollowingId().size())
+				.orElse(0);
 	}
 }

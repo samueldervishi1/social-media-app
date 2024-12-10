@@ -78,12 +78,14 @@
   border: 1px solid #0072ff;
 }
 
-.send_button {
+.send_button{
+  margin-top: 0px;
+  height: 50px;
   background: linear-gradient(to right, #0072ff, #00c6ff);
   color: white;
-  padding: 10px 15px;
+  padding: 10px 15px !important;
   border: none;
-  border-radius: 20px;
+  border-radius: 20px !important;
   cursor: pointer;
   font-size: 16px;
   display: flex;
@@ -153,12 +155,14 @@
   border: 1px solid #0072ff;
 }
 
-.send_button {
+.send_button{
+  margin-top: 6px;
+  height: 50px;
   background: linear-gradient(to right, #0072ff, #00c6ff);
   color: white;
-  padding: 10px 15px;
+  padding: 10px 15px !important;
   border: none;
-  border-radius: 20px;
+  border-radius: 20px !important;
   cursor: pointer;
   font-size: 16px;
   display: flex;

@@ -33,7 +33,6 @@ public class JwtTokenUtil {
 
 	public String generateToken(String username , String userId , boolean twoFa) {
 		try {
-			logger.info("Generating token for username: {}" , username);
 			Date now = new Date();
 			Date expiryDate = generateExpiryDate(now);
 
@@ -46,11 +45,10 @@ public class JwtTokenUtil {
 					.signWith(secretKey)
 					.compact();
 
-			logger.info("Generated token successfully for username: {}" , username);
+			logger.info("Successfully generated token for userId: {}" , userId);
 			return token;
-
 		} catch (Exception e) {
-			logger.error("Error generating token for username {}: {}" , username , e.getMessage());
+			logger.error("Error generating JWT token for userId: {}: {}" , userId , e.getMessage());
 			throw new InternalServerErrorException("Error generating JWT token");
 		}
 	}
@@ -60,6 +58,9 @@ public class JwtTokenUtil {
 	}
 
 	private Date generateExpiryDate(Date now) {
+		if (expiration <= 0) {
+			throw new IllegalArgumentException("Invalid expiration time configured.");
+		}
 		return new Date(now.getTime() + expiration);
 	}
 }

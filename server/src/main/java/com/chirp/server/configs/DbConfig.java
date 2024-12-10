@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 @Configuration
-public class dbConfig extends AbstractMongoClientConfiguration {
+public class DbConfig extends AbstractMongoClientConfiguration {
 
 	@Value("${spring.data.mongodb.database}")
 	private String dbName;

@@ -1,11 +1,11 @@
 package com.chirp.server.controllers;
 
+import com.chirp.server.exceptions.BadRequestException;
+import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.services.SearchUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +21,11 @@ public class SearchController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
-	@Autowired
-	private SearchUserService searchUserService;
+	private final SearchUserService searchUserService;
+
+	public SearchController(SearchUserService searchUserService) {
+		this.searchUserService = searchUserService;
+	}
 
 	@GetMapping
 	public ResponseEntity<?> searchUsers(@RequestParam Optional<String> username) {
@@ -31,13 +34,13 @@ public class SearchController {
 			List<User> users = searchUserService.searchUser(username.get());
 			return handleSearchResult(users);
 		} else {
-			return ResponseEntity.badRequest().body("Invalid search parameters.");
+			throw new BadRequestException("Invalid search parameters.");
 		}
 	}
 
 	private ResponseEntity<?> handleSearchResult(List<User> users) {
 		if (users.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+			throw new NotFoundException("User not found.");
 		} else {
 			return ResponseEntity.ok(users);
 		}

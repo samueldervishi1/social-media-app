@@ -7,7 +7,7 @@ import axios from "axios";
 import { GoHome } from "react-icons/go";
 import { IoPersonCircleOutline, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
-import { CiLogout, CiCircleInfo } from "react-icons/ci";
+import { CiLogout } from "react-icons/ci";
 import { GiArtificialHive } from "react-icons/gi";
 import { CgCommunity } from "react-icons/cg";
 import {
@@ -18,6 +18,7 @@ import {
 } from "react-icons/md";
 import { BiPlusCircle } from "react-icons/bi";
 import { TbPremiumRights, TbAuth2Fa } from "react-icons/tb";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 import loaderImage from "../assets/ZKZg.gif";
 import styles from "../styles/navbar.module.css";
 
@@ -124,7 +125,8 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (
         searchBarRef.current &&
-        !searchBarRef.current.contains(event.target)
+        !searchBarRef.current.contains(event.target) &&
+        !document.querySelector(".drpp").contains(event.target)
       ) {
         setShowDropdown(false);
         setQuery("");
@@ -137,15 +139,6 @@ const Navbar = () => {
     };
   }, []);
 
-  const handleLogout = () => {
-    setIsLoggingOut(true);
-    setTimeout(() => {
-      localStorage.removeItem("token");
-      setIsLoggingOut(false);
-      window.location.reload();
-    }, 2000);
-  };
-
   const handleUserClick = (clickedUserId) => {
     setIsMenuOpen(false);
     if (clickedUserId === userId) {
@@ -153,6 +146,17 @@ const Navbar = () => {
     } else {
       navigate(`/u/${clickedUserId}`);
     }
+    setQuery("");
+    setShowDropdown(false);
+  };
+
+  const handleLogout = () => {
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      localStorage.removeItem("token");
+      setIsLoggingOut(false);
+      window.location.reload();
+    }, 2000);
   };
 
   return (
@@ -230,10 +234,18 @@ const Navbar = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item href="/profile">
+                    {" "}
+                    <IoPersonCircleOutline className={styles.icon_p} />
                     See your profile {username}
                   </Dropdown.Item>
-                  <Dropdown.Item href="#">Add another account</Dropdown.Item>
+                  <Dropdown.Item href="#">
+                    {" "}
+                    <BiPlusCircle className={styles.icon_p} />
+                    Add another account
+                  </Dropdown.Item>
                   <Dropdown.Item href="/c/user/communities">
+                    {" "}
+                    <CgCommunity className={styles.icon_p} />
                     Your communities
                   </Dropdown.Item>
                   <Dropdown.Divider className={styles.divider_dp} />
@@ -257,7 +269,8 @@ const Navbar = () => {
                     <TbPremiumRights className={styles.icon_p} /> Premium
                   </Dropdown.Item>
                   <Dropdown.Item href="/about">
-                    <CiCircleInfo className={styles.icon_p} /> About
+                    <IoIosInformationCircleOutline className={styles.icon_p} />{" "}
+                    About
                   </Dropdown.Item>
                   <Dropdown.Item href="/terms">
                     {" "}
@@ -300,15 +313,24 @@ const Navbar = () => {
               <CgCommunity className={styles.icon_p} /> Communities
             </a>
             <Dropdown>
-              <Dropdown.Toggle variant="link" className={styles.mobile_menu_item}>
+              <Dropdown.Toggle
+                variant="link"
+                className={styles.mobile_menu_item}
+              >
                 <IoPersonCircleOutline className={styles.icon_p} /> Profile
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item href="/profile">
+                  {" "}
+                  <IoPersonCircleOutline className={styles.icon_p} />
                   See your profile {username}
                 </Dropdown.Item>
-                <Dropdown.Item href="#">Add another account</Dropdown.Item>
+                <Dropdown.Item href="#">
+                  <BiPlusCircle className={styles.icon_p} /> Add another account
+                </Dropdown.Item>
                 <Dropdown.Item href="/c/user/communities">
+                  {" "}
+                  <CgCommunity className={styles.icon_p} />
                   Your communities
                 </Dropdown.Item>
                 <Dropdown.Divider className={styles.divider_dp} />
@@ -318,7 +340,10 @@ const Navbar = () => {
               </Dropdown.Menu>
             </Dropdown>
             <Dropdown>
-              <Dropdown.Toggle variant="link" className={styles.mobile_menu_item}>
+              <Dropdown.Toggle
+                variant="link"
+                className={styles.mobile_menu_item}
+              >
                 <IoSettingsOutline className={styles.icon_p} /> Settings
               </Dropdown.Toggle>
 
@@ -330,7 +355,8 @@ const Navbar = () => {
                   <TbPremiumRights className={styles.icon_p} /> Premium
                 </Dropdown.Item>
                 <Dropdown.Item href="/about">
-                  <CiCircleInfo className={styles.icon_p} /> About
+                  <IoIosInformationCircleOutline className={styles.icon_p} />{" "}
+                  About
                 </Dropdown.Item>
                 <Dropdown.Item href="/terms">
                   {" "}

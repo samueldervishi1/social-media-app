@@ -6,7 +6,6 @@ import com.chirp.server.models.Post;
 import com.chirp.server.services.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +19,11 @@ public class PostController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
-	@Autowired
-	private PostService postService;
+	private final PostService postService;
+
+	public PostController(PostService postService){
+		this.postService = postService;
+	}
 
 	@GetMapping("/{postId}")
 	public ResponseEntity<Post> getPost(@PathVariable String postId) {
@@ -64,7 +66,7 @@ public class PostController {
 	@GetMapping("/all")
 	public ResponseEntity<List<Post>> getAllPosts() {
 		try {
-			List<Post> posts = postService.getAllDBPosts();
+			List<Post> posts = postService.getAllPosts();
 			return ResponseEntity.ok(posts);
 		} catch (Exception e) {
 			logger.error("Error retrieving all posts: {}" , e.getMessage() , e);

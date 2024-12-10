@@ -2,7 +2,6 @@ package com.chirp.server.controllers;
 
 import com.chirp.server.services.UserService;
 import com.chirp.server.models.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v2/auth")
 public class AuthController {
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
+
+	public AuthController(UserService userService){
+		this.userService = userService;
+	}
 
 	@GetMapping("/2fa-status/{userId}")
 	public String checkTwoFaStatus(@PathVariable String userId) {

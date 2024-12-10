@@ -7,6 +7,7 @@ import com.chirp.server.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,13 @@ public class ProfileService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProfileService.class);
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	public ProfileService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	public User updateProfile(String userId , User updatedUser) throws Exception {
 		try {

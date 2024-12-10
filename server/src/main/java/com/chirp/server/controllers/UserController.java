@@ -4,7 +4,6 @@ import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.services.UpdatePassword;
 import com.chirp.server.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,33 +12,30 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/users")
 public class UserController {
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
+	private final UpdatePassword updatePassword;
 
-	@Autowired
-	private UpdatePassword updatePassword;
+	public UserController(UserService userService , UpdatePassword updatePassword) {
+		this.userService = userService;
+		this.updatePassword = updatePassword;
+	}
 
 	@GetMapping("/info/{username}")
-	public User getUserInfo(@PathVariable String username) {
-		return userService.getUserInfo(username);
+	public ResponseEntity<User> getUserInfo(@PathVariable String username) {
+		User user = userService.getUserInfo(username);
+		return ResponseEntity.ok(user);
 	}
 
 	@GetMapping("/{userId}")
 	public ResponseEntity<User> getUserInfoById(@PathVariable String userId) {
-		try {
-			User user = userService.getUserInfoById(userId);
-			return ResponseEntity.ok(user);
-		} catch (NotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		} catch (Exception ex) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
+		User user = userService.getUserInfoById(userId);
+		return ResponseEntity.ok(user);
 	}
 
 	@PostMapping("/auth/register")
-	public User register(@RequestBody User user) {
-		System.out.println("User registering: " + user.getUsername());
-		return userService.createUser(user);
+	public ResponseEntity<User> register(@RequestBody User user) {
+		User createdUser = userService.createUser(user);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
 	}
 
 	@PutMapping("/update-password")

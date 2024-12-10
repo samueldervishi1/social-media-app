@@ -5,9 +5,10 @@ import com.chirp.server.models.Like;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommunityLikePostRepository extends MongoRepository<CommunityLikePost, String> {
-	CommunityLikePost findByUserIdAndCommunityName(String userId , String communityName);
+	Optional<CommunityLikePost> findByUserIdAndCommunityName(String userId , String communityName);
 
 	boolean existsByUserIdAndCommunityNameAndPostIdsContaining(String userId , String communityName , String postId);
 
