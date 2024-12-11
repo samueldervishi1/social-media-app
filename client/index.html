@@ -12,19 +12,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- Preload font with correct crossorigin -->
     <link
       rel="preload"
       href="https://fonts.googleapis.com/css2?family=Afacad+Flux:slnt,wght@-14..14,300&display=swap"
       as="style"
-      type="font/woff2"
       crossorigin="anonymous"
     />
 
+    <!-- Load font with correct crossorigin -->
     <link
       href="https://fonts.googleapis.com/css2?family=Afacad+Flux:slnt,wght@-14..14,300&display=swap"
       rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
+      crossorigin="anonymous"
     />
 
     <noscript>
@@ -33,6 +33,9 @@
         rel="stylesheet"
       />
     </noscript>
+
+    <!-- Add this script tag in your public/index.html -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   </head>
   <body>

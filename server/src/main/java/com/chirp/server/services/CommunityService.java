@@ -131,10 +131,8 @@ public class CommunityService {
 	public int getUserCountForCommunity(String name) {
 		logger.info("Fetching user count for community: {}" , name);
 		try {
-			return communityRepository.findByNameContaining(name).stream()
-					.findFirst()
-					.map(community -> community.getUserIds() != null ? community.getUserIds().size() : 0)
-					.orElse(0);
+			Optional<Integer> userCount = communityRepository.getUserCountForCommunity(name);
+			return userCount.orElse(0);
 		} catch (Exception e) {
 			logger.error("Error fetching user count for community {}: {}" , name , e.getMessage() , e);
 			throw new InternalServerErrorException("An unexpected error occurred while fetching user count.");

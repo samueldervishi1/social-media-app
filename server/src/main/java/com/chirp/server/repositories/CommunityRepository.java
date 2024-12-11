@@ -1,6 +1,7 @@
 package com.chirp.server.repositories;
 
 import com.chirp.server.models.Community;
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -11,5 +12,10 @@ public interface CommunityRepository extends MongoRepository<Community, String> 
 
 	List<Community> findByNameContaining(String name);
 
+	@Aggregation(pipeline = {
+        "{ $match: { 'name': { $regex: ?0, $options: 'i' } } }",
+        "{ $project: { userCount: { $size: '$userIds' } } }"
+    })
+    Optional<Integer> getUserCountForCommunity(String name);
 	List<Community> findByUserIdsContaining(String userId);
 }

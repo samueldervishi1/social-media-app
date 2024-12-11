@@ -21,16 +21,24 @@ public class PostService {
 
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
+	private final ImageService imageService;
 
-	public PostService(UserRepository userRepository , PostRepository postRepository) {
+	public PostService(UserRepository userRepository , PostRepository postRepository, ImageService imageService) {
 		this.userRepository = userRepository;
 		this.postRepository = postRepository;
+		this.imageService = imageService;
 	}
 
 	@Transactional
-	public void createPost(String username , Post post) {
+	public void createPost(String username , Post post,  String base64Image) {
 		User user = getUserByUsername(username);
 		preparePost(post , user);
+
+		if (base64Image != null && !base64Image.isEmpty()) {
+            String imageUrl = imageService.uploadImage(base64Image);
+            post.setImageUrl(imageUrl);
+        }
+
 
 		Post savedPost = postRepository.save(post);
 		logger.info("Post successfully saved with ID: {}" , savedPost.getId());

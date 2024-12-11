@@ -37,6 +37,10 @@
   color: red;
 }
 
+.no-image-message{
+  color: red;
+}
+
 .saved {
   color: #00c6ff;
 }

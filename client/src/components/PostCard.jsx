@@ -31,6 +31,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
   const [showMenu, setShowMenu] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -523,6 +524,10 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   const handleCloseCommentsModal = () => setShowCommentsModal(false);
 
+  const handleError = () => {
+    setImageError(true);
+  };
+
   return (
     <div className="post-card">
       <div className="post-header">
@@ -574,12 +579,12 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           <p className="post-content">{content}</p>
         </div>
 
-        {imageUrl ? (
+        {imageUrl && imageUrl !== null && (
           <>
             <img
               src={imageUrl}
               alt="Post Image"
-              className="image"
+              className="post-image"
               onError={handleError}
               style={{ display: imageError ? "none" : "block" }}
             />
@@ -587,7 +592,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
               <div className="no-image-message">Image cannot be displayed.</div>
             )}
           </>
-        ) : null}
+        )}
       </div>
       <div className="post-footer">
         <div className="footer-icons">

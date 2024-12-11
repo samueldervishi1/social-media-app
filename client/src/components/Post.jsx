@@ -38,7 +38,12 @@ const PostForm = () => {
     }
 
     const username = getUsernameFromToken(token);
-    const postData = { content: postContent };
+
+    const base64Image = selectedImage ? selectedImage.split(",")[1] : null;
+    const postData = {
+      content: postContent,
+      base64Image: base64Image,
+    };
 
     try {
       const response = await axios.post(

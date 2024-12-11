@@ -20,6 +20,7 @@ public class Post {
 	private List<String> likes = new ArrayList<>();
 	private String postDate;
 	private String postTime;
+	private String base64Image;
 	private String imageUrl;
 	private Boolean deleted = false;
 
@@ -103,5 +104,13 @@ public class Post {
 
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getBase64Image() {
+		return base64Image;
+	}
+
+	public void setBase64Image(String base64Image) {
+		this.base64Image = base64Image;
 	}
 }
