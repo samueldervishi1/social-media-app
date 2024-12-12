@@ -34,7 +34,8 @@ public class SecurityConfig {
 			"/api/v2/auth/login" ,
 			"/api/v2/users/auth/register" ,
 			"/api/v2/auth/2fa-status/**" ,
-			"/api/v2/users/update-password"
+			"/api/v2/users/update-password",
+			"/api/v2/health"
 	);
 
 	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {

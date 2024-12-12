@@ -7,7 +7,7 @@ import axios from "axios";
 import { GoHome } from "react-icons/go";
 import { IoPersonCircleOutline, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
-import { CiLogout } from "react-icons/ci";
+import { CiLogout, CiServer } from "react-icons/ci";
 import { GiArtificialHive } from "react-icons/gi";
 import { CgCommunity } from "react-icons/cg";
 import {
@@ -285,6 +285,10 @@ const Navbar = () => {
                     <MdOutlineHelpOutline className={styles.icon_p} />
                     Help
                   </Dropdown.Item>
+                  <Dropdown.Item href="/health">
+                    <CiServer className={styles.icon_p} />
+                    Server health
+                  </Dropdown.Item>
                   <Dropdown.Divider className={styles.divider_dp} />
                   <Dropdown.Item
                     onClick={() => setShowDeleteModal(true)}
@@ -370,6 +374,10 @@ const Navbar = () => {
                   <MdOutlineHelpOutline className={styles.icon_p} />
                   Help
                 </Dropdown.Item>
+                <Dropdown.Item href="/health">
+                    <CiServer className={styles.icon_p} />
+                    Server health
+                  </Dropdown.Item>
                 <Dropdown.Divider className={styles.divider_delete} />
                 <Dropdown.Item
                   onClick={() => setShowDeleteModal(true)}

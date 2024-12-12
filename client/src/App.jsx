@@ -25,6 +25,7 @@ const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
 const UserCommunities = lazy(() => import("./components/UserCommunities"));
 const Enable2FA = lazy(() => import("./components/Enable2FA"));
 // const Verify2FA = lazy(() => import("./components/Verify2FA"));
+const HealthCheck = lazy(() => import("./components/HealthCheck"));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -94,6 +95,7 @@ const App = () => {
             <Route path="/premium" element={<PremiumPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/health" element={<HealthCheck />} />
 
             {/* Not Found Route */}
             <Route path="*" element={<NotFound />} />

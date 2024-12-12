@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Modal } from "react-bootstrap";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Snackbar } from "@mui/material";
+import { Snackbar, Tooltip } from "@mui/material";
 import customLoadingGif from "../assets/ZKZg.gif";
 import styles from "../styles/login.module.css";
 
@@ -21,6 +22,10 @@ const LoginScript = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState(false);
+  const [serverStatus, setServerStatus] = useState(null);
+  const [healthMessage, setHealthMessage] = useState("");
+  const [healthEmoji, setHealthEmoji] = useState("");
+  const [status, setStatus] = useState(null);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -28,6 +33,43 @@ const LoginScript = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchHealthStatus = async () => {
+      try {
+        const response = await axios.get("http://localhost:5130/api/v2/health");
+        if (response.data.status === "Server is running smoothly!") {
+          setServerStatus("healthy");
+          setHealthMessage("Server is running smoothly");
+          setHealthEmoji("😊");
+        } else {
+          setServerStatus("unhealthy");
+          setHealthMessage("Unexpected server status");
+          setHealthEmoji("🤔");
+        }
+      } catch (error) {
+        if (error.code === "ERR_NETWORK") {
+          setServerStatus("info");
+          setHealthMessage(
+            "Server might be running, but the status checker is down!"
+          );
+          setHealthEmoji("😶");
+        } else {
+          setServerStatus("danger");
+          setHealthMessage(
+            "Server is experiencing an outage right now. We are working to bring it up  as soon as possible. Please be patient!"
+          );
+          setHealthEmoji("😢");
+        }
+      }
+    };
+
+    fetchHealthStatus();
+
+    const intervalId = setInterval(fetchHealthStatus, 120000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -148,6 +190,15 @@ const LoginScript = () => {
 
   return (
     <div>
+      <div
+        className={`${styles.text_center} ${styles.my_3} ${styles.emoji_tooltip_container}`}
+      >
+        <Tooltip title={healthMessage}>
+          <span className={styles.emoji_tooltip_icon}>{healthEmoji}</span>
+        </Tooltip>
+        <div className={styles.emoji_tooltip_message}>{healthMessage}</div>
+      </div>
+
       <form
         id="loginForm"
         onSubmit={handleSubmit}

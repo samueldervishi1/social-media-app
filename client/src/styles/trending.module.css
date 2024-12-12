@@ -52,6 +52,8 @@
   gap: 20px;
   display: flex;
   flex-direction: column;
+  text-align: center;
+  color: red;
 }
 
 .trending_card {
