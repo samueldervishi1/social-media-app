@@ -8,6 +8,8 @@ import loaderGif from "../assets/ZKZg.gif";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import styles from "../styles/ai.module.css";
 
+import { getUserIdFromToken } from "../auth/authUtils";
+
 const ChirpAI = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
@@ -18,20 +20,7 @@ const ChirpAI = () => {
   const [isThinking, setIsThinking] = useState(false);
   const [hideHeading, setHideHeading] = useState(false);
   const [isMobileView, setIsMobileView] = useState();
-
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        return decodedToken.userId;
-      } catch (error) {
-        console.error("Error decoding token:", error.message);
-        return null;
-      }
-    }
-    return null;
-  };
+  const [isTypingFinished, setIsTypingFinished] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -234,7 +223,9 @@ const ChirpAI = () => {
   const simulateTypingEffect = (text) => {
     const chunks = text.split(/(\s+)/);
     let currentContent = "";
-    const interval = 35;
+    const interval = 40;
+
+    setIsTypingFinished(false);
 
     chunks.forEach((chunk, index) => {
       setTimeout(() => {
@@ -256,6 +247,8 @@ const ChirpAI = () => {
         });
 
         if (index === chunks.length - 1) {
+          setIsTypingFinished(true);
+          setIsThinking(false);
           scrollToBottom();
         }
       }, interval * index);
@@ -280,33 +273,36 @@ const ChirpAI = () => {
     <div className={styles.sidebar1_container}>
       <div
         className={styles.button_container}
-        style={{ display: "flex", margin: "6px 0", background: "#1c1c1d" }}
+        style={{
+          display: "flex",
+          margin: "6px 0",
+        }}
       >
-        {/* <div style={{ position: "relative"}}>
-        <button
-          style={{
-            border: "none",
-            background: "transparent",
-            padding: 10,
-            borderRadius: 200,
-            height: 35,
-            textAlign: "center",
-            color: "white",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
-          onClick={resetChat}
-          onMouseEnter={(e) =>
-            (e.currentTarget.querySelector(".tooltip").style.display =
-              "block")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.querySelector(".tooltip").style.display = "none")
-          }
-        >
-          New chat
-        </button>
-      </div> */}
+        <div style={{ position: "relative", background: "#f2f4f7" }}>
+          <button
+            style={{
+              border: "none",
+              background: "transparent",
+              padding: 15,
+              borderRadius: 200,
+              height: 35,
+              textAlign: "center",
+              color: "black",
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+            onClick={resetChat}
+            // onMouseEnter={(e) =>
+            //   (e.currentTarget.querySelector(".tooltip").style.display =
+            //     "block")
+            // }
+            // onMouseLeave={(e) =>
+            //   (e.currentTarget.querySelector(".tooltip").style.display = "none")
+            // }
+          >
+            <FaRegPenToSquare />
+          </button>
+        </div>
       </div>
 
       <div className={styles.main_content_ai}>

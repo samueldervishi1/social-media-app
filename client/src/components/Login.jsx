@@ -25,7 +25,6 @@ const LoginScript = () => {
   const [serverStatus, setServerStatus] = useState(null);
   const [healthMessage, setHealthMessage] = useState("");
   const [healthEmoji, setHealthEmoji] = useState("");
-  const [status, setStatus] = useState(null);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");

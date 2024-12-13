@@ -11,6 +11,7 @@ const TrendingList = () => {
   const [communities, setCommunities] = useState([]);
   const [joinedCommunities, setJoinedCommunities] = useState([]);
   const [membersCounts, setMembersCounts] = useState({});
+  const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -45,6 +46,7 @@ const TrendingList = () => {
         }, 2000);
       } catch (error) {
         console.error("Error fetching communities:", error);
+        setError("Something went wrong. Please try again later.");
         setTimeout(() => {
           setLoading(false);
         }, 2000);
@@ -135,6 +137,8 @@ const TrendingList = () => {
           <div className={styles.loader_container}>
             <img src={loaderGif} alt="Loading..." className={styles.loader} />
           </div>
+        ) : error ? (
+          <p className={styles.error_message}>{error}</p>
         ) : communities.length > 0 ? (
           <>
             {communities.slice(0, 6).map((community) => (
