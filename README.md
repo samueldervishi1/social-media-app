@@ -91,7 +91,6 @@ npm run dev
 ## Future Improvements
 This project is actively being developed. Planned improvements include:
 - Real-time notifications.
-- Improved UI/UX design and responsiveness.
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute to the project, please follow these steps:
