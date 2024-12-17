@@ -84,6 +84,10 @@ span.members_count {
   margin-top: 20px;
 }
 
+.no_communities{
+  text-align: center;
+}
+
 .members {
   font-weight: bold;
   color: #444;

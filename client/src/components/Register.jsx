@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "../styles/register.module.css";
 
 const Register = () => {
@@ -38,7 +39,8 @@ const Register = () => {
 
   const [serverStatus, setServerStatus] = useState(null);
   const [healthMessage, setHealthMessage] = useState("");
-  const [healthEmoji, setHealthEmoji] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  
 
   useEffect(() => {
     const fetchHealthStatus = async () => {
@@ -47,11 +49,9 @@ const Register = () => {
         if (response.data.status === "Server is running smoothly!") {
           setServerStatus("healthy");
           setHealthMessage("Server is running smoothly");
-          setHealthEmoji("😊");
         } else {
           setServerStatus("unhealthy");
           setHealthMessage("Unexpected server status");
-          setHealthEmoji("🤔");
         }
       } catch (error) {
         if (error.code === "ERR_NETWORK") {
@@ -59,13 +59,11 @@ const Register = () => {
           setHealthMessage(
             "Server might be running, but the status checker is down!"
           );
-          setHealthEmoji("😶");
         } else {
           setServerStatus("danger");
           setHealthMessage(
             "Server is experiencing an outage right now. We are working to bring it up  as soon as possible. Please be patient!"
           );
-          setHealthEmoji("😢");
         }
       }
     };
@@ -82,7 +80,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v2/users/auth/register",
+        "http://localhost:8080/api/v2/users/auth/register",
         formData,
         {
           headers: {
@@ -133,15 +131,30 @@ const Register = () => {
     };
   }, []);
 
+  const toggleMessage = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div id="main">
       <div
         className={`${styles.text_center} ${styles.my_3} ${styles.emoji_tooltip_container}`}
       >
-        <Tooltip title={healthMessage}>
-          <span className={styles.emoji_tooltip_icon}>{healthEmoji}</span>
-        </Tooltip>
-        <div className={styles.emoji_tooltip_message}>{healthMessage}</div>
+        <div
+          className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ""}`}
+          onClick={toggleMessage}
+        >
+          {isOpen ? <ArrowForwardIosIcon /> : <ArrowBackIosIcon />}
+        </div>
+        <div
+          className={`${styles.message} ${isOpen ? styles.messageOpen : ""} 
+          ${serverStatus === "healthy" ? styles.healthy : ""}
+          ${serverStatus === "danger" ? styles.danger : ""}
+          ${serverStatus === "unhealthy" ? styles.info : ""}
+          ${serverStatus === "info" ? styles.info : ""}`}
+        >
+          {healthMessage}
+        </div>
       </div>
       <div className={styles.screen}>
         <form id="registrationForm" onSubmit={handleSubmit}>

@@ -20,7 +20,7 @@ const UserCommunities = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:5000/api/v2/communities/user/${userId}`,
+          `http://localhost:8080/api/v2/communities/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

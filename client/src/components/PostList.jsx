@@ -22,7 +22,7 @@ const PostList = () => {
       const token = localStorage.getItem("token");
 
       const userPostsResponse = await axios.get(
-        `http://localhost:5000/api/v2/posts/all`,
+        `http://localhost:8080/api/v2/posts/all`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

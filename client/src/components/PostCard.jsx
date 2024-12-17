@@ -71,7 +71,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/v2/users/${userId}`,
+        `http://localhost:8080/api/v2/users/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,7 +99,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         const token = localStorage.getItem("token");
 
         const response = await axios.get(
-          `http://localhost:5000/api/v2/users/${userId}`,
+          `http://localhost:8080/api/v2/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -129,7 +129,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v2/likes/${userIdFromToken}`,
+          `http://localhost:8080/api/v2/likes/${userIdFromToken}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -168,7 +168,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     const fetchLikeCount = async () => {
       try {
         const likeResponse = await axios.get(
-          `http://localhost:5000/api/v2/likes/post/${id}`,
+          `http://localhost:8080/api/v2/likes/post/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -205,7 +205,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const fetchPostDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v2/posts/${id}`,
+        `http://localhost:8080/api/v2/posts/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -253,7 +253,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
+          `http://localhost:8080/api/v2/save/posts/${userIdFromToken}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -298,7 +298,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v2/posts/comments/create/${commenterId}/${id}`,
+        `http://localhost:8080/api/v2/posts/comments/create/${commenterId}/${id}`,
         { content: newComment },
         {
           headers: {
@@ -327,7 +327,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     try {
       if (!liked) {
         await axios.post(
-          `http://localhost:5000/api/v2/likes/post/${userIdFromToken}/${id}`,
+          `http://localhost:8080/api/v2/likes/post/${userIdFromToken}/${id}`,
           {},
           {
             headers: {
@@ -339,7 +339,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       }
 
       const likeResponse = await axios.get(
-        `http://localhost:5000/api/v2/likes/post/${id}`,
+        `http://localhost:8080/api/v2/likes/post/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -366,7 +366,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     try {
       if (!saved) {
         await axios.post(
-          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}`,
+          `http://localhost:8080/api/v2/save/posts/${userIdFromToken}`,
           [id],
           {
             headers: {
@@ -379,7 +379,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         window.alert("Post saved successfully!");
       } else {
         await axios.delete(
-          `http://localhost:5000/api/v2/save/posts/${userIdFromToken}/${id}`,
+          `http://localhost:8080/api/v2/save/posts/${userIdFromToken}/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -417,7 +417,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/v2/posts/delete/${id}`,
+        `http://localhost:8080/api/v2/posts/delete/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -449,7 +449,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/v2/posts/comments/delete/${id}/${commentId}`,
+        `http://localhost:8080/api/v2/posts/comments/delete/${id}/${commentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

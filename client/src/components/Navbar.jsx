@@ -50,7 +50,7 @@ const Navbar = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/v2/search/users?username=${username}`,
+        `http://localhost:8080/api/v2/search/users?username=${username}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -85,7 +85,7 @@ const Navbar = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:5000/api/v2/users/update/delete/${userId}`,
+        `http://localhost:8080/api/v2/users/update/delete/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

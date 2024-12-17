@@ -131,7 +131,7 @@ const ChirpAI = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.get(`http://localhost:5000/api/v2/ping`, {
+      await axios.get(`http://localhost:8080/api/v2/ping`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -157,7 +157,7 @@ const ChirpAI = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        `http://localhost:5000/api/v2/ask`,
+        `http://localhost:8080/api/v2/ask`,
         {
           message: userInput,
         },
@@ -177,7 +177,7 @@ const ChirpAI = () => {
         const userId = getUserIdFromToken();
         const sessionId = getSessionId();
         await axios.post(
-          `http://localhost:5000/api/v2/history/save/${userId}/session/${sessionId}`,
+          `http://localhost:8080/api/v2/history/save/${userId}/session/${sessionId}`,
           {
             message: userInput,
             answer: responseData,

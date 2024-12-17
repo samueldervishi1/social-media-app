@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import styles from "../styles/inbox.module.css";
 import defaultUserIcon from "../assets/user.webp";
+import customLoadingGif from "../assets/ZKZg.gif";
 
 const MessageComponent = React.lazy(() => import("./Message"));
-
 import { getUserIdFromToken } from "../auth/authUtils";
 
 const Inbox = ({ user }) => {
@@ -14,6 +14,7 @@ const Inbox = ({ user }) => {
   const [followers, setFollowers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Fetch followers
   useEffect(() => {
@@ -27,7 +28,7 @@ const Inbox = ({ user }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:5000/api/v2/users/list/${userId}`,
+          `http://localhost:8080/api/v2/users/list/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -40,14 +41,18 @@ const Inbox = ({ user }) => {
             const followersData = await Promise.all(
               followerIds.map(async (followerId) => {
                 const followerResponse = await axios.get(
-                  `http://localhost:5000/api/v2/users/${followerId}`,
+                  `http://localhost:8080/api/v2/users/${followerId}`,
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,
                     },
                   }
                 );
-                return followerResponse.data;
+                const followerData = followerResponse.data;
+                return {
+                  ...followerData,
+                  username: followerData.username || "Unknown",
+                };
               })
             );
             setFollowers(followersData);
@@ -64,6 +69,10 @@ const Inbox = ({ user }) => {
         setErrorMessage(
           "Unable to fetch followers. Please check your internet connection."
         );
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
       }
     };
 
@@ -90,15 +99,25 @@ const Inbox = ({ user }) => {
         }`}
       >
         {showMessageComponent && receiverId && selectedUser && (
-          <MessageComponent
-            senderId={getUserIdFromToken()}
-            receiverId={receiverId}
-          />
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <MessageComponent
+              senderId={getUserIdFromToken()}
+              receiverId={receiverId}
+            />
+          </React.Suspense>
         )}
       </div>
 
       <div className={styles.bottom_navbar}>
-        {errorMessage ? (
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <img
+              src={customLoadingGif}
+              alt="Loading..."
+              className={styles.loadingGif}
+            />
+          </div>
+        ) : errorMessage ? (
           <p>{errorMessage}</p>
         ) : followers.length > 0 ? (
           <div className={styles.followers_list}>
@@ -108,7 +127,12 @@ const Inbox = ({ user }) => {
                 className={styles.follower_btn}
                 onClick={() => handleMessageClick(follower)}
               >
-                <img src={defaultUserIcon} className={styles.follower_avatar} />
+                <img
+                  src={defaultUserIcon}
+                  className={styles.follower_avatar}
+                  alt="User Avatar"
+                />
+                <p className={styles.follower_username}>{follower.username}</p>
               </button>
             ))}
           </div>

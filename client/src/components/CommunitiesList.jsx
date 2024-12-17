@@ -34,14 +34,14 @@ const CommunitiesList = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:5000/api/v2/communities/list",
+          "http://localhost:8080/api/v2/communities/list",
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setCommunities(response.data);
+        setCommunities(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -63,9 +63,9 @@ const CommunitiesList = () => {
           communities.map(async (community) => {
             try {
               const response = await axios.get(
-                `http://localhost:5000/api/v2/communities/c/count/${encodeURIComponent(
+                `http://localhost:8080/api/v2/communities/${encodeURIComponent(
                   community.name
-                )}`,
+                )}/count/users`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
@@ -114,7 +114,7 @@ const CommunitiesList = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:5000/api/v2/communities/join/${communityId}/${userId}`,
+        `http://localhost:8080/api/v2/communities/join/${communityId}/users/${userId}`,
         {},
         {
           headers: {
@@ -163,75 +163,81 @@ const CommunitiesList = () => {
           />
         </div>
       ) : (
-        <div className={styles.card_container}>
-          {communities.map((community) => {
-            const userId = getUserIdFromToken();
-            const isUserJoined =
-              community.userIds && community.userIds.includes(userId);
+        <>
+          {communities.length > 0 ? (
+            <div className={styles.card_container}>
+              {communities.map((community) => {
+                const userId = getUserIdFromToken();
+                const isUserJoined =
+                  community.userIds && community.userIds.includes(userId);
 
-            return (
-              <div
-                key={community.communityId}
-                className={styles.card}
-                onClick={() => navigate(`/c/community/${community.name}`)}
-              >
-                <div className={styles.banner}>
-                  <img
-                    src={placeHolderImage}
-                    alt={`${community.name} banner`}
-                    className={styles.banner_img}
-                  />
-                  <img
-                    src={placeHolderLogo}
-                    alt={`${community.name} profile`}
-                    className={styles.profile_img}
-                  />
-                  <button
-                    className={styles.join_button}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!isUserJoined) {
-                        handleJoinCommunity(community.communityId);
-                      }
-                    }}
-                    disabled={isUserJoined}
+                return (
+                  <div
+                    key={community.communityId}
+                    className={styles.card}
+                    onClick={() => navigate(`/c/community/${community.name}`)}
                   >
-                    {isUserJoined ? "Joined" : "Join"}
-                  </button>
+                    <div className={styles.banner}>
+                      <img
+                        src={placeHolderImage}
+                        alt={`${community.name} banner`}
+                        className={styles.banner_img}
+                      />
+                      <img
+                        src={placeHolderLogo}
+                        alt={`${community.name} profile`}
+                        className={styles.profile_img}
+                      />
+                      <button
+                        className={styles.join_button}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isUserJoined) {
+                            handleJoinCommunity(community.communityId);
+                          }
+                        }}
+                        disabled={isUserJoined}
+                      >
+                        {isUserJoined ? "Joined" : "Join"}
+                      </button>
 
-                  <button
-                    className={styles.menu_button}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleDropdown(community.communityId);
-                    }}
-                  >
-                    &#8230;
-                  </button>
+                      <button
+                        className={styles.menu_button}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDropdown(community.communityId);
+                        }}
+                      >
+                        &#8230;
+                      </button>
 
-                  {dropdownVisible === community.communityId && (
-                    <div className={styles.dropdown_community}>
-                      <a href="#">Add to favourites</a>
-                      <a href="#">Add to custom feed</a>
-                      <a href="#">Share community</a>
+                      {dropdownVisible === community.communityId && (
+                        <div className={styles.dropdown_community}>
+                          <a href="#">Add to favourites</a>
+                          <a href="#">Add to custom feed</a>
+                          <a href="#">Share community</a>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                <div className={styles.card_content}>
-                  <h2>
-                    c/{community.name} <span>-</span>
-                    <span className={styles.members_count}>
-                      {membersCounts[community.name] !== undefined
-                        ? getMemberText(membersCounts[community.name])
-                        : "Loading..."}
-                    </span>
-                  </h2>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                    <div className={styles.card_content}>
+                      <h2>
+                        c/{community.name} <span>-</span>
+                        <span className={styles.members_count}>
+                          {membersCounts[community.name] !== undefined
+                            ? getMemberText(membersCounts[community.name])
+                            : "Loading..."}
+                        </span>
+                      </h2>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className={styles.no_communities}>No communities available.</p>
+          )}
+        </>
       )}
 
       <Snackbar

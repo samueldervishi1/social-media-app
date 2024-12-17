@@ -16,7 +16,7 @@ public class RateLimitingFilter implements Filter {
 
 	private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
-	private static final int DEFAULT_LIMIT = 5;
+	private static final int DEFAULT_LIMIT = 2;
 	private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1);
 	private static final Duration RETRY_AFTER_DURATION = Duration.ofSeconds(30);
 

@@ -32,7 +32,7 @@ const TrendingList = () => {
     const fetchCommunities = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/v2/communities/list",
+          "http://localhost:8080/api/v2/communities/list",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ const TrendingList = () => {
           communities.map(async (community) => {
             try {
               const response = await axios.get(
-                `http://localhost:5000/api/v2/communities/c/count/${encodeURIComponent(
+                `http://localhost:8080/api/v2/communities/c/count/${encodeURIComponent(
                   community.name
                 )}`,
                 {
@@ -109,7 +109,7 @@ const TrendingList = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:5000/api/v2/communities/join/${communityId}/${userId}`,
+        `http://localhost:8080/api/v2/communities/join/${communityId}/${userId}`,
         {},
         {
           headers: {

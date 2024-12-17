@@ -19,7 +19,7 @@ function Enable2FA() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:5000/api/v2/users/${userId}`,
+          `http://localhost:8080/api/v2/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -60,7 +60,7 @@ function Enable2FA() {
         const token = localStorage.getItem("token");
 
         await axios.put(
-          `http://localhost:5000/api/v2/users/update/${userId}`,
+          `http://localhost:8080/api/v2/users/update/${userId}`,
           { twoFa: true }, // Update twoFa to boolean true
           {
             headers: {

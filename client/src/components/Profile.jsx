@@ -34,7 +34,7 @@ const Profile = () => {
       // Fetches user profile information
       if (username) {
         const profileResponse = await axios.get(
-          `http://localhost:5000/api/v2/users/info/${username}`,
+          `http://localhost:8080/api/v2/users/info/${username}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const Profile = () => {
       // Fetches followers and following counts
       if (userId) {
         const followersFollowingResponse = await axios.get(
-          `http://localhost:5000/api/v2/users/list/${userId}`,
+          `http://localhost:8080/api/v2/users/list/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -73,7 +73,7 @@ const Profile = () => {
 
         // Fetches the count of user's posts
         const userPostsResponse = await axios.get(
-          `http://localhost:5000/api/v2/posts/list/${userId}`,
+          `http://localhost:8080/api/v2/posts/list/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

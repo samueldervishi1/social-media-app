@@ -50,7 +50,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:5000/api/v2/posts/list/count/${userId}`,
+          `http://localhost:8080/api/v2/posts/list/count/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/v2/posts/list/${userId}`,
+        `http://localhost:8080/api/v2/posts/list/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,7 +128,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        `http://localhost:5000/api/v2/users/update/${userId}`,
+        `http://localhost:8080/api/v2/users/update/${userId}`,
         updateData,
         {
           headers: {
