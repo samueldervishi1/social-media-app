@@ -21,6 +21,7 @@ const ChirpAI = () => {
   const [hideHeading, setHideHeading] = useState(false);
   const [isMobileView, setIsMobileView] = useState();
   const [isTypingFinished, setIsTypingFinished] = useState(true);
+  const [showContinueMessage, setShowContinueMessage] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,23 +45,6 @@ const ChirpAI = () => {
   useEffect(() => {
     resetChat();
   }, []);
-
-  //handle the limit for the model
-  const handleRateLimit = () => {
-    setIsRateLimited(true);
-    setCountdown(120);
-
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval);
-          setIsRateLimited(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
 
   //format the code block provided by the model
   const formatCodeBlocks = (text) => {
@@ -153,6 +137,25 @@ const ChirpAI = () => {
 
     console.log("Sending question to backend...");
 
+    const handleRateLimit = () => {
+      setIsRateLimited(true);
+      setCountdown(30);
+      setShowContinueMessage(false);
+
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            setIsRateLimited(false);
+            setCountdown(0);
+            setShowContinueMessage(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    };
+
     try {
       const token = localStorage.getItem("token");
 
@@ -194,14 +197,15 @@ const ChirpAI = () => {
         setIsThinking(false);
       }
     } catch (error) {
-      if (error.response?.status === 408) {
+      if (error.response?.status === 405) {
         handleRateLimit();
         const errorMessage =
-          "You have reached your limit. It will be reset after 2 minutes.";
+          "You have reached your request limit. Please wait 30 seconds before trying again.";
         const errorResponse = {
           content: errorMessage,
           isUser: false,
         };
+        setIsThinking(false);
         setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
       } else {
         console.error("Error: ", error.message);
@@ -292,13 +296,6 @@ const ChirpAI = () => {
               cursor: "pointer",
             }}
             onClick={resetChat}
-            // onMouseEnter={(e) =>
-            //   (e.currentTarget.querySelector(".tooltip").style.display =
-            //     "block")
-            // }
-            // onMouseLeave={(e) =>
-            //   (e.currentTarget.querySelector(".tooltip").style.display = "none")
-            // }
           >
             <FaRegPenToSquare />
           </button>
@@ -364,7 +361,7 @@ const ChirpAI = () => {
             onKeyUp={handleKeyUp}
             disabled={isRateLimited || isThinking}
             maxLength={4000}
-          ></textarea>
+          />
           <button
             className={styles.ai_submit}
             type="submit"
@@ -383,7 +380,9 @@ const ChirpAI = () => {
         </form>
         <p className={styles.info_text}>
           {isRateLimited
-            ? `You have reached your limit. It will be reset after ${countdown} seconds.`
+            ? countdown > 0
+              ? `Too many requests. Please wait ${countdown} seconds before trying again.`
+              : "You can continue now."
             : "AЯYHƆ can make mistakes. Check important info."}
         </p>
       </div>

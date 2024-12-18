@@ -25,30 +25,6 @@ public class CommentsService {
 		this.postRepository = postRepository;
 	}
 
-	private User getUserById(String userId) {
-		return userRepository.findById(userId).orElseThrow(() -> {
-			logger.warn("User not found with userId: {}" , userId);
-			return new NotFoundException("User not found with userId: " + userId);
-		});
-	}
-
-	private Post getPostById(String postId) {
-		return postRepository.findById(postId).orElseThrow(() -> {
-			logger.warn("Post not found with ID: {}" , postId);
-			return new NotFoundException("Post not found with ID: " + postId);
-		});
-	}
-
-	private Comments getCommentFromPost(Post post , String commentId) {
-		return post.getCommentsList().stream()
-				.filter(comment -> comment.getId().equals(commentId))
-				.findFirst()
-				.orElseThrow(() -> {
-					logger.warn("Comment not found with ID: {} in post with ID: {}" , commentId , post.getId());
-					return new NotFoundException("Comment not found with ID: " + commentId);
-				});
-	}
-
 	@Transactional
 	public Comments createComment(String userId , String postId , Comments comment) {
 		try {
@@ -101,5 +77,29 @@ public class CommentsService {
 			logger.error("Unexpected error while retrieving comment. Error: {}" , e.getMessage() , e);
 			throw new InternalServerErrorException("An unexpected error occurred while retrieving the comment");
 		}
+	}
+
+	private User getUserById(String userId) {
+		return userRepository.findById(userId).orElseThrow(() -> {
+			logger.warn("User not found with userId: {}" , userId);
+			return new NotFoundException("User not found with userId: " + userId);
+		});
+	}
+
+	private Post getPostById(String postId) {
+		return postRepository.findById(postId).orElseThrow(() -> {
+			logger.warn("Post not found with ID: {}" , postId);
+			return new NotFoundException("Post not found with ID: " + postId);
+		});
+	}
+
+	private Comments getCommentFromPost(Post post , String commentId) {
+		return post.getCommentsList().stream()
+				.filter(comment -> comment.getId().equals(commentId))
+				.findFirst()
+				.orElseThrow(() -> {
+					logger.warn("Comment not found with ID: {} in post with ID: {}" , commentId , post.getId());
+					return new NotFoundException("Comment not found with ID: " + commentId);
+				});
 	}
 }

@@ -33,9 +33,9 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(TooManyRequestsException.class)
-    public ResponseEntity<ErrorResponse> handleTooManyRequestsException(TooManyRequestsException ex) {
-        return new ResponseEntity<>(new ErrorResponse("Too many requests. Please wait and try again.", HttpStatus.TOO_MANY_REQUESTS.value()), HttpStatus.TOO_MANY_REQUESTS);
-    }
+	public ResponseEntity<ErrorResponse> handleTooManyRequestsException(TooManyRequestsException ex) {
+		return new ResponseEntity<>(new ErrorResponse("Too many requests. Please wait and try again." , HttpStatus.TOO_MANY_REQUESTS.value()) , HttpStatus.TOO_MANY_REQUESTS);
+	}
 
 	public record ErrorResponse(String message , int statusCode , LocalDateTime timestamp) {
 		public ErrorResponse(String message , int statusCode) {

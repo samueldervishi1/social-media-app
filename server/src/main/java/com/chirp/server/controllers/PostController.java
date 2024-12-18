@@ -3,7 +3,6 @@ package com.chirp.server.controllers;
 import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.Post;
-//import com.chirp.server.services.ImageService;
 import com.chirp.server.services.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,6 @@ public class PostController {
 	private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
 	private final PostService postService;
-//	private final ImageService imageService;
 
 	public PostController(PostService postService) {
 		this.postService = postService;
@@ -84,13 +82,6 @@ public class PostController {
 		logger.debug("Received POST request to create a post for user: {}" , username);
 
 		try {
-//			if (post.getBase64Image() != null && !post.getBase64Image().isEmpty()) {
-//				String imageUrl = imageService.uploadImage(post.getBase64Image());
-//				post.setImageUrl(imageUrl);
-//				logger.info("Image uploaded and URL saved: {}" , imageUrl);
-//			}
-//			String base64Image = post.getBase64Image();
-
 			postService.createPost(username , post);
 
 			return ResponseEntity.ok("Post created successfully");

@@ -5,10 +5,8 @@ import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import com.chirp.server.utils.JwtTokenUtil;
-import io.jsonwebtoken.security.Password;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,19 +28,24 @@ public class LoginService {
 	public String login(String username , String password) {
 		logger.info("Attempting to login with username {}" , username);
 
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new NotFoundException("Username not found"));
+		try {
+			User user = userRepository.findByUsername(username)
+					.orElseThrow(() -> new NotFoundException("Username not found"));
 
-		if (user.isDeleted()) {
-			logger.info("User does not exist");
-			throw new NotFoundException("This user does not exist.");
+			if (user.isDeleted()) {
+				logger.info("User does not exist");
+				throw new NotFoundException("This user does not exist.");
+			}
+
+			validatePassword(password , user.getPassword());
+
+			String token = jwtTokenUtil.generateToken(username , user.getId() , user.isTwoFa());
+			logger.info("Successfully logged in user: {}" , username);
+			return token;
+		} catch (Exception e) {
+			logger.error("Unexpected error during login attempt for user {}: {}" , username , e.getMessage());
+			throw new BadRequestException("An error occurred during login.");
 		}
-
-		validatePassword(password , user.getPassword());
-
-		String token = jwtTokenUtil.generateToken(username , user.getId() , user.isTwoFa());
-		logger.info("Successfully logged in user: {}" , username);
-		return token;
 	}
 
 	private void validatePassword(String rawPassword , String encodedPassword) {

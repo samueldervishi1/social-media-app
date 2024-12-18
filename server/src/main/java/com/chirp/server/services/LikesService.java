@@ -38,6 +38,23 @@ public class LikesService {
 		return handleLike(userId , commentId , false);
 	}
 
+	public int getLikesCountForPost(String postId) {
+		try {
+			return likesRepository.findByPostIdContaining(postId).size();
+		} catch (Exception e) {
+			logAndHandleException(e , "getting likes count for post");
+			return 0;
+		}
+	}
+
+	public List<Like> getLikesForComment(String commentId) {
+		return fetchLikesByEntity(likesRepository.findByCommentIdContaining(commentId) , commentId , "comment");
+	}
+
+	public List<Like> getLikesForUser(String userId) {
+		return fetchLikesByEntity(likesRepository.findByUserId(userId) , userId , "user");
+	}
+
 	private Like handleLike(String userId , String entityId , boolean isPost) {
 		String entityType = isPost ? "post" : "comment";
 		try {
@@ -81,23 +98,6 @@ public class LikesService {
 			post.getLikes().add(userId);
 			postRepository.save(post);
 		}
-	}
-
-	public int getLikesCountForPost(String postId) {
-		try {
-			return likesRepository.findByPostIdContaining(postId).size();
-		} catch (Exception e) {
-			logAndHandleException(e , "getting likes count for post");
-			return 0;
-		}
-	}
-
-	public List<Like> getLikesForComment(String commentId) {
-		return fetchLikesByEntity(likesRepository.findByCommentIdContaining(commentId) , commentId , "comment");
-	}
-
-	public List<Like> getLikesForUser(String userId) {
-		return fetchLikesByEntity(likesRepository.findByUserId(userId) , userId , "user");
 	}
 
 	private List<Like> fetchLikesByEntity(List<Like> likes , String entityId , String entityType) {

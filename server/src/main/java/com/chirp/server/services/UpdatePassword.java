@@ -4,6 +4,7 @@ import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
