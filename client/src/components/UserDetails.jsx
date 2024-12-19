@@ -365,8 +365,7 @@ const UserDetail = () => {
             style={{
               fontWeight: activeTab === "posts" ? "bold" : "normal",
               padding: "10px",
-              borderBottom:
-                activeTab === "posts" ? "2px solid #1c1c1d;" : "none",
+              borderBottom: activeTab === "posts" ? "2px solid #1c1c1d;" : "none",
               cursor: "pointer",
               textAlign: "center",
               marginTop: "20px",
@@ -385,6 +384,7 @@ const UserDetail = () => {
                       title={post.title}
                       content={post.content}
                       postDate={post.postDate}
+                      postTime={post.postTime}
                       userId={post.userId}
                       imageUrl={post.imageUrl}
                     />

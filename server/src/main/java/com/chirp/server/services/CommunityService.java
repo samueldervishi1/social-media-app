@@ -38,6 +38,10 @@ public class CommunityService {
 		});
 
 		Community community = new Community(name , ownerId , description);
+		List<String> userIds = new ArrayList<>();
+		userIds.add(ownerId);
+		community.setUserIds(userIds);
+
 		Community savedCommunity = communityRepository.save(community);
 		logger.info("Community created successfully with ID: {}" , savedCommunity.getCommunityId());
 		return savedCommunity;
@@ -45,7 +49,7 @@ public class CommunityService {
 
 	public CommunityPost createCommunityPost(String name , String ownerId , String content) {
 		Community community = getEntityByIdOrName(name , communityRepository.findByName(name));
-		logger.error("Community does not exists with this name: {}", name);
+		logger.error("Community does not exists with this name: {}" , name);
 
 		CommunityPost communityPost = new CommunityPost();
 		communityPost.setOwnerId(ownerId);
@@ -57,6 +61,8 @@ public class CommunityService {
 		communityPost.setDeleted(false);
 
 		CommunityPost savedCommunityPost = communityPostRepository.save(communityPost);
+		community.getPostIds().add(savedCommunityPost.getId());
+		communityRepository.save(community);
 		logger.info("Post successfully created with ID: {} for community: {}" , savedCommunityPost.getId() , name);
 
 		return savedCommunityPost;

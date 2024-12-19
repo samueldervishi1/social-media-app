@@ -147,7 +147,7 @@ const TrendingList = () => {
                 className={styles.trending_card}
                 onClick={() => navigate(`/c/community/${community.name}`)}
               >
-                <span className={styles.trend_hashtag}>{community.name}</span> -
+                <span className={styles.trend_hashtag}>c/{community.name}</span> -
                 <span className={styles.members_count}>
                   {membersCounts[community.name] !== undefined
                     ? getMemberText(membersCounts[community.name])

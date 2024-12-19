@@ -86,6 +86,7 @@ span.members_count {
 
 .no_communities{
   text-align: center;
+  margin-top: 50px;
 }
 
 .members {
@@ -173,6 +174,38 @@ span.members_count {
   width: 30px;
   height: 30px;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.create_button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create_button:hover {
+  background-color: #0056b3;
+}
+
+.create_button:active {
+  background-color: #003f7f;
+}
+
 
 @media screen and (min-width: 1025px) {
   .card {

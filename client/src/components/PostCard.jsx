@@ -32,6 +32,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [usernames, setUsernames] = useState({});
   const [showMenu, setShowMenu] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [reason, setReason] = useState("");
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -69,7 +72,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //fetch user username
   const fetchUsername = async (userId) => {
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.get(
         `http://localhost:8080/api/v2/users/${userId}`,
         {
@@ -96,8 +98,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
-
         const response = await axios.get(
           `http://localhost:8080/api/v2/users/${userId}`,
           {
@@ -121,15 +121,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //fetch liked posts
   useEffect(() => {
     const fetchLikedPosts = async () => {
-      const userIdFromToken = getUserIdFromToken();
-      if (!userIdFromToken) {
-        console.error("User not authenticated or token invalid.");
-        return;
-      }
-
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v2/likes/${userIdFromToken}`,
+          `http://localhost:8080/api/v2/likes/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -245,15 +239,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //fetch saved posts
   useEffect(() => {
     const fetchSavedPosts = async () => {
-      const userIdFromToken = getUserIdFromToken();
-      if (!userIdFromToken) {
-        console.error("User not authenticated or token invalid.");
-        return;
-      }
-
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v2/save/posts/${userIdFromToken}`,
+          `http://localhost:8080/api/v2/save/posts/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -283,8 +271,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   //create comment
   const navigateToAddComment = async () => {
-    const commenterId = getUserIdFromToken();
-    if (!commenterId) {
+    if (!userId) {
       console.error("User not authenticated or token invalid.");
       return;
     }
@@ -298,7 +285,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v2/posts/comments/create/${commenterId}/${id}`,
+        `http://localhost:8080/api/v2/posts/comments/create/${userId}/${id}`,
         { content: newComment },
         {
           headers: {
@@ -322,12 +309,10 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //like a post
   const toggleLike = async (e) => {
     e.stopPropagation();
-    const userIdFromToken = getUserIdFromToken();
-
     try {
       if (!liked) {
         await axios.post(
-          `http://localhost:8080/api/v2/likes/post/${userIdFromToken}/${id}`,
+          `http://localhost:8080/api/v2/likes/post/${userId}/${id}`,
           {},
           {
             headers: {
@@ -357,8 +342,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //save a post
   const toggleSave = async (e) => {
     e.stopPropagation();
-    const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
+    if (!userId) {
       console.error("User not authenticated or token invalid.");
       return;
     }
@@ -366,7 +350,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     try {
       if (!saved) {
         await axios.post(
-          `http://localhost:8080/api/v2/save/posts/${userIdFromToken}`,
+          `http://localhost:8080/api/v2/save/posts/${userId}`,
           [id],
           {
             headers: {
@@ -379,7 +363,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         window.alert("Post saved successfully!");
       } else {
         await axios.delete(
-          `http://localhost:8080/api/v2/save/posts/${userIdFromToken}/${id}`,
+          `http://localhost:8080/api/v2/save/posts/${userId}/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -398,8 +382,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   //delete a post
   const deletePost = async () => {
-    const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
+    if (!userId) {
       console.error("User not authenticated or token invalid.");
       setSnackbarMessage("Authentication error. Please log in again.");
       setSnackbarSeverity("error");
@@ -407,7 +390,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       return;
     }
 
-    if (userIdFromToken !== userId) {
+    if (userId !== userId) {
       console.error("You are not authorized to delete this post.");
       setSnackbarMessage("You are not authorized to delete this post.");
       setSnackbarSeverity("error");
@@ -441,12 +424,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   //delete comment
   const deleteComment = async (commentId) => {
-    const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
-      console.error("User not authenticated or token invalid.");
-      return;
-    }
-
     try {
       const response = await axios.delete(
         `http://localhost:8080/api/v2/posts/comments/delete/${id}/${commentId}`,
@@ -464,6 +441,57 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       console.error("Error deleting comment:", error.message);
     }
   };
+
+  //report post
+  const handleReportSubmit = async () => {
+    if (!reason.trim()) {
+      alert("Please provide a reason for reporting!");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/v2/report`,
+        {
+          userId,
+          postId: id,
+          reason,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        alert("Report submitted successfully!");
+        setShowReportModal(false);
+        setReason("");
+      } else {
+        alert("Failed to submit the report. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      alert("An error occurred. Please try again later.");
+    }
+  };
+
+  const openReportModal = () => {
+    setShowReportModal(true);
+  };
+
+  const closeReportModal = () => {
+    setShowReportModal(false);
+    setReason("");
+  };
+
+  const handleSelect = (value) => {
+    setReason(value);
+    setIsDropdownOpen(false);
+  };
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const formatTime = (postTime) => {
     const date = new Date(`1970-01-01T${postTime}Z`);
@@ -497,10 +525,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   const handleCommentChange = (e) => {
     setNewComment(e.target.value);
-  };
-
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
   };
 
   const handleProfileLinkClick = (e) => {
@@ -549,18 +573,19 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
             </span>
           </h2>
         </div>
-        {isUserPostOwner && (
+        {(isUserPostOwner || !isUserPostOwner) && (
           <div className="more-options">
-            <button onClick={toggleMenu} className="three-dots">
-              &#8230;
-            </button>
-            {showMenu && (
-              <div className="dropdown-delete">
+            <div className="dropdown-options">
+              {isUserPostOwner ? (
                 <button onClick={deletePost} className="delete-button">
                   Delete Post
                 </button>
-              </div>
-            )}
+              ) : (
+                <button onClick={openReportModal} className="report-button">
+                  Report Post
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -618,6 +643,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           </div>
         </div>
 
+        {/*Comments modal */}
         <Modal
           show={showCommentsModal}
           onHide={handleCloseCommentsModal}
@@ -686,6 +712,47 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
               </button>
             </div>
           </Modal.Body>
+        </Modal>
+
+        {/* Report Modal */}
+        <Modal show={showReportModal} onHide={closeReportModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Report Post</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Please select a reason for reporting this post:</p>
+            <div className="custom-dropdown">
+              <button
+                className="custom-dropdown-toggle"
+                onClick={toggleDropdown}
+              >
+                {reason || "Select a reason"}
+              </button>
+
+              {isDropdownOpen && (
+                <ul className="custom-dropdown-menu">
+                  <li onClick={() => handleSelect("Spam")}>Spam</li>
+                  <li onClick={() => handleSelect("Harassment")}>Harassment</li>
+                  <li onClick={() => handleSelect("Inappropriate Content")}>
+                    Inappropriate Content
+                  </li>
+                  <li onClick={() => handleSelect("Other")}>Other</li>
+                </ul>
+              )}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="cancel-button" onClick={closeReportModal}>
+              Cancel
+            </button>
+            <button
+              className="submit-button"
+              onClick={handleReportSubmit}
+              disabled={!reason}
+            >
+              Submit
+            </button>
+          </Modal.Footer>
         </Modal>
       </div>
       <Snackbar

@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 import placeHolderImage from "../assets/placeholder.png";
 import placeHolderLogo from "../assets/logo-placeholder-image.png";
 import loader from "../assets/ZKZg.gif";
-import styles from "../styles/communitiesList.module.css";
-
 import { getUserIdFromToken } from "../auth/authUtils";
-
 import { Snackbar, Alert } from "@mui/material";
+import { Modal, Button, Form } from "react-bootstrap";
+import styles from "../styles/communitiesList.module.css";
 
 const CommunitiesList = () => {
   const [communities, setCommunities] = useState([]);
@@ -21,12 +20,20 @@ const CommunitiesList = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [communityName, setCommunityName] = useState("");
+  const [communityDescription, setCommunityDescription] = useState("");
+
   const navigate = useNavigate();
 
   const getMemberText = (count) => {
     if (count === 1) return "1 member";
     if (count >= 0) return `${count} members`;
     return "Loading...";
+  };
+
+  const isValidCommunityName = (name) => {
+    return !name.includes(" ");
   };
 
   useEffect(() => {
@@ -63,9 +70,9 @@ const CommunitiesList = () => {
           communities.map(async (community) => {
             try {
               const response = await axios.get(
-                `http://localhost:8080/api/v2/communities/${encodeURIComponent(
+                `http://localhost:8080/api/v2/communities/c/count/${encodeURIComponent(
                   community.name
-                )}/count/users`,
+                )}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
@@ -137,6 +144,54 @@ const CommunitiesList = () => {
     }
   };
 
+  const handleCreateCommunity = async () => {
+    if (!isValidCommunityName(communityName)) {
+      setSnackbarMessage("Community name cannot contain spaces.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    try {
+      const userId = getUserIdFromToken();
+      const token = localStorage.getItem("token");
+
+      const response = await axios.post(
+        `http://localhost:8080/api/v2/communities/create/${userId}`,
+        {
+          name: communityName,
+          description: communityDescription,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSnackbarMessage("Community created successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+
+        setShowCreateModal(false);
+        setCommunityName("");
+        setCommunityDescription("");
+
+        setCommunities((prevCommunities) => [
+          ...prevCommunities,
+          response.data,
+        ]);
+
+        window.location.reload();
+      }
+    } catch (err) {
+      setSnackbarMessage("Failed to create community.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
   const toggleDropdown = (communityId) => {
     setDropdownVisible(dropdownVisible === communityId ? null : communityId);
   };
@@ -147,7 +202,18 @@ const CommunitiesList = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Popular Communities</h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Popular Communities</h1>
+        <div>
+          <Button
+            className={styles.create_button}
+            onClick={() => setShowCreateModal(true)}
+          >
+            Create New Community
+          </Button>
+        </div>
+      </div>
+
       {error && (
         <p className={styles.error}>
           Something went wrong. Please try again later.
@@ -235,11 +301,12 @@ const CommunitiesList = () => {
               })}
             </div>
           ) : (
-            <p className={styles.no_communities}>No communities available.</p>
+            <p className={styles.no_communities}>No communities available. </p>
           )}
         </>
       )}
 
+      {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
@@ -254,6 +321,48 @@ const CommunitiesList = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      {/* Create Community Modal */}
+      <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create New Community</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Community Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={communityName}
+                onChange={(e) => setCommunityName(e.target.value)}
+                placeholder="Enter community name"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={communityDescription}
+                onChange={(e) => setCommunityDescription(e.target.value)}
+                placeholder="Enter description"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleCreateCommunity}
+            disabled={!communityName || !communityDescription}
+          >
+            Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

@@ -37,7 +37,7 @@
   color: red;
 }
 
-.no-image-message{
+.no-image-message {
   color: red;
   text-align: center;
 }
@@ -102,6 +102,73 @@
   border: none;
   font-size: 15px;
   padding: 5px 10px;
+}
+
+.report-button {
+  color: black;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 15px;
+  padding: 5px 10px;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.custom-dropdown-toggle {
+  width: 100%;
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  z-index: 1050;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.custom-dropdown-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.custom-dropdown-menu li:hover {
+  background-color: #f0f0f0;
+}
+
+.submit-button {
+  background: red;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.submit-button:disabled {
+  background: lightgray;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  background: gray;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
 .delete-comment-button {
@@ -389,7 +456,7 @@
     border-bottom: 2px solid #0072ff;
   }
 
-  .list-loader{
+  .list-loader {
     left: 25%;
   }
 }

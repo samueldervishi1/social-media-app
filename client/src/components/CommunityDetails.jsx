@@ -114,17 +114,15 @@ const CommunityDetails = () => {
         } catch (err) {
           if (err.response && err.response.status === 404) {
             console.error("Post not found for postId:", postId);
-            // You can choose to display a custom message per post or skip adding it to the array
-            return null; // Skip this post if it's 404
+            return null; 
           } else {
             console.error("Error fetching post details:", err.message);
-            return null; // Return null if there's a different error (e.g., network issue)
+            return null;
           }
         }
       });
   
       const postDetails = await Promise.all(postDetailsPromises);
-      // Filter out any null posts caused by 404 or other errors
       const validPosts = postDetails.filter(post => post !== null);
   
       if (validPosts.length === 0) {
@@ -135,13 +133,10 @@ const CommunityDetails = () => {
     } catch (err) {
       console.error("Error fetching posts:", err.message);
       setError("Failed to load posts.");
-      setPosts([]); // Clear posts array when error occurs
+      setPosts([]);
     }
   };
   
-  
-  
-
   //fetch members count for communities
   useEffect(() => {
     const fetchMembersCount = async () => {
