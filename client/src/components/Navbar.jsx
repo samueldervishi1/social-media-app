@@ -123,14 +123,15 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        searchBarRef.current &&
-        !searchBarRef.current.contains(event.target) &&
-        !document.querySelector(".drpp").contains(event.target)
-      ) {
-        setShowDropdown(false);
-        setQuery("");
+      const dropdownElement = document.querySelector(".drpp");
+      if (searchBarRef.current && searchBarRef.current.contains(event.target)) {
+        return;
       }
+      if (dropdownElement && dropdownElement.contains(event.target)) {
+        return;
+      }
+      setShowDropdown(false);
+      setQuery("");
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -375,9 +376,9 @@ const Navbar = () => {
                   Help
                 </Dropdown.Item>
                 <Dropdown.Item href="/health">
-                    <CiServer className={styles.icon_p} />
-                    Server health
-                  </Dropdown.Item>
+                  <CiServer className={styles.icon_p} />
+                  Server health
+                </Dropdown.Item>
                 <Dropdown.Divider className={styles.divider_delete} />
                 <Dropdown.Item
                   onClick={() => setShowDeleteModal(true)}
