@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import Dropdown from "react-bootstrap/Dropdown";
-import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Modal, Button } from "react-bootstrap";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import Avatar from "@mui/material/Avatar";
+import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
 import { GoHome } from "react-icons/go";
 import { IoPersonCircleOutline, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
@@ -16,13 +22,13 @@ import {
   MdOutlineEmail,
   MdOutlineHelpOutline,
 } from "react-icons/md";
-import { BiPlusCircle } from "react-icons/bi";
 import { TbPremiumRights, TbAuth2Fa } from "react-icons/tb";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import loaderImage from "../assets/ZKZg.gif";
+import user from "../assets/user.webp";
 import styles from "../styles/navbar.module.css";
 
-import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
+import { getUserIdFromToken } from "../auth/authUtils";
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -37,8 +43,38 @@ const Navbar = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElSettings, setAnchorElSettings] = React.useState(null);
+
   const userId = getUserIdFromToken();
-  const username = getUsernameFromToken();
+
+  const userSettings = [
+    {
+      name: "Profile",
+      icon: <IoPersonCircleOutline className={styles.icon_p} />,
+    },
+    {
+      name: "Your Communities",
+      icon: <CgCommunity className={styles.icon_p} />,
+    },
+    { name: "Logout", icon: <CiLogout className={styles.icon_p} /> },
+  ];
+
+  const settings = [
+    { name: "Enable 2FA", icon: <TbAuth2Fa className={styles.icon_p} /> },
+    { name: "Premium", icon: <TbPremiumRights className={styles.icon_p} /> },
+    {
+      name: "About",
+      icon: <IoIosInformationCircleOutline className={styles.icon_p} />,
+    },
+    {
+      name: "Terms & Services",
+      icon: <MdOutlinePrivacyTip className={styles.icon_p} />,
+    },
+    { name: "Contact", icon: <MdOutlineEmail className={styles.icon_p} /> },
+    { name: "Help", icon: <MdOutlineHelpOutline className={styles.icon_p} /> },
+    { name: "Server health", icon: <CiServer className={styles.icon_p} /> },
+  ];
 
   // Search for users by username
   const searchUsers = async (username) => {
@@ -160,15 +196,100 @@ const Navbar = () => {
     }, 2000);
   };
 
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleSettingAction = (settingName) => {
+    if (settingName === "Profile") {
+      navigate("/profile");
+    } else if (settingName === "Your Communities") {
+      navigate("/c/user/communities");
+    } else if (settingName === "Logout") {
+      handleLogout();
+    }
+    handleCloseUserMenu();
+  };
+
+  const handleActions = (settingName) => {
+    if (settingName === "Enable 2FA") {
+      navigate("/security/2fa/enable");
+    } else if (settingName === "Premium") {
+      navigate("/premium");
+    } else if (settingName === "About") {
+      navigate("/about");
+    } else if (settingName === "Terms & Services") {
+      navigate("/terms");
+    } else if (settingName === "Contact") {
+      navigate("/contact");
+    } else if (settingName === "Help") {
+      navigate("/help");
+    } else if (settingName === "Server health") {
+      navigate("/health");
+    } else if (settingName === "Delete Account") {
+      setShowDeleteModal(true);
+    }
+    handleCloseUserMenu();
+  };
+
+  const handleOpenSettingsMenu = (event) => {
+    setAnchorElSettings(event.currentTarget);
+  };
+
+  const handleCloseSettingsMenu = () => {
+    setAnchorElSettings(null);
+  };
+
   return (
     <>
       <div className={styles.chat_history1}>
         <div className={styles.history_div_2}>
-          <div>
-            <a href="/home" className={styles.name_logo}>
-              AЯYHƆ{" "}
-            </a>
-          </div>
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar src={user} />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {userSettings.map((setting, index) => (
+                <MenuItem
+                  key={index}
+                  onClick={() => handleSettingAction(setting.name)}
+                >
+                  <Typography sx={{ display: "flex", alignItems: "center" }}>
+                    {setting.icon}
+                    {setting.name}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+          <Box sx={{ marginLeft: 2 }}>
+            <Tooltip title="Open settings">
+              <IconButton href="/home" sx={{ p: 0 }}>
+                AЯYHƆ
+              </IconButton>
+            </Tooltip>
+          </Box>
           <div
             className={styles.hamburger}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -226,81 +347,49 @@ const Navbar = () => {
               <a href="/c/communities" className={styles.mobile_menu_item}>
                 <CgCommunity className={styles.icon_p} /> Communities
               </a>
-              <Dropdown>
-                <Dropdown.Toggle
-                  variant="link"
-                  className={styles.mobile_menu_item}
+              <Box sx={{ marginLeft: 2 }}>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }}>
+                    <IoSettingsOutline className={styles.icon_p}/> Settings
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  anchorEl={anchorElSettings}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElSettings)}
+                  onClose={handleCloseSettingsMenu}
                 >
-                  <IoPersonCircleOutline className={styles.icon_p} /> Profile
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="/profile">
-                    {" "}
-                    <IoPersonCircleOutline className={styles.icon_p} />
-                    See your profile {username}
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#">
-                    {" "}
-                    <BiPlusCircle className={styles.icon_p} />
-                    Add another account
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/c/user/communities">
-                    {" "}
-                    <CgCommunity className={styles.icon_p} />
-                    Your communities
-                  </Dropdown.Item>
-                  <Dropdown.Divider className={styles.divider_dp} />
-                  <Dropdown.Item onClick={handleLogout}>
-                    <CiLogout className={styles.icon_p} /> Logout
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <Dropdown>
-                <Dropdown.Toggle
-                  variant="link"
-                  className={styles.mobile_menu_item}
-                >
-                  <IoSettingsOutline className={styles.icon_p} /> Settings
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="/security/2fa/enable">
-                    <TbAuth2Fa className={styles.icon_p} /> Enable 2FA
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/premium">
-                    <TbPremiumRights className={styles.icon_p} /> Premium
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/about">
-                    <IoIosInformationCircleOutline className={styles.icon_p} />{" "}
-                    About
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/terms">
-                    {" "}
-                    <MdOutlinePrivacyTip className={styles.icon_p} />
-                    Terms &amp; Services
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/contact">
-                    <MdOutlineEmail className={styles.icon_p} />
-                    Contact
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/help">
-                    <MdOutlineHelpOutline className={styles.icon_p} />
-                    Help
-                  </Dropdown.Item>
-                  <Dropdown.Item href="/health">
-                    <CiServer className={styles.icon_p} />
-                    Server health
-                  </Dropdown.Item>
-                  <Dropdown.Divider className={styles.divider_dp} />
-                  <Dropdown.Item
+                  {settings.map((setting, index) => (
+                    <MenuItem
+                      key={index}
+                      onClick={() => handleActions(setting.name)}
+                    >
+                      <Typography
+                        sx={{ display: "flex", alignItems: "center" }}
+                      >
+                        {setting.icon}
+                        {setting.name}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                  <MenuItem
                     onClick={() => setShowDeleteModal(true)}
-                    className="delete-name"
+                    sx={{ color: "red" }}
                   >
-                    {" "}
-                    <MdDeleteForever className={styles.name_delete} /> Delete
-                    Account
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+                    <MdDeleteForever className={styles.icon_p} />
+                    Delete Account
+                  </MenuItem>
+                </Menu>
+              </Box>
             </div>
           )}
 
@@ -317,79 +406,47 @@ const Navbar = () => {
             <a href="/c/communities" className={styles.menu_item}>
               <CgCommunity className={styles.icon_p} /> Communities
             </a>
-            <Dropdown>
-              <Dropdown.Toggle
-                variant="link"
-                className={styles.mobile_menu_item}
+            <Box sx={{ marginLeft: 2 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }}>
+                  <IoSettingsOutline />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                anchorEl={anchorElSettings}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElSettings)}
+                onClose={handleCloseSettingsMenu}
               >
-                <IoPersonCircleOutline className={styles.icon_p} /> Profile
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item href="/profile">
-                  {" "}
-                  <IoPersonCircleOutline className={styles.icon_p} />
-                  See your profile {username}
-                </Dropdown.Item>
-                <Dropdown.Item href="#">
-                  <BiPlusCircle className={styles.icon_p} /> Add another account
-                </Dropdown.Item>
-                <Dropdown.Item href="/c/user/communities">
-                  {" "}
-                  <CgCommunity className={styles.icon_p} />
-                  Your communities
-                </Dropdown.Item>
-                <Dropdown.Divider className={styles.divider_dp} />
-                <Dropdown.Item onClick={handleLogout}>
-                  <CiLogout className={styles.icon_p} /> Logout
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-            <Dropdown>
-              <Dropdown.Toggle
-                variant="link"
-                className={styles.mobile_menu_item}
-              >
-                <IoSettingsOutline className={styles.icon_p} /> Settings
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                <Dropdown.Item href="/security/2fa/enable">
-                  <TbAuth2Fa className={styles.icon_p} /> Enable 2FA
-                </Dropdown.Item>
-                <Dropdown.Item href="/premium">
-                  <TbPremiumRights className={styles.icon_p} /> Premium
-                </Dropdown.Item>
-                <Dropdown.Item href="/about">
-                  <IoIosInformationCircleOutline className={styles.icon_p} />{" "}
-                  About
-                </Dropdown.Item>
-                <Dropdown.Item href="/terms">
-                  {" "}
-                  <MdOutlinePrivacyTip className={styles.icon_p} />
-                  Terms &amp; Services
-                </Dropdown.Item>
-                <Dropdown.Item href="/contact">
-                  <MdOutlineEmail className={styles.icon_p} /> Contact
-                </Dropdown.Item>
-                <Dropdown.Item href="/help">
-                  <MdOutlineHelpOutline className={styles.icon_p} />
-                  Help
-                </Dropdown.Item>
-                <Dropdown.Item href="/health">
-                  <CiServer className={styles.icon_p} />
-                  Server health
-                </Dropdown.Item>
-                <Dropdown.Divider className={styles.divider_delete} />
-                <Dropdown.Item
+                {settings.map((setting, index) => (
+                  <MenuItem
+                    key={index}
+                    onClick={() => handleActions(setting.name)}
+                  >
+                    <Typography sx={{ display: "flex", alignItems: "center" }}>
+                      {setting.icon}
+                      {setting.name}
+                    </Typography>
+                  </MenuItem>
+                ))}
+                <MenuItem
                   onClick={() => setShowDeleteModal(true)}
-                  className={styles.delete_name}
+                  sx={{ color: "red" }}
                 >
-                  {" "}
-                  <MdDeleteForever className={styles.name_delete} /> Delete
-                  Account
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+                  <MdDeleteForever className={styles.icon_p} />
+                  Delete Account
+                </MenuItem>
+              </Menu>
+            </Box>
           </div>
         </div>
       </div>
