@@ -4,6 +4,7 @@ import styles from "../styles/home.module.css";
 const Post = React.lazy(() => import("./Post"));
 const PostList = React.lazy(() => import("./PostList"));
 const TrendingList = React.lazy(() => import("./TrendingList"));
+const Discount = React.lazy(() => import("./Discount"));
 
 const Home = () => {
   return (
@@ -16,6 +17,8 @@ const Home = () => {
       </div>
       <div className={styles.sidebar}>
         <React.Suspense fallback={<div>Loading...</div>}>
+          <Discount />
+
           <TrendingList />
         </React.Suspense>
       </div>

@@ -206,7 +206,7 @@ const Navbar = () => {
 
   const handleSettingAction = (settingName) => {
     if (settingName === "Profile") {
-      navigate("/profile");
+      navigate("/u/profile");
     } else if (settingName === "Your Communities") {
       navigate("/c/user/communities");
     } else if (settingName === "Logout") {
@@ -227,13 +227,13 @@ const Navbar = () => {
     } else if (settingName === "Contact") {
       navigate("/contact");
     } else if (settingName === "Help") {
-      navigate("/help");
+      navigate("/faq");
     } else if (settingName === "Server health") {
       navigate("/health");
     } else if (settingName === "Delete Account") {
       setShowDeleteModal(true);
     }
-    handleCloseUserMenu();
+    handleCloseSettingsMenu();
   };
 
   const handleOpenSettingsMenu = (event) => {
