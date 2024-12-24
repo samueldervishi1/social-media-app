@@ -177,7 +177,7 @@
   background: none;
   border: none;
   font-size: 10px;
-  margin-left: 100px;
+  margin-left: 190px;
   top: 0px;
   position: relative;
   padding: 0;
@@ -555,5 +555,15 @@
     justify-content: center;
     align-items: center;
     display: flex;
+  }
+  .delete-comment-button {
+    color: red;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 10px;
+    margin-left: 100px;
+    position: relative;
+    padding: 0;
   }
 }

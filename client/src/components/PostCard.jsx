@@ -531,9 +531,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     e.stopPropagation();
     const loggedInUserId = getUserIdFromToken();
     if (userId === loggedInUserId) {
-      navigate("/profile");
+      navigate("/u/profile");
     } else {
-      navigate(`/users/${userId}`);
+      navigate(`/u/users/${userId}`);
     }
   };
 

@@ -189,6 +189,7 @@ const CommunitiesList = () => {
       setSnackbarMessage("Failed to create community.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+      console.log
     }
   };
 

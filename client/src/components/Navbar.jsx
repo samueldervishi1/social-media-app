@@ -28,7 +28,7 @@ import loaderImage from "../assets/ZKZg.gif";
 import user from "../assets/user.webp";
 import styles from "../styles/navbar.module.css";
 
-import { getUserIdFromToken } from "../auth/authUtils";
+import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -47,14 +47,15 @@ const Navbar = () => {
   const [anchorElSettings, setAnchorElSettings] = React.useState(null);
 
   const userId = getUserIdFromToken();
+  const username = getUsernameFromToken();
 
   const userSettings = [
     {
-      name: "Profile",
+      name: `Your profile ${username}`,
       icon: <IoPersonCircleOutline className={styles.icon_p} />,
     },
     {
-      name: "Your Communities",
+      name: "Your communities",
       icon: <CgCommunity className={styles.icon_p} />,
     },
     { name: "Logout", icon: <CiLogout className={styles.icon_p} /> },
@@ -179,7 +180,7 @@ const Navbar = () => {
   const handleUserClick = (clickedUserId) => {
     setIsMenuOpen(false);
     if (clickedUserId === userId) {
-      navigate("/profile");
+      navigate("/u/profile");
     } else {
       navigate(`/u/${clickedUserId}`);
     }
@@ -205,9 +206,9 @@ const Navbar = () => {
   };
 
   const handleSettingAction = (settingName) => {
-    if (settingName === "Profile") {
+    if (settingName === `Your profile ${username}`) {
       navigate("/u/profile");
-    } else if (settingName === "Your Communities") {
+    } else if (settingName === "Your communities") {
       navigate("/c/user/communities");
     } else if (settingName === "Logout") {
       handleLogout();
@@ -290,6 +291,37 @@ const Navbar = () => {
               </IconButton>
             </Tooltip>
           </Box>
+          <div className={styles.search_bar} ref={searchBarRef}>
+            <input
+              type="text"
+              placeholder="Search..."
+              className={styles.search_input}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setShowDropdown(true)}
+            />
+            {showDropdown && (
+              <div className={styles.search_r}>
+                {showNoResults ? (
+                  <p className={styles.search_hld}>Nothing found</p>
+                ) : results.length === 0 ? (
+                  <p className={styles.search_hld}>Search for friends</p>
+                ) : (
+                  <ul className={styles.search_rsl}>
+                    {results.map((user) => (
+                      <li
+                        key={user.id}
+                        className={styles.search_t}
+                        onClick={() => handleUserClick(user.id)}
+                      >
+                        {user.username}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
           <div
             className={styles.hamburger}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -350,7 +382,7 @@ const Navbar = () => {
               <Box sx={{ marginLeft: 2 }}>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }}>
-                    <IoSettingsOutline className={styles.icon_p}/> Settings
+                    <IoSettingsOutline className={styles.icon_p} /> Settings
                   </IconButton>
                 </Tooltip>
                 <Menu
