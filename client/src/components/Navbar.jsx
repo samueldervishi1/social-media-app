@@ -25,7 +25,6 @@ import {
 import { TbPremiumRights, TbAuth2Fa } from "react-icons/tb";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import loaderImage from "../assets/ZKZg.gif";
-import user from "../assets/user.webp";
 import styles from "../styles/navbar.module.css";
 
 import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
@@ -252,7 +251,8 @@ const Navbar = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar src={user} />
+                {/* <Avatar src={user} /> */}
+                <Avatar />
               </IconButton>
             </Tooltip>
             <Menu
@@ -295,11 +295,21 @@ const Navbar = () => {
             <input
               type="text"
               placeholder="Search..."
-              className={styles.search_input}
+              style={{
+                all: "unset",
+                display: "block",
+                width: "100%",
+                padding: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "20px",
+                fontSize: "16px",
+                backgroundColor: "#fff",
+              }}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setShowDropdown(true)}
             />
+
             {showDropdown && (
               <div className={styles.search_r}>
                 {showNoResults ? (
@@ -373,7 +383,7 @@ const Navbar = () => {
               <a href="/messages" className={styles.mobile_menu_item}>
                 <AiOutlineMessage className={styles.icon_p} /> Messages
               </a>
-              <a href="/chirp" className={styles.mobile_menu_item}>
+              <a href="/chat" className={styles.mobile_menu_item}>
                 <GiArtificialHive className={styles.icon_p} /> AЯYHƆ
               </a>
               <a href="/c/communities" className={styles.mobile_menu_item}>
@@ -425,23 +435,36 @@ const Navbar = () => {
             </div>
           )}
 
+          {/*desktop layout */}
           <div className={styles.history_links}>
             <a href="/home" className={styles.menu_item}>
-              <GoHome className={styles.icon_p} /> Home
+              <IconButton>
+                <GoHome className={styles.icon_p} />
+                Home
+              </IconButton>
             </a>
             <a href="/messages" className={styles.menu_item}>
-              <AiOutlineMessage className={styles.icon_p} /> Messages
+              <IconButton>
+                <AiOutlineMessage className={styles.icon_p} />
+                Messages
+              </IconButton>
             </a>
-            <a href="/chirp" className={styles.menu_item}>
-              <GiArtificialHive className={styles.icon_p} /> AЯYHƆ
+            <a href="/chat" className={styles.menu_item}>
+              <IconButton>
+                <GiArtificialHive className={styles.icon_p} />
+                Sypher
+              </IconButton>
             </a>
             <a href="/c/communities" className={styles.menu_item}>
-              <CgCommunity className={styles.icon_p} /> Communities
+              <IconButton>
+                <CgCommunity className={styles.icon_p} />
+                Communities
+              </IconButton>
             </a>
-            <Box sx={{ marginLeft: 2 }}>
+            <Box sx={{ marginLeft: 0, marginTop: 1 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }}>
-                  <IoSettingsOutline />
+                  <IoSettingsOutline className={styles.icon_p} /> Settings
                 </IconButton>
               </Tooltip>
               <Menu

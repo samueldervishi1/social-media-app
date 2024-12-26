@@ -19,7 +19,7 @@ const Inbox = lazy(() => import("./components/Inbox"));
 const TermsAndServices = lazy(() => import("./components/Terms"));
 const About = lazy(() => import("./components/About"));
 const Contact = lazy(() => import("./components/Contact"));
-const ChirpAI = lazy(() => import("./components/ChirpAI"));
+const ChatAI = lazy(() => import("./components/ChatAI"));
 const CommunitiesList = lazy(() => import("./components/CommunitiesList"));
 const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
 const UserCommunities = lazy(() => import("./components/UserCommunities"));
@@ -62,8 +62,8 @@ const App = () => {
               element={isAuthenticated ? <Inbox /> : <LoginScript />}
             />
             <Route
-              path="/chirp"
-              element={isAuthenticated ? <ChirpAI /> : <LoginScript />}
+              path="/chat"
+              element={isAuthenticated ? <ChatAI /> : <LoginScript />}
             />
             <Route
               path="/u/:userId"

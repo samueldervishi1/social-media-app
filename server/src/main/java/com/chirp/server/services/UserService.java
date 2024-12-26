@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 @Service
 public class UserService {
@@ -36,11 +38,51 @@ public class UserService {
 	public User createUser(User user) {
 		validateUser(user);
 
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		String salt = generateSalt();
+
+		String saltedPassword = user.getPassword() + salt;
+		String hashedPassword = passwordEncoder.encode(saltedPassword);
+
+		user.setPassword(hashedPassword);
+		user.setSalt(salt);
 		user.setRole(user.getRole() != null ? user.getRole() : DEFAULT_ROLE);
 
 		logger.info("Creating user: {}" , user.getUsername());
 		return userRepository.save(user);
+	}
+
+	public boolean validatePassword(String rawPassword , String storedPassword , String salt) {
+		String saltedPassword = rawPassword + salt;
+		return passwordEncoder.matches(saltedPassword , storedPassword);
+	}
+
+	private String generateSalt() {
+		byte[] saltBytes = new byte[16];
+		new SecureRandom().nextBytes(saltBytes);
+		return Base64.getEncoder().encodeToString(saltBytes);
+	}
+
+	private void validateUser(User user) {
+		if (!isValidEmail(user.getEmail())) {
+			throw new BadRequestException(INVALID_EMAIL_FORMAT);
+		}
+		if (userRepository.existsByEmail(user.getEmail())) {
+			logger.error("Email already exists: {}" , user.getEmail());
+			throw new BadRequestException(EMAIL_ALREADY_EXISTS);
+		}
+
+		if (userRepository.existsByUsername(user.getUsername())) {
+			logger.error("Username already exists: {}" , user.getUsername());
+			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
+		}
+
+		if (!isValidLength(user.getFullName())) {
+			throw new BadRequestException(NAME_TOO_SHORT);
+		}
+
+		if (!isValidPassword(user.getPassword())) {
+			throw new BadRequestException(INVALID_PASSWORD_FORMAT);
+		}
 	}
 
 	public User getUserInfo(String username) {
@@ -57,31 +99,8 @@ public class UserService {
 		});
 	}
 
-	private void validateUser(User user) {
-		// Validate Email
-		if (!isValidEmail(user.getEmail())) {
-			throw new BadRequestException(INVALID_EMAIL_FORMAT);
-		}
-		if (userRepository.existsByEmail(user.getEmail())) {
-			logger.error("Email already exists: {}" , user.getEmail());
-			throw new BadRequestException(EMAIL_ALREADY_EXISTS);
-		}
-
-		// Validate Username
-		if (userRepository.existsByUsername(user.getUsername())) {
-			logger.error("Username already exists: {}" , user.getUsername());
-			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
-		}
-
-		// Validate Full Name
-		if (!isValidLength(user.getFullName())) {
-			throw new BadRequestException(NAME_TOO_SHORT);
-		}
-
-		// Validate Password
-		if (!isValidPassword(user.getPassword())) {
-			throw new BadRequestException(INVALID_PASSWORD_FORMAT);
-		}
+	public Optional<User> findById(String userId) {
+		return userRepository.findById(userId);
 	}
 
 	private boolean isValidEmail(String email) {
@@ -96,9 +115,5 @@ public class UserService {
 	private boolean isValidPassword(String password) {
 		String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
 		return Pattern.matches(passwordRegex , password);
-	}
-
-	public Optional<User> findById(String userId) {
-		return userRepository.findById(userId);
 	}
 }

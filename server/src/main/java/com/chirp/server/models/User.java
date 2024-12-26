@@ -14,6 +14,7 @@ public class User {
 	private String id;
 	private String username;
 	private String password;
+	private String salt;
 	private String fullName;
 	private String email;
 	private List<String> links = new ArrayList<>();
@@ -62,6 +63,14 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 
 	public String getFullName() {

@@ -39,6 +39,27 @@
   flex-wrap: wrap;
 }
 
+.pricing_price_container {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.old_price {
+  font-size: 1.2rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.new_price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #10b981; 
+}
+
+
 .pricing_plan {
   background-color: #ffffff;
   padding: 30px;
@@ -74,6 +95,13 @@
   margin-bottom: 12px;
   display: flex;
   align-items: center;
+}
+
+.tick {
+  color: #10b981; 
+  font-weight: bold;
+  margin-right: 8px;
+  font-size: 1.2rem;
 }
 
 .pricing_price {

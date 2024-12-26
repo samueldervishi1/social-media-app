@@ -10,7 +10,7 @@ import styles from "../styles/ai.module.css";
 
 import { getUserIdFromToken } from "../auth/authUtils";
 
-const ChirpAI = () => {
+const ChatAI = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -355,7 +355,7 @@ const ChirpAI = () => {
             name="message"
             rows="1"
             cols="1"
-            placeholder="Ask AЯYHƆ..."
+            placeholder="Ask Sypher..."
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             onKeyUp={handleKeyUp}
@@ -383,11 +383,11 @@ const ChirpAI = () => {
             ? countdown > 0
               ? `Too many requests. Please wait ${countdown} seconds before trying again.`
               : "You can continue now."
-            : "AЯYHƆ can make mistakes. Check important info."}
+            : "Sypher can make mistakes. Check important info."}
         </p>
       </div>
     </div>
   );
 };
 
-export default ChirpAI;
+export default ChatAI;

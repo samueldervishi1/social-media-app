@@ -37,7 +37,7 @@ public class LoginService {
 				throw new NotFoundException("This user does not exist.");
 			}
 
-			validatePassword(password , user.getPassword());
+			validatePassword(password , user.getPassword() , user.getSalt());
 
 			String token = jwtTokenUtil.generateToken(username , user.getId() , user.isTwoFa());
 			logger.info("Successfully logged in user: {}" , username);
@@ -48,8 +48,10 @@ public class LoginService {
 		}
 	}
 
-	private void validatePassword(String rawPassword , String encodedPassword) {
-		if (!passwordEncoder.matches(rawPassword , encodedPassword)) {
+	private void validatePassword(String rawPassword , String encodedPassword , String salt) {
+		String saltedPassword = rawPassword + salt;
+
+		if (!passwordEncoder.matches(saltedPassword , encodedPassword)) {
 			logger.warn("Password mismatch for username: {}" , encodedPassword);
 			throw new BadRequestException("Invalid username or password");
 		}

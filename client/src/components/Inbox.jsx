@@ -35,6 +35,7 @@ const Inbox = ({ user }) => {
             },
           }
         );
+
         if (response.status === 200) {
           const followerIds = response.data?.followerId || [];
           if (followerIds.length > 0) {
@@ -58,17 +59,33 @@ const Inbox = ({ user }) => {
             setFollowers(followersData);
           } else {
             setFollowers([]);
+            setErrorMessage(
+              "You don't have any followers yet. Follow people to start chatting!"
+            );
           }
+        } else if (response.status === 404) {
+          setFollowers([]);
+          setErrorMessage(
+            "You don't have any followers yet. Follow people to start chatting!"
+          );
+        } else if (response.status === 500) {
+          console.error("Server error: 500");
+          setErrorMessage(
+            "An error occurred on the server. Please try again later."
+          );
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          setFollowers([]);
+          setErrorMessage(
+            "You don't have any followers yet. Follow people to start chatting!"
+          );
         } else {
+          console.error("Error fetching followers:", error);
           setErrorMessage(
             "Unable to fetch followers. Please check your internet connection."
           );
         }
-      } catch (error) {
-        console.error("Error fetching followers:", error);
-        setErrorMessage(
-          "Unable to fetch followers. Please check your internet connection."
-        );
       } finally {
         setTimeout(() => {
           setLoading(false);

@@ -12,20 +12,25 @@ const PremiumPage = () => {
               <h2 className={styles.pricing_header}>Premium</h2>
               <ul className={styles.pricing_features}>
                 <li className={styles.pricing_features_item}>
-                  Half Ads in For You and Following
+                  <span className={styles.tick}>✔</span> Half Ads in For You and
+                  Following
                 </li>
                 <li className={styles.pricing_features_item}>
-                  Larger reply boost
+                  <span className={styles.tick}>✔</span> Larger reply boost
                 </li>
                 <li className={styles.pricing_features_item}>
-                  Get paid to post
+                  <span className={styles.tick}>✔</span> Get paid to post
                 </li>
-                <li className={styles.pricing_features_item}>Checkmark</li>
                 <li className={styles.pricing_features_item}>
-                  Creator Subscription
+                  <span className={styles.tick}>✔</span> Checkmark
+                </li>
+                <li className={styles.pricing_features_item}>
+                  <span className={styles.tick}>✔</span> Creator Subscription
                 </li>
               </ul>
-              <span className={styles.pricing_price}>$15</span>
+              <div className={styles.pricing_price_container}>
+                <span className={styles.new_price}>$15</span>
+              </div>
               <button
                 className={`${styles.pricing_button} ${styles.is_featured}`}
               >
@@ -37,20 +42,28 @@ const PremiumPage = () => {
               <h2 className={styles.pricing_header}>Premium +</h2>
               <ul className={styles.pricing_features}>
                 <li className={styles.pricing_features_item}>
-                  Everything in Premium, and
+                  <span className={styles.tick}>✔</span> Everything in Premium,
+                  and
                 </li>
                 <li className={styles.pricing_features_item}>
-                  No Ads in For You and Following
+                  <span className={styles.tick}>✔</span> No Ads in For You and
+                  Following
                 </li>
                 <li className={styles.pricing_features_item}>
-                  Largest reply boost
+                  <span className={styles.tick}>✔</span> Largest reply boost
                 </li>
                 <li className={styles.pricing_features_item}>
-                  Chirps Pro, Analytics, Media Studio
+                  <span className={styles.tick}>✔</span> AЯYHƆ's Pro, Analytics,
+                  Media Studio
                 </li>
-                <li className={styles.pricing_features_item}>Write articles</li>
+                <li className={styles.pricing_features_item}>
+                  <span className={styles.tick}>✔</span> Write articles
+                </li>
               </ul>
-              <span className={styles.pricing_price}>$25</span>
+              <div className={styles.pricing_price_container}>
+                <span className={styles.old_price}>$25</span>
+                <span className={styles.new_price}>$10</span>
+              </div>
               <button
                 className={`${styles.pricing_button} ${styles.is_featured}`}
               >

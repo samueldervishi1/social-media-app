@@ -17,9 +17,6 @@ body.login_page::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: cover;
-  filter: blur(6px);
-  z-index: -1;
 }
 
 .custom_login_loader {

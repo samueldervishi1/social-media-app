@@ -35,7 +35,7 @@ public class UserController {
 	@PostMapping("/auth/register")
 	public ResponseEntity<User> register(@RequestBody User user) {
 		User createdUser = userService.createUser(user);
-		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+		return ResponseEntity.status(HttpStatus.OK).body(createdUser);
 	}
 
 	@PutMapping("/update-password")

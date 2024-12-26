@@ -4,6 +4,7 @@ import axios from "axios";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { Snackbar, Alert } from "@mui/material";
 import styles from "../styles/register.module.css";
 
 const Register = () => {
@@ -24,6 +25,9 @@ const Register = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -40,7 +44,6 @@ const Register = () => {
   const [serverStatus, setServerStatus] = useState(null);
   const [healthMessage, setHealthMessage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  
 
   useEffect(() => {
     const fetchHealthStatus = async () => {
@@ -62,7 +65,7 @@ const Register = () => {
         } else {
           setServerStatus("danger");
           setHealthMessage(
-            "Server is experiencing an outage right now. We are working to bring it up  as soon as possible. Please be patient!"
+            "Server is experiencing an outage right now. We are working to bring it up as soon as possible. Please be patient!"
           );
         }
       }
@@ -90,14 +93,20 @@ const Register = () => {
       );
 
       if (response.status === 200) {
-        alert("User registered successfully!");
-        navigate("/login");
+        setSnackbarMessage("User registered successfully!");
+        setSnackbarOpen(true);
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        console.log("Unexpected response status:", response);
       }
     } catch (error) {
       console.error("Error registering user:", error);
 
       if (error.response && error.response.data) {
-        console.log("Backend Error Response:", error.response.data); // Log the error response
+        console.log("Backend Error Response:", error.response.data);
 
         const { message } = error.response.data;
 
@@ -257,6 +266,17 @@ const Register = () => {
           </div>
         </form>
       </div>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert severity="success" sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
