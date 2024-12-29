@@ -186,10 +186,19 @@ const ProfileHeader = ({ followers, following, profile }) => {
   };
 
   const getLinkIcon = (url) => {
-    if (url.includes("github.com")) return linkIconMapping.github;
-    if (url.includes("linkedin.com")) return linkIconMapping.linkedin;
-    if (url.includes("twitter.com")) return linkIconMapping.twitter;
-    return linkIconMapping.default;
+    try {
+      const parsedUrl = new URL(url);
+      const hostname = parsedUrl.hostname;
+
+      if (hostname.includes("github.com")) return linkIconMapping.github;
+      if (hostname.includes("linkedin.com")) return linkIconMapping.linkedin;
+      if (hostname.includes("twitter.com")) return linkIconMapping.twitter;
+
+      return linkIconMapping.default;
+    } catch (error) {
+      console.error("Invalid URL:", url);
+      return linkIconMapping.default;
+    }
   };
 
   return (
