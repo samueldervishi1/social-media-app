@@ -249,7 +249,7 @@ const Navbar = () => {
       <div className={styles.chat_history1}>
         <div className={styles.history_div_2}>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="Open profile settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 {/* <Avatar src={user} /> */}
                 <Avatar />
@@ -285,7 +285,7 @@ const Navbar = () => {
             </Menu>
           </Box>
           <Box sx={{ marginLeft: 2 }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="Home">
               <IconButton href="/home" sx={{ p: 0 }}>
                 AЯYHƆ
               </IconButton>

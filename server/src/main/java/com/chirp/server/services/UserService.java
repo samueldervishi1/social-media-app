@@ -51,11 +51,6 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	public boolean validatePassword(String rawPassword , String storedPassword , String salt) {
-		String saltedPassword = rawPassword + salt;
-		return passwordEncoder.matches(saltedPassword , storedPassword);
-	}
-
 	private String generateSalt() {
 		byte[] saltBytes = new byte[16];
 		new SecureRandom().nextBytes(saltBytes);

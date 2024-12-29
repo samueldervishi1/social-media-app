@@ -5,6 +5,7 @@ import { Image } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import { FaGithub, FaLinkedin, FaTwitter, FaGlobe } from "react-icons/fa";
 import profileImage from "../assets/user.webp";
 import placeHolderImage from "../assets/placeholder.png";
 import styles from "../styles/profile-header.module.css";
@@ -58,7 +59,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
           }
         );
 
-        console.log("Backend response: ", response.data);      
+        console.log("Backend response: ", response.data);
 
         if (response.status === 200) {
           setPostCount(response.data);
@@ -177,6 +178,20 @@ const ProfileHeader = ({ followers, following, profile }) => {
     setActiveTab(tab);
   };
 
+  const linkIconMapping = {
+    github: <FaGithub />,
+    linkedin: <FaLinkedin />,
+    twitter: <FaTwitter />,
+    default: <FaGlobe />,
+  };
+
+  const getLinkIcon = (url) => {
+    if (url.includes("github.com")) return linkIconMapping.github;
+    if (url.includes("linkedin.com")) return linkIconMapping.linkedin;
+    if (url.includes("twitter.com")) return linkIconMapping.twitter;
+    return linkIconMapping.default;
+  };
+
   return (
     <div
       className={styles.constructor_container}
@@ -238,6 +253,30 @@ const ProfileHeader = ({ followers, following, profile }) => {
           <div>
             <strong>{following}</strong> Following
           </div>
+        </div>
+        <div style={{ marginTop: "20px" }}>
+          {profile.links.length > 0 && (
+            <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+              {profile.links.map((link, index) => (
+                <a
+                  key={index}
+                  href={link}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    color: "black",
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <span style={{ marginRight: "5px" }}>
+                    {getLinkIcon(link)}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <div
