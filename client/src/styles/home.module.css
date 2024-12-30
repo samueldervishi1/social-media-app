@@ -8,9 +8,24 @@
   box-sizing: border-box;
 }
 
+.menu {
+  position: fixed;
+  left: 0;
+  height: 100%;
+  width: 20%;
+  padding: 20px;
+  box-sizing: border-box;
+  border-right: 1px solid #ddd;
+  background-color: #fff;
+  box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
+}
+
 .main_content {
-  flex: 0.7;
-  padding: 5px;
+  margin-left: 20%;
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .sidebar {
@@ -23,6 +38,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  top: 10px;
+  position: relative;
 }
 
 @media (max-width: 768px) {
@@ -30,9 +47,14 @@
     flex-direction: column;
   }
 
+  .menu {
+    display: none;
+  }
+
   .main_content {
+    margin-left: 0;
     width: 100%;
-    margin-right: 0;
+    padding: 10px;
   }
 
   .sidebar {

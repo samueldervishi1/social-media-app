@@ -15,7 +15,6 @@ import { IoPersonCircleOutline, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineMessage } from "react-icons/ai";
 import { CiLogout, CiServer } from "react-icons/ci";
 import { GiArtificialHive } from "react-icons/gi";
-import { CgCommunity } from "react-icons/cg";
 import {
   MdDeleteForever,
   MdOutlinePrivacyTip,
@@ -24,6 +23,7 @@ import {
 } from "react-icons/md";
 import { TbPremiumRights, TbAuth2Fa } from "react-icons/tb";
 import { IoIosInformationCircleOutline } from "react-icons/io";
+import { RiUserCommunityLine } from "react-icons/ri";
 import loaderImage from "../assets/ZKZg.gif";
 import styles from "../styles/navbar.module.css";
 
@@ -52,10 +52,6 @@ const Navbar = () => {
     {
       name: `Your profile ${username}`,
       icon: <IoPersonCircleOutline className={styles.icon_p} />,
-    },
-    {
-      name: "Your communities",
-      icon: <CgCommunity className={styles.icon_p} />,
     },
     { name: "Logout", icon: <CiLogout className={styles.icon_p} /> },
   ];
@@ -207,8 +203,6 @@ const Navbar = () => {
   const handleSettingAction = (settingName) => {
     if (settingName === `Your profile ${username}`) {
       navigate("/u/profile");
-    } else if (settingName === "Your communities") {
-      navigate("/c/user/communities");
     } else if (settingName === "Logout") {
       handleLogout();
     }
@@ -387,7 +381,7 @@ const Navbar = () => {
                 <GiArtificialHive className={styles.icon_p} /> AЯYHƆ
               </a>
               <a href="/c/communities" className={styles.mobile_menu_item}>
-                <CgCommunity className={styles.icon_p} /> Communities
+                <RiUserCommunityLine className={styles.icon_p} /> Communities
               </a>
               <Box sx={{ marginLeft: 2 }}>
                 <Tooltip title="Open settings">
@@ -457,7 +451,7 @@ const Navbar = () => {
             </a>
             <a href="/c/communities" className={styles.menu_item}>
               <IconButton>
-                <CgCommunity className={styles.icon_p} />
+                <RiUserCommunityLine className={styles.icon_p} />
                 Communities
               </IconButton>
             </a>

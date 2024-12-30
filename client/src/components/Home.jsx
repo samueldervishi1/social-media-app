@@ -6,9 +6,16 @@ const PostList = React.lazy(() => import("./PostList"));
 const TrendingList = React.lazy(() => import("./TrendingList"));
 const Discount = React.lazy(() => import("./Discount"));
 
+const Menu = React.lazy(() => import("./Menu"));
+
 const Home = () => {
   return (
     <div className={styles.home_container}>
+      <div className={styles.menu}>
+        <React.Suspense fallback={<div>Loading Menu...</div>}>
+          <Menu />
+        </React.Suspense>
+      </div>
       <div className={styles.main_content}>
         <React.Suspense fallback={<div>Loading...</div>}>
           <Post />
@@ -18,7 +25,6 @@ const Home = () => {
       <div className={styles.sidebar}>
         <React.Suspense fallback={<div>Loading...</div>}>
           <Discount />
-
           <TrendingList />
         </React.Suspense>
       </div>
