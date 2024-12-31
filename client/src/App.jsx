@@ -27,6 +27,7 @@ const Enable2FA = lazy(() => import("./components/Enable2FA"));
 // const Verify2FA = lazy(() => import("./components/Verify2FA"));
 const HealthCheck = lazy(() => import("./components/HealthCheck"));
 const FAQ = lazy(() => import("./components/FAQ"));
+const SavedPosts = lazy(() => import("./components/SavedPosts"));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -84,6 +85,10 @@ const App = () => {
             <Route
               path="/security/2fa/enable"
               element={isAuthenticated ? <Enable2FA /> : <LoginScript />}
+            />
+            <Route
+              path="/saved"
+              element={isAuthenticated ? <SavedPosts /> : <LoginScript />}
             />
 
             {/* <Route

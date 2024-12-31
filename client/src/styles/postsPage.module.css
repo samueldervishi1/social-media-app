@@ -1,0 +1,29 @@
+.postsPageContainer {
+  display: flex;
+  height: 100vh;
+}
+
+.postsContentContainer {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px;
+  background-color: #fff;
+  overflow-y: auto;
+}
+
+.postsList {
+  padding-left: 20px;
+}
+
+.postsListItem {
+  margin: 5px 0;
+}
+
+.errorMessage {
+  color: red;
+}
+
+.noPostsMessage {
+  font-size: 16px;
+  color: #666;
+}

@@ -2,8 +2,10 @@ package com.chirp.server.services;
 
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.Post;
+import com.chirp.server.models.SavePost;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.PostRepository;
+import com.chirp.server.repositories.SavePostRepository;
 import com.chirp.server.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

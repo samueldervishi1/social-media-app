@@ -8,7 +8,7 @@
   box-sizing: border-box;
 }
 
-.menu {
+/* .menu {
   position: fixed;
   left: 0;
   height: 100%;
@@ -18,7 +18,7 @@
   border-right: 1px solid #ddd;
   background-color: #fff;
   box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .main_content {
   margin-left: 20%;

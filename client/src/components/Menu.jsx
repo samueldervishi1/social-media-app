@@ -15,7 +15,7 @@ const Menu = () => {
           <a href="/friends">Friends</a>
         </li>
         <li>
-          <CiSaveDown2 className={styles.icons} /> <a href="/u/saved">Saved</a>
+          <CiSaveDown2 className={styles.icons} /> <a href="/saved">Saved</a>
         </li>
         <li>
           <RiUserCommunityLine className={styles.icons} />{" "}

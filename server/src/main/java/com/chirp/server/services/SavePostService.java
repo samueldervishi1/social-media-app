@@ -28,7 +28,7 @@ public class SavePostService {
 	public SavePost savePosts(String userId , List<String> postIds) {
 		try {
 			if (!userRepository.existsById(userId)) {
-				logAndThrowNotFoundException("User {} does not exist" , userId);
+				logAndThrow("User {} does not exist" , userId , NotFoundException.class);
 			}
 
 			SavePost savePost = savePostRepository.findByUserId(userId)
@@ -37,9 +37,9 @@ public class SavePostService {
 
 			return savePostRepository.save(savePost);
 		} catch (Exception e) {
-			logger.error("Unexpected error while saving posts for user {}: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while saving posts");
+			logAndThrow("Unexpected error while saving posts for user {}: {}" , userId , e.getMessage() , InternalServerErrorException.class , e);
 		}
+		return null;
 	}
 
 	private SavePost addNewPostIds(SavePost savePost , List<String> postIds , String userId) {
@@ -47,7 +47,7 @@ public class SavePostService {
 				.filter(postId -> !savePost.getPostIds().contains(postId))
 				.toList();
 		if (newPostIds.isEmpty()) {
-			logAndThrowBadRequestException("User {} is trying to save posts that are already saved" , userId);
+			logAndThrow("User {} is trying to save posts that are already saved" , userId , BadRequestException.class);
 		}
 		savePost.getPostIds().addAll(newPostIds);
 		return savePost;
@@ -65,42 +65,56 @@ public class SavePostService {
 				logger.warn("Post {} not found in saved posts for user {}" , postId , userId);
 				throw new NotFoundException("Post " + postId + " not found in saved posts for user " + userId);
 			}
-
 		} catch (NotFoundException e) {
-			logger.error("Error unsaving post for user {}: {}" , userId , e.getMessage() , e);
-			throw e;
+			logAndThrow("Error unsaving post for user {}: {}" , userId , e.getMessage() , NotFoundException.class , e);
 		} catch (Exception e) {
-			logger.error("Unexpected error while unsaving post for user {}: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while unsaving the post");
+			logAndThrow("Unexpected error while unsaving post for user {}: {}" , userId , e.getMessage() , InternalServerErrorException.class , e);
 		}
 	}
 
 	public SavePost getSavedPostsForUser(String userId) {
+		logger.info("Fetching saved posts for user {}" , userId);
+
 		try {
 			Optional<SavePost> savedPostsOptional = savePostRepository.findByUserId(userId);
-			return savedPostsOptional.orElse(null);
+
+			if (savedPostsOptional.isPresent()) {
+				logger.info("Saved posts found for user {}: {}" , userId , savedPostsOptional.get().getPostIds());
+				return savedPostsOptional.get();
+			} else {
+				logger.warn("No saved posts found for user {}" , userId);
+				return null;
+			}
 		} catch (Exception e) {
-			logger.error("Error fetching saved posts for user {}: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while fetching saved posts");
+			logAndThrow("Error fetching saved posts for user {}: {}" , userId , e.getMessage() , InternalServerErrorException.class , e);
 		}
+		return null;
 	}
 
 	public int getNumberOfSavedPosts(String postId) {
 		try {
 			return savePostRepository.countByPostId(postId);
 		} catch (Exception e) {
-			logger.error("Error fetching saved count for post ID {}: {}" , postId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while fetching saved count for the post");
+			logAndThrow("Error fetching saved count for post ID {}: {}" , postId , e.getMessage() , InternalServerErrorException.class , e);
+		}
+		return 0;
+	}
+
+	private void logAndThrow(String message , String userId , Class<? extends RuntimeException> exceptionClass) {
+		logger.error(message , userId);
+		try {
+			throw exceptionClass.getConstructor(String.class).newInstance(String.format(message , userId));
+		} catch (Exception e) {
+			throw new RuntimeException("Error while throwing exception" , e);
 		}
 	}
 
-	private void logAndThrowNotFoundException(String message , String userId) {
-		logger.error(message , userId);
-		throw new NotFoundException(String.format(message , userId));
-	}
-
-	private void logAndThrowBadRequestException(String message , String userId) {
-		logger.error(message , userId);
-		throw new BadRequestException(String.format(message , userId));
+	private void logAndThrow(String message , String userId , String additionalMessage , Class<? extends RuntimeException> exceptionClass , Exception e) {
+		logger.error(message , userId , additionalMessage , e);
+		try {
+			throw exceptionClass.getConstructor(String.class).newInstance(String.format(message , userId , additionalMessage));
+		} catch (Exception ex) {
+			throw new RuntimeException("Error while throwing exception" , ex);
+		}
 	}
 }
