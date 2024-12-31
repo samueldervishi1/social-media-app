@@ -12,8 +12,6 @@
   background: rgba(255, 255, 255, 0.12);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(7.6px);
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
 }
 
 .history_div_2 {
