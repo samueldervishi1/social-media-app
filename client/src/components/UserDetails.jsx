@@ -257,7 +257,11 @@ const UserDetail = () => {
     <>
       {isLoading ? (
         <div className="loader-overlay">
-          <img src={loaderImage} alt="Loading..." className={styles.loader_image} />
+          <img
+            src={loaderImage}
+            alt="Loading..."
+            className={styles.loader_image}
+          />
         </div>
       ) : (
         <div
@@ -365,7 +369,8 @@ const UserDetail = () => {
             style={{
               fontWeight: activeTab === "posts" ? "bold" : "normal",
               padding: "10px",
-              borderBottom: activeTab === "posts" ? "2px solid #1c1c1d;" : "none",
+              borderBottom:
+                activeTab === "posts" ? "2px solid #1c1c1d;" : "none",
               cursor: "pointer",
               textAlign: "center",
               marginTop: "20px",

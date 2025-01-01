@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v2/users")
 public class UserController {
@@ -18,6 +20,12 @@ public class UserController {
 	public UserController(UserService userService , UpdatePassword updatePassword) {
 		this.userService = userService;
 		this.updatePassword = updatePassword;
+	}
+
+	@GetMapping
+	public ResponseEntity<List<User>> getAllUsers() {
+		List<User> users = userService.getAllUsers();
+		return ResponseEntity.ok(users);
 	}
 
 	@GetMapping("/info/{username}")

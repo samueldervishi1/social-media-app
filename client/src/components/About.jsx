@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import aboutData from "../assets/about.json";
-import styles from  "../styles/about.module.css";
+import styles from "../styles/about.module.css";
 
 const About = () => {
   const [about, setAbout] = useState([]);
@@ -30,7 +30,9 @@ const About = () => {
       {about.map((section) => (
         <div key={section.id} className={styles.about_section}>
           <h2 className={styles.about_title}>{section.title}</h2>
-          <div className={styles.about_content}>{formatContent(section.content)}</div>
+          <div className={styles.about_content}>
+            {formatContent(section.content)}
+          </div>
         </div>
       ))}
     </div>

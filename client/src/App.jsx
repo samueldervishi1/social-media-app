@@ -24,10 +24,10 @@ const CommunitiesList = lazy(() => import("./components/CommunitiesList"));
 const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
 const UserCommunities = lazy(() => import("./components/UserCommunities"));
 const Enable2FA = lazy(() => import("./components/Enable2FA"));
-// const Verify2FA = lazy(() => import("./components/Verify2FA"));
 const HealthCheck = lazy(() => import("./components/HealthCheck"));
 const FAQ = lazy(() => import("./components/FAQ"));
 const SavedPosts = lazy(() => import("./components/SavedPosts"));
+const Friends = lazy(() => import("./components/Friends"));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -90,11 +90,10 @@ const App = () => {
               path="/saved"
               element={isAuthenticated ? <SavedPosts /> : <LoginScript />}
             />
-
-            {/* <Route
-              path="/security/2fa/verify"
-              element={isAuthenticated ? <Verify2FA onVerify={isTwoFaVerified}/> : <Home />}
-            /> */}
+            <Route
+              path="/friends"
+              element={isAuthenticated ? <Friends /> : <LoginScript />}
+            />
 
             {/* Static Pages */}
             <Route path="/terms" element={<TermsAndServices />} />

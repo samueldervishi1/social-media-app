@@ -1,7 +1,6 @@
 package com.chirp.server.controllers;
 
 import com.chirp.server.exceptions.BadRequestException;
-import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.SavePost;
 import com.chirp.server.services.SavePostService;

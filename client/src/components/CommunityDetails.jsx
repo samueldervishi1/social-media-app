@@ -71,7 +71,7 @@ const CommunityDetails = () => {
   //fetch posts per community
   const fetchPosts = async (postIds) => {
     if (!postIds || postIds.length === 0) return;
-  
+
     try {
       const token = localStorage.getItem("token");
       const postDetailsPromises = postIds.map(async (postId) => {
@@ -81,7 +81,7 @@ const CommunityDetails = () => {
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const post = postResponse.data;
-  
+
           try {
             const likesResponse = await axios.get(
               `http://localhost:8080/api/v2/communities/count/${postId}`,
@@ -95,7 +95,7 @@ const CommunityDetails = () => {
             );
             post.likesCount = 0;
           }
-  
+
           try {
             const userResponse = await axios.get(
               `http://localhost:8080/api/v2/users/${post.ownerId}`,
@@ -109,22 +109,22 @@ const CommunityDetails = () => {
             );
             post.author = "Unknown";
           }
-  
+
           return post;
         } catch (err) {
           if (err.response && err.response.status === 404) {
             console.error("Post not found for postId:", postId);
-            return null; 
+            return null;
           } else {
             console.error("Error fetching post details:", err.message);
             return null;
           }
         }
       });
-  
+
       const postDetails = await Promise.all(postDetailsPromises);
-      const validPosts = postDetails.filter(post => post !== null);
-  
+      const validPosts = postDetails.filter((post) => post !== null);
+
       if (validPosts.length === 0) {
         setError("No posts found.");
       } else {
@@ -136,7 +136,7 @@ const CommunityDetails = () => {
       setPosts([]);
     }
   };
-  
+
   //fetch members count for communities
   useEffect(() => {
     const fetchMembersCount = async () => {
@@ -386,7 +386,7 @@ const CommunityDetails = () => {
           className={styles.community_profile_img}
         />
       </div>
-  
+
       <div className={styles.community_info}>
         <h2 className={styles.community_name}>
           c/{community.name} <span>-</span>
@@ -394,14 +394,14 @@ const CommunityDetails = () => {
             {membersCount !== null ? getMemberText(membersCount) : "Loading..."}
           </span>
         </h2>
-  
+
         <button
           className={styles.community_post_button}
           onClick={() => setShowPostModal(true)}
         >
           <IoCreateOutline />
         </button>
-  
+
         <button
           className={styles.community_action_button}
           onClick={() => handleJoinCommunity(community.communityId)}
@@ -409,14 +409,14 @@ const CommunityDetails = () => {
         >
           {isUserJoined ? "Joined" : "Join"}
         </button>
-  
+
         <button
           className={styles.community_menu_button}
           onClick={toggleDropdown}
         >
           &#8230;
         </button>
-  
+
         {dropdownVisible && (
           <div ref={dropdownRef} className={styles.community_dropdown_menu}>
             <a href="#">Add to favourites</a>
@@ -425,7 +425,7 @@ const CommunityDetails = () => {
           </div>
         )}
       </div>
-  
+
       <div className={styles.community_actions}>
         <div className={styles.community_buttons}>
           <button
@@ -461,14 +461,16 @@ const CommunityDetails = () => {
         </div>
       </div>
       <hr className={styles.divider} />
-  
+
       <div className={styles.content_container}>
         <div className={styles.left_side}>
-        {error ? (
-          <div className={styles.no_posts_message}>Error: {error}</div>
-        ) : currentView === "Feed" && posts.length === 0 ? (
-          <div className={styles.no_posts_message}>No posts found in this community.</div>
-        ) : (
+          {error ? (
+            <div className={styles.no_posts_message}>Error: {error}</div>
+          ) : currentView === "Feed" && posts.length === 0 ? (
+            <div className={styles.no_posts_message}>
+              No posts found in this community.
+            </div>
+          ) : (
             posts.map((post) => (
               <div
                 key={post.id}
@@ -528,14 +530,14 @@ const CommunityDetails = () => {
             ))
           )}
         </div>
-  
+
         <div className={styles.right_side}>
           <div className={styles.community_card}>
             <div className={styles.community_description}>
               <h3>{community.name}</h3>
               <p>{community.about}</p>
             </div>
-  
+
             <div className={styles.community_info_details}>
               <div className={styles.community_created}>
                 <strong>Created on:</strong> {formatDate(community.createTime)}
@@ -569,7 +571,7 @@ const CommunityDetails = () => {
           </div>
         </div>
       </div>
-  
+
       <Modal show={showPostModal} onHide={() => setShowPostModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Create Post</Modal.Title>
@@ -597,7 +599,6 @@ const CommunityDetails = () => {
       </Modal>
     </div>
   );
-  
 };
 
 export default CommunityDetails;

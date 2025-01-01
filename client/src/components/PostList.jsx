@@ -33,7 +33,7 @@ const PostList = () => {
       const filteredPosts = allPosts.filter(
         (post) => !post.deleted && !post.reported
       );
-      
+
       filteredPosts.sort((a, b) => {
         const dateA = new Date(a.createTime || `${a.postDate}T${a.postTime}`);
         const dateB = new Date(b.createTime || `${b.postDate}T${b.postTime}`);

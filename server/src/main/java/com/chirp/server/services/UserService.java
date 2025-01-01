@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.security.SecureRandom;
@@ -96,6 +97,11 @@ public class UserService {
 
 	public Optional<User> findById(String userId) {
 		return userRepository.findById(userId);
+	}
+
+	public List<User> getAllUsers() {
+		logger.info("Fetching all users from the database.");
+		return userRepository.findAll();
 	}
 
 	private boolean isValidEmail(String email) {

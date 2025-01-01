@@ -67,7 +67,6 @@ const NotFound = () => {
       </svg>
 
       <div className="message-notfound">Page not found</div>
-      <div className="message-notfound"><a href="/home" style={{color: "#16a085", textDecoration: "none"}}>Go Home</a></div>
     </div>
   );
 };
