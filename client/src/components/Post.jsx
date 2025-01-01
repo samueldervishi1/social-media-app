@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { CiImageOn, CiLocationArrow1 } from "react-icons/ci";
+import { CiLocationArrow1 } from "react-icons/ci";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import Picker from "emoji-picker-react";
 import { Snackbar, Alert } from "@mui/material";
@@ -10,18 +10,14 @@ import { getUsernameFromToken } from "../auth/authUtils";
 
 const PostForm = () => {
   const [postContent, setPostContent] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  // Submits a new post to the server
   const handlePostSubmit = async (event) => {
     event.preventDefault();
     if (isSubmitting) return;
@@ -29,7 +25,6 @@ const PostForm = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("Token not found in localStorage.");
       setSnackbarMessage("Token not found. Please log in again.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
@@ -38,12 +33,7 @@ const PostForm = () => {
     }
 
     const username = getUsernameFromToken(token);
-
-    const base64Image = selectedImage ? selectedImage.split(",")[1] : null;
-    const postData = {
-      content: postContent,
-      base64Image: base64Image,
-    };
+    const postData = { content: postContent };
 
     try {
       const response = await axios.post(
@@ -61,16 +51,12 @@ const PostForm = () => {
         setSnackbarMessage("Post created successfully!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-        localStorage.removeItem("cachedPosts");
-        window.location.reload();
+        setPostContent("");
+        setTimeout(() => {
+          window.location.reload(); // Refresh the page after a successful post
+        }, 1000);
       }
-      setPostContent("");
-      setSelectedImage(null);
     } catch (error) {
-      console.error(
-        "Error creating post:",
-        error.response?.data || error.message
-      );
       setSnackbarMessage("Error creating post. Please try again.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
@@ -79,37 +65,20 @@ const PostForm = () => {
     }
   };
 
-  // Handles changes to the post content input field
-  const handlePostContentChange = (event) => {
-    setPostContent(event.target.value);
-  };
+  const handlePostContentChange = (event) => setPostContent(event.target.value);
 
-  // Handles image selection for the post
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Adds a selected emoji to the post content
   const handleEmojiClick = (emojiData) => {
-    if (emojiData && emojiData.emoji) {
+    if (emojiData?.emoji) {
       setPostContent((prevContent) => prevContent + emojiData.emoji);
       setShowEmojiPicker(false);
-    } else {
-      console.error("No valid emoji selected:", emojiData);
     }
   };
 
-  // Retrieves the user's location and adds it to the post content
   const handleLocation = () => {
     if (!navigator.geolocation) {
-      console.error("Geolocation is not supported by your browser.");
+      setSnackbarMessage("Geolocation is not supported by your browser.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
       return;
     }
 
@@ -144,7 +113,9 @@ const PostForm = () => {
           const locationString = `📍 Location: ${city}, ${country}`;
           setPostContent((prevContent) => `${prevContent} ${locationString}`);
         } catch (error) {
-          console.error("Error fetching address:", error.message);
+          setSnackbarMessage("Error fetching location details.");
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
           const locationString = `📍 Location: (${latitude.toFixed(
             4
           )}, ${longitude.toFixed(4)})`;
@@ -152,7 +123,6 @@ const PostForm = () => {
         }
       },
       (error) => {
-        console.error("Error fetching location:", error.message);
         setSnackbarMessage("Unable to retrieve your location.");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
@@ -160,65 +130,30 @@ const PostForm = () => {
     );
   };
 
-  // Clears the currently selected image
-  const clearSelectedImage = () => {
-    setSelectedImage(null);
-  };
-
-  const placeholderText = `What's on your mind, ${getUsernameFromToken()} ?`;
+  const placeholderText = `What's on your mind, ${getUsernameFromToken()}?`;
 
   return (
-    <div className={styles.post_form}>
-      <form onSubmit={handlePostSubmit}>
-        {selectedImage && (
-          <div className={styles.selected_image_container}>
-            <img
-              src={selectedImage}
-              alt="Selected"
-              className={styles.preview_image}
-            />
-            <button
-              type="button"
-              className={styles.clear_image_button}
-              onClick={clearSelectedImage}
-              title="Clear Image"
-            >
-              Clear image
-            </button>
-          </div>
-        )}
+    <form className={styles.post_form} onSubmit={handlePostSubmit}>
+      <div className={styles.input_with_icons}>
         <textarea
           placeholder={placeholderText}
           value={postContent}
           onChange={handlePostContentChange}
-          rows={4}
+          rows={1}
           required
           className={styles.textarea}
         />
-
-        <div className={styles.post_form_actions}>
-          <div className={styles.icons_container}>
-            <label htmlFor="image-upload" className={styles.icon_label}>
-              <CiImageOn className={styles.icon} title="Add Image" />
-              <input
-                type="file"
-                id="image-upload"
-                style={{ display: "none" }}
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-            </label>
-            <MdOutlineEmojiEmotions
-              className={styles.icon}
-              title="Add Emoji"
-              onClick={() => setShowEmojiPicker((prev) => !prev)}
-            />
-            <CiLocationArrow1
-              className={styles.icon}
-              title="Add Location"
-              onClick={handleLocation}
-            />
-          </div>
+        <div className={styles.icons_container}>
+          <MdOutlineEmojiEmotions
+            className={styles.icon}
+            onClick={() => setShowEmojiPicker((prev) => !prev)}
+            title="Add Emoji"
+          />
+          <CiLocationArrow1
+            className={styles.icon}
+            onClick={handleLocation}
+            title="Add Location"
+          />
           <button
             type="submit"
             className={styles.post_the_post}
@@ -227,13 +162,12 @@ const PostForm = () => {
             {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>
-        {showEmojiPicker && (
-          <div className={styles.emoji_picker}>
-            <Picker onEmojiClick={handleEmojiClick} />
-          </div>
-        )}
-      </form>
-
+      </div>
+      {showEmojiPicker && (
+        <div className={styles.emoji_picker}>
+          <Picker onEmojiClick={handleEmojiClick} />
+        </div>
+      )}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
@@ -248,7 +182,7 @@ const PostForm = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </div>
+    </form>
   );
 };
 

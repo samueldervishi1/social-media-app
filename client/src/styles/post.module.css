@@ -1,76 +1,37 @@
 .post_form {
   margin: 10px auto;
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #ffffff;
-  border-radius: 20px;
-  box-shadow: none;
-  max-width: 650px;
+  width: 100%;
+  max-width: 500px;
   display: flex;
-  border: 1px solid grey;
+  flex-direction: column;
 }
 
-.preview_image {
-  width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-  border-radius: 20px;
-}
-
-.emoji_picker {
-  position: absolute;
-  bottom: 60px;
-  right: 20px;
-  z-index: 10001;
-}
-
-.user_image {
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.user_image img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
-.post_form form {
-  width: 100%;
-}
-
-.post_form textarea {
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 0.1px solid lightgray;
-  border-radius: 20px;
+.input_with_icons {
+  display: flex;
+  position: relative;
+  border: 1px solid lightgray;
+  border-radius: 15px;
   background-color: #f0f2f5;
-  color: black;
-  font-size: 16px;
-  outline: none;
-  width: 100%;
-}
-
-.post_form_actions {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  padding-right: 10px; /* Ensure padding for icons */
 }
 
-.post_the_post {
-  padding: 10px 20px;
-  background: linear-gradient(to right, #0072ff, #00c6ff);
-  color: white;
+.textarea {
+  padding: 10px;
   border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 16px;
+  border-radius: 15px;
+  background-color: transparent;
+  color: black;
+  font-size: 14px;
+  width: 100%;
+  resize: none;
+  outline: none;
 }
 
 .icons_container {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .icon {
@@ -79,10 +40,20 @@
   font-size: 20px;
 }
 
-.clear_image_button {
-  background: transparent;
+.post_the_post {
+  padding: 5px 10px;
+  background: linear-gradient(to right, #0072ff, #00c6ff);
+  color: white;
   border: none;
-  margin-right: 5px;
-  margin-bottom: 10px;
-  color: rgb(29, 155, 240);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.emoji_picker {
+  position: absolute;
+  bottom: 50px;
+  right: 10px;
+  z-index: 10001;
 }

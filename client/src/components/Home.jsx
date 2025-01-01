@@ -33,12 +33,12 @@ const Home = () => {
           <PostList key={refreshPostList} />
         </React.Suspense>
       </div>
-      <div className={styles.sidebar}>
+      {/* <div className={styles.sidebar}>
         <React.Suspense fallback={<div>Loading...</div>}>
           <Discount />
           <TrendingList />
         </React.Suspense>
-      </div>
+      </div> */}
     </div>
   );
 };
