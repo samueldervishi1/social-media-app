@@ -4,6 +4,7 @@ import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
+import com.chirp.server.models.ActivityModel.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,11 @@ public class SearchUserService {
 	private static final Logger logger = LoggerFactory.getLogger(SearchUserService.class);
 
 	private final UserRepository userRepository;
+	private final ActivityService activityService;
 
-	public SearchUserService(UserRepository userRepository) {
+	public SearchUserService(UserRepository userRepository , ActivityService activityService) {
 		this.userRepository = userRepository;
+		this.activityService = activityService;
 	}
 
 	public List<User> searchUser(String username) {
@@ -39,6 +42,12 @@ public class SearchUserService {
 				logger.info("No active users found for username: {}" , username);
 				throw new NotFoundException("No users found.");
 			}
+
+			String actionTypeString = username + " searched for users";
+			ActionType actionType = new ActionType(List.of(actionTypeString));
+
+			String userId = activeUsers.get(0).getId();
+			activityService.updateOrCreateActivity(userId , actionType , "Search completed successfully");
 
 			return activeUsers;
 		} catch (InternalServerErrorException e) {

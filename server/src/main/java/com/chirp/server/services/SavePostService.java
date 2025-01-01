@@ -6,6 +6,7 @@ import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.SavePost;
 import com.chirp.server.repositories.SavePostRepository;
 import com.chirp.server.repositories.UserRepository;
+import com.chirp.server.models.ActivityModel.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ public class SavePostService {
 
 	private final SavePostRepository savePostRepository;
 	private final UserRepository userRepository;
+	private final ActivityService activityService;
 
-	public SavePostService(SavePostRepository savePostRepository , UserRepository userRepository) {
+	public SavePostService(SavePostRepository savePostRepository , UserRepository userRepository , ActivityService activityService) {
 		this.savePostRepository = savePostRepository;
 		this.userRepository = userRepository;
+		this.activityService = activityService;
 	}
 
 	public SavePost savePosts(String userId , List<String> postIds) {
@@ -34,6 +37,10 @@ public class SavePostService {
 			SavePost savePost = savePostRepository.findByUserId(userId)
 					.map(existingPost -> addNewPostIds(existingPost , postIds , userId))
 					.orElse(new SavePost(userId , postIds));
+
+			String actionTypeString = userId + " saved a post";
+			ActionType actionType = new ActionType(List.of(actionTypeString));
+			activityService.updateOrCreateActivity(userId , actionType , "Post saved successfully");
 
 			return savePostRepository.save(savePost);
 		} catch (Exception e) {
@@ -60,6 +67,12 @@ public class SavePostService {
 
 			if (savePost.getPostIds().remove(postId)) {
 				savePostRepository.save(savePost);
+
+				// Log activity when a post is unsaved
+				String actionTypeString = userId + " unsaved a post";
+				ActionType actionType = new ActionType(List.of(actionTypeString));
+				activityService.updateOrCreateActivity(userId , actionType , "Post unsaved successfully");
+
 				logger.info("Post {} unsaved successfully for user {}" , postId , userId);
 			} else {
 				logger.warn("Post {} not found in saved posts for user {}" , postId , userId);

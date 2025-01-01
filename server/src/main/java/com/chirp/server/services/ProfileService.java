@@ -2,12 +2,12 @@ package com.chirp.server.services;
 
 import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.models.ActivityModel;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Profiles;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +21,13 @@ public class ProfileService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final ActivityService activityService;
 
-	public ProfileService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
+	@Autowired
+	public ProfileService(UserRepository userRepository , PasswordEncoder passwordEncoder , ActivityService activityService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.activityService = activityService;
 	}
 
 	public User updateProfile(String userId , User updatedUser) throws Exception {
@@ -43,6 +46,8 @@ public class ProfileService {
 			updateFields(user , updatedUser);
 
 			User updatedUserRecord = userRepository.save(user);
+
+			activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of("Updated profile")) , "Profile updated successfully");
 
 			logger.info("User updated successfully: {}" , user.getId());
 			return updatedUserRecord;
@@ -66,6 +71,7 @@ public class ProfileService {
 
 			user.setPassword(passwordEncoder.encode(newPassword));
 			userRepository.save(user);
+
 			logger.info("Password updated successfully for user ID: {}" , userId);
 
 		} catch (Exception e) {
@@ -83,6 +89,7 @@ public class ProfileService {
 			user.setDeleted(true);
 
 			userRepository.save(user);
+
 			logger.info("User soft deleted for user ID: {}" , userId);
 		} catch (Exception e) {
 			handleException("soft deleting user" , userId , e);

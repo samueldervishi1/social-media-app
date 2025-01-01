@@ -87,11 +87,11 @@ const App = () => {
               element={isAuthenticated ? <Enable2FA /> : <LoginScript />}
             />
             <Route
-              path="/saved"
+              path="/user/saved"
               element={isAuthenticated ? <SavedPosts /> : <LoginScript />}
             />
             <Route
-              path="/friends"
+              path="/user/friends"
               element={isAuthenticated ? <Friends /> : <LoginScript />}
             />
 

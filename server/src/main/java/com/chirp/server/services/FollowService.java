@@ -3,12 +3,15 @@ package com.chirp.server.services;
 import com.chirp.server.exceptions.BadRequestException;
 import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.models.ActivityModel;
 import com.chirp.server.models.FollowerDTO;
 import com.chirp.server.repositories.FollowRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -17,9 +20,11 @@ public class FollowService {
 	private static final Logger logger = LoggerFactory.getLogger(FollowService.class);
 
 	private final FollowRepository followRepository;
+	private final ActivityService activityService;
 
-	public FollowService(FollowRepository followRepository) {
+	public FollowService(FollowRepository followRepository , ActivityService activityService) {
 		this.followRepository = followRepository;
+		this.activityService = activityService;
 	}
 
 	@Transactional
@@ -33,6 +38,7 @@ public class FollowService {
 				followerDTO.getFollowingId().add(followingId);
 				followRepository.save(followerDTO);
 				logger.info("{} started following {}" , followerId , followingId);
+				activityService.updateOrCreateActivity(followerId , new ActivityModel.ActionType(List.of("Followed user")) , "Started following user: " + followingId);
 			} else {
 				logger.warn("{} is already following {}" , followerId , followingId);
 			}
@@ -60,6 +66,7 @@ public class FollowService {
 			if (followerDTO.getFollowingId().remove(followingId)) {
 				followRepository.save(followerDTO);
 				logger.info("{} unfollowed {}" , followerId , followingId);
+				activityService.updateOrCreateActivity(followerId , new ActivityModel.ActionType(List.of("Unfollowed user")) , "Unfollowed user: " + followingId);
 			} else {
 				throw new BadRequestException("User " + followerId + " is not following " + followingId);
 			}

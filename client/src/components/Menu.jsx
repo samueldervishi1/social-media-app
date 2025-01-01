@@ -12,10 +12,11 @@ const Menu = () => {
       <ul className={styles.menu_list}>
         <li>
           <LiaUserFriendsSolid className={styles.icons} />{" "}
-          <a href="/friends">Friends</a>
+          <a href="/user/friends">Friends</a>
         </li>
         <li>
-          <CiSaveDown2 className={styles.icons} /> <a href="/saved">Saved</a>
+          <CiSaveDown2 className={styles.icons} />{" "}
+          <a href="/user/saved">Saved</a>
         </li>
         <li>
           <RiUserCommunityLine className={styles.icons} />{" "}
@@ -27,7 +28,7 @@ const Menu = () => {
         </li>
         <li>
           <TbLogs className={styles.icons} />
-          <a href="/activity"> Activity</a>
+          <a href="/user/activity"> Activity</a>
         </li>
       </ul>
       <div className={styles.footer_links}>

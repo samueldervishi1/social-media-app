@@ -1,6 +1,7 @@
 package com.chirp.server.services;
 
 import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.models.ActivityModel;
 import com.chirp.server.models.Post;
 import com.chirp.server.models.SavePost;
 import com.chirp.server.models.User;
@@ -23,10 +24,12 @@ public class PostService {
 
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
+	private final ActivityService activityService;
 
-	public PostService(UserRepository userRepository , PostRepository postRepository) {
+	public PostService(UserRepository userRepository , PostRepository postRepository , ActivityService activityService) {
 		this.userRepository = userRepository;
 		this.postRepository = postRepository;
+		this.activityService = activityService;
 	}
 
 	@Transactional
@@ -37,6 +40,8 @@ public class PostService {
 
 		Post savedPost = postRepository.save(post);
 		logger.info("Post successfully saved with ID: {}" , savedPost.getId());
+
+		activityService.updateOrCreateActivity(user.getId() , new ActivityModel.ActionType(List.of("Created post")) , "Post created successfully");
 	}
 
 	private void preparePost(Post post , User user) {

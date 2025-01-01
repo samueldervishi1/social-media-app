@@ -24,11 +24,14 @@ public class CommunityService {
 	private final CommunityRepository communityRepository;
 	private final CommunityPostRepository communityPostRepository;
 	private final CommunityLikePostRepository communityLikePostRepository;
+	private final ActivityService activityService;
 
-	public CommunityService(CommunityRepository communityRepository , CommunityPostRepository communityPostRepository , CommunityLikePostRepository communityLikePostRepository) {
+	public CommunityService(CommunityRepository communityRepository , CommunityPostRepository communityPostRepository ,
+	                        CommunityLikePostRepository communityLikePostRepository , ActivityService activityService) {
 		this.communityRepository = communityRepository;
 		this.communityPostRepository = communityPostRepository;
 		this.communityLikePostRepository = communityLikePostRepository;
+		this.activityService = activityService;
 	}
 
 	public Community createCommunity(String name , String ownerId , String description) {
@@ -44,6 +47,7 @@ public class CommunityService {
 
 		Community savedCommunity = communityRepository.save(community);
 		logger.info("Community created successfully with ID: {}" , savedCommunity.getCommunityId());
+		activityService.updateOrCreateActivity(ownerId , new ActivityModel.ActionType(List.of("Created community")) , "Created community: " + name);
 		return savedCommunity;
 	}
 
@@ -64,6 +68,7 @@ public class CommunityService {
 		community.getPostIds().add(savedCommunityPost.getId());
 		communityRepository.save(community);
 		logger.info("Post successfully created with ID: {} for community: {}" , savedCommunityPost.getId() , name);
+		activityService.updateOrCreateActivity(ownerId , new ActivityModel.ActionType(List.of("Created post")) , "Created a post in community: " + name);
 
 		return savedCommunityPost;
 	}
@@ -84,6 +89,7 @@ public class CommunityService {
 		}
 
 		updateCommunityPostLikes(postId , userId);
+		activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of("Liked post")) , "Liked post in community: " + communityName);
 
 		return communityLikePost;
 	}
@@ -106,6 +112,7 @@ public class CommunityService {
 			community.getUserIds().add(userId);
 			communityRepository.save(community);
 			logger.info("User {} successfully joined community {}" , userId , communityId);
+			activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of("Joined community")) , "Joined community: " + communityId);
 		} else {
 			logger.info("User {} is already a member of community {}" , userId , communityId);
 		}

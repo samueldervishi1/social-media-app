@@ -3,6 +3,7 @@ package com.chirp.server.services;
 import com.chirp.server.exceptions.BadRequestException;
 import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.ResourceNotFoundException;
+import com.chirp.server.models.ActivityModel;
 import com.chirp.server.models.Like;
 import com.chirp.server.models.Post;
 import com.chirp.server.repositories.LikesRepository;
@@ -22,20 +23,26 @@ public class LikesService {
 
 	private final LikesRepository likesRepository;
 	private final PostRepository postRepository;
+	private final ActivityService activityService;
 
-	public LikesService(LikesRepository likesRepository , PostRepository postRepository) {
+	public LikesService(LikesRepository likesRepository , PostRepository postRepository , ActivityService activityService) {
 		this.likesRepository = likesRepository;
 		this.postRepository = postRepository;
+		this.activityService = activityService;
 	}
 
 	@Transactional
 	public Like likePost(String userId , String postId) {
-		return handleLike(userId , postId , true);
+		Like like = handleLike(userId , postId , true);
+		activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of("Liked post")) , "Post liked successfully");
+		return like;
 	}
 
 	@Transactional
 	public Like likeComment(String userId , String commentId) {
-		return handleLike(userId , commentId , false);
+		Like like = handleLike(userId , commentId , false);
+		activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of("Liked comment")) , "Comment liked successfully");
+		return like;
 	}
 
 	public int getLikesCountForPost(String postId) {
