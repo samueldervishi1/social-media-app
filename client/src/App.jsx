@@ -28,6 +28,7 @@ const HealthCheck = lazy(() => import("./components/HealthCheck"));
 const FAQ = lazy(() => import("./components/FAQ"));
 const SavedPosts = lazy(() => import("./components/SavedPosts"));
 const Friends = lazy(() => import("./components/Friends"));
+const Events = lazy(() => import("./components/Events"));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -93,6 +94,11 @@ const App = () => {
             <Route
               path="/user/friends"
               element={isAuthenticated ? <Friends /> : <LoginScript />}
+            />
+
+<Route
+              path="/c/events"
+              element={isAuthenticated ? <Events /> : <LoginScript />}
             />
 
             {/* Static Pages */}
