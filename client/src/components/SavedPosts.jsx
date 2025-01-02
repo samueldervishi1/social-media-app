@@ -46,11 +46,8 @@ const PostsPage = () => {
 
   return (
     <div className={styles.postsPageContainer}>
-      <div className={styles.menuContainer}>
-        <Menu />
-      </div>
       <div className={styles.postsContentContainer}>
-        <h1>Saved Posts</h1>
+        <h1 className={styles.saved_posts_title}>Saved Posts</h1>
 
         {error && <p className={styles.errorMessage}>{error}</p>}
 

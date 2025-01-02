@@ -6,9 +6,15 @@
 .postsContentContainer {
   flex: 1;
   padding: 20px;
-  margin-left: 250px;
   background-color: #fff;
   overflow-y: auto;
+}
+
+.saved_posts_title{
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .postsList {
@@ -21,6 +27,7 @@
 
 .errorMessage {
   color: red;
+  text-align: center;
 }
 
 .noPostsMessage {
