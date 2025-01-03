@@ -212,13 +212,14 @@ const ProfileHeader = ({ followers, following, profile }) => {
         color: "black",
         marginBottom: 40,
         marginTop: 20,
+        borderRadius: 20,
       }}
     >
       <div style={{ position: "relative", width: "100%", height: "300px" }}>
         <img
           src={placeHolderImage}
           alt="Cover"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          style={{ width: "100%", height: "100%", objectFit: "cover",  borderRadius: 20 }}
         />
         <div style={{ position: "absolute", bottom: "-50px", left: "20px" }}>
           <Image

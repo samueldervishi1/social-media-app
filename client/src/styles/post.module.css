@@ -1,7 +1,7 @@
 .post_form {
   margin: 10px auto;
   width: 100%;
-  max-width: 500px;
+  max-width: 750px;
   display: flex;
   flex-direction: column;
 }
@@ -13,7 +13,7 @@
   border-radius: 15px;
   background-color: #f0f2f5;
   align-items: center;
-  padding-right: 10px; /* Ensure padding for icons */
+  padding-right: 10px; 
 }
 
 .textarea {

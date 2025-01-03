@@ -14,17 +14,15 @@ const Discount = () => {
       expirationDate = new Date(storedExpirationDate);
     } else {
       expirationDate = new Date();
-      expirationDate.setDate(expirationDate.getDate() + 6);
+      expirationDate.setDate(expirationDate.getDate() + 7);
+      expirationDate.setHours(23, 59, 59, 999);
       localStorage.setItem("expirationDate", expirationDate.toISOString());
     }
 
     const updateDaysRemaining = () => {
       const currentDate = new Date();
       const difference = expirationDate - currentDate;
-      const daysLeft = Math.max(
-        Math.floor(difference / (1000 * 60 * 60 * 24)),
-        0
-      );
+      const daysLeft = Math.ceil(difference / (1000 * 60 * 60 * 24));
 
       setDaysRemaining(daysLeft);
     };

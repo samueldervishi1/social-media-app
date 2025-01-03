@@ -125,37 +125,20 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         const response = await axios.get(
           `http://localhost:8080/api/v2/likes/${userId}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (response.status === 200) {
           const likedPosts = response.data[0]?.postId || [];
-          if (likedPosts.includes(id)) {
-            setLiked(true);
-          }
+          setLiked(likedPosts.includes(id));
         }
       } catch (error) {
-        if (error.response) {
-          console.error(
-            "Error fetching liked posts:",
-            error.response.data.message
-          );
-        } else if (error.request) {
-          if (error.code === "ECONNABORTED") {
-            console.error("Request timed out. Please try again later.");
-          } else {
-            console.error("No response received. Please check your network.");
-          }
-        } else {
-          console.error("Error fetching liked posts:", error.message);
-        }
+        console.error("Error fetching liked posts:", error.message);
       }
     };
 
     fetchLikedPosts();
-  }, [id]);
+  }, [id, userId]);
 
   //fetch liked count per post
   useEffect(() => {
@@ -175,20 +158,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           console.error("Failed to fetch like count");
         }
       } catch (error) {
-        if (error.response) {
-          console.error(
-            "Error fetching like count:",
-            error.response.data.message
-          );
-        } else if (error.request) {
-          if (error.code === "ECONNABORTED") {
-            console.error("Request timed out. Please try again later.");
-          } else {
-            console.error("No response received. Please check your network.");
-          }
-        } else {
-          console.error("Error fetching like count:", error.message);
-        }
+        console.error("Error fetching like count:", error.message);
       }
     };
 
@@ -243,31 +213,20 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         const response = await axios.get(
           `http://localhost:8080/api/v2/save/posts/${userId}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
         if (response.status === 200) {
           const savedPostIds = response.data.postIds || [];
-          if (savedPostIds.includes(id)) {
-            setSaved(true);
-          }
-        } else {
-          console.log("No saved posts found.");
+          setSaved(savedPostIds.includes(id));
         }
       } catch (error) {
-        if (error.response && error.response.status === 404) {
-          console.log("No saved posts for this user.");
-        } else {
-          console.error("Error fetching saved posts:", error.message);
-        }
+        console.error("Error fetching saved posts:", error.message);
       }
     };
 
     fetchSavedPosts();
-  }, [id]);
+  }, [id, userId]);
 
   //create comment
   const navigateToAddComment = async () => {
@@ -307,33 +266,25 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   };
 
   //like a post
-  const toggleLike = async (e) => {
-    e.stopPropagation();
+  const toggleLike = async () => {
     try {
-      if (!liked) {
-        await axios.post(
-          `http://localhost:8080/api/v2/likes/post/${userId}/${id}`,
-          {},
+      if (liked) {
+        await axios.delete(
+          `http://localhost:8080/api/v2/likes/${userId}/post/${id}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setLiked(true);
+      } else {
+        await axios.post(
+          `http://localhost:8080/api/v2/likes/${userId}/post/${id}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
       }
-
-      const likeResponse = await axios.get(
-        `http://localhost:8080/api/v2/likes/post/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (likeResponse.status === 200) {
-        setLikeCount(likeResponse.data);
-      }
+      setLiked(!liked);
     } catch (error) {
       console.error("Error toggling like:", error.message);
     }
@@ -634,6 +585,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
             )}
             <span className="like-count">{likeCount}</span>
           </div>
+
           <div>
             {saved ? (
               <IoBookmark className="icon saved" onClick={toggleSave} />
