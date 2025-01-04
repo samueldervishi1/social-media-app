@@ -1,0 +1,53 @@
+.error-boundary-container {
+  text-align: center;
+  padding: 50px;
+  background-color: #f8d7da;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #721c24;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8d7da;
+}
+
+.error-heading {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.error-message {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.reload-button {
+  background-color: #28a745;
+  color: white;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reload-button:hover {
+  background-color: #218838;
+}
+
+.contact-admin {
+  margin-top: 20px;
+  font-size: 1rem;
+}
+
+.contact-admin a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.contact-admin a:hover {
+  text-decoration: underline;
+}

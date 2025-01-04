@@ -6,29 +6,44 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useAuth } from "./auth/AuthContext";
-import Navbar from "./components/Navbar";
 
-const LoginScript = lazy(() => import("./components/Login"));
+// Authentication components
+const Login = lazy(() => import("./components/Login"));
 const Register = lazy(() => import("./components/Register"));
+
+// User profile and related pages (Profile, UserDetails, UserCommunities, SavedPosts)
 const Home = lazy(() => import("./components/Home"));
 const Profile = lazy(() => import("./components/Profile"));
 const UserDetails = lazy(() => import("./components/UserDetails"));
-const NotFound = lazy(() => import("./components/NotFound"));
-const PremiumPage = lazy(() => import("./components/PremiumPage"));
+const UserCommunities = lazy(() => import("./components/UserCommunities"));
+const SavedPosts = lazy(() => import("./components/SavedPosts"));
+
+// Layout components (Navbar, Header, Footer, etc.)
+const Navbar = lazy(() => import("./components/Navbar"));
+
+// Messaging and communication components (Inbox, ChatAI, Friends)
 const Inbox = lazy(() => import("./components/Inbox"));
+const ChatAI = lazy(() => import("./components/ChatAI"));
+const Friends = lazy(() => import("./components/Friends"));
+
+// Community-related components (CommunitiesList, CommunityDetails)
+const CommunitiesList = lazy(() => import("./components/CommunitiesList"));
+const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
+
+// Security and settings components (Enable2FA)
+const Enable2FA = lazy(() => import("./components/Enable2FA"));
+
+// Event-related components (Events)
+const Events = lazy(() => import("./components/Events"));
+
+// General information components for static pages
 const TermsAndServices = lazy(() => import("./components/Terms"));
 const About = lazy(() => import("./components/About"));
 const Contact = lazy(() => import("./components/Contact"));
-const ChatAI = lazy(() => import("./components/ChatAI"));
-const CommunitiesList = lazy(() => import("./components/CommunitiesList"));
-const CommunityDetails = lazy(() => import("./components/CommunityDetails"));
-const UserCommunities = lazy(() => import("./components/UserCommunities"));
-const Enable2FA = lazy(() => import("./components/Enable2FA"));
+const NotFound = lazy(() => import("./components/NotFound"));
+const PremiumPage = lazy(() => import("./components/PremiumPage"));
 const HealthCheck = lazy(() => import("./components/HealthCheck"));
 const FAQ = lazy(() => import("./components/FAQ"));
-const SavedPosts = lazy(() => import("./components/SavedPosts"));
-const Friends = lazy(() => import("./components/Friends"));
-const Events = lazy(() => import("./components/Events"));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -43,62 +58,62 @@ const App = () => {
         >
           <Routes>
             {/* Public Routes */}
-            <Route path="/login" element={<LoginScript />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
             {/* Protected Routes */}
             <Route
               path="/home"
-              element={isAuthenticated ? <Home /> : <LoginScript />}
+              element={isAuthenticated ? <Home /> : <Login />}
             />
             <Route
               path="/u/profile"
-              element={isAuthenticated ? <Profile /> : <LoginScript />}
+              element={isAuthenticated ? <Profile /> : <Login />}
             />
             <Route
               path="/u/users/:userId"
-              element={isAuthenticated ? <UserDetails /> : <LoginScript />}
+              element={isAuthenticated ? <UserDetails /> : <Login />}
             />
             <Route
               path="/messages"
-              element={isAuthenticated ? <Inbox /> : <LoginScript />}
+              element={isAuthenticated ? <Inbox /> : <Login />}
             />
             <Route
               path="/chat"
-              element={isAuthenticated ? <ChatAI /> : <LoginScript />}
+              element={isAuthenticated ? <ChatAI /> : <Login />}
             />
             <Route
               path="/u/:userId"
-              element={isAuthenticated ? <UserDetails /> : <LoginScript />}
+              element={isAuthenticated ? <UserDetails /> : <Login />}
             />
             <Route
               path="/c/communities"
-              element={isAuthenticated ? <CommunitiesList /> : <LoginScript />}
+              element={isAuthenticated ? <CommunitiesList /> : <Login />}
             />
             <Route
               path="/c/community/:name"
-              element={isAuthenticated ? <CommunityDetails /> : <LoginScript />}
+              element={isAuthenticated ? <CommunityDetails /> : <Login />}
             />
             <Route
               path="/c/user/communities"
-              element={isAuthenticated ? <UserCommunities /> : <LoginScript />}
+              element={isAuthenticated ? <UserCommunities /> : <Login />}
             />
             <Route
               path="/security/2fa/enable"
-              element={isAuthenticated ? <Enable2FA /> : <LoginScript />}
+              element={isAuthenticated ? <Enable2FA /> : <Login />}
             />
             <Route
               path="/user/saved"
-              element={isAuthenticated ? <SavedPosts /> : <LoginScript />}
+              element={isAuthenticated ? <SavedPosts /> : <Login />}
             />
             <Route
               path="/user/friends"
-              element={isAuthenticated ? <Friends /> : <LoginScript />}
+              element={isAuthenticated ? <Friends /> : <Login />}
             />
 
-<Route
+            <Route
               path="/c/events"
-              element={isAuthenticated ? <Events /> : <LoginScript />}
+              element={isAuthenticated ? <Events /> : <Login />}
             />
 
             {/* Static Pages */}

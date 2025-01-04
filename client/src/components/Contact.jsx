@@ -26,7 +26,7 @@ const Contact = () => {
 
         <div className={styles.email}>
           <p style={{ color: "black" }}>
-            Email us at: <a href="mailto:shefi1@proton.me">shefi1@proton.me</a>
+            Email us at: <a href="mailto:support@chyra.com">support@chyra.com</a>
           </p>
         </div>
       </div>
