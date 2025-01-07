@@ -144,6 +144,10 @@
   z-index: 10;
 }
 
+.menu_item {
+  font-size: 15px;
+}
+
 .mobile_menu_item {
   padding: 10px 15px;
   color: black;

@@ -35,9 +35,9 @@ const Navbar = () => {
   const searchBarRef = useRef(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [showNoResults, setShowNoResults] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
@@ -111,6 +111,23 @@ const Navbar = () => {
     }
   };
 
+  // Trigger user search with debounce to optimize API calls
+  useEffect(() => {
+    if (query.trim() === "") {
+      setShowDropdown(false);
+      return;
+    }
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    const timeout = setTimeout(() => {
+      searchUsers(query);
+      setShowDropdown(true);
+    }, 500);
+
+    setTypingTimeout(timeout);
+  }, [query]);
+
   // Delete the current user's account and navigate to login
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
@@ -135,23 +152,6 @@ const Navbar = () => {
       alert("Failed to delete account. Please try again later.");
     }
   };
-
-  // Trigger user search with debounce to optimize API calls
-  useEffect(() => {
-    if (query.trim() === "") {
-      setShowDropdown(false);
-      return;
-    }
-
-    if (typingTimeout) clearTimeout(typingTimeout);
-
-    const timeout = setTimeout(() => {
-      searchUsers(query);
-      setShowDropdown(true);
-    }, 500);
-
-    setTypingTimeout(timeout);
-  }, [query]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -280,52 +280,11 @@ const Navbar = () => {
           </Box>
           <Box sx={{ marginLeft: 2 }}>
             <Tooltip title="Home">
-              <IconButton href="/home" sx={{ p: 0 }}>
+              <IconButton href="/home" sx={{ p: 0 }} style={{ fontSize: "25px" }}>
                 AЯYHƆ
               </IconButton>
             </Tooltip>
           </Box>
-          <div className={styles.search_bar} ref={searchBarRef}>
-            <input
-              type="text"
-              placeholder="Search..."
-              style={{
-                all: "unset",
-                display: "block",
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #ccc",
-                borderRadius: "20px",
-                fontSize: "16px",
-                backgroundColor: "#fff",
-              }}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setShowDropdown(true)}
-            />
-
-            {showDropdown && (
-              <div className={styles.search_r}>
-                {showNoResults ? (
-                  <p className={styles.search_hld}>Nothing found</p>
-                ) : results.length === 0 ? (
-                  <p className={styles.search_hld}>Search for friends</p>
-                ) : (
-                  <ul className={styles.search_rsl}>
-                    {results.map((user) => (
-                      <li
-                        key={user.id}
-                        className={styles.search_t}
-                        onClick={() => handleUserClick(user.id)}
-                      >
-                        {user.username}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </div>
           <div
             className={styles.hamburger}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -371,21 +330,33 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
-              <a href="/home" className={styles.mobile_menu_item}>
-                <GoHome className={styles.icon_p} /> Home
+              <a href="/home" className={styles.menu_item}>
+                <IconButton style={{ fontSize: "15px" }}>
+                  <GoHome className={styles.icon_p} />
+                  Home
+                </IconButton>
               </a>
-              <a href="/messages" className={styles.mobile_menu_item}>
-                <AiOutlineMessage className={styles.icon_p} /> Messages
+              <a href="/messages" className={styles.menu_item}>
+                <IconButton style={{ fontSize: "15px" }}>
+                  <AiOutlineMessage className={styles.icon_p} />
+                  Messages
+                </IconButton>
               </a>
-              <a href="/chat" className={styles.mobile_menu_item}>
-                <GiArtificialHive className={styles.icon_p} /> AЯYHƆ
+              <a href="/chat" className={styles.menu_item}>
+                <IconButton style={{ fontSize: "15px" }}>
+                  <GiArtificialHive className={styles.icon_p} />
+                  Sypher
+                </IconButton>
               </a>
-              <a href="/c/communities" className={styles.mobile_menu_item}>
-                <RiUserCommunityLine className={styles.icon_p} /> Communities
+              <a href="/c/communities" className={styles.menu_item}>
+                <IconButton style={{ fontSize: "15px" }}>
+                  <RiUserCommunityLine className={styles.icon_p} />
+                  Communities
+                </IconButton>
               </a>
-              <Box sx={{ marginLeft: 2 }}>
+              <Box sx={{ marginLeft: 1 }}>
                 <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }}>
+                  <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }} style={{ fontSize: "15px" }}>
                     <IoSettingsOutline className={styles.icon_p} /> Settings
                   </IconButton>
                 </Tooltip>
@@ -432,32 +403,32 @@ const Navbar = () => {
           {/*desktop layout */}
           <div className={styles.history_links}>
             <a href="/home" className={styles.menu_item}>
-              <IconButton>
+              <IconButton style={{ fontSize: "15px" }}>
                 <GoHome className={styles.icon_p} />
                 Home
               </IconButton>
             </a>
             <a href="/messages" className={styles.menu_item}>
-              <IconButton>
+              <IconButton style={{ fontSize: "15px" }}>
                 <AiOutlineMessage className={styles.icon_p} />
                 Messages
               </IconButton>
             </a>
             <a href="/chat" className={styles.menu_item}>
-              <IconButton>
+              <IconButton style={{ fontSize: "15px" }}>
                 <GiArtificialHive className={styles.icon_p} />
                 Sypher
               </IconButton>
             </a>
             <a href="/c/communities" className={styles.menu_item}>
-              <IconButton>
+              <IconButton style={{ fontSize: "15px" }}>
                 <RiUserCommunityLine className={styles.icon_p} />
                 Communities
               </IconButton>
             </a>
             <Box sx={{ marginLeft: 0, marginTop: 1 }}>
               <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }}>
+                <IconButton onClick={handleOpenSettingsMenu} sx={{ p: 0 }} style={{ fontSize: "15px" }}>
                   <IoSettingsOutline className={styles.icon_p} /> Settings
                 </IconButton>
               </Tooltip>

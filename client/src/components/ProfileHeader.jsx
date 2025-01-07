@@ -219,7 +219,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
         <img
           src={placeHolderImage}
           alt="Cover"
-          style={{ width: "100%", height: "100%", objectFit: "cover",  borderRadius: 20 }}
+          style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 20 }}
         />
         <div style={{ position: "absolute", bottom: "-50px", left: "20px" }}>
           <Image
@@ -319,7 +319,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
                 />
               ))
             ) : (
-              <p>No posts available.</p>
+              <p style={{ textAlign: "center" }}>No posts available.</p>
             )}
           </div>
         )}
