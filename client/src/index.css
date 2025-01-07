@@ -7,7 +7,7 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
   overflow-x: hidden;
-  background-color: #f2f4f7;
+  background-color: black;
   overflow: auto;
 }
 
