@@ -282,7 +282,7 @@ const ChatAI = () => {
           margin: "6px 0",
         }}
       >
-        <div style={{ position: "relative", background: "#f2f4f7" }}>
+        <div style={{ position: "relative" }}>
           <button
             style={{
               border: "none",

@@ -3,15 +3,20 @@ import styles from "../styles/home.module.css";
 
 const Post = React.lazy(() => import("./Post"));
 const PostList = React.lazy(() => import("./PostList"));
-const TrendingList = React.lazy(() => import("./TrendingList"));
-const Discount = React.lazy(() => import("./Discount"));
 const Menu = React.lazy(() => import("./Menu"));
 
+import { useAuth } from "../auth/AuthContext";
+
 const Home = () => {
+  const { validateToken, logout } = useAuth();
   const [refreshPostList, setRefreshPostList] = useState(false);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
+      const tokenIsValid = validateToken();
+      if (!tokenIsValid) {
+        logout();
+      }
       setRefreshPostList((prev) => !prev);
     }, 300000);
 
@@ -33,12 +38,6 @@ const Home = () => {
           <PostList key={refreshPostList} />
         </React.Suspense>
       </div>
-      {/* <div className={styles.sidebar}>
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <Discount />
-          <TrendingList />
-        </React.Suspense>
-      </div> */}
     </div>
   );
 };

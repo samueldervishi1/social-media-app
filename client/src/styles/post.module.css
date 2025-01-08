@@ -13,7 +13,7 @@
   border-radius: 15px;
   background-color: #f0f2f5;
   align-items: center;
-  padding-right: 10px; 
+  padding-right: 10px;
 }
 
 .textarea {
@@ -41,14 +41,16 @@
 }
 
 .post_the_post {
-  padding: 5px 10px;
-  background: linear-gradient(to right, #0072ff, #00c6ff);
-  color: white;
+  background: transparent;
+  color: black;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
-  font-size: 14px;
-  margin-left: 5px;
+}
+
+.post_the_post:hover {
+  background: lightgrey;
+  padding: 4px 6px;
+  border-radius: 10px;
 }
 
 .emoji_picker {

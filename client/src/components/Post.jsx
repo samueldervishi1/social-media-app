@@ -1,20 +1,21 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { CiLocationArrow1 } from "react-icons/ci";
-import { MdOutlineEmojiEmotions } from "react-icons/md";
-import Picker from "emoji-picker-react";
-import { Snackbar, Alert } from "@mui/material";
-import styles from "../styles/post.module.css";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { CiLocationArrow1 } from 'react-icons/ci';
+import { MdOutlineEmojiEmotions } from 'react-icons/md';
+import Picker from 'emoji-picker-react';
+import { LuSendHorizontal } from 'react-icons/lu';
+import { Snackbar, Alert } from '@mui/material';
+import styles from '../styles/post.module.css';
 
-import { getUsernameFromToken } from "../auth/authUtils";
+import { getUsernameFromToken } from '../auth/authUtils';
 
 const PostForm = () => {
-  const [postContent, setPostContent] = useState("");
+  const [postContent, setPostContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
@@ -23,10 +24,10 @@ const PostForm = () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (!token) {
-      setSnackbarMessage("Token not found. Please log in again.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Token not found. Please log in again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
       setIsSubmitting(false);
       return;
@@ -41,24 +42,24 @@ const PostForm = () => {
         postData,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
       if (response.status === 200) {
-        setSnackbarMessage("Post created successfully!");
-        setSnackbarSeverity("success");
+        setSnackbarMessage('Post created successfully!');
+        setSnackbarSeverity('success');
         setSnackbarOpen(true);
-        setPostContent("");
+        setPostContent('');
         setTimeout(() => {
           window.location.reload(); // Refresh the page after a successful post
         }, 1000);
       }
     } catch (error) {
-      setSnackbarMessage("Error creating post. Please try again.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Error creating post. Please try again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     } finally {
       setIsSubmitting(false);
@@ -76,8 +77,8 @@ const PostForm = () => {
 
   const handleLocation = () => {
     if (!navigator.geolocation) {
-      setSnackbarMessage("Geolocation is not supported by your browser.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Geolocation is not supported by your browser.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
       return;
     }
@@ -88,15 +89,15 @@ const PostForm = () => {
 
         try {
           const response = await axios.get(
-            "https://nominatim.openstreetmap.org/reverse",
+            'https://nominatim.openstreetmap.org/reverse',
             {
               params: {
                 lat: latitude,
                 lon: longitude,
-                format: "json",
+                format: 'json',
               },
               headers: {
-                "Accept-Language": "en",
+                'Accept-Language': 'en',
               },
             }
           );
@@ -107,14 +108,14 @@ const PostForm = () => {
             address.town ||
             address.village ||
             address.hamlet ||
-            "Unknown City";
-          const country = address.country || "Unknown Country";
+            'Unknown City';
+          const country = address.country || 'Unknown Country';
 
           const locationString = `📍 Location: ${city}, ${country}`;
           setPostContent((prevContent) => `${prevContent} ${locationString}`);
         } catch (error) {
-          setSnackbarMessage("Error fetching location details.");
-          setSnackbarSeverity("error");
+          setSnackbarMessage('Error fetching location details.');
+          setSnackbarSeverity('error');
           setSnackbarOpen(true);
           const locationString = `📍 Location: (${latitude.toFixed(
             4
@@ -123,8 +124,8 @@ const PostForm = () => {
         }
       },
       (error) => {
-        setSnackbarMessage("Unable to retrieve your location.");
-        setSnackbarSeverity("error");
+        setSnackbarMessage('Unable to retrieve your location.');
+        setSnackbarSeverity('error');
         setSnackbarOpen(true);
       }
     );
@@ -147,19 +148,20 @@ const PostForm = () => {
           <MdOutlineEmojiEmotions
             className={styles.icon}
             onClick={() => setShowEmojiPicker((prev) => !prev)}
-            title="Add Emoji"
+            title='Pick an emoji you like'
           />
           <CiLocationArrow1
             className={styles.icon}
             onClick={handleLocation}
-            title="Add Location"
+            title='Share your location'
           />
           <button
-            type="submit"
+            type='submit'
             className={styles.post_the_post}
             disabled={isSubmitting}
+            title='Share your post'
           >
-            {isSubmitting ? "Posting..." : "Post"}
+            <LuSendHorizontal />
           </button>
         </div>
       </div>
@@ -172,12 +174,12 @@ const PostForm = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {snackbarMessage}
         </Alert>

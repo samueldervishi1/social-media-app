@@ -42,6 +42,31 @@ export const AuthProvider = ({ children }) => {
     setToken(newToken);
   };
 
+  const validateToken = () => {
+    if (token) {
+      try {
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
+        const expirationTime = decodedToken.exp * 1000;
+
+        if (Date.now() >= expirationTime) {
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          setToken(null);
+          return false;
+        }
+        return true;
+      } catch (error) {
+        console.error("Error decoding token: ", error.message);
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        setToken(null);
+        return false;
+      }
+    }
+    return false;
+  };
+
+
   const logout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
@@ -54,6 +79,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         login,
         logout,
+        validateToken,
       }}
     >
       {children}
