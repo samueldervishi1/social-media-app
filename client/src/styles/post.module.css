@@ -45,12 +45,8 @@
   color: black;
   border: none;
   cursor: pointer;
-}
-
-.post_the_post:hover {
-  background: lightgrey;
-  padding: 4px 6px;
-  border-radius: 10px;
+  position: relative;
+  top: -2px;
 }
 
 .emoji_picker {
