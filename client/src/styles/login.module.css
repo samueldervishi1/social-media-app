@@ -23,31 +23,10 @@ body.login_page::before {
   width: 30px;
 }
 
-.split_container {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-}
-
-.background_image {
-  object-fit: cover;
-  width: auto;
-  height: 90%;
-}
-
-.image_container {
-  width: 45%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .form_container {
-  margin-top: 50px;
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
   width: 50%;
   height: 80%;
   display: flex;

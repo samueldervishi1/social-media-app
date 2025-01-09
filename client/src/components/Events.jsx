@@ -6,6 +6,7 @@ import locationIcon from '../assets/location.png';
 const Events = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [map, setMap] = useState(null);
+  const [dailyEvents, setDailyEvents] = useState([]);
 
   const events = [
     {
@@ -159,6 +160,26 @@ const Events = () => {
       : 0;
     return `calc(88.3vh - ${navbarHeight}px)`;
   };
+
+  const updateEventLocations = () => {
+    const today = new Date().getDate();
+    const allEvents = [...events, ...farEvents];
+
+    const updatedEvents = allEvents.map((event, index) => {
+      const offset = today + index;
+      return {
+        ...event,
+        lon: event.lon + 0.001 * Math.sin(offset),
+        lat: event.lat + 0.001 * Math.cos(offset),
+      };
+    });
+
+    setDailyEvents(updatedEvents);
+  };
+
+  useEffect(() => {
+    updateEventLocations();
+  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
