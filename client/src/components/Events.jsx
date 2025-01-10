@@ -46,7 +46,20 @@ const Events = () => {
           ];
           setUserLocation(userCoords);
 
-          if (!map) {
+          if (map) {
+            map.setView(userCoords, 13);
+            const userIcon = L.icon({
+              iconUrl: locationIcon,
+              iconSize: [32, 32],
+              iconAnchor: [16, 32],
+              popupAnchor: [0, -32],
+            });
+
+            const userMarker = L.marker(userCoords, { icon: userIcon }).addTo(
+              map
+            );
+            userMarker.bindPopup('You are here!');
+          } else {
             const mapInstance = L.map('map', { zoomControl: false }).setView(
               userCoords,
               13
@@ -94,37 +107,30 @@ const Events = () => {
     return date.toLocaleDateString('en-US', options);
   };
 
+  const isEventEnded = (eventDate) => {
+    const currentDate = new Date();
+    return new Date(eventDate) < currentDate;
+  };
+
   useEffect(() => {
     if (map && userLocation) {
       dailyEvents.forEach((event) => {
         const eventLocation = [event.lat, event.lon];
-        const distance = calculateDistance(
-          userLocation[0],
-          userLocation[1],
-          event.lat,
-          event.lon
-        );
-
-        if (distance <= 100000) {
-          const marker = L.marker(eventLocation).addTo(map);
-
-          const popupContent = `
-  <div style="padding: 10px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);">
-      <h4 style="margin: 0; color: #007bff; text-align: center;">${
-        event.title
-      }</h4>
-      <p style="margin: 5px 0; font-size: 14px;">${event.description}</p>
-      <p style="margin: 5px 0; font-size: 12px; color: #777;">Date & Time: ${formatDate(
-        event.date
-      )}</p>
-  </div>
-`;
-
-          marker.bindPopup(popupContent);
-        }
+        const marker = L.marker(eventLocation).addTo(map);
+  
+        const popupContent = `
+          <div style="padding: 10px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);">
+              <h4 style="margin: 0; color: #007bff; text-align: center;">${event.title}</h4>
+              <p style="margin: 5px 0; font-size: 14px;">${event.description}</p>
+              <p style="margin: 5px 0; font-size: 12px; color: #777;">Date & Time: ${formatDate(event.date)}</p>
+          </div>
+        `;
+  
+        marker.bindPopup(popupContent);
       });
     }
   }, [map, userLocation, dailyEvents]);
+  
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
