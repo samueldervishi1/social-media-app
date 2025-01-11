@@ -45,10 +45,6 @@ body.login_page::before {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.login_form {
-  width: 100%;
-}
-
 .text_center {
   text-align: center;
 }
