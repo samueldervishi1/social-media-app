@@ -4,13 +4,13 @@
   overflow-y: auto;
   gap: 16px;
   justify-content: center; 
+  display: flex;
 }
 
 .userCard {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
-  width: calc(25% - 16px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   background-color: #fff;
