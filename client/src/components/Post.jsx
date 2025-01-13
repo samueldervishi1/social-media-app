@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CiLocationArrow1 } from 'react-icons/ci';
 import { MdOutlineEmojiEmotions } from 'react-icons/md';
 import Picker from 'emoji-picker-react';
 import { LuSendHorizontal } from 'react-icons/lu';
 import { Snackbar, Alert } from '@mui/material';
+import { openDB } from 'idb';
 import styles from '../styles/post.module.css';
-
 import { getUsernameFromToken } from '../auth/authUtils';
 
 const PostForm = () => {
@@ -19,9 +19,42 @@ const PostForm = () => {
 
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
-  const handlePostSubmit = async (event) => {
-    event.preventDefault();
-    if (isSubmitting) return;
+  const dbPromise = openDB('socialAppDB', 1, {
+    upgrade(db) {
+      db.createObjectStore('posts', { keyPath: 'id', autoIncrement: true });
+    },
+  });
+
+  const savePostOffline = async (postContent) => {
+    const db = await dbPromise;
+    const post = {
+      content: postContent,
+      postDate: new Date().toISOString().split('T')[0],
+      postTime: new Date().toISOString().split('T')[1],
+    };
+    await db.put('posts', post);
+  };
+
+  const sendOfflinePosts = async () => {
+    const db = await dbPromise;
+    const posts = await db.getAll('posts');
+    if (posts.length > 0) {
+      for (const post of posts) {
+        await handlePostSubmit(post.content, true);
+        await db.delete('posts', post.id);
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('online', sendOfflinePosts);
+    return () => {
+      window.removeEventListener('online', sendOfflinePosts);
+    };
+  }, []);
+
+  const handlePostSubmit = async (content, isOffline = false) => {
+    if (isSubmitting || (isOffline && !content)) return;
     setIsSubmitting(true);
 
     const token = localStorage.getItem('token');
@@ -34,12 +67,11 @@ const PostForm = () => {
     }
 
     const username = getUsernameFromToken(token);
-    const postData = { content: postContent };
 
     try {
       const response = await axios.post(
         `http://localhost:8080/api/v2/posts/create/${username}`,
-        postData,
+        { content },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -54,13 +86,22 @@ const PostForm = () => {
         setSnackbarOpen(true);
         setPostContent('');
         setTimeout(() => {
-          window.location.reload(); // Refresh the page after a successful post
+          window.location.reload();
         }, 1000);
       }
     } catch (error) {
-      setSnackbarMessage('Error creating post. Please try again.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      if (!navigator.onLine) {
+        await savePostOffline(content);
+        setSnackbarMessage(
+          'Post saved offline. It will be sent when you are online.'
+        );
+        setSnackbarSeverity('warning');
+        setSnackbarOpen(true);
+      } else {
+        setSnackbarMessage('Error creating post. Please try again.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -134,7 +175,13 @@ const PostForm = () => {
   const placeholderText = `What's on your mind, ${getUsernameFromToken()}?`;
 
   return (
-    <form className={styles.post_form} onSubmit={handlePostSubmit}>
+    <form
+      className={styles.post_form}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handlePostSubmit(postContent);
+      }}
+    >
       <div className={styles.input_with_icons}>
         <textarea
           placeholder={placeholderText}

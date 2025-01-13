@@ -37,3 +37,6 @@ src/main/resources/application.properties
 ### VS Code ###
 .vscode/
 .idea
+src/main/resources/localhost.key
+src/main/resources/localhost.crt
+src/main/resources/localhost.p12
