@@ -1,0 +1,69 @@
+.activity-container {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+  margin: 0;
+}
+.roadmap-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 80vh;
+  width: 100%;
+  max-width: 600px;
+}
+
+.user-ac {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  width: 100%;
+}
+
+.roadmap-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.roadmap-step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 100%;
+}
+
+.roadmap-action {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.roadmap-timestamp {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.roadmap-connector {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 30px;
+  background-color: black;
+  transform: translateX(-50%);
+}
+
+.roadmap-item .roadmap-connector {
+  display: block;
+}

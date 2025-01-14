@@ -10,11 +10,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.security.SecureRandom;
-import java.util.Base64;
 
 @Service
 public class UserService {
@@ -23,11 +23,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-
-	public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
-		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-	}
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 	private static final String DEFAULT_ROLE = "simple_account";
 	private static final String INVALID_EMAIL_FORMAT = "Invalid email format";
@@ -35,12 +31,18 @@ public class UserService {
 	private static final String USERNAME_ALREADY_EXISTS = "Username already exists";
 	private static final String NAME_TOO_SHORT = "Full name should be at least 2 characters long";
 	private static final String INVALID_PASSWORD_FORMAT = "Password should be at least 8 characters long, including one letter, one symbol, and one number";
+	private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+	private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
+
+	public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	public User createUser(User user) {
 		validateUser(user);
 
 		String salt = generateSalt();
-
 		String saltedPassword = user.getPassword() + salt;
 		String hashedPassword = passwordEncoder.encode(saltedPassword);
 
@@ -54,20 +56,27 @@ public class UserService {
 
 	private String generateSalt() {
 		byte[] saltBytes = new byte[16];
-		new SecureRandom().nextBytes(saltBytes);
+		SECURE_RANDOM.nextBytes(saltBytes);
 		return Base64.getEncoder().encodeToString(saltBytes);
 	}
 
 	private void validateUser(User user) {
+		if (user == null) {
+			throw new BadRequestException("User cannot be null");
+		}
+
 		if (!isValidEmail(user.getEmail())) {
 			throw new BadRequestException(INVALID_EMAIL_FORMAT);
 		}
-		if (userRepository.existsByEmail(user.getEmail())) {
-			logger.error("Email already exists: {}" , user.getEmail());
-			throw new BadRequestException(EMAIL_ALREADY_EXISTS);
-		}
 
-		if (userRepository.existsByUsername(user.getUsername())) {
+		boolean emailExists = userRepository.existsByEmail(user.getEmail());
+		boolean usernameExists = userRepository.existsByUsername(user.getUsername());
+
+		if (emailExists || usernameExists) {
+			if (emailExists) {
+				logger.error("Email already exists: {}" , user.getEmail());
+				throw new BadRequestException(EMAIL_ALREADY_EXISTS);
+			}
 			logger.error("Username already exists: {}" , user.getUsername());
 			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
 		}
@@ -105,8 +114,7 @@ public class UserService {
 	}
 
 	private boolean isValidEmail(String email) {
-		String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-		return Pattern.matches(emailRegex , email);
+		return Pattern.matches(EMAIL_REGEX , email);
 	}
 
 	private boolean isValidLength(String value) {
@@ -114,7 +122,6 @@ public class UserService {
 	}
 
 	private boolean isValidPassword(String password) {
-		String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
-		return Pattern.matches(passwordRegex , password);
+		return Pattern.matches(PASSWORD_REGEX , password);
 	}
 }

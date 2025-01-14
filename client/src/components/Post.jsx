@@ -172,7 +172,7 @@ const PostForm = () => {
     );
   };
 
-  const placeholderText = `What's on your mind, ${getUsernameFromToken()}?`;
+  const placeholderText = `What's on your mind today, ${getUsernameFromToken()}?`;
 
   return (
     <form

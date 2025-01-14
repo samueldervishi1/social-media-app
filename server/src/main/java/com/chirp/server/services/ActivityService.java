@@ -6,6 +6,7 @@ import com.chirp.server.repositories.ActivityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -38,10 +39,10 @@ public class ActivityService {
 		}
 	}
 
+	@Transactional
 	public void updateOrCreateActivity(String userId , ActivityModel.ActionType actionType , String status) {
 		try {
 			List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
-
 			ActivityModel existingActivity = existingActivities.stream()
 					.filter(activity -> activity.getActionType().getAllActivity().equals(actionType.getAllActivity()))
 					.findFirst()
@@ -50,10 +51,15 @@ public class ActivityService {
 			if (existingActivity != null) {
 				existingActivity.setTimestamp(Instant.now());
 				existingActivity.setStatus(status);
-				activityRepository.save(existingActivity);
+
+				ActivityModel updatedActivity = activityRepository.save(existingActivity);
+
+				logger.info("Updated existing activity: {}" , updatedActivity);
 			} else {
 				ActivityModel newActivity = new ActivityModel(actionType , userId , Instant.now() , status);
-				activityRepository.save(newActivity);
+				ActivityModel savedActivity = activityRepository.save(newActivity);
+
+				logger.info("Created new activity: {}" , savedActivity);
 			}
 		} catch (Exception e) {
 			logger.error("Error updating or creating activity for user {}: {}" , userId , e.getMessage());

@@ -28,7 +28,7 @@ const Menu = () => {
         </li>
         <li>
           <TbLogs className={styles.icons} />
-          <a href="/user/activity"> Activity</a>
+          <a href="/c/activity"> Activity</a>
         </li>
       </ul>
       <div className={styles.footer_links}>
