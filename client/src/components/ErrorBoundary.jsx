@@ -1,64 +1,60 @@
 import React, { Component } from 'react';
 import '../styles/errorBoundary.css';
 
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    const storedAttempts = localStorage.getItem('reloadAttempts');
-    this.state = {
-      hasError: false,
-      error: null,
-      errorInfo: null,
-      reloadAttempts: storedAttempts ? parseInt(storedAttempts, 10) : 0,
-    };
-  }
+const MAX_RELOAD_ATTEMPTS = 3;
+const SUPPORT_EMAIL = 'support@chyra.com';
 
-  static getDerivedStateFromError(error) {
+class ErrorBoundary extends Component {
+  state = {
+    hasError: false,
+    reloadAttempts: parseInt(localStorage.getItem('reloadAttempts') || '0', 10),
+  };
+
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    this.setState({ error, errorInfo });
     console.error('Error captured:', error, errorInfo);
   }
 
   handleReload = () => {
-    const { reloadAttempts } = this.state;
-    const newAttempts = reloadAttempts + 1;
-
+    const newAttempts = this.state.reloadAttempts + 1;
     localStorage.setItem('reloadAttempts', newAttempts);
 
-    if (newAttempts >= 3) {
+    if (newAttempts >= MAX_RELOAD_ATTEMPTS) {
       this.setState({ reloadAttempts: 0 });
+      localStorage.removeItem('reloadAttempts');
     } else {
       window.location.reload();
     }
   };
 
   render() {
-    if (this.state.hasError) {
-      return (
-        <div className='error-boundary-container'>
-          <h1 className='error-heading'>Oops! Something went wrong.</h1>
-          <p className='error-message'>
-            We're sorry for the inconvenience. Please try reloading the page.
-          </p>
-          <button className='reload-button' onClick={this.handleReload}>
-            Reload Page
-          </button>
-          {this.state.reloadAttempts >= 3 && (
-            <div className='contact-admin'>
-              <p>
-                If reloading still doesn't work, please contact the admin at
-                <a href='mailto:support@chyra.com'> support@chyra.com</a>.
-              </p>
-            </div>
-          )}
-        </div>
-      );
-    }
+    const { hasError, reloadAttempts } = this.state;
+    const { children } = this.props;
 
-    return this.props.children;
+    if (!hasError) return children;
+
+    return (
+      <div className='error-boundary-container'>
+        <h1 className='error-heading'>Oops! Something went wrong.</h1>
+        <p className='error-message'>
+          We're sorry for the inconvenience. Please try reloading the page.
+        </p>
+        <button className='reload-button' onClick={this.handleReload}>
+          Reload Page
+        </button>
+        {reloadAttempts >= MAX_RELOAD_ATTEMPTS && (
+          <div className='contact-admin'>
+            <p>
+              If reloading still doesn't work, please contact the admin at
+              <a href={`mailto:${SUPPORT_EMAIL}`}> {SUPPORT_EMAIL}</a>.
+            </p>
+          </div>
+        )}
+      </div>
+    );
   }
 }
 

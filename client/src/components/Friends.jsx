@@ -1,45 +1,42 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import userImage from "../assets/user.webp";
-import styles from "../styles/friends.module.css";
-import { getUsernameFromToken } from "../auth/authUtils";
+import React, { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
+import userImage from '../assets/user.webp';
+import styles from '../styles/friends.module.css';
+import { getUsernameFromToken } from '../auth/authUtils';
 
-const Menu = React.lazy(() => import("./Menu"));
-const token = localStorage.getItem("token");
+const token = localStorage.getItem('token');
 
 const Friends = () => {
   const [users, setUsers] = useState([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const loggedInUsername = getUsernameFromToken(token);
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const { data } = await axios.get('http://localhost:8080/api/v2/users', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUsers(data.filter((user) => user.username !== loggedInUsername));
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      setError('Try again later.');
+    }
+  }, [loggedInUsername]);
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/v2/users", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const filteredUsers = response.data.filter(
-          (user) => user.username !== loggedInUsername
-        );
-        setUsers(filteredUsers);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-        setError("Try again later.");
-      }
-    };
     fetchUsers();
-  }, [loggedInUsername, token]);
+  }, [fetchUsers]);
 
-  const handleFollow = (userId) => {
+  const handleFollow = useCallback((userId) => {
     console.log(`Follow button clicked for user with ID: ${userId}`);
-  };
+  }, []);
 
-  const handleHide = (userId) => {
+  const handleHide = useCallback((userId) => {
     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-  };
+  }, []);
 
   if (error) {
     return <div className={styles.errorMessage}>{error}</div>;
@@ -57,6 +54,7 @@ const Friends = () => {
                 src={userImage}
                 alt={user.username}
                 className={styles.userImage}
+                loading='lazy'
               />
               <div className={styles.userInfo}>
                 <h3>{user.fullName}</h3>

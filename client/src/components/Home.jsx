@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import styles from "../styles/home.module.css";
+import React, { useEffect, useState, Suspense } from 'react';
+import styles from '../styles/home.module.css';
+import { useAuth } from '../auth/AuthContext';
 
-const Post = React.lazy(() => import("./Post"));
-const PostList = React.lazy(() => import("./PostList"));
-const Menu = React.lazy(() => import("./Menu"));
+const Post = React.lazy(() => import('./Post'));
+const PostList = React.lazy(() => import('./PostList'));
+const Menu = React.lazy(() => import('./Menu'));
 
-import { useAuth } from "../auth/AuthContext";
+const REFRESH_INTERVAL = 300000;
 
 const Home = () => {
   const { validateToken, logout } = useAuth();
@@ -13,30 +14,28 @@ const Home = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const tokenIsValid = validateToken();
-      if (!tokenIsValid) {
+      if (!validateToken()) {
         logout();
+        return;
       }
       setRefreshPostList((prev) => !prev);
-    }, 300000);
+    }, REFRESH_INTERVAL);
 
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+    return () => clearInterval(intervalId);
+  }, [validateToken, logout]);
 
   return (
     <div className={styles.home_container}>
       <div className={styles.menu}>
-        <React.Suspense fallback={<div>Loading Menu...</div>}>
+        <Suspense fallback={<div>Loading Menu...</div>}>
           <Menu />
-        </React.Suspense>
+        </Suspense>
       </div>
       <div className={styles.main_content}>
-        <React.Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>Loading...</div>}>
           <Post />
           <PostList key={refreshPostList} />
-        </React.Suspense>
+        </Suspense>
       </div>
     </div>
   );
