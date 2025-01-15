@@ -12,9 +12,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class SummarizationService {
@@ -24,7 +22,6 @@ public class SummarizationService {
 	private static final String ERROR_MODEL_API_URL = "Model API URL is not configured properly.";
 	private static final String ERROR_MODEL = "Model is not configured properly.";
 	private static final String ERROR_UNEXPECTED = "An unexpected error occurred while summarizing content.";
-	private static final String ERROR_NO_TEXT = "No response text available";
 	private static final String ERROR_UNEXPECTED_FORMAT = "Unexpected response format";
 
 	@Value("${model.api.key}")
@@ -42,49 +39,47 @@ public class SummarizationService {
 	@Value("${model.api.model}")
 	private String model;
 
-	private final RestTemplate restTemplate = new RestTemplate();
+	private final RestTemplate restTemplate;
+	private final HttpHeaders headers;
+
+	public SummarizationService() {
+		this.restTemplate = new RestTemplate();
+		this.headers = new HttpHeaders();
+		this.headers.setContentType(MediaType.APPLICATION_JSON);
+	}
 
 	@PostConstruct
 	private void validateConfigs() {
-		if (!StringUtils.hasText(modelApiUrl)) {
-			throw new IllegalArgumentException(ERROR_MODEL_API_URL);
+		if (!StringUtils.hasText(modelApiUrl) || !StringUtils.hasText(model)) {
+			throw new IllegalArgumentException(!StringUtils.hasText(modelApiUrl) ? ERROR_MODEL_API_URL : ERROR_MODEL);
 		}
-
-		if (!StringUtils.hasText(model)) {
-			throw new IllegalArgumentException(ERROR_MODEL);
-		}
+		headers.set("Authorization" , "Bearer " + apiKey);
 	}
 
 	public String summarize(String message) {
 		try {
-			Map<String, Object> requestBody = new HashMap<>();
-			requestBody.put("model" , model);
-			requestBody.put("message" , message);
-			requestBody.put("temperature" , temperature);
-			requestBody.put("prompt_truncation" , promptTruncation);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.set("Authorization" , "Bearer " + apiKey);
-
-			HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody , headers);
+			Map<String, Object> requestBody = Map.of(
+					"model" , model ,
+					"message" , message ,
+					"temperature" , temperature ,
+					"prompt_truncation" , promptTruncation
+			);
 
 			ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(
 					modelApiUrl ,
 					HttpMethod.POST ,
-					requestEntity ,
+					new HttpEntity<>(requestBody , headers) ,
 					new ParameterizedTypeReference<>() {
 					}
 			);
 
-			if (responseEntity.getBody() == null || !responseEntity.getBody().containsKey("text")) {
-				logger.error("Unexpected response format received: {}" , responseEntity.getBody());
+			Map<String, Object> responseBody = responseEntity.getBody();
+			if (responseBody == null || !responseBody.containsKey("text")) {
+				logger.error("Unexpected response format received: {}" , responseBody);
 				return ERROR_UNEXPECTED_FORMAT;
 			}
 
-			return Optional.ofNullable(responseEntity.getBody())
-					.map(responseBody -> (String) responseBody.get("text"))
-					.orElse(ERROR_NO_TEXT);
+			return (String) responseBody.get("text");
 
 		} catch (HttpStatusCodeException e) {
 			logger.error("HTTP Status: {} - Error Response: {}" , e.getStatusCode() , e.getResponseBodyAsString() , e);

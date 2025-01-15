@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v2/ask")
@@ -19,7 +20,7 @@ public class ChatBotController {
 	}
 
 	@PostMapping
-	public HashMap<String, Object> askQuestion(@RequestBody HashMap<String, String> request) {
+	public Map<String, Object> askQuestion(@RequestBody HashMap<String, String> request) {
 		String question = request.get("message");
 		return chatBotService.getResponses(question);
 	}

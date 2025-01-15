@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 public class LoginService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
+	private static final String USER_NOT_FOUND = "Username not found";
+	private static final String USER_DELETED = "This user does not exist.";
+	private static final String INVALID_CREDENTIALS = "Invalid username or password";
+	private static final String LOGIN_ERROR = "An error occurred during login.";
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -29,31 +33,39 @@ public class LoginService {
 		logger.info("Attempting to login with username {}" , username);
 
 		try {
-			User user = userRepository.findByUsername(username)
-					.orElseThrow(() -> new NotFoundException("Username not found"));
-
-			if (user.isDeleted()) {
-				logger.info("User does not exist");
-				throw new NotFoundException("This user does not exist.");
-			}
-
-			validatePassword(password , user.getPassword() , user.getSalt());
-
-			String token = jwtTokenUtil.generateToken(username , user.getId() , user.isTwoFa());
-			logger.info("Successfully logged in user: {}" , username);
-			return token;
+			User user = findAndValidateUser(username);
+			validatePassword(password , user);
+			return generateUserToken(user);
+		} catch (NotFoundException | BadRequestException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("Unexpected error during login attempt for user {}: {}" , username , e.getMessage());
-			throw new BadRequestException("An error occurred during login.");
+			throw new BadRequestException(LOGIN_ERROR);
 		}
 	}
 
-	private void validatePassword(String rawPassword , String encodedPassword , String salt) {
-		String saltedPassword = rawPassword + salt;
+	private User findAndValidateUser(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
 
-		if (!passwordEncoder.matches(saltedPassword , encodedPassword)) {
-			logger.warn("Password mismatch for username: {}" , encodedPassword);
-			throw new BadRequestException("Invalid username or password");
+		if (user.isDeleted()) {
+			logger.info("User does not exist");
+			throw new NotFoundException(USER_DELETED);
 		}
+
+		return user;
+	}
+
+	private void validatePassword(String rawPassword , User user) {
+		if (!passwordEncoder.matches(rawPassword + user.getSalt() , user.getPassword())) {
+			logger.warn("Password mismatch for user: {}" , user.getUsername());
+			throw new BadRequestException(INVALID_CREDENTIALS);
+		}
+	}
+
+	private String generateUserToken(User user) {
+		String token = jwtTokenUtil.generateToken(user.getUsername() , user.getId() , user.isTwoFa());
+		logger.info("Successfully logged in user: {}" , user.getUsername());
+		return token;
 	}
 }

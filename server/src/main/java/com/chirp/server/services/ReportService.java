@@ -17,7 +17,11 @@ import java.util.List;
 @Service
 public class ReportService {
 
-	private final Logger logger = LoggerFactory.getLogger(ReportService.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
+	private static final String USER_ALREADY_REPORTED = "User %s has already reported post %s";
+	private static final String POST_NOT_FOUND = "Post with ID %s not found.";
+	private static final String REPORT_ERROR = "Failed to create report";
+
 	private final ReportPostRepository reportPostRepository;
 	private final PostRepository postRepository;
 	private final ActivityService activityService;
@@ -30,33 +34,52 @@ public class ReportService {
 
 	public Report report(Report report) {
 		try {
-			logger.info("Report user {} post {} reason {}" , report.getUserId() , report.getPostId() , report.getReason());
+			String userId = report.getUserId();
+			String postId = report.getPostId();
 
-			boolean alreadyReported = reportPostRepository.existsByUserIdAndPostId(report.getUserId() , report.getPostId());
-			if (alreadyReported) {
-				logger.warn("User {} has already reported post {}. Duplicate report ignored." , report.getUserId() , report.getPostId());
-				throw new BadRequestException("User " + report.getUserId() + " has already reported post " + report.getPostId());
-			}
+			logger.info("Processing report - userId: {}, postId: {}, reason: {}" , userId , postId , report.getReason());
 
-			Post post = postRepository.findById(report.getPostId()).orElseThrow(() -> new BadRequestException("Post with ID " + report.getPostId() + " not found."));
-			if (!post.isReported()) {
-				post.setReported(true);
-				postRepository.save(post);
-				logger.info("Post with ID {} reported successfully." , report.getPostId());
-			} else {
-				logger.warn("Post with ID {} already reported." , report.getPostId());
-			}
-
-			String actionTypeString = report.getUserId() + " reported post " + report.getPostId();
-			ActionType actionType = new ActionType(List.of(actionTypeString));
-			activityService.updateOrCreateActivity(report.getUserId() , actionType , "Post reported successfully");
+			validateAndHandleDuplicateReport(userId , postId);
+			handlePostReporting(postId);
+			createReportActivity(userId , postId);
 
 			report.setReportTime(LocalDateTime.now());
-			logger.info("Report created for userId: {}, postId: {}" , report.getUserId() , report.getPostId());
-			return reportPostRepository.save(report);
+			Report savedReport = reportPostRepository.save(report);
+			logger.info("Report successfully created - userId: {}, postId: {}" , userId , postId);
+
+			return savedReport;
+		} catch (BadRequestException e) {
+			throw e;
 		} catch (Exception e) {
-			logger.error("Error occurred while creating report: {}" , e.getMessage() , e);
-			throw new InternalServerErrorException("Failed to create report");
+			logger.error("Error creating report: {}" , e.getMessage() , e);
+			throw new InternalServerErrorException(REPORT_ERROR);
 		}
+	}
+
+	private void validateAndHandleDuplicateReport(String userId , String postId) {
+		if (reportPostRepository.existsByUserIdAndPostId(userId , postId)) {
+			logger.warn("Duplicate report detected - userId: {}, postId: {}" , userId , postId);
+			throw new BadRequestException(String.format(USER_ALREADY_REPORTED , userId , postId));
+		}
+	}
+
+	private void handlePostReporting(String postId) {
+		Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new BadRequestException(String.format(POST_NOT_FOUND , postId)));
+
+		if (!post.isReported()) {
+			post.setReported(true);
+			postRepository.save(post);
+			logger.info("Post marked as reported - postId: {}" , postId);
+		}
+	}
+
+	private void createReportActivity(String userId , String postId) {
+		String actionTypeString = userId + " reported post " + postId;
+		activityService.updateOrCreateActivity(
+				userId ,
+				new ActionType(List.of(actionTypeString)) ,
+				"Post reported successfully"
+		);
 	}
 }

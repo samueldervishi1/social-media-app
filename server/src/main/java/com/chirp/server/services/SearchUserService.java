@@ -16,6 +16,10 @@ import java.util.stream.Collectors;
 public class SearchUserService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchUserService.class);
+	private static final String EMPTY_USERNAME_ERROR = "Username must not be empty or null.";
+	private static final String NO_USERS_FOUND_ERROR = "No users found.";
+	private static final String INTERNAL_ERROR = "Error searching for user by username";
+	private static final String UNEXPECTED_ERROR = "Unexpected error occurred.";
 
 	private final UserRepository userRepository;
 	private final ActivityService activityService;
@@ -26,36 +30,45 @@ public class SearchUserService {
 	}
 
 	public List<User> searchUser(String username) {
-		if (username == null || username.trim().isEmpty()) {
-			logger.warn("Search request with null or empty username");
-			throw new IllegalArgumentException("Username must not be empty or null.");
-		}
+		validateUsername(username);
 
 		try {
-			List<User> users = userRepository.findByUsernameContaining(username);
-
-			List<User> activeUsers = users.stream()
-					.filter(user -> !user.isDeleted())
-					.collect(Collectors.toList());
-
-			if (activeUsers.isEmpty()) {
-				logger.info("No active users found for username: {}" , username);
-				throw new NotFoundException("No users found.");
-			}
-
-			String actionTypeString = username + " searched for users";
-			ActionType actionType = new ActionType(List.of(actionTypeString));
-
-			String userId = activeUsers.get(0).getId();
-			activityService.updateOrCreateActivity(userId , actionType , "Search completed successfully");
-
+			List<User> activeUsers = findActiveUsersByUsername(username);
+			logSearchActivity(username , activeUsers);
 			return activeUsers;
 		} catch (InternalServerErrorException e) {
-			logger.error("Internal error while searching for user by username: {}. Error: {}" , username , e.getMessage());
-			throw new InternalServerErrorException("Error searching for user by username");
+			logger.error("Internal error while searching for user by username: {}" , username , e);
+			throw new InternalServerErrorException(INTERNAL_ERROR);
 		} catch (Exception e) {
-			logger.error("Unexpected error while searching for user by username: {}. Error: {}" , username , e.getMessage());
-			throw new InternalServerErrorException("Unexpected error occurred.");
+			logger.error("Unexpected error while searching for user by username: {}" , username , e);
+			throw new InternalServerErrorException(UNEXPECTED_ERROR);
 		}
+	}
+
+	private void validateUsername(String username) {
+		if (username == null || username.trim().isEmpty()) {
+			logger.warn("Search request with null or empty username");
+			throw new IllegalArgumentException(EMPTY_USERNAME_ERROR);
+		}
+	}
+
+	private List<User> findActiveUsersByUsername(String username) {
+		List<User> activeUsers = userRepository.findByUsernameContaining(username).stream()
+				.filter(user -> !user.isDeleted())
+				.collect(Collectors.toList());
+
+		if (activeUsers.isEmpty()) {
+			logger.info("No active users found for username: {}" , username);
+			throw new NotFoundException(NO_USERS_FOUND_ERROR);
+		}
+
+		return activeUsers;
+	}
+
+	private void logSearchActivity(String username , List<User> activeUsers) {
+		String actionTypeString = username + " searched for users";
+		ActionType actionType = new ActionType(List.of(actionTypeString));
+		String userId = activeUsers.get(0).getId();
+		activityService.updateOrCreateActivity(userId , actionType , "Search completed successfully");
 	}
 }

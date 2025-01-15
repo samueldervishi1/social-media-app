@@ -20,7 +20,7 @@ public class CommunityController {
 
 	private final CommunityService communityService;
 
-	public CommunityController(CommunityService communityService, PostService postService){
+	public CommunityController(CommunityService communityService){
 		this.communityService = communityService;
 	}
 
@@ -118,12 +118,12 @@ public class CommunityController {
 		return new ResponseEntity<>(community , HttpStatus.CREATED);
 	}
 
-	@PostMapping("/{communityName}/posts")
-	public CommunityPost createPostForCommunity(
-			@PathVariable String communityName ,
-			@RequestBody CommunityPost communityPost) {
-		return communityService.createCommunityPost(communityName , communityPost.getOwnerId() , communityPost.getContent());
-	}
+//	@PostMapping("/{communityName}/posts")
+//	public CommunityPost createPostForCommunity(
+//			@PathVariable String communityName ,
+//			@RequestBody CommunityPost communityPost) {
+//		return communityService.createCommunityPost(communityName , communityPost.getOwnerId() , communityPost.getContent());
+//	}
 
 	@PostMapping("/join/{communityId}/{userId}")
 	public ResponseEntity<String> joinCommunity(@PathVariable String communityId , @PathVariable String userId) {
@@ -135,16 +135,16 @@ public class CommunityController {
 		}
 	}
 
-	@PostMapping("/{communityName}/posts/{postId}/like")
-	public ResponseEntity<CommunityLikePost> likePost(
-			@PathVariable String communityName ,
-			@PathVariable String postId ,
-			@RequestParam String userId) throws Exception {
-		try {
-			CommunityLikePost newLike = communityService.likePostForCommunity(userId , postId , communityName);
-			return new ResponseEntity<>(newLike , HttpStatus.CREATED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null , HttpStatus.BAD_REQUEST);
-		}
-	}
+//	@PostMapping("/{communityName}/posts/{postId}/like")
+//	public ResponseEntity<CommunityLikePost> likePost(
+//			@PathVariable String communityName ,
+//			@PathVariable String postId ,
+//			@RequestParam String userId) throws Exception {
+//		try {
+//			CommunityLikePost newLike = communityService.likePostForCommunity(userId , postId , communityName);
+//			return new ResponseEntity<>(newLike , HttpStatus.CREATED);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(null , HttpStatus.BAD_REQUEST);
+//		}
+//	}
 }

@@ -4,7 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.Collections;
 
 @Service
 public class ChatBotService {
@@ -16,26 +17,21 @@ public class ChatBotService {
 		this.summarizationService = summarizationService;
 	}
 
-	public HashMap<String, Object> getResponses(String input) {
+	public Map<String, Object> getResponses(String input) {
 		logger.info("Input received: {}" , input);
 
-		try {
-			HashMap<String, Object> response = new HashMap<>();
-			if (input == null || input.trim().isEmpty()) {
-				response.put("error" , "Input is null or empty");
-				return response;
-			}
-			input = input.toLowerCase();
-			String answer = summarizationService.summarize(input);
-			response.put("answer" , answer);
+		if (input == null || input.trim().isEmpty()) {
+			return Collections.singletonMap("error" , "Input is null or empty");
+		}
 
+		try {
+			String answer = summarizationService.summarize(input.toLowerCase());
+			Map<String, Object> response = Collections.singletonMap("answer" , answer);
 			logger.info("Response generated: {}" , response);
 			return response;
 		} catch (Exception e) {
-			logger.error("Error processing request: {}" , e.getMessage() , e);
-			HashMap<String, Object> errorResponse = new HashMap<>();
-			errorResponse.put("error" , "Error processing request: " + e.getMessage());
-			return errorResponse;
+			logger.error("Error processing request" , e);
+			return Collections.singletonMap("error" , "Error processing request: " + e.getMessage());
 		}
 	}
 }

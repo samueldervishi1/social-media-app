@@ -13,7 +13,7 @@ public class DbConfig extends AbstractMongoClientConfiguration {
 	private String dbName;
 
 	@Value("${spring.data.mongodb.uri}")
-	private String mongoURI;
+	private String mongoUri;
 
 	@Override
 	protected String getDatabaseName() {
@@ -21,7 +21,7 @@ public class DbConfig extends AbstractMongoClientConfiguration {
 	}
 
 	@Override
-	protected void configureClientSettings(MongoClientSettings.Builder settings) {
-		settings.applyConnectionString(new ConnectionString(mongoURI));
+	protected void configureClientSettings(MongoClientSettings.Builder builder) {
+		builder.applyConnectionString(new ConnectionString(mongoUri));
 	}
 }

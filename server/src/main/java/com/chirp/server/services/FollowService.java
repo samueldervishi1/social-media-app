@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
 @Service
 public class FollowService {
 
 	private static final Logger logger = LoggerFactory.getLogger(FollowService.class);
+	private static final String USER_NOT_FOUND = "User connections not found for: ";
+	private static final String FOLLOW_ERROR = "An error occurred while following the user";
+	private static final String UNFOLLOW_ERROR = "An unexpected error occurred while unfollowing the user";
 
 	private final FollowRepository followRepository;
 	private final ActivityService activityService;
@@ -32,27 +34,21 @@ public class FollowService {
 		try {
 			logger.info("Attempting to follow: {} by {}" , followingId , followerId);
 
-			FollowerDTO followerDTO = followRepository.findByUserId(followerId)
-					.orElseGet(() -> new FollowerDTO(followerId));
-			if (!followerDTO.getFollowingId().contains(followingId)) {
-				followerDTO.getFollowingId().add(followingId);
+			FollowerDTO followerDTO = getOrCreateFollowerDTO(followerId);
+			if (followerDTO.getFollowingId().add(followingId)) {
 				followRepository.save(followerDTO);
 				logger.info("{} started following {}" , followerId , followingId);
-				activityService.updateOrCreateActivity(followerId , new ActivityModel.ActionType(List.of("Followed user")) , "Started following user: " + followingId);
-			} else {
-				logger.warn("{} is already following {}" , followerId , followingId);
+				createFollowActivity(followerId , followingId , true);
 			}
 
-			FollowerDTO followingDTO = followRepository.findByUserId(followingId)
-					.orElseGet(() -> new FollowerDTO(followingId));
-			if (!followingDTO.getFollowerId().contains(followerId)) {
-				followingDTO.getFollowerId().add(followerId);
+			FollowerDTO followingDTO = getOrCreateFollowerDTO(followingId);
+			if (followingDTO.getFollowerId().add(followerId)) {
 				followRepository.save(followingDTO);
 				logger.info("{} followed by {}" , followingId , followerId);
 			}
 		} catch (Exception e) {
 			logger.error("Error following user: {} by {}. Error: {}" , followingId , followerId , e.getMessage() , e);
-			throw new InternalServerErrorException("An error occurred while following the user");
+			throw new InternalServerErrorException(FOLLOW_ERROR);
 		}
 	}
 
@@ -62,33 +58,29 @@ public class FollowService {
 			logger.info("Attempting to unfollow: {} by {}" , followingId , followerId);
 
 			FollowerDTO followerDTO = followRepository.findByUserId(followerId)
-					.orElseThrow(() -> new NotFoundException("Follower user not found: " + followerId));
+					.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + followerId));
+
 			if (followerDTO.getFollowingId().remove(followingId)) {
 				followRepository.save(followerDTO);
 				logger.info("{} unfollowed {}" , followerId , followingId);
-				activityService.updateOrCreateActivity(followerId , new ActivityModel.ActionType(List.of("Unfollowed user")) , "Unfollowed user: " + followingId);
+				createFollowActivity(followerId , followingId , false);
 			} else {
 				throw new BadRequestException("User " + followerId + " is not following " + followingId);
 			}
 
-			followRepository.findByUserId(followingId).ifPresent(followingDTO -> {
-				if (followingDTO.getFollowerId().remove(followerId)) {
-					followRepository.save(followingDTO);
-					logger.info("{} removed from followers of {}" , followerId , followingId);
-				}
-			});
+			removeFollower(followerId , followingId);
 		} catch (BadRequestException | NotFoundException e) {
-			logger.warn("Error in unfollowing user: {} by {}. Error: {}" , followingId , followerId , e.getMessage() , e);
+			logger.warn("Error in unfollowing user: {} by {}. Error: {}" , followingId , followerId , e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			logger.error("Unexpected error while unfollowing user: {} by {}. Error: {}" , followingId , followerId , e.getMessage() , e);
-			throw new InternalServerErrorException("An unexpected error occurred while unfollowing the user");
+			logger.error("Unexpected error while unfollowing user: {} by {}. Error: {}" , followingId , followerId , e.getMessage());
+			throw new InternalServerErrorException(UNFOLLOW_ERROR);
 		}
 	}
 
 	public FollowerDTO getUserConnections(String userId) {
 		return followRepository.findByUserId(userId)
-				.orElseThrow(() -> new NotFoundException("User connections not found for: " + userId));
+				.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + userId));
 	}
 
 	public int getUserFollowersCount(String userId) {
@@ -101,5 +93,29 @@ public class FollowService {
 		return followRepository.findByUserId(userId)
 				.map(followerDTO -> followerDTO.getFollowingId().size())
 				.orElse(0);
+	}
+
+	private FollowerDTO getOrCreateFollowerDTO(String userId) {
+		return followRepository.findByUserId(userId)
+				.orElseGet(() -> new FollowerDTO(userId));
+	}
+
+	private void createFollowActivity(String followerId , String followingId , boolean isFollow) {
+		String action = isFollow ? "Followed user" : "Unfollowed user";
+		String message = (isFollow ? "Started following user: " : "Unfollowed user: ") + followingId;
+		activityService.updateOrCreateActivity(
+				followerId ,
+				new ActivityModel.ActionType(List.of(action)) ,
+				message
+		);
+	}
+
+	private void removeFollower(String followerId , String followingId) {
+		followRepository.findByUserId(followingId).ifPresent(followingDTO -> {
+			if (followingDTO.getFollowerId().remove(followerId)) {
+				followRepository.save(followingDTO);
+				logger.info("{} removed from followers of {}" , followerId , followingId);
+			}
+		});
 	}
 }

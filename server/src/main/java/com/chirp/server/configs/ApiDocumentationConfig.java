@@ -10,18 +10,30 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApiDocumentationConfig {
 
+	private static final String BASE_URL = "http://localhost:8080/api/v2/";
+	private static final String API_TITLE = "CHYRA API Documentation";
+	private static final String API_VERSION = "2.1.1";
+	private static final String CONTACT_NAME = "Samuel";
+	private static final String CONTACT_EMAIL = "samueldervishi02@gmail.com";
+
 	@Bean
 	public OpenAPI apiDocConfig() {
+		Server server = new Server()
+				.url(BASE_URL)
+				.description("Development Server");
+
+		Contact contact = new Contact()
+				.name(CONTACT_NAME)
+				.email(CONTACT_EMAIL);
+
+		Info info = new Info()
+				.title(API_TITLE)
+				.version(API_VERSION)
+				.description("[ Base URL: " + BASE_URL + " ]")
+				.contact(contact);
+
 		return new OpenAPI()
-				.info(new Info()
-						.title("CHYRA API Documentation")
-						.version("2.1.1")
-						.description("[ Base URL: localhost:8080/chyra-connectApi/v2/ ]")
-						.contact(new Contact()
-								.name("Samuel")
-								.email("samueldervishi02@gmail.com")))
-				.addServersItem(new Server()
-						.url("http://localhost:8080/chyra-connectApi/v2/")
-						.description("Development Server"));
+				.info(info)
+				.addServersItem(server);
 	}
 }

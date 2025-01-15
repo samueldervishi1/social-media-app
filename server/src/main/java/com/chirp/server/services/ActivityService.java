@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ActivityService {
@@ -42,25 +43,19 @@ public class ActivityService {
 	@Transactional
 	public void updateOrCreateActivity(String userId , ActivityModel.ActionType actionType , String status) {
 		try {
-			List<ActivityModel> existingActivities = activityRepository.findByUserId(userId);
-			ActivityModel existingActivity = existingActivities.stream()
+			Optional<ActivityModel> existingActivity = activityRepository.findByUserId(userId).stream()
 					.filter(activity -> activity.getActionType().getAllActivity().equals(actionType.getAllActivity()))
-					.findFirst()
-					.orElse(null);
+					.findFirst();
 
-			if (existingActivity != null) {
-				existingActivity.setTimestamp(Instant.now());
-				existingActivity.setStatus(status);
+			ActivityModel activity = existingActivity.map(existing -> {
+				existing.setTimestamp(Instant.now());
+				existing.setStatus(status);
+				return existing;
+			}).orElseGet(() -> new ActivityModel(actionType , userId , Instant.now() , status));
 
-				ActivityModel updatedActivity = activityRepository.save(existingActivity);
+			ActivityModel savedActivity = activityRepository.save(activity);
+			logger.info("{} activity: {}" , existingActivity.isPresent() ? "Updated" : "Created new" , savedActivity);
 
-				logger.info("Updated existing activity: {}" , updatedActivity);
-			} else {
-				ActivityModel newActivity = new ActivityModel(actionType , userId , Instant.now() , status);
-				ActivityModel savedActivity = activityRepository.save(newActivity);
-
-				logger.info("Created new activity: {}" , savedActivity);
-			}
 		} catch (Exception e) {
 			logger.error("Error updating or creating activity for user {}: {}" , userId , e.getMessage());
 			throw new InternalServerErrorException("Error updating or creating activity");

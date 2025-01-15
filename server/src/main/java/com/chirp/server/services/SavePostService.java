@@ -12,11 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SavePostService {
 	private static final Logger logger = LoggerFactory.getLogger(SavePostService.class);
+	private static final String USER_NOT_FOUND = "User %s does not exist";
+	private static final String POSTS_ALREADY_SAVED = "User %s is trying to save posts that are already saved";
+	private static final String NO_SAVED_POSTS = "No saved posts found for user %s";
+	private static final String POST_NOT_FOUND = "Post %s not found in saved posts for user %s";
+	private static final String UNEXPECTED_ERROR = "Unexpected error while %s for user %s: %s";
 
 	private final SavePostRepository savePostRepository;
 	private final UserRepository userRepository;
@@ -29,33 +33,34 @@ public class SavePostService {
 	}
 
 	public SavePost savePosts(String userId , List<String> postIds) {
-		try {
-			if (!userRepository.existsById(userId)) {
-				logAndThrow("User {} does not exist" , userId , NotFoundException.class);
-			}
+		if (!userRepository.existsById(userId)) {
+			throw new NotFoundException(String.format(USER_NOT_FOUND , userId));
+		}
 
+		try {
 			SavePost savePost = savePostRepository.findByUserId(userId)
 					.map(existingPost -> addNewPostIds(existingPost , postIds , userId))
 					.orElse(new SavePost(userId , postIds));
 
-			String actionTypeString = userId + " saved a post";
-			ActionType actionType = new ActionType(List.of(actionTypeString));
-			activityService.updateOrCreateActivity(userId , actionType , "Post saved successfully");
-
+			createActivity(userId , "saved" , "Post saved successfully");
 			return savePostRepository.save(savePost);
+		} catch (BadRequestException e) {
+			throw e;
 		} catch (Exception e) {
-			logAndThrow("Unexpected error while saving posts for user {}: {}" , userId , e.getMessage() , InternalServerErrorException.class , e);
+			logger.error(UNEXPECTED_ERROR , "saving posts" , userId , e.getMessage() , e);
+			throw new InternalServerErrorException(String.format(UNEXPECTED_ERROR , "saving posts" , userId , e.getMessage()));
 		}
-		return null;
 	}
 
 	private SavePost addNewPostIds(SavePost savePost , List<String> postIds , String userId) {
 		List<String> newPostIds = postIds.stream()
 				.filter(postId -> !savePost.getPostIds().contains(postId))
 				.toList();
+
 		if (newPostIds.isEmpty()) {
-			logAndThrow("User {} is trying to save posts that are already saved" , userId , BadRequestException.class);
+			throw new BadRequestException(String.format(POSTS_ALREADY_SAVED , userId));
 		}
+
 		savePost.getPostIds().addAll(newPostIds);
 		return savePost;
 	}
@@ -63,71 +68,53 @@ public class SavePostService {
 	public void unsavePost(String userId , String postId) {
 		try {
 			SavePost savePost = savePostRepository.findByUserId(userId)
-					.orElseThrow(() -> new NotFoundException("No saved posts found for user " + userId));
+					.orElseThrow(() -> new NotFoundException(String.format(NO_SAVED_POSTS , userId)));
 
-			if (savePost.getPostIds().remove(postId)) {
-				savePostRepository.save(savePost);
-
-				// Log activity when a post is unsaved
-				String actionTypeString = userId + " unsaved a post";
-				ActionType actionType = new ActionType(List.of(actionTypeString));
-				activityService.updateOrCreateActivity(userId , actionType , "Post unsaved successfully");
-
-				logger.info("Post {} unsaved successfully for user {}" , postId , userId);
-			} else {
-				logger.warn("Post {} not found in saved posts for user {}" , postId , userId);
-				throw new NotFoundException("Post " + postId + " not found in saved posts for user " + userId);
+			if (!savePost.getPostIds().remove(postId)) {
+				throw new NotFoundException(String.format(POST_NOT_FOUND , postId , userId));
 			}
+
+			savePostRepository.save(savePost);
+			createActivity(userId , "unsaved" , "Post unsaved successfully");
+			logger.info("Post {} unsaved successfully for user {}" , postId , userId);
+
 		} catch (NotFoundException e) {
-			logAndThrow("Error unsaving post for user {}: {}" , userId , e.getMessage() , NotFoundException.class , e);
+			throw e;
 		} catch (Exception e) {
-			logAndThrow("Unexpected error while unsaving post for user {}: {}" , userId , e.getMessage() , InternalServerErrorException.class , e);
+			logger.error(UNEXPECTED_ERROR , "unsaving post" , userId , e.getMessage() , e);
+			throw new InternalServerErrorException(String.format(UNEXPECTED_ERROR , "unsaving post" , userId , e.getMessage()));
 		}
 	}
 
 	public SavePost getSavedPostsForUser(String userId) {
-		logger.info("Fetching saved posts for user {}" , userId);
-
 		try {
-			Optional<SavePost> savedPostsOptional = savePostRepository.findByUserId(userId);
-
-			if (savedPostsOptional.isPresent()) {
-				logger.info("Saved posts found for user {}: {}" , userId , savedPostsOptional.get().getPostIds());
-				return savedPostsOptional.get();
-			} else {
-				logger.warn("No saved posts found for user {}" , userId);
-				return null;
-			}
+			return savePostRepository.findByUserId(userId)
+					.map(savedPosts -> {
+						logger.info("Found {} saved posts for user {}" , savedPosts.getPostIds().size() , userId);
+						return savedPosts;
+					})
+					.orElse(null);
 		} catch (Exception e) {
-			logAndThrow("Error fetching saved posts for user {}: {}" , userId , e.getMessage() , InternalServerErrorException.class , e);
+			logger.error(UNEXPECTED_ERROR , "fetching saved posts" , userId , e.getMessage() , e);
+			throw new InternalServerErrorException(String.format(UNEXPECTED_ERROR , "fetching saved posts" , userId , e.getMessage()));
 		}
-		return null;
 	}
 
 	public int getNumberOfSavedPosts(String postId) {
 		try {
 			return savePostRepository.countByPostId(postId);
 		} catch (Exception e) {
-			logAndThrow("Error fetching saved count for post ID {}: {}" , postId , e.getMessage() , InternalServerErrorException.class , e);
-		}
-		return 0;
-	}
-
-	private void logAndThrow(String message , String userId , Class<? extends RuntimeException> exceptionClass) {
-		logger.error(message , userId);
-		try {
-			throw exceptionClass.getConstructor(String.class).newInstance(String.format(message , userId));
-		} catch (Exception e) {
-			throw new RuntimeException("Error while throwing exception" , e);
+			logger.error("Error fetching saved count for post ID {}: {}" , postId , e.getMessage() , e);
+			throw new InternalServerErrorException(String.format("Error getting saved count for post %s" , postId));
 		}
 	}
 
-	private void logAndThrow(String message , String userId , String additionalMessage , Class<? extends RuntimeException> exceptionClass , Exception e) {
-		logger.error(message , userId , additionalMessage , e);
-		try {
-			throw exceptionClass.getConstructor(String.class).newInstance(String.format(message , userId , additionalMessage));
-		} catch (Exception ex) {
-			throw new RuntimeException("Error while throwing exception" , ex);
-		}
+	private void createActivity(String userId , String action , String message) {
+		String actionTypeString = userId + " " + action + " a post";
+		activityService.updateOrCreateActivity(
+				userId ,
+				new ActionType(List.of(actionTypeString)) ,
+				message
+		);
 	}
 }

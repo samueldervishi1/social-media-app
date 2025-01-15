@@ -8,12 +8,15 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class AppConfig {
+
+	private static final String API_URL_PATTERN = "/api/*";
+
 	@Bean
 	public FilterRegistrationBean<RateLimitingFilter> rateLimitingFilter() {
-		FilterRegistrationBean<RateLimitingFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(new RateLimitingFilter());
-		registrationBean.addUrlPatterns("/api/*");
-		return registrationBean;
+		return new FilterRegistrationBean<>() {{
+			setFilter(new RateLimitingFilter());
+			addUrlPatterns(API_URL_PATTERN);
+		}};
 	}
 
 	@Bean

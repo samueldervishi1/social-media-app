@@ -21,6 +21,8 @@ import java.util.List;
 public class PostService {
 
 	private static final Logger logger = LoggerFactory.getLogger(PostService.class);
+	private static final String POST_NOT_FOUND = "Post not found with ID: ";
+	private static final String USER_NOT_FOUND = "User not found with username: ";
 
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
@@ -33,15 +35,20 @@ public class PostService {
 	}
 
 	@Transactional
-	public void createPost(String username , Post post) {
+	public Post createPost(String username , Post post) {
 		User user = getUserByUsername(username);
 		preparePost(post , user);
-
 
 		Post savedPost = postRepository.save(post);
 		logger.info("Post successfully saved with ID: {}" , savedPost.getId());
 
-		activityService.updateOrCreateActivity(user.getId() , new ActivityModel.ActionType(List.of("Created post")) , "Post created successfully");
+		activityService.updateOrCreateActivity(
+				user.getId() ,
+				new ActivityModel.ActionType(List.of("Created post")) ,
+				"Post created successfully"
+		);
+
+		return savedPost;
 	}
 
 	private void preparePost(Post post , User user) {
@@ -52,17 +59,17 @@ public class PostService {
 	}
 
 	public List<Post> getAllPosts() {
-		List<Post> posts = postRepository.findAll();
-		posts.forEach(post -> logger.info("Fetched post with date and time: {}" , post.getPostDate()));
-		return posts;
+		return postRepository.findAll();
 	}
 
 	public Post getPostById(String postId) {
-		return postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post not found with ID: " + postId));
+		return postRepository.findById(postId)
+				.orElseThrow(() -> new NotFoundException(POST_NOT_FOUND + postId));
 	}
 
 	private User getUserByUsername(String username) {
-		return userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found with username: " + username));
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + username));
 	}
 
 	public List<Post> getUserPosts(String userId) {
@@ -75,8 +82,9 @@ public class PostService {
 
 	@Transactional
 	public void deletePost(String postId) {
-		Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post not found with ID: " + postId));
+		Post post = getPostById(postId);
 		post.setDeleted(true);
 		postRepository.save(post);
+		logger.info("Post with ID {} marked as deleted" , postId);
 	}
 }

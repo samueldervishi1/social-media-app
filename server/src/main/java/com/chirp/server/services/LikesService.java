@@ -14,12 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LikesService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LikesService.class);
+	private static final String ALREADY_LIKED_MSG = "%s is already liked.";
+	private static final String POST_NOT_FOUND_MSG = "Post with ID %s not found.";
+	private static final String UNEXPECTED_ERROR_MSG = "An unexpected error occurred while %s";
 
 	private final LikesRepository likesRepository;
 	private final PostRepository postRepository;
@@ -34,14 +39,22 @@ public class LikesService {
 	@Transactional
 	public Like likePost(String userId , String postId) {
 		Like like = handleLike(userId , postId , true);
-		activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of("Liked post")) , "Post liked successfully");
+		activityService.updateOrCreateActivity(
+				userId ,
+				new ActivityModel.ActionType(Collections.singletonList("Liked post")) ,
+				"Post liked successfully"
+		);
 		return like;
 	}
 
 	@Transactional
 	public Like likeComment(String userId , String commentId) {
 		Like like = handleLike(userId , commentId , false);
-		activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of("Liked comment")) , "Comment liked successfully");
+		activityService.updateOrCreateActivity(
+				userId ,
+				new ActivityModel.ActionType(Collections.singletonList("Liked comment")) ,
+				"Comment liked successfully"
+		);
 		return like;
 	}
 
@@ -55,19 +68,26 @@ public class LikesService {
 	}
 
 	public List<Like> getLikesForComment(String commentId) {
-		return fetchLikesByEntity(likesRepository.findByCommentIdContaining(commentId) , commentId , "comment");
+		List<Like> likes = likesRepository.findByCommentIdContaining(commentId);
+		if (likes.isEmpty()) {
+			logger.info("No likes found for comment with ID {}" , commentId);
+		}
+		return likes;
 	}
 
 	public List<Like> getLikesForUser(String userId) {
-		return fetchLikesByEntity(likesRepository.findByUserId(userId) , userId , "user");
+		List<Like> likes = likesRepository.findByUserId(userId);
+		if (likes.isEmpty()) {
+			logger.info("No likes found for user with ID {}" , userId);
+		}
+		return likes;
 	}
 
 	private Like handleLike(String userId , String entityId , boolean isPost) {
 		String entityType = isPost ? "post" : "comment";
 		try {
-			Like like = likesRepository.findByUserId(userId).stream()
-					.findFirst()
-					.orElse(new Like(userId));
+			Optional<Like> existingLike = likesRepository.findByUserId(userId).stream().findFirst();
+			Like like = existingLike.orElseGet(() -> new Like(userId));
 
 			List<String> entityIds = isPost ? like.getPostId() : like.getCommentId();
 			if (entityIds == null) {
@@ -80,17 +100,17 @@ public class LikesService {
 			}
 
 			if (entityIds.contains(entityId)) {
-				throw new BadRequestException(entityType + " is already liked.");
+				throw new BadRequestException(String.format(ALREADY_LIKED_MSG , entityType));
 			}
 
 			entityIds.add(entityId);
-			likesRepository.save(like);
+			Like savedLike = likesRepository.save(like);
 
 			if (isPost) {
 				incrementPostLikes(userId , entityId);
 			}
 
-			return like;
+			return savedLike;
 		} catch (Exception e) {
 			logAndHandleException(e , "liking " + entityType);
 			throw e;
@@ -99,7 +119,7 @@ public class LikesService {
 
 	private void incrementPostLikes(String userId , String postId) {
 		Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new ResourceNotFoundException("Post with ID " + postId + " not found."));
+				.orElseThrow(() -> new ResourceNotFoundException(String.format(POST_NOT_FOUND_MSG , postId)));
 
 		if (!post.getLikes().contains(userId)) {
 			post.getLikes().add(userId);
@@ -107,19 +127,12 @@ public class LikesService {
 		}
 	}
 
-	private List<Like> fetchLikesByEntity(List<Like> likes , String entityId , String entityType) {
-		if (likes.isEmpty()) {
-			logger.info("No likes found for {} with ID {}" , entityType , entityId);
-		}
-		return likes;
-	}
-
 	private void logAndHandleException(Exception e , String action) {
 		if (e instanceof BadRequestException || e instanceof ResourceNotFoundException) {
 			logger.error("Error during {}: {}" , action , e.getMessage());
 		} else {
-			logger.error("Unexpected error during {}: {}" , action , e.getMessage());
-			throw new InternalServerErrorException("An unexpected error occurred while " + action);
+			logger.error("Unexpected error during {}: {}" , action , e.getMessage() , e);
+			throw new InternalServerErrorException(String.format(UNEXPECTED_ERROR_MSG , action));
 		}
 	}
 }

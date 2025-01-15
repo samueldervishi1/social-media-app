@@ -20,19 +20,18 @@ import java.util.regex.Pattern;
 public class UserService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-
-	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
 	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-
 	private static final String DEFAULT_ROLE = "simple_account";
 	private static final String INVALID_EMAIL_FORMAT = "Invalid email format";
 	private static final String EMAIL_ALREADY_EXISTS = "Email already exists";
 	private static final String USERNAME_ALREADY_EXISTS = "Username already exists";
 	private static final String NAME_TOO_SHORT = "Full name should be at least 2 characters long";
 	private static final String INVALID_PASSWORD_FORMAT = "Password should be at least 8 characters long, including one letter, one symbol, and one number";
-	private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-	private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
+	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
+	private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
+
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
@@ -43,12 +42,9 @@ public class UserService {
 		validateUser(user);
 
 		String salt = generateSalt();
-		String saltedPassword = user.getPassword() + salt;
-		String hashedPassword = passwordEncoder.encode(saltedPassword);
-
-		user.setPassword(hashedPassword);
+		user.setPassword(passwordEncoder.encode(user.getPassword() + salt));
 		user.setSalt(salt);
-		user.setRole(user.getRole() != null ? user.getRole() : DEFAULT_ROLE);
+		user.setRole(user.getRole() == null ? DEFAULT_ROLE : user.getRole());
 
 		logger.info("Creating user: {}" , user.getUsername());
 		return userRepository.save(user);
@@ -69,18 +65,6 @@ public class UserService {
 			throw new BadRequestException(INVALID_EMAIL_FORMAT);
 		}
 
-		boolean emailExists = userRepository.existsByEmail(user.getEmail());
-		boolean usernameExists = userRepository.existsByUsername(user.getUsername());
-
-		if (emailExists || usernameExists) {
-			if (emailExists) {
-				logger.error("Email already exists: {}" , user.getEmail());
-				throw new BadRequestException(EMAIL_ALREADY_EXISTS);
-			}
-			logger.error("Username already exists: {}" , user.getUsername());
-			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
-		}
-
 		if (!isValidLength(user.getFullName())) {
 			throw new BadRequestException(NAME_TOO_SHORT);
 		}
@@ -88,20 +72,36 @@ public class UserService {
 		if (!isValidPassword(user.getPassword())) {
 			throw new BadRequestException(INVALID_PASSWORD_FORMAT);
 		}
+
+		checkDuplicateCredentials(user);
+	}
+
+	private void checkDuplicateCredentials(User user) {
+		if (userRepository.existsByEmail(user.getEmail())) {
+			logger.error("Email already exists: {}" , user.getEmail());
+			throw new BadRequestException(EMAIL_ALREADY_EXISTS);
+		}
+
+		if (userRepository.existsByUsername(user.getUsername())) {
+			logger.error("Username already exists: {}" , user.getUsername());
+			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
+		}
 	}
 
 	public User getUserInfo(String username) {
-		return userRepository.findByUsername(username).orElseThrow(() -> {
-			logger.error("User not found with username: {}" , username);
-			return new NotFoundException("User not found with username: " + username);
-		});
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> {
+					logger.error("User not found with username: {}" , username);
+					return new NotFoundException("User not found with username: " + username);
+				});
 	}
 
 	public User getUserInfoById(String id) {
-		return userRepository.findUserById(id).orElseThrow(() -> {
-			logger.error("User not found with ID: {}" , id);
-			return new NotFoundException("User not found with ID: " + id);
-		});
+		return userRepository.findUserById(id)
+				.orElseThrow(() -> {
+					logger.error("User not found with ID: {}" , id);
+					return new NotFoundException("User not found with ID: " + id);
+				});
 	}
 
 	public Optional<User> findById(String userId) {
@@ -114,7 +114,7 @@ public class UserService {
 	}
 
 	private boolean isValidEmail(String email) {
-		return Pattern.matches(EMAIL_REGEX , email);
+		return EMAIL_PATTERN.matcher(email).matches();
 	}
 
 	private boolean isValidLength(String value) {
@@ -122,6 +122,6 @@ public class UserService {
 	}
 
 	private boolean isValidPassword(String password) {
-		return Pattern.matches(PASSWORD_REGEX , password);
+		return PASSWORD_PATTERN.matcher(password).matches();
 	}
 }
