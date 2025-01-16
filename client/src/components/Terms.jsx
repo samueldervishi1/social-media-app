@@ -1,6 +1,7 @@
 import React from 'react';
 import termsData from '../assets/terms.json';
 import styles from '../styles/terms.module.css';
+import { Link } from 'react-router-dom';
 
 const TermsAndServices = () => {
   const formatContent = (content) => (
@@ -19,6 +20,9 @@ const TermsAndServices = () => {
 
   return (
     <div className={styles.terms_container}>
+      <div className={styles.login_link}>
+        <Link to='/login'>Login to get started</Link>
+      </div>
       <div className={styles.h1_container}>
         <h1 style={{ color: 'black' }}>Terms of Service</h1>
       </div>

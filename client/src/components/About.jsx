@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import aboutData from '../assets/about.json';
 import styles from '../styles/about.module.css';
 
@@ -18,6 +19,9 @@ const formatContent = (content) => {
 const About = () => {
   return (
     <div className={styles.about_container}>
+      <div className={styles.login_link}>
+        <Link to="/login">Login to get started</Link>
+      </div>
       <div className={styles.h1_container}>
         <h1 style={{ color: 'black' }}>About Us</h1>
       </div>

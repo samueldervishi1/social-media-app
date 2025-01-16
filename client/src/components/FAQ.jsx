@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -136,6 +137,9 @@ const FAQ = () => {
 
   return (
     <div style={styles.container}>
+      <div className={styles.login_link}>
+        <Link to='/login'>Login to get started</Link>
+      </div>
       <section>
         <div>
           <h2>FAQ</h2>

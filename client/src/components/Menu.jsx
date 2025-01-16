@@ -32,8 +32,7 @@ const Menu = () => {
         </li>
       </ul>
       <div className={styles.footer_links}>
-        <a href='/about'>About</a> ·<a href='/terms'>Terms</a> ·
-        <a href='/health'>Health</a> ·<a href='/home'>CHYRA © 2024</a>
+        <a href='/home'>CHYRA © 2024</a>
       </div>
     </nav>
   );
