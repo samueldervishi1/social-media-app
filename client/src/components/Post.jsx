@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { CiLocationArrow1 } from 'react-icons/ci';
-import { MdOutlineEmojiEmotions } from 'react-icons/md';
+import { MdOutlineEmojiEmotions, MdDelete } from 'react-icons/md';
 import Picker from 'emoji-picker-react';
 import { LuSendHorizontal } from 'react-icons/lu';
 import { Snackbar, Alert } from '@mui/material';
@@ -15,29 +15,95 @@ const PostForm = () => {
   const [postContent, setPostContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-
-  const handleSnackbarClose = () => setSnackbarOpen(false);
-
-  const dbPromise = openDB('socialAppDB', 1, {
-    upgrade(db) {
-      db.createObjectStore('posts', { keyPath: 'id', autoIncrement: true });
-    },
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
   });
 
-  const savePostOffline = async (postContent) => {
-    const db = await dbPromise;
-    const post = {
-      content: postContent,
-      postDate: new Date().toISOString().split('T')[0],
-      postTime: new Date().toISOString().split('T')[1],
-    };
-    await db.put('posts', post);
-  };
+  const handleSnackbarClose = () =>
+    setSnackbar((prev) => ({ ...prev, open: false }));
 
-  const sendOfflinePosts = async () => {
+  const showSnackbar = useCallback((message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity,
+    });
+  }, []);
+
+  const dbPromise = useMemo(
+    () =>
+      openDB('socialAppDB', 1, {
+        upgrade(db) {
+          db.createObjectStore('posts', { keyPath: 'id', autoIncrement: true });
+        },
+      }),
+    []
+  );
+
+  const savePostOffline = useCallback(
+    async (content) => {
+      const db = await dbPromise;
+      const post = {
+        content,
+        postDate: new Date().toISOString().split('T')[0],
+        postTime: new Date().toISOString().split('T')[1],
+      };
+      await db.put('posts', post);
+    },
+    [dbPromise]
+  );
+
+  const handlePostSubmit = useCallback(
+    async (content, isOffline = false) => {
+      if (isSubmitting || (isOffline && !content)) return;
+      setIsSubmitting(true);
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showSnackbar('Token not found. Please log in again.', 'error');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const username = getUsernameFromToken(token);
+
+      try {
+        const response = await axios.post(
+          `${API_URL}/api/v2/posts/create/${username}`,
+          { content },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          showSnackbar('Post created successfully!');
+          setPostContent('');
+          setTimeout(() => window.location.reload(), 1000);
+        }
+      } catch (error) {
+        if (!navigator.onLine) {
+          await savePostOffline(content);
+          showSnackbar(
+            'Post saved offline. It will be sent when you are online.',
+            'warning'
+          );
+        } else {
+          showSnackbar('Error creating post. Please try again.', 'error');
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [isSubmitting, showSnackbar, savePostOffline]
+  );
+
+  const sendOfflinePosts = useCallback(async () => {
     const db = await dbPromise;
     const posts = await db.getAll('posts');
     if (posts.length > 0) {
@@ -46,83 +112,16 @@ const PostForm = () => {
         await db.delete('posts', post.id);
       }
     }
-  };
+  }, [dbPromise, handlePostSubmit]);
 
   useEffect(() => {
     window.addEventListener('online', sendOfflinePosts);
-    return () => {
-      window.removeEventListener('online', sendOfflinePosts);
-    };
-  }, []);
+    return () => window.removeEventListener('online', sendOfflinePosts);
+  }, [sendOfflinePosts]);
 
-  const handlePostSubmit = async (content, isOffline = false) => {
-    if (isSubmitting || (isOffline && !content)) return;
-    setIsSubmitting(true);
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setSnackbarMessage('Token not found. Please log in again.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-      setIsSubmitting(false);
-      return;
-    }
-
-    const username = getUsernameFromToken(token);
-
-    try {
-      const response = await axios.post(
-        `${API_URL}/api/v2/posts/create/${username}`,
-        { content },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setSnackbarMessage('Post created successfully!');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
-        setPostContent('');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
-    } catch (error) {
-      if (!navigator.onLine) {
-        await savePostOffline(content);
-        setSnackbarMessage(
-          'Post saved offline. It will be sent when you are online.'
-        );
-        setSnackbarSeverity('warning');
-        setSnackbarOpen(true);
-      } else {
-        setSnackbarMessage('Error creating post. Please try again.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handlePostContentChange = (event) => setPostContent(event.target.value);
-
-  const handleEmojiClick = (emojiData) => {
-    if (emojiData?.emoji) {
-      setPostContent((prevContent) => prevContent + emojiData.emoji);
-      setShowEmojiPicker(false);
-    }
-  };
-
-  const handleLocation = () => {
+  const handleLocation = useCallback(async () => {
     if (!navigator.geolocation) {
-      setSnackbarMessage('Geolocation is not supported by your browser.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      showSnackbar('Geolocation is not supported by your browser.', 'error');
       return;
     }
 
@@ -154,27 +153,29 @@ const PostForm = () => {
             'Unknown City';
           const country = address.country || 'Unknown Country';
 
-          const locationString = `📍 Location: ${city}, ${country}`;
-          setPostContent((prevContent) => `${prevContent} ${locationString}`);
+          setPostContent((prev) => `${prev} 📍 Location: ${city}, ${country}`);
         } catch (error) {
-          setSnackbarMessage('Error fetching location details.');
-          setSnackbarSeverity('error');
-          setSnackbarOpen(true);
-          const locationString = `📍 Location: (${latitude.toFixed(
-            4
-          )}, ${longitude.toFixed(4)})`;
-          setPostContent((prevContent) => `${prevContent} ${locationString}`);
+          showSnackbar('Error fetching location details.', 'error');
+          setPostContent(
+            (prev) =>
+              `${prev} 📍 Location: (${latitude.toFixed(
+                4
+              )}, ${longitude.toFixed(4)})`
+          );
         }
       },
-      (error) => {
-        setSnackbarMessage('Unable to retrieve your location.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-      }
+      () => showSnackbar('Unable to retrieve your location.', 'error')
     );
-  };
+  }, [showSnackbar]);
 
-  const placeholderText = `What's on your mind today, ${getUsernameFromToken()}?`;
+  const placeholderText = useMemo(
+    () => `What's on your mind today, ${getUsernameFromToken()}?`,
+    []
+  );
+
+  const handleClearInput = () => {
+    setPostContent('');
+  };
 
   return (
     <form
@@ -188,12 +189,17 @@ const PostForm = () => {
         <textarea
           placeholder={placeholderText}
           value={postContent}
-          onChange={handlePostContentChange}
+          onChange={(e) => setPostContent(e.target.value)}
           rows={1}
           required
           className={styles.textarea}
         />
         <div className={styles.icons_container}>
+          <MdDelete
+            className={styles.icon}
+            onClick={handleClearInput}
+            title='Clear input'
+          />
           <MdOutlineEmojiEmotions
             className={styles.icon}
             onClick={() => setShowEmojiPicker((prev) => !prev)}
@@ -216,21 +222,28 @@ const PostForm = () => {
       </div>
       {showEmojiPicker && (
         <div className={styles.emoji_picker}>
-          <Picker onEmojiClick={handleEmojiClick} />
+          <Picker
+            onEmojiClick={(emojiData) => {
+              if (emojiData?.emoji) {
+                setPostContent((prev) => prev + emojiData.emoji);
+                setShowEmojiPicker(false);
+              }
+            }}
+          />
         </div>
       )}
       <Snackbar
-        open={snackbarOpen}
+        open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert
           onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
+          severity={snackbar.severity}
           sx={{ width: '100%' }}
         >
-          {snackbarMessage}
+          {snackbar.message}
         </Alert>
       </Snackbar>
     </form>

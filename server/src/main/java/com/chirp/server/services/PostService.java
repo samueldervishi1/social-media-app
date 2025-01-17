@@ -3,10 +3,8 @@ package com.chirp.server.services;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.ActivityModel;
 import com.chirp.server.models.Post;
-import com.chirp.server.models.SavePost;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.PostRepository;
-import com.chirp.server.repositories.SavePostRepository;
 import com.chirp.server.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,7 @@ public class PostService {
 	}
 
 	@Transactional
-	public Post createPost(String username , Post post) {
+	public void createPost(String username , Post post) {
 		User user = getUserByUsername(username);
 		preparePost(post , user);
 
@@ -48,7 +46,6 @@ public class PostService {
 				"Post created successfully"
 		);
 
-		return savedPost;
 	}
 
 	private void preparePost(Post post , User user) {

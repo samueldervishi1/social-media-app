@@ -46,6 +46,7 @@
   border: none;
   cursor: pointer;
   position: relative;
+  margin-top: -4px;
 }
 
 .emoji_picker {

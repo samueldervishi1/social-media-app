@@ -377,7 +377,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
             Account Information
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ textAlign: 'center' }}>
+        <Modal.Body>
           <p>
             To help keep our community authentic, we’re showing information
             about accounts on AЯYHƆ. People can see this by tapping on the
@@ -387,6 +387,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
               style={{ color: 'blue', textDecoration: 'underline' }}
             >
               {' '}
+              <br />
               See why this information is important.
             </a>
           </p>

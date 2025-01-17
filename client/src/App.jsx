@@ -5,39 +5,25 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+
 import { useAuth } from './auth/AuthContext';
 
-// Authentication components
 const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
-
-// User profile and related pages (Profile, UserDetails, UserCommunities, SavedPosts)
 const Home = lazy(() => import('./components/Home'));
 const Profile = lazy(() => import('./components/Profile'));
 const UserDetails = lazy(() => import('./components/UserDetails'));
 const UserCommunities = lazy(() => import('./components/UserCommunities'));
 const SavedPosts = lazy(() => import('./components/SavedPosts'));
 const Activity = lazy(() => import('./components/Activity'));
-
-// Layout components (Navbar, Header, Footer, etc.)
 const Navbar = lazy(() => import('./components/Navbar'));
-
-// Messaging and communication components (Inbox, ChatAI, Friends)
 const Inbox = lazy(() => import('./components/Inbox'));
 const ChatAI = lazy(() => import('./components/ChatAI'));
 const Friends = lazy(() => import('./components/Friends'));
-
-// Community-related components (CommunitiesList, CommunityDetails)
 const CommunitiesList = lazy(() => import('./components/CommunitiesList'));
 const CommunityDetails = lazy(() => import('./components/CommunityDetails'));
-
-// Security and settings components (Enable2FA)
 const Enable2FA = lazy(() => import('./components/Enable2FA'));
-
-// Event-related components (Events)
 const Events = lazy(() => import('./components/Events'));
-
-// General information components for static pages
 const TermsAndServices = lazy(() => import('./components/Terms'));
 const About = lazy(() => import('./components/About'));
 const Contact = lazy(() => import('./components/Contact'));
