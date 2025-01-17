@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import placeHolderImage from "../assets/placeholder.png";
 import placeHolderLogo from "../assets/logo-placeholder-image.png";
 import loader from "../assets/ZKZg.gif";
-import { getUserIdFromToken } from "../auth/authUtils";
 import { Snackbar, Alert } from "@mui/material";
 import { Modal, Button, Form } from "react-bootstrap";
 import styles from "../styles/communitiesList.module.css";
+
+import { getUserIdFromToken } from "../auth/authUtils";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const CommunitiesList = () => {
   const [communities, setCommunities] = useState([]);
@@ -41,7 +43,7 @@ const CommunitiesList = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:8080/api/v2/communities/list",
+          `${API_URL}/api/v2/communities/list`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -70,7 +72,7 @@ const CommunitiesList = () => {
           communities.map(async (community) => {
             try {
               const response = await axios.get(
-                `http://localhost:8080/api/v2/communities/c/count/${encodeURIComponent(
+                `${API_URL}/api/v2/communities/c/count/${encodeURIComponent(
                   community.name
                 )}`,
                 {
@@ -121,7 +123,7 @@ const CommunitiesList = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:8080/api/v2/communities/join/${communityId}/users/${userId}`,
+        `${API_URL}/api/v2/communities/join/${communityId}/users/${userId}`,
         {},
         {
           headers: {
@@ -157,7 +159,7 @@ const CommunitiesList = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        `http://localhost:8080/api/v2/communities/create/${userId}`,
+        `${API_URL}/api/v2/communities/create/${userId}`,
         {
           name: communityName,
           description: communityDescription,

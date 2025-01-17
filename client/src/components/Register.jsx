@@ -5,6 +5,8 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/register.module.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -45,7 +47,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/v2/users/auth/register',
+        `${API_URL}/api/v2/users/auth/register`,
         formData,
         {
           headers: {

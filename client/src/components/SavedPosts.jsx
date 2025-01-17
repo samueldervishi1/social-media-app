@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import styles from "../styles/postsPage.module.css";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import styles from '../styles/postsPage.module.css';
 
-const Menu = React.lazy(() => import("./Menu"));
-import { getUserIdFromToken } from "../auth/authUtils";
+import { getUserIdFromToken } from '../auth/authUtils';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const userId = getUserIdFromToken();
-const token = localStorage.getItem("token");
+const token = localStorage.getItem('token');
 
 const PostsPage = () => {
   const [posts, setPosts] = useState([]);
@@ -16,12 +16,12 @@ const PostsPage = () => {
     const fetchPosts = async () => {
       try {
         if (!token) {
-          setError("No token found!");
+          setError('No token found!');
           return;
         }
 
         const response = await axios.get(
-          `http://localhost:8080/api/v2/save/posts/${userId}`,
+          `${API_URL}/api/v2/save/posts/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,7 +33,7 @@ const PostsPage = () => {
       } catch (err) {
         if (err.response && err.response.status === 404) {
           setError(
-            "You have not saved any posts. Save something to show it here."
+            'You have not saved any posts. Save something to show it here.'
           );
         } else {
           setError(`Error fetching posts: ${err.message}`);

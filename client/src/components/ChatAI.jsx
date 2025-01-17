@@ -9,6 +9,7 @@ import { FaRegPenToSquare } from "react-icons/fa6";
 import styles from "../styles/ai.module.css";
 
 import { getUserIdFromToken } from "../auth/authUtils";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const ChatAI = () => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -115,7 +116,7 @@ const ChatAI = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.get(`http://localhost:8080/api/v2/ping`, {
+      await axios.get(`${API_URL}/api/v2/ping`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -160,7 +161,7 @@ const ChatAI = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        `http://localhost:8080/api/v2/ask`,
+        `${API_URL}/api/v2/ask`,
         {
           message: userInput,
         },
@@ -180,7 +181,7 @@ const ChatAI = () => {
         const userId = getUserIdFromToken();
         const sessionId = getSessionId();
         await axios.post(
-          `http://localhost:8080/api/v2/history/save/${userId}/session/${sessionId}`,
+          `${API_URL}/api/v2/history/save/${userId}/session/${sessionId}`,
           {
             message: userInput,
             answer: responseData,

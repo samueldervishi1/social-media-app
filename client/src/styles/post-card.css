@@ -455,10 +455,6 @@
   .new-comment-form textarea:focus {
     border-bottom: 2px solid #0072ff;
   }
-
-  .list-loader {
-    left: 25%;
-  }
 }
 
 @media (max-width: 768px) {

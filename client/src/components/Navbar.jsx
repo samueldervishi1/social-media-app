@@ -15,19 +15,25 @@ import { IoPersonCircleOutline, IoSettingsOutline } from 'react-icons/io5';
 import { AiOutlineMessage } from 'react-icons/ai';
 import { CiLogout, CiServer } from 'react-icons/ci';
 import { GiArtificialHive } from 'react-icons/gi';
+import { TbLogs } from 'react-icons/tb';
 import {
   MdDeleteForever,
   MdOutlinePrivacyTip,
   MdOutlineEmail,
   MdOutlineHelpOutline,
+  MdClose,
 } from 'react-icons/md';
 import { TbPremiumRights, TbAuth2Fa } from 'react-icons/tb';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
+import { LiaUserFriendsSolid } from 'react-icons/lia';
+import { CiSaveDown2 } from 'react-icons/ci';
+import { SiEventstore } from 'react-icons/si';
 import loaderImage from '../assets/ZKZg.gif';
 import styles from '../styles/navbar.module.css';
 
 import { getUserIdFromToken, getUsernameFromToken } from '../auth/authUtils';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -52,6 +58,13 @@ const Navbar = () => {
       name: `Your profile ${username}`,
       icon: <IoPersonCircleOutline className={styles.icon_p} />,
     },
+    {
+      name: 'Find friends',
+      icon: <LiaUserFriendsSolid className={styles.icon_p} />,
+    },
+    { name: 'Saved', icon: <CiSaveDown2 className={styles.icon_p} /> },
+    { name: 'Events', icon: <SiEventstore className={styles.icon_p} /> },
+    { name: 'Activity', icon: <TbLogs className={styles.icon_p} /> },
     { name: 'Logout', icon: <CiLogout className={styles.icon_p} /> },
   ];
 
@@ -86,7 +99,7 @@ const Navbar = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:8080/api/v2/search/users?username=${encodeURIComponent(
+        `${API_URL}/api/v2/search/users?username=${encodeURIComponent(
           username
         )}`,
         {
@@ -135,25 +148,22 @@ const Navbar = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
-      await axios.delete(
-        `http://localhost:8080/api/v2/users/update/delete/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`${API_URL}/api/v2/users/update/delete/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       localStorage.removeItem('token');
       setShowDeleteModal(false);
-      navigate('/login');
+      window.location.href = '/login';
     } catch (error) {
       console.error('Error deleting account:', error);
       alert('Failed to delete account. Please try again later.');
     } finally {
       setIsDeleting(false);
     }
-  }, [userId, navigate]);
+  }, [userId]);
 
   // Click outside handler
   useEffect(() => {
@@ -199,6 +209,16 @@ const Navbar = () => {
     (settingName) => {
       if (settingName === `Your profile ${username}`) {
         navigate('/u/profile');
+      } else if (settingName === 'Find friends') {
+        navigate('/user/friends');
+      } else if (settingName === 'Saved') {
+        navigate('/user/saved');
+      } else if (settingName === 'Your communities') {
+        navigate('/c/user/communities');
+      } else if (settingName === 'Activity') {
+        navigate('/c/activity');
+      } else if (settingName === 'Events') {
+        navigate('/c/events');
       } else if (settingName === 'Logout') {
         handleLogout();
       }
@@ -230,6 +250,19 @@ const Navbar = () => {
     [navigate]
   );
 
+  useEffect(() => {
+    const isAnyPanelOpen = Boolean(anchorElSettings) || Boolean(anchorElUser);
+    if (isAnyPanelOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [anchorElSettings, anchorElUser]);
+
   return (
     <>
       <div className={styles.chat_history1}>
@@ -240,34 +273,46 @@ const Navbar = () => {
                 <Avatar />
               </IconButton>
             </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id='menu-appbar'
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+
+            {/* User Profile Sliding Panel */}
+            <div
+              className={`${styles.user_overlay} ${
+                Boolean(anchorElUser) ? styles.open : ''
+              }`}
+              onClick={handleCloseUserMenu}
+            />
+            <div
+              className={`${styles.user_sidebar} ${
+                Boolean(anchorElUser) ? styles.open : ''
+              }`}
             >
-              {userSettings.map((setting, index) => (
-                <MenuItem
-                  key={index}
-                  onClick={() => handleSettingAction(setting.name)}
-                >
-                  <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                    {setting.icon}
-                    {setting.name}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+              <div className={styles.user_header}>
+                <Typography variant='h6'>Profile settings</Typography>
+                <IconButton onClick={handleCloseUserMenu}>
+                  <MdClose />
+                </IconButton>
+              </div>
+              <div className={styles.user_content}>
+                {userSettings.map((setting, index) => (
+                  <div
+                    key={index}
+                    className={styles.user_item}
+                    onClick={() => handleSettingAction(setting.name)}
+                  >
+                    <Typography
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                      }}
+                    >
+                      {setting.icon}
+                      {setting.name}
+                    </Typography>
+                  </div>
+                ))}
+              </div>
+            </div>
           </Box>
           <Box sx={{ marginLeft: 2 }}>
             <Tooltip title='Home'>
@@ -425,7 +470,7 @@ const Navbar = () => {
                 Communities
               </IconButton>
             </a>
-            <Box sx={{ marginLeft: 0, marginTop: 1 }}>
+            <Box sx={{ marginLeft: 0, marginTop: 0.7 }}>
               <Tooltip title='Open settings'>
                 <IconButton
                   onClick={handleOpenSettingsMenu}
@@ -435,40 +480,62 @@ const Navbar = () => {
                   <IoSettingsOutline className={styles.icon_p} /> Settings
                 </IconButton>
               </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                anchorEl={anchorElSettings}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElSettings)}
-                onClose={handleCloseSettingsMenu}
+
+              {/* Settings Sliding Panel */}
+              <div
+                className={`${styles.settings_overlay} ${
+                  Boolean(anchorElSettings) ? styles.open : ''
+                }`}
+                onClick={handleCloseSettingsMenu}
+              />
+              <div
+                className={`${styles.settings_sidebar} ${
+                  Boolean(anchorElSettings) ? styles.open : ''
+                }`}
               >
-                {settings.map((setting, index) => (
-                  <MenuItem
-                    key={index}
-                    onClick={() => handleActions(setting.name)}
+                <div className={styles.settings_header}>
+                  <Typography variant='h6'>Settings</Typography>
+                  <IconButton onClick={handleCloseSettingsMenu}>
+                    <MdClose />
+                  </IconButton>
+                </div>
+                <div className={styles.settings_content}>
+                  {settings.map((setting, index) => (
+                    <div
+                      key={index}
+                      className={styles.settings_item}
+                      onClick={() => handleActions(setting.name)}
+                    >
+                      <Typography
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                        }}
+                      >
+                        {setting.icon}
+                        {setting.name}
+                      </Typography>
+                    </div>
+                  ))}
+                  <div
+                    className={styles.settings_item}
+                    onClick={() => setShowDeleteModal(true)}
+                    style={{ color: 'red' }}
                   >
-                    <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                      {setting.icon}
-                      {setting.name}
+                    <Typography
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                      }}
+                    >
+                      <MdDeleteForever className={styles.icon_p} />
+                      Delete Account
                     </Typography>
-                  </MenuItem>
-                ))}
-                <MenuItem
-                  onClick={() => setShowDeleteModal(true)}
-                  sx={{ color: 'red' }}
-                >
-                  <MdDeleteForever className={styles.icon_p} />
-                  Delete Account
-                </MenuItem>
-              </Menu>
+                  </div>
+                </div>
+              </div>
             </Box>
           </div>
         </div>

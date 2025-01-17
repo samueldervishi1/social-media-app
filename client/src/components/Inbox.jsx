@@ -7,6 +7,7 @@ import customLoadingGif from "../assets/ZKZg.gif";
 
 const MessageComponent = React.lazy(() => import("./Message"));
 import { getUserIdFromToken } from "../auth/authUtils";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Inbox = ({ user }) => {
   const [showMessageComponent, setShowMessageComponent] = useState(false);
@@ -28,7 +29,7 @@ const Inbox = ({ user }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/users/list/${userId}`,
+          `${API_URL}/api/v2/users/list/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -42,7 +43,7 @@ const Inbox = ({ user }) => {
             const followersData = await Promise.all(
               followerIds.map(async (followerId) => {
                 const followerResponse = await axios.get(
-                  `http://localhost:8080/api/v2/users/${followerId}`,
+                  `${API_URL}/api/v2/users/${followerId}`,
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,

@@ -3,6 +3,7 @@ import { FaPlus, FaMinus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const FAQ = () => {
+  const token = localStorage.getItem('token');
   const [activeIndex, setActiveIndex] = useState(null);
   const [formState, setFormState] = useState({
     isSubmitted: false,
@@ -137,9 +138,11 @@ const FAQ = () => {
 
   return (
     <div style={styles.container}>
-      <div className={styles.login_link}>
-        <Link to='/login'>Login to get started</Link>
-      </div>
+      {!token && (
+        <div className={styles.login_link}>
+          <Link to='/login'>Login to get started</Link>
+        </div>
+      )}
       <section>
         <div>
           <h2>FAQ</h2>

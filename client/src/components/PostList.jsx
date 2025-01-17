@@ -4,6 +4,7 @@ import loaderImage from "../assets/ZKZg.gif";
 import "../styles/post-card.css";
 
 const PostCard = React.lazy(() => import("./PostCard"));
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -22,7 +23,7 @@ const PostList = () => {
       const token = localStorage.getItem("token");
 
       const userPostsResponse = await axios.get(
-        `http://localhost:8080/api/v2/posts/all`,
+        `${API_URL}/api/v2/posts/all`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

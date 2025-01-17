@@ -11,6 +11,7 @@ import loader from "../assets/ZKZg.gif";
 import styles from "../styles/communityDetails.module.css";
 
 import { getUserIdFromToken } from "../auth/authUtils";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const CommunityDetails = () => {
   const { name } = useParams();
@@ -47,7 +48,7 @@ const CommunityDetails = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/communities/${name}`,
+          `${API_URL}/api/v2/communities/${name}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -77,14 +78,14 @@ const CommunityDetails = () => {
       const postDetailsPromises = postIds.map(async (postId) => {
         try {
           const postResponse = await axios.get(
-            `http://localhost:8080/api/v2/communities/post/${postId}`,
+            `${API_URL}/api/v2/communities/post/${postId}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const post = postResponse.data;
 
           try {
             const likesResponse = await axios.get(
-              `http://localhost:8080/api/v2/communities/count/${postId}`,
+              `${API_URL}/api/v2/communities/count/${postId}`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
             post.likesCount = likesResponse.data;
@@ -98,7 +99,7 @@ const CommunityDetails = () => {
 
           try {
             const userResponse = await axios.get(
-              `http://localhost:8080/api/v2/users/${post.ownerId}`,
+              `${API_URL}/api/v2/users/${post.ownerId}`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
             post.author = userResponse.data.username;
@@ -143,7 +144,7 @@ const CommunityDetails = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/communities/c/count/${encodeURIComponent(
+          `${API_URL}/api/v2/communities/c/count/${encodeURIComponent(
             name
           )}`,
           {
@@ -175,7 +176,7 @@ const CommunityDetails = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:8080/api/v2/communities/join/${communityId}/${userId}`,
+        `${API_URL}/api/v2/communities/join/${communityId}/${userId}`,
         {},
         {
           headers: {
@@ -209,7 +210,7 @@ const CommunityDetails = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v2/communities/${name}/posts`,
+        `${API_URL}/api/v2/communities/${name}/posts`,
         postData,
         {
           headers: {

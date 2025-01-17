@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Alert } from "react-bootstrap";
 
+
+const CHECK_URL = import.meta.env.VITE_CHECK_URL;
+
 const HealthCheck = () => {
   const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
@@ -10,7 +13,7 @@ const HealthCheck = () => {
   useEffect(() => {
     const fetchHealthStatus = async () => {
       try {
-        const response = await axios.get("http://localhost:5130/api/v2/health");
+        const response = await axios.get(`${CHECK_URL}/api/v2/health`);
 
         if (response.data.status === "Server is running smoothly!") {
           setStatus("success");

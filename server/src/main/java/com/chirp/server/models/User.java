@@ -3,6 +3,7 @@ package com.chirp.server.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,7 @@ public class User {
 	private String role = "simple_account";
 	private boolean deleted;
 	private boolean twoFa = false;
+	private LocalDateTime accountCreationDate;
 
 	@Override
 	public boolean equals(Object o) {
@@ -135,5 +137,13 @@ public class User {
 
 	public void setTwoFa(boolean twoFa) {
 		this.twoFa = twoFa;
+	}
+
+	public LocalDateTime getAccountCreationDate() {
+		return accountCreationDate;
+	}
+
+	public void setAccountCreationDate(LocalDateTime accountCreationDate) {
+		this.accountCreationDate = accountCreationDate;
 	}
 }

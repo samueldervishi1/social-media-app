@@ -10,6 +10,7 @@ import styles from "../styles/user-details.module.css";
 
 const PostCard = React.lazy(() => import("./PostCard"));
 import { getUserIdFromToken } from "../auth/authUtils";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const UserDetail = () => {
   const { userId } = useParams();
@@ -38,7 +39,7 @@ const UserDetail = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:8080/api/v2/users/${userId}`,
+        `${API_URL}/api/v2/users/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -77,7 +78,7 @@ const UserDetail = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:8080/api/v2/posts/list/${userId}`,
+        `${API_URL}/api/v2/posts/list/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -109,7 +110,7 @@ const UserDetail = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/posts/list/count/${userId}`,
+          `${API_URL}/api/v2/posts/list/count/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -137,7 +138,7 @@ const UserDetail = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/users/${userId}/followers/count`,
+          `${API_URL}/api/v2/users/${userId}/followers/count`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -160,7 +161,7 @@ const UserDetail = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/users/${userId}/following/count`,
+          `${API_URL}/api/v2/users/${userId}/following/count`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -184,7 +185,7 @@ const UserDetail = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/users/${loggedInUserId}/following`,
+          `${API_URL}/api/v2/users/${loggedInUserId}/following`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -209,8 +210,8 @@ const UserDetail = () => {
       try {
         const token = localStorage.getItem("token");
         const apiEndpoint = isFollowing
-          ? `http://localhost:8080/api/v2/users/${loggedInUserId}/unfollow/${userId}`
-          : `http://localhost:8080/api/v2/users/follow/${loggedInUserId}/follow/${userId}`;
+          ? `${API_URL}/api/v2/users/${loggedInUserId}/unfollow/${userId}`
+          : `${API_URL}/api/v2/users/follow/${loggedInUserId}/follow/${userId}`;
 
         const response = await axios.post(
           apiEndpoint,

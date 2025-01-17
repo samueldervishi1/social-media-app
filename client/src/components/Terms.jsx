@@ -4,6 +4,7 @@ import styles from '../styles/terms.module.css';
 import { Link } from 'react-router-dom';
 
 const TermsAndServices = () => {
+  const token = localStorage.getItem('token');
   const formatContent = (content) => (
     <p>
       {content.split('*').map((part, index) =>
@@ -20,9 +21,11 @@ const TermsAndServices = () => {
 
   return (
     <div className={styles.terms_container}>
-      <div className={styles.login_link}>
-        <Link to='/login'>Login to get started</Link>
-      </div>
+      {!token && (
+        <div className={styles.login_link}>
+          <Link to='/login'>Login to get started</Link>
+        </div>
+      )}
       <div className={styles.h1_container}>
         <h1 style={{ color: 'black' }}>Terms of Service</h1>
       </div>

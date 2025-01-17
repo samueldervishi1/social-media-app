@@ -4,6 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import locationIcon from '../assets/location.png';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Events = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [map, setMap] = useState(null);
@@ -18,14 +20,11 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(
-        'http://localhost:8080/api/v2/events/all',
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/api/v2/events/all`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
       setDailyEvents(response.data);
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -107,30 +106,30 @@ const Events = () => {
     return date.toLocaleDateString('en-US', options);
   };
 
-  const isEventEnded = (eventDate) => {
-    const currentDate = new Date();
-    return new Date(eventDate) < currentDate;
-  };
-
   useEffect(() => {
     if (map && userLocation) {
       dailyEvents.forEach((event) => {
         const eventLocation = [event.lat, event.lon];
         const marker = L.marker(eventLocation).addTo(map);
-  
+
         const popupContent = `
           <div style="padding: 10px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);">
-              <h4 style="margin: 0; color: #007bff; text-align: center;">${event.title}</h4>
-              <p style="margin: 5px 0; font-size: 14px;">${event.description}</p>
-              <p style="margin: 5px 0; font-size: 12px; color: #777;">Date & Time: ${formatDate(event.date)}</p>
+              <h4 style="margin: 0; color: #007bff; text-align: center;">${
+                event.title
+              }</h4>
+              <p style="margin: 5px 0; font-size: 14px;">${
+                event.description
+              }</p>
+              <p style="margin: 5px 0; font-size: 12px; color: #777;">Date & Time: ${formatDate(
+                event.date
+              )}</p>
           </div>
         `;
-  
+
         marker.bindPopup(popupContent);
       });
     }
   }, [map, userLocation, dailyEvents]);
-  
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;

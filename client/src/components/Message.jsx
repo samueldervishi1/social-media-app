@@ -7,7 +7,7 @@ const MessageComponent = ({ senderId, receiverId }) => {
   const [messageInput, setMessageInput] = useState('');
   const ws = useRef(null);
 
-  const wsBaseUrl = 'ws://localhost:8001/ws/chat';
+  const wsBaseUrl = import.meta.env.VITE_WS_BASE_URL;
 
   // Handle WebSocket connection
   useEffect(() => {

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { getUserIdFromToken } from '../auth/authUtils';
 import '../styles/activity.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Activity = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +28,7 @@ const Activity = () => {
 
       try {
         const { data } = await axios.get(
-          `http://localhost:8080/api/v2/activities/user/${userId}`,
+          `${API_URL}/api/v2/activities/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

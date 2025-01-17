@@ -5,6 +5,8 @@ import customLoadingGif from '../assets/ZKZg.gif';
 import styles from '../styles/login.module.css';
 import { useAuth } from '../auth/AuthContext';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const LoginScript = () => {
   const [formState, setFormState] = useState({
     error: null,
@@ -27,7 +29,7 @@ const LoginScript = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v2/auth/login`,
+          `${API_URL}/api/v2/auth/login`,
           {
             method: 'POST',
             headers: {

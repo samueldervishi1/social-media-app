@@ -366,3 +366,159 @@
     display: flex;
   }
 }
+
+.settings_sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 300px;
+  background: rgb(255, 255, 255);
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  z-index: 1500;
+  backdrop-filter: blur(7.6px);
+  visibility: hidden;
+  opacity: 0;
+  overflow-x: hidden;
+  pointer-events: none;
+  display: none;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.settings_sidebar.open {
+  transform: translateX(0);
+  visibility: visible;
+  opacity: 1;
+  transition: transform 0.3s ease-in-out, visibility 0s linear 0s,
+    opacity 0.3s ease-in-out;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings_header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings_content {
+  padding: 20px;
+}
+
+.settings_item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 8px;
+}
+
+.settings_item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.settings_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+  z-index: 1400;
+  pointer-events: none;
+}
+
+.settings_overlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.user_sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 300px;
+  background: rgb(255, 255, 255);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out, visibility 0s linear 0.3s,
+    opacity 0.3s ease-in-out;
+  z-index: 1500;
+  backdrop-filter: blur(7.6px);
+  visibility: hidden;
+  opacity: 0;
+  overflow-x: hidden;
+  pointer-events: none;
+  display: none;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.user_sidebar.open {
+  transform: translateX(0);
+  visibility: visible;
+  opacity: 1;
+  transition: transform 0.3s ease-in-out, visibility 0s linear 0s,
+    opacity 0.3s ease-in-out;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.user_header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user_content {
+  padding: 20px;
+}
+
+.user_item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 8px;
+}
+
+.user_item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.user_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+  z-index: 1400;
+  pointer-events: none;
+}
+
+.user_overlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+body.sidebar-open {
+  overflow: hidden;
+}

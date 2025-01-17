@@ -7,7 +7,9 @@ import { LuSendHorizontal } from 'react-icons/lu';
 import { Snackbar, Alert } from '@mui/material';
 import { openDB } from 'idb';
 import styles from '../styles/post.module.css';
+
 import { getUsernameFromToken } from '../auth/authUtils';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PostForm = () => {
   const [postContent, setPostContent] = useState('');
@@ -70,7 +72,7 @@ const PostForm = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v2/posts/create/${username}`,
+        `${API_URL}/api/v2/posts/create/${username}`,
         { content },
         {
           headers: {

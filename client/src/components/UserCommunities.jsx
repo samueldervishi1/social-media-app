@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getUserIdFromToken } from "../auth/authUtils";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const UserCommunities = () => {
   const [communities, setCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ const UserCommunities = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8080/api/v2/communities/user/${userId}`,
+          `${API_URL}/api/v2/communities/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

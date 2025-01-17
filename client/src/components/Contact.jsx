@@ -4,11 +4,14 @@ import styles from '../styles/contact.module.css';
 import { Link } from 'react-router-dom';
 
 const Contact = () => {
+  const token = localStorage.getItem('token');
   return (
     <div className={styles.contact_container}>
-      <div className={styles.login_link}>
-        <Link to='/login'>Login to get started</Link>
-      </div>
+      {!token && (
+        <div className={styles.login_link}>
+          <Link to='/login'>Login to get started</Link>
+        </div>
+      )}
       <div className={styles.h1_container}>
         <h1>Contact Us</h1>
       </div>

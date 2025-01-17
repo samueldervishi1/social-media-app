@@ -1,29 +1,22 @@
-export const getUserIdFromToken = () => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    try {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+const getToken = () => localStorage.getItem('token');
 
-      return decodedToken.userId;
-    } catch (error) {
-      console.error("Error decoding token for User ID:", error.message);
-      return null;
-    }
+const decodeToken = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (error) {
+    console.error('Error decoding token:', error.message);
+    return null;
   }
-  return null;
+};
+
+export const getUserIdFromToken = () => {
+  const token = getToken();
+  const decodedToken = token ? decodeToken(token) : null;
+  return decodedToken ? decodedToken.userId : null;
 };
 
 export const getUsernameFromToken = () => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    try {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-
-      return decodedToken.sub;
-    } catch (error) {
-      console.error("Error decoding token for Username:", error.message);
-      return null;
-    }
-  }
-  return null;
+  const token = getToken();
+  const decodedToken = token ? decodeToken(token) : null;
+  return decodedToken ? decodedToken.sub : null;
 };

@@ -7,6 +7,7 @@ import styles from "../styles/profile.module.css";
 
 import { getUserIdFromToken, getUsernameFromToken } from "../auth/authUtils";
 const ProfileHeader = React.lazy(() => import("./ProfileHeader"));
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const ProfileContext = createContext(null);
 
@@ -34,7 +35,7 @@ const Profile = () => {
       // Fetches user profile information
       if (username) {
         const profileResponse = await axios.get(
-          `http://localhost:8080/api/v2/users/info/${username}`,
+          `${API_URL}/api/v2/users/info/${username}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -55,7 +56,7 @@ const Profile = () => {
       // Fetches followers and following counts
       if (userId) {
         const followersFollowingResponse = await axios.get(
-          `http://localhost:8080/api/v2/users/list/${userId}`,
+          `${API_URL}/api/v2/users/list/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -73,7 +74,7 @@ const Profile = () => {
 
         // Fetches the count of user's posts
         const userPostsResponse = await axios.get(
-          `http://localhost:8080/api/v2/posts/list/${userId}`,
+          `${API_URL}/api/v2/posts/list/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -5,6 +5,7 @@ import styles from '../styles/friends.module.css';
 import { getUsernameFromToken } from '../auth/authUtils';
 
 const token = localStorage.getItem('token');
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Friends = () => {
   const [users, setUsers] = useState([]);
@@ -14,7 +15,7 @@ const Friends = () => {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const { data } = await axios.get('http://localhost:8080/api/v2/users', {
+      const { data } = await axios.get(`${API_URL}/api/v2/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

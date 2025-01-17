@@ -82,6 +82,10 @@
   scrollbar-width: none;
 }
 
+.text_center{
+  text-align: center !important;
+}
+
 @media (max-width: 1024px) {
   .constructor_container {
     max-width: 800px;

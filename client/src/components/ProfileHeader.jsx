@@ -6,12 +6,14 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { FaGithub, FaLinkedin, FaTwitter, FaGlobe } from 'react-icons/fa';
+import { IoIosCalendar } from 'react-icons/io';
 import profileImage from '../assets/user.webp';
 import placeHolderImage from '../assets/placeholder.png';
 import styles from '../styles/profile-header.module.css';
 
 const PostCard = React.lazy(() => import('./PostCard'));
 import { getUserIdFromToken } from '../auth/authUtils';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const ProfileHeader = ({ followers, following, profile }) => {
   const [showModal, setShowModal] = useState(false);
@@ -23,6 +25,8 @@ const ProfileHeader = ({ followers, following, profile }) => {
   const [emailInput, setEmailInput] = useState('');
   const [postCount, setPostCount] = useState(0);
   const [activeTab, setActiveTab] = useState('posts');
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [accountCreationDate, setAccountCreationDate] = useState('');
 
   useEffect(() => {
     if (profile) {
@@ -30,6 +34,13 @@ const ProfileHeader = ({ followers, following, profile }) => {
       setTitleInput(profile.title);
       setFullNameInput(profile.fullName);
       setEmailInput(profile.email);
+      setAccountCreationDate(
+        new Date(profile.accountCreationDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+      );
     }
   }, [profile]);
 
@@ -40,6 +51,8 @@ const ProfileHeader = ({ followers, following, profile }) => {
   };
 
   const handleCloseModal = () => setShowModal(false);
+  const handleShowUsernameModal = () => setShowUsernameModal(true);
+  const handleCloseUsernameModal = () => setShowUsernameModal(false);
 
   const fetchPostCount = useCallback(async () => {
     const userId = getUserIdFromToken();
@@ -51,7 +64,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:8080/api/v2/posts/list/count/${userId}`,
+        `${API_URL}/api/v2/posts/list/count/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,7 +94,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:8080/api/v2/posts/list/${userId}`,
+        `${API_URL}/api/v2/posts/list/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -125,7 +138,7 @@ const ProfileHeader = ({ followers, following, profile }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:8080/api/v2/users/update/${userId}`,
+        `${API_URL}/api/v2/users/update/${userId}`,
         updateData,
         {
           headers: {
@@ -225,7 +238,12 @@ const ProfileHeader = ({ followers, following, profile }) => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <h3 style={{ margin: 0 }}>{profile.username}</h3>
+          <h3
+            style={{ margin: 0, cursor: 'pointer' }}
+            onClick={handleShowUsernameModal}
+          >
+            {profile.username}
+          </h3>
           <Button
             className={`${styles.light} ${styles.me_1} ${styles.button_edit}`}
             onClick={handleShowModal}
@@ -350,6 +368,47 @@ const ProfileHeader = ({ followers, following, profile }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={showUsernameModal} onHide={handleCloseUsernameModal}>
+        <Modal.Header>
+          <Modal.Title
+            className={`${styles.text_center} ${styles.constructor_container}`}
+          >
+            Account Information
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ textAlign: 'center' }}>
+          <p>
+            To help keep our community authentic, we’re showing information
+            about accounts on AЯYHƆ. People can see this by tapping on the
+            username on your profile.
+            <a
+              href='/importance'
+              style={{ color: 'blue', textDecoration: 'underline' }}
+            >
+              {' '}
+              See why this information is important.
+            </a>
+          </p>
+          <p
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+            }}
+          >
+            <IoIosCalendar style={{ marginRight: '5px' }} />
+            <span style={{ color: 'gray' }}>
+              Joined Date {accountCreationDate}
+            </span>
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={handleCloseUsernameModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
@@ -364,6 +423,7 @@ ProfileHeader.propTypes = {
     email: PropTypes.string,
     username: PropTypes.string,
     links: PropTypes.array,
+    accountCreationDate: PropTypes.string.isRequired,
   }).isRequired,
 };
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class UserService {
 		user.setPassword(passwordEncoder.encode(user.getPassword() + salt));
 		user.setSalt(salt);
 		user.setRole(user.getRole() == null ? DEFAULT_ROLE : user.getRole());
+		user.setAccountCreationDate(LocalDateTime.now());
 
 		logger.info("Creating user: {}" , user.getUsername());
 		return userRepository.save(user);
