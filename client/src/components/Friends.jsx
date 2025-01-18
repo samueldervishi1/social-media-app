@@ -23,7 +23,7 @@ const Friends = () => {
       setUsers(data.filter((user) => user.username !== loggedInUsername));
     } catch (err) {
       console.error('Error fetching users:', err);
-      setError('Try again later.');
+      setError('We are havng trouble finding you friends at this moment!');
     }
   }, [loggedInUsername]);
 
@@ -47,7 +47,7 @@ const Friends = () => {
     <div className={styles.friends_container}>
       <div className={styles.userCardsContainer}>
         {users.length === 0 ? (
-          <div className={styles.noUsers}>Try again later.</div>
+          <div className={styles.noUsers}>We are havng trouble finding you friends at this moment!</div>
         ) : (
           users.map((user) => (
             <div className={styles.userCard} key={user.id}>
