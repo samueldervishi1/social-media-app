@@ -5,10 +5,17 @@ import styles from '../styles/home.module.css';
 
 const Post = React.lazy(() => import('./Post'));
 const PostList = React.lazy(() => import('./PostList'));
-//const Menu = React.lazy(() => import('./Menu'));
 
 const POST_REFRESH_INTERVAL = 300000;
-const SUGGESTION_REFRESH_INTERVAL = 3600000;
+const SUGGESTION_REFRESH_INTERVAL = 1800000;
+
+const suggestions = [
+  'Click on your username to view your profile.',
+  'Try exploring different events on Events page',
+  'Check out the AI feature for personalized recommendations.',
+  'Explore trending topics to stay updated.',
+  'Join discussions in the community for more insights.',
+];
 
 const Home = () => {
   const { validateToken, logout } = useAuth();
@@ -35,19 +42,15 @@ const Home = () => {
         logout();
         return;
       }
-      setRefreshSuggestions((prev) => !prev);
-
-      setSnackbarMessage('New suggestions are now available!');
+      const randomSuggestion =
+        suggestions[Math.floor(Math.random() * suggestions.length)];
+      setSnackbarMessage(randomSuggestion);
       setSnackbarOpen(true);
+      setRefreshSuggestions((prev) => !prev);
     }, SUGGESTION_REFRESH_INTERVAL);
 
     return () => clearInterval(suggestionIntervalId);
   }, [validateToken, logout]);
-
-  const handleUsernameClick = () => {
-    setSnackbarMessage('Clicking your username shows info about your account.');
-    setSnackbarOpen(true);
-  };
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -55,11 +58,6 @@ const Home = () => {
 
   return (
     <div className={styles.home_container}>
-      {/* <div className={styles.menu}>
-        <Suspense fallback={<div>Loading Menu...</div>}>
-          <Menu onUsernameClick={handleUsernameClick} />
-        </Suspense>
-      </div> */}
       <div className={styles.main_content}>
         <Suspense fallback={<div>Loading...</div>}>
           <Post refreshSuggestions={refreshSuggestions} />

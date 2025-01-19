@@ -100,7 +100,6 @@ public class CommunityService {
 //		return communityLikePost;
 //	}
 
-	@Cacheable(value = "communityUserCount")
 	public int getUserCountForCommunity(String name) {
 		logger.info("Fetching user count for community: {}" , name);
 		try {
@@ -123,19 +122,16 @@ public class CommunityService {
 		}
 	}
 
-	@Cacheable(value = "communities", key = "#communityId")
 	public Community getCommunityById(String communityId) {
 		return communityRepository.findById(communityId)
 				.orElseThrow(() -> new NotFoundException(String.format(COMMUNITY_NOT_FOUND , communityId)));
 	}
 
-	@Cacheable(value = "communities", key = "#name")
 	public Community getCommunityByName(String name) {
 		return communityRepository.findByName(name)
 				.orElseThrow(() -> new NotFoundException(String.format(COMMUNITY_NOT_FOUND , name)));
 	}
 
-	@Cacheable(value = "userCommunities", key = "#userId")
 	public List<Community> getCommunitiesByUserId(String userId) {
 		logger.info("Fetching communities for user: {}" , userId);
 		try {
@@ -146,19 +142,16 @@ public class CommunityService {
 		}
 	}
 
-	@Cacheable(value = "communityPosts", key = "#postId")
 	public CommunityPost getCommunityPostById(String postId) {
 		return communityPostRepository.findById(postId)
 				.orElseThrow(() -> new NotFoundException(String.format(POST_NOT_FOUND , postId)));
 	}
 
-	@Cacheable(value = "allCommunities")
 	public List<Community> getAllCommunities() {
 		logger.info("Fetching all communities");
 		return communityRepository.findAll();
 	}
 
-	@Cacheable(value = "allPosts")
 	public List<CommunityPost> getAllDBPosts() {
 		return communityPostRepository.findAll();
 	}

@@ -20,16 +20,13 @@ public class CommunityController {
 
 	private final CommunityService communityService;
 
-	public CommunityController(CommunityService communityService){
+	public CommunityController(CommunityService communityService) {
 		this.communityService = communityService;
 	}
 
 	@GetMapping("/list")
 	public ResponseEntity<List<Community>> getAllCommunities() {
 		List<Community> communities = communityService.getAllCommunities();
-		if (communities.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
 		return new ResponseEntity<>(communities , HttpStatus.OK);
 	}
 

@@ -48,6 +48,7 @@ const CommunitiesList = () => {
           },
         });
         setCommunities(Array.isArray(response.data) ? response.data : []);
+        console.log(response);
       } catch (err) {
         setError(err.message);
       } finally {
