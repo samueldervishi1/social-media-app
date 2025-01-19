@@ -1,25 +1,25 @@
-import React, { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { format } from "date-fns";
-import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
-import { AiOutlineComment } from "react-icons/ai";
-import { IoSend } from "react-icons/io5";
-import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
-import Modal from "react-bootstrap/Modal";
-import { Snackbar, Alert } from "@mui/material";
-import defaultUserIcon from "../assets/user.webp";
-import "../styles/post-card.css";
+import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { format } from 'date-fns';
+import { IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
+import { AiOutlineComment } from 'react-icons/ai';
+import { IoSend } from 'react-icons/io5';
+import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5';
+import Modal from 'react-bootstrap/Modal';
+import { Snackbar, Alert } from '@mui/material';
+import defaultUserIcon from '../assets/user.webp';
+import '../styles/post-card.css';
 
-import { getUserIdFromToken } from "../auth/authUtils";
+import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
-const token = localStorage.getItem("token");
+const token = localStorage.getItem('token');
 
 const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [showNewCommentForm, setShowNewCommentForm] = useState(false);
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState('');
   const [user, setUser] = useState(null);
   const [commentsList, setCommentsList] = useState([]);
   const [commentCount, setCommentCount] = useState(0);
@@ -27,21 +27,21 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [saved, setSaved] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [communityName, setCommunityName] = useState("");
+  const [username, setUsername] = useState('');
+  const [communityName, setCommunityName] = useState('');
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
   const [showMenu, setShowMenu] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState('');
   const [showReportModal, setShowReportModal] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -63,24 +63,21 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
   //fetch user username
   const fetchUsername = async (userId) => {
     try {
-      const response = await axios.get(
-        `${API_URL}/api/v2/users/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/api/v2/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.status === 200) {
         setUsernames((prevUsernames) => ({
           ...prevUsernames,
@@ -99,20 +96,17 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/api/v2/users/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}/api/v2/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (response.status === 200) {
           setUser(response.data);
           setUsername(response.data.username);
         }
       } catch (error) {
-        console.error("Error fetching user details:", error.message);
+        console.error('Error fetching user details:', error.message);
       }
     };
 
@@ -123,18 +117,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   useEffect(() => {
     const fetchLikedPosts = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/api/v2/likes/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axios.get(`${API_URL}/api/v2/likes/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (response.status === 200) {
           const likedPosts = response.data[0]?.postId || [];
           setLiked(likedPosts.includes(id));
         }
       } catch (error) {
-        console.error("Error fetching liked posts:", error.message);
+        console.error('Error fetching liked posts:', error.message);
       }
     };
 
@@ -156,10 +147,10 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         if (likeResponse.status === 200) {
           setLikeCount(likeResponse.data);
         } else {
-          console.error("Failed to fetch like count");
+          console.error('Failed to fetch like count');
         }
       } catch (error) {
-        console.error("Error fetching like count:", error.message);
+        console.error('Error fetching like count:', error.message);
       }
     };
 
@@ -169,14 +160,11 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //fetch post details
   const fetchPostDetails = async () => {
     try {
-      const response = await axios.get(
-        `${API_URL}/api/v2/posts/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/api/v2/posts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.status === 200) {
         const { commentsList } = response.data;
         if (commentsList) {
@@ -199,7 +187,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         }
       }
     } catch (error) {
-      console.error("Error fetching post details:", error.message);
+      console.error('Error fetching post details:', error.message);
     }
   };
 
@@ -222,7 +210,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           setSaved(savedPostIds.includes(id));
         }
       } catch (error) {
-        console.error("Error fetching saved posts:", error.message);
+        console.error('Error fetching saved posts:', error.message);
       }
     };
 
@@ -232,12 +220,12 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //create comment
   const navigateToAddComment = async () => {
     if (!userId) {
-      console.error("User not authenticated or token invalid.");
+      console.error('User not authenticated or token invalid.');
       return;
     }
 
-    if (newComment.trim() === "") {
-      console.error("Empty comment cannot be posted.");
+    if (newComment.trim() === '') {
+      console.error('Empty comment cannot be posted.');
       return;
     }
 
@@ -249,18 +237,18 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         { content: newComment },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
       if (response.status === 200) {
         await fetchPostDetails();
-        setNewComment("");
+        setNewComment('');
         setShowNewCommentForm(false);
       }
     } catch (error) {
-      console.error("Error posting comment:", error.message);
+      console.error('Error posting comment:', error.message);
     } finally {
       setLoading(false);
     }
@@ -270,12 +258,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const toggleLike = async () => {
     try {
       if (liked) {
-        await axios.delete(
-          `${API_URL}/api/v2/likes/${userId}/post/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await axios.delete(`${API_URL}/api/v2/likes/${userId}/post/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
       } else {
         await axios.post(
           `${API_URL}/api/v2/likes/${userId}/post/${id}`,
@@ -287,7 +272,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       }
       setLiked(!liked);
     } catch (error) {
-      console.error("Error toggling like:", error.message);
+      console.error('Error toggling like:', error.message);
     }
   };
 
@@ -295,57 +280,50 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const toggleSave = async (e) => {
     e.stopPropagation();
     if (!userId) {
-      console.error("User not authenticated or token invalid.");
+      console.error('User not authenticated or token invalid.');
       return;
     }
 
     try {
       if (!saved) {
-        await axios.post(
-          `${API_URL}/api/v2/save/posts/${userId}`,
-          [id],
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await axios.post(`${API_URL}/api/v2/save/posts/${userId}`, [id], {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setSaved(true);
-        window.alert("Post saved successfully!");
+        window.alert('Post saved successfully!');
       } else {
-        await axios.delete(
-          `${API_URL}/api/v2/save/posts/${userId}/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+        await axios.delete(`${API_URL}/api/v2/save/posts/${userId}/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include',
+        });
         setSaved(false);
-        window.alert("Post unsaved successfully!");
+        window.alert('Post unsaved successfully!');
       }
     } catch (error) {
-      console.error("Error toggling save:", error.message);
-      window.alert("An error occurred. Please try again.");
+      console.error('Error toggling save:', error.message);
+      window.alert('An error occurred. Please try again.');
     }
   };
 
   //delete a post
   const deletePost = async () => {
     if (!userId) {
-      console.error("User not authenticated or token invalid.");
-      setSnackbarMessage("Authentication error. Please log in again.");
-      setSnackbarSeverity("error");
+      console.error('User not authenticated or token invalid.');
+      setSnackbarMessage('Authentication error. Please log in again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
       return;
     }
 
     if (userId !== userId) {
-      console.error("You are not authorized to delete this post.");
-      setSnackbarMessage("You are not authorized to delete this post.");
-      setSnackbarSeverity("error");
+      console.error('You are not authorized to delete this post.');
+      setSnackbarMessage('You are not authorized to delete this post.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
       return;
     }
@@ -361,15 +339,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       );
 
       if (response.status === 200) {
-        setSnackbarMessage("Post deleted successfully!");
-        setSnackbarSeverity("success");
+        setSnackbarMessage('Post deleted successfully!');
+        setSnackbarSeverity('success');
         setSnackbarOpen(true);
         window.location.reload();
       }
     } catch (error) {
-      console.error("Error deleting post:", error.message);
-      setSnackbarMessage("Error deleting post. Please try again.");
-      setSnackbarSeverity("error");
+      console.error('Error deleting post:', error.message);
+      setSnackbarMessage('Error deleting post. Please try again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
   };
@@ -386,18 +364,18 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         }
       );
       if (response.status === 200) {
-        console.log("Comment deleted successfully");
+        console.log('Comment deleted successfully');
         await fetchPostDetails();
       }
     } catch (error) {
-      console.error("Error deleting comment:", error.message);
+      console.error('Error deleting comment:', error.message);
     }
   };
 
   //report post
   const handleReportSubmit = async () => {
     if (!reason.trim()) {
-      alert("Please provide a reason for reporting!");
+      alert('Please provide a reason for reporting!');
       return;
     }
 
@@ -417,15 +395,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       );
 
       if (response.status === 200 || response.status === 201) {
-        alert("Report submitted successfully!");
+        alert('Report submitted successfully!');
         setShowReportModal(false);
-        setReason("");
+        setReason('');
       } else {
-        alert("Failed to submit the report. Please try again.");
+        alert('Failed to submit the report. Please try again.');
       }
     } catch (error) {
-      console.error("Error submitting report:", error);
-      alert("An error occurred. Please try again later.");
+      console.error('Error submitting report:', error);
+      alert('An error occurred. Please try again later.');
     }
   };
 
@@ -435,7 +413,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   const closeReportModal = () => {
     setShowReportModal(false);
-    setReason("");
+    setReason('');
   };
 
   const handleSelect = (value) => {
@@ -447,7 +425,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   const formatTime = (postTime) => {
     const date = new Date(`1970-01-01T${postTime}Z`);
-    return format(date, "hh:mm a");
+    return format(date, 'hh:mm a');
   };
 
   //calculate time of the post
@@ -456,16 +434,16 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     const seconds = Math.floor((new Date() - postDateTime) / 1000);
     let interval = Math.floor(seconds / 31536000);
 
-    if (interval >= 1) return interval + "y ago";
+    if (interval >= 1) return interval + 'y ago';
     interval = Math.floor(seconds / 2592000);
-    if (interval >= 1) return interval + "mo ago";
+    if (interval >= 1) return interval + 'mo ago';
     interval = Math.floor(seconds / 86400);
-    if (interval >= 1) return interval + "d ago";
+    if (interval >= 1) return interval + 'd ago';
     interval = Math.floor(seconds / 3600);
-    if (interval >= 1) return interval + "h ago";
+    if (interval >= 1) return interval + 'h ago';
     interval = Math.floor(seconds / 60);
-    if (interval >= 1) return interval + "min ago";
-    return seconds < 10 ? "just now" : seconds + "s ago";
+    if (interval >= 1) return interval + 'min ago';
+    return seconds < 10 ? 'just now' : seconds + 's ago';
   };
 
   const formattedPostTime = timeSincePost(postDate, postTime);
@@ -483,7 +461,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     e.stopPropagation();
     const loggedInUserId = getUserIdFromToken();
     if (userId === loggedInUserId) {
-      navigate("/u/profile");
+      navigate('/u/profile');
     } else {
       navigate(`/u/users/${userId}`);
     }
@@ -491,7 +469,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   const formatDate = (postDate) => {
     const date = new Date(postDate);
-    return format(date, "MMM dd, yyyy");
+    return format(date, 'MMM dd, yyyy');
   };
 
   const isValidDate = (date) => {
@@ -505,35 +483,35 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   };
 
   return (
-    <div className="post-card">
-      <div className="post-header">
+    <div className='post-card'>
+      <div className='post-header'>
         <div onClick={handleProfileLinkClick}>
           <img
             src={user ? user.profileImage || defaultUserIcon : defaultUserIcon}
-            alt="User Icon"
-            className="user-icon"
+            alt='User Icon'
+            className='user-icon'
           />
         </div>
-        <div className="post-header-text">
+        <div className='post-header-text'>
           <h2 onClick={handleProfileLinkClick}>
-            <span className="username">
-              @{username ? user.username : "Error"}
+            <span className='username'>
+              @{username ? user.username : 'Error'}
             </span>
-            <span className="post-details">
-              <span className="separator">•</span>
-              <span className="post-date">{formattedPostTime}</span>
+            <span className='post-details'>
+              <span className='separator'>•</span>
+              <span className='post-date'>{formattedPostTime}</span>
             </span>
           </h2>
         </div>
         {(isUserPostOwner || !isUserPostOwner) && (
-          <div className="more-options">
-            <div className="dropdown-options">
+          <div className='more-options'>
+            <div className='dropdown-options'>
               {isUserPostOwner ? (
-                <button onClick={deletePost} className="delete-button">
+                <button onClick={deletePost} className='delete-button'>
                   Delete Post
                 </button>
               ) : (
-                <button onClick={openReportModal} className="report-button">
+                <button onClick={openReportModal} className='report-button'>
                   Report Post
                 </button>
               )}
@@ -543,55 +521,55 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       </div>
       {communityName && (
         <span
-          className="community-name-card"
+          className='community-name-card'
           onClick={() => navigate(`/c/community/${communityName}`)}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: 'pointer' }}
         >
           c/{communityName}
         </span>
       )}
 
-      <div className="post-body">
+      <div className='post-body'>
         <div>
-          <p className="post-content">{content}</p>
+          <p className='post-content'>{content}</p>
         </div>
 
         {imageUrl && imageUrl !== null && (
           <>
             <img
               src={imageUrl}
-              alt="Post Image"
-              className="post-image"
+              alt='Post Image'
+              className='post-image'
               onError={handleError}
-              style={{ display: imageError ? "none" : "block" }}
+              style={{ display: imageError ? 'none' : 'block' }}
             />
             {imageError && (
-              <div className="no-image-message">Image cannot be displayed.</div>
+              <div className='no-image-message'>Image cannot be displayed.</div>
             )}
           </>
         )}
       </div>
-      <div className="post-footer">
-        <div className="footer-icons">
-          <div className="icon-wrapper" onClick={toggleComments}>
-            <AiOutlineComment className="icon" />
-            <p className="comment-num">{commentCount}</p>
+      <div className='post-footer'>
+        <div className='footer-icons'>
+          <div className='icon-wrapper' onClick={toggleComments}>
+            <AiOutlineComment className='icon' />
+            <p className='comment-num'>{commentCount}</p>
           </div>
 
           <div>
             {liked ? (
-              <IoMdHeart className="icon liked" onClick={toggleLike} />
+              <IoMdHeart className='icon liked' onClick={toggleLike} />
             ) : (
-              <IoMdHeartEmpty className="icon" onClick={toggleLike} />
+              <IoMdHeartEmpty className='icon' onClick={toggleLike} />
             )}
-            <span className="like-count">{likeCount}</span>
+            <span className='like-count'>{likeCount}</span>
           </div>
 
           <div>
             {saved ? (
-              <IoBookmark className="icon saved" onClick={toggleSave} />
+              <IoBookmark className='icon saved' onClick={toggleSave} />
             ) : (
-              <IoBookmarkOutline className="icon" onClick={toggleSave} />
+              <IoBookmarkOutline className='icon' onClick={toggleSave} />
             )}
           </div>
         </div>
@@ -601,63 +579,63 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           show={showCommentsModal}
           onHide={handleCloseCommentsModal}
           centered
-          className="comments-modal"
+          className='comments-modal'
         >
-          <Modal.Header className="share-title">
+          <Modal.Header className='share-title'>
             <Modal.Title>Comments</Modal.Title>
           </Modal.Header>
-          <Modal.Body className="share-body">
-            <ul className="comment-list">
+          <Modal.Body className='share-body'>
+            <ul className='comment-list'>
               {commentsList.length === 0 ? (
-                <li className="no-comments-message">
+                <li className='no-comments-message'>
                   No comments yet. Be the first to add one!
                 </li>
               ) : (
                 commentsList.map((comment) => (
-                  <li key={comment.id} className="comment-item1">
+                  <li key={comment.id} className='comment-item1'>
                     <img
                       src={
                         usernames[comment.userId]
                           ? user.profileImage || defaultUserIcon
                           : defaultUserIcon
                       }
-                      alt="User Icon"
-                      className="user-icon1"
+                      alt='User Icon'
+                      className='user-icon1'
                     />
-                    <strong className="user-id">
-                      @{usernames[comment.userId] || comment.userId} •{" "}
-                      <small className="small-timer">
+                    <strong className='user-id'>
+                      @{usernames[comment.userId] || comment.userId} •{' '}
+                      <small className='small-timer'>
                         {isValidDate(comment.commentDate)
                           ? `${formatDate(comment.commentDate)} at ${formatTime(
                               comment.commentTime
                             )}`
-                          : "N/A"}
+                          : 'N/A'}
                       </small>
                       {comment.userId === getUserIdFromToken() && (
-                        <div className="more-options">
+                        <div className='more-options'>
                           <button
                             onClick={() => deleteComment(comment.id)}
-                            className="delete-comment-button"
+                            className='delete-comment-button'
                           >
                             Delete Comment
                           </button>
                         </div>
                       )}
                     </strong>
-                    <p className="user-comment">{comment.content}</p>
+                    <p className='user-comment'>{comment.content}</p>
                   </li>
                 ))
               )}
             </ul>
 
-            <div className="new-comment-form">
+            <div className='new-comment-form'>
               <textarea
                 value={newComment}
                 onChange={handleCommentChange}
-                placeholder="Write your comment..."
+                placeholder='Write your comment...'
               />
               <button
-                className="post-comment-button"
+                className='post-comment-button'
                 onClick={navigateToAddComment}
                 disabled={loading}
               >
@@ -674,32 +652,32 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           </Modal.Header>
           <Modal.Body>
             <p>Please select a reason for reporting this post:</p>
-            <div className="custom-dropdown">
+            <div className='custom-dropdown'>
               <button
-                className="custom-dropdown-toggle"
+                className='custom-dropdown-toggle'
                 onClick={toggleDropdown}
               >
-                {reason || "Select a reason"}
+                {reason || 'Select a reason'}
               </button>
 
               {isDropdownOpen && (
-                <ul className="custom-dropdown-menu">
-                  <li onClick={() => handleSelect("Spam")}>Spam</li>
-                  <li onClick={() => handleSelect("Harassment")}>Harassment</li>
-                  <li onClick={() => handleSelect("Inappropriate Content")}>
+                <ul className='custom-dropdown-menu'>
+                  <li onClick={() => handleSelect('Spam')}>Spam</li>
+                  <li onClick={() => handleSelect('Harassment')}>Harassment</li>
+                  <li onClick={() => handleSelect('Inappropriate Content')}>
                     Inappropriate Content
                   </li>
-                  <li onClick={() => handleSelect("Other")}>Other</li>
+                  <li onClick={() => handleSelect('Other')}>Other</li>
                 </ul>
               )}
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <button className="cancel-button" onClick={closeReportModal}>
+            <button className='cancel-button' onClick={closeReportModal}>
               Cancel
             </button>
             <button
-              className="submit-button"
+              className='submit-button'
               onClick={handleReportSubmit}
               disabled={!reason}
             >
@@ -712,12 +690,12 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {snackbarMessage}
         </Alert>

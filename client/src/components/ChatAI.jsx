@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
-import bot from "../assets/bot.svg";
-import user from "../assets/user.svg";
-import send from "../assets/send.svg";
-import loaderGif from "../assets/ZKZg.gif";
-import { FaRegPenToSquare } from "react-icons/fa6";
-import styles from "../styles/ai.module.css";
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import bot from '../assets/bot.svg';
+import user from '../assets/user.svg';
+import send from '../assets/send.svg';
+import loaderGif from '../assets/ZKZg.gif';
+import { FaRegPenToSquare } from 'react-icons/fa6';
+import styles from '../styles/ai.module.css';
 
-import { getUserIdFromToken } from "../auth/authUtils";
+import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ChatAI = () => {
   const [chatMessages, setChatMessages] = useState([]);
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -29,17 +29,17 @@ const ChatAI = () => {
       setIsMobileView(window.innerWidth < 768);
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   const resetChat = () => {
     const newSessionId = uuidv4();
-    localStorage.setItem("sessionId", newSessionId);
+    localStorage.setItem('sessionId', newSessionId);
     setChatMessages([]);
-    setUserInput("");
+    setUserInput('');
     setHideHeading(false);
   };
 
@@ -54,34 +54,34 @@ const ChatAI = () => {
     const formattedText = text
       .replace(codeBlockRegex, (match, lang, _, code) => {
         const escapedCode = code
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
 
         return `
               <div class="terminal_block">
                 <div class="terminal_header">${
-                  lang ? lang.trim() : "code"
+                  lang ? lang.trim() : 'code'
                 }</div>
                 <pre><code>${escapedCode}</code></pre>
               </div>
             `;
       })
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .split("\n")
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .split('\n')
       .map((line) =>
-        line.startsWith("- ") ? `<li>${line.substring(2)}</li>` : line
+        line.startsWith('- ') ? `<li>${line.substring(2)}</li>` : line
       )
-      .join("<br />")
-      .replace(/(<li>.*<\/li>\s*){2,}/g, "<ul>$&</ul>");
+      .join('<br />')
+      .replace(/(<li>.*<\/li>\s*){2,}/g, '<ul>$&</ul>');
 
-    return formattedText.includes("<li>")
+    return formattedText.includes('<li>')
       ? `<ul>${formattedText}</ul>`
       : formattedText;
   };
 
   const getSessionId = () => {
-    return localStorage.getItem("sessionId");
+    return localStorage.getItem('sessionId');
   };
 
   //send the question to the model
@@ -98,7 +98,7 @@ const ChatAI = () => {
 
     if (userInput.length > 4000) {
       const errorResponse = {
-        content: "Your input exceeds the 4000 character limit.",
+        content: 'Your input exceeds the 4000 character limit.',
         isUser: false,
       };
       setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
@@ -110,12 +110,12 @@ const ChatAI = () => {
 
     const message = { content: userInput, isUser: true };
     setChatMessages((prevMessages) => [...prevMessages, message]);
-    setUserInput("");
+    setUserInput('');
 
-    console.log("Sending ping request to backend...");
+    console.log('Sending ping request to backend...');
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       await axios.get(`${API_URL}/api/v2/ping`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -124,8 +124,8 @@ const ChatAI = () => {
     } catch (error) {
       setIsLoading(false);
       setIsThinking(false);
-      const errorMessage = "Check your internet connection.";
-      console.error("Error during ping request: ", error);
+      const errorMessage = 'Check your internet connection.';
+      console.error('Error during ping request: ', error);
       setTimeout(() => {
         const errorResponse = {
           content: errorMessage,
@@ -136,7 +136,7 @@ const ChatAI = () => {
       return;
     }
 
-    console.log("Sending question to backend...");
+    console.log('Sending question to backend...');
 
     const handleRateLimit = () => {
       setIsRateLimited(true);
@@ -158,7 +158,7 @@ const ChatAI = () => {
     };
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
 
       const response = await axios.post(
         `${API_URL}/api/v2/ask`,
@@ -167,7 +167,7 @@ const ChatAI = () => {
         },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -188,20 +188,20 @@ const ChatAI = () => {
           },
           {
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           }
         );
       } else {
-        console.error("Error: ", response.statusText);
+        console.error('Error: ', response.statusText);
         setIsThinking(false);
       }
     } catch (error) {
       if (error.response?.status === 405) {
         handleRateLimit();
         const errorMessage =
-          "You have reached your request limit. Please wait 30 seconds before trying again.";
+          'You have reached your request limit. Please wait 30 seconds before trying again.';
         const errorResponse = {
           content: errorMessage,
           isUser: false,
@@ -209,9 +209,9 @@ const ChatAI = () => {
         setIsThinking(false);
         setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
       } else {
-        console.error("Error: ", error.message);
+        console.error('Error: ', error.message);
         const errorMessage =
-          "Something went wrong. Please check your internet connection or try again later.";
+          'Something went wrong. Please check your internet connection or try again later.';
         const errorResponse = {
           content: errorMessage,
           isUser: false,
@@ -227,7 +227,7 @@ const ChatAI = () => {
   //simulate a typing effect
   const simulateTypingEffect = (text) => {
     const chunks = text.split(/(\s+)/);
-    let currentContent = "";
+    let currentContent = '';
     const interval = 40;
 
     setIsTypingFinished(false);
@@ -274,27 +274,33 @@ const ChatAI = () => {
     scrollToBottom();
   }, [chatMessages, isLoading]);
 
+  const calculateTextAreaHeight = (text) => {
+    const lineHeight = 24;
+    const lines = text.split('\n').length;
+    return Math.min(lines * lineHeight, 120);
+  };
+
   return (
     <div className={styles.sidebar1_container}>
       <div
         className={styles.button_container}
         style={{
-          display: "flex",
-          margin: "6px 0",
+          display: 'flex',
+          margin: '6px 0',
         }}
       >
-        <div style={{ position: "relative" }}>
+        <div style={{ position: 'relative' }}>
           <button
             style={{
-              border: "none",
-              background: "transparent",
+              border: 'none',
+              background: 'transparent',
               padding: 15,
               borderRadius: 200,
               height: 35,
-              textAlign: "center",
-              color: "black",
-              textDecoration: "underline",
-              cursor: "pointer",
+              textAlign: 'center',
+              color: 'black',
+              textDecoration: 'underline',
+              cursor: 'pointer',
             }}
             onClick={resetChat}
           >
@@ -310,7 +316,7 @@ const ChatAI = () => {
         <div
           id={styles.chat_container}
           ref={chatContainerRef}
-          style={{ flex: 1, overflowY: "auto" }}
+          style={{ flex: 1, overflowY: 'auto' }}
         >
           {chatMessages.map((message, index) => (
             <div
@@ -321,7 +327,7 @@ const ChatAI = () => {
             >
               <div className={styles.chat}>
                 <div className={styles.profile}>
-                  <img src={!message.isUser ? bot : user} alt="bot" />
+                  <img src={!message.isUser ? bot : user} alt='bot' />
                 </div>
                 <div
                   className={styles.message}
@@ -336,10 +342,10 @@ const ChatAI = () => {
             <div className={`${styles.wrapper} ${styles.ai}`}>
               <div className={styles.chat}>
                 <div className={styles.profile}>
-                  <img src={bot} alt="bot" />
+                  <img src={bot} alt='bot' />
                 </div>
                 <div
-                  className={styles.message + " " + styles.thinking_placeholder}
+                  className={styles.message + ' ' + styles.thinking_placeholder}
                 >
                   Thinking
                   <span className={styles.dot}>.</span>
@@ -353,29 +359,34 @@ const ChatAI = () => {
         <form className={styles.ai_form} onSubmit={handleSubmit}>
           <textarea
             className={styles.ai_textArea}
-            name="message"
-            rows="1"
-            cols="1"
-            placeholder="Ask Sypher..."
+            name='message'
+            rows='1'
+            cols='1'
+            placeholder='Ask Sypher...'
             value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
+            onChange={(e) => {
+              setUserInput(e.target.value);
+              e.target.style.height = `${calculateTextAreaHeight(
+                e.target.value
+              )}px`;
+            }}
             onKeyUp={handleKeyUp}
             disabled={isRateLimited || isThinking}
             maxLength={4000}
           />
           <button
             className={styles.ai_submit}
-            type="submit"
+            type='submit'
             disabled={isRateLimited || isThinking}
           >
             {isThinking ? (
               <img
                 src={loaderGif}
-                alt="Loading"
-                style={{ width: "20px", height: "20px" }}
+                alt='Loading'
+                style={{ width: '20px', height: '20px' }}
               />
             ) : (
-              <img src={send} alt="Send" />
+              <img src={send} alt='Send' />
             )}
           </button>
         </form>
@@ -383,8 +394,8 @@ const ChatAI = () => {
           {isRateLimited
             ? countdown > 0
               ? `Too many requests. Please wait ${countdown} seconds before trying again.`
-              : "You can continue now."
-            : "Sypher can make mistakes. Check important info."}
+              : 'You can continue now.'
+            : 'Sypher can make mistakes. Check important info.'}
         </p>
       </div>
     </div>

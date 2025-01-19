@@ -193,6 +193,11 @@ const PostForm = () => {
           rows={1}
           required
           className={styles.textarea}
+          style={{ resize: 'none', overflow: 'hidden' }}
+          onInput={(e) => {
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
         />
         <div className={styles.icons_container}>
           <MdDelete

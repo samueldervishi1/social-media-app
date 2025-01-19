@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import { Image } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import profileImage from "../assets/user.webp";
-import placeHolderImage from "../assets/placeholder.png";
-import loaderImage from "../assets/ZKZg.gif";
-import styles from "../styles/user-details.module.css";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Image } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import profileImage from '../assets/user.webp';
+import placeHolderImage from '../assets/placeholder.png';
+import loaderImage from '../assets/ZKZg.gif';
+import styles from '../styles/user-details.module.css';
 
-const PostCard = React.lazy(() => import("./PostCard"));
-import { getUserIdFromToken } from "../auth/authUtils";
+const PostCard = React.lazy(() => import('./PostCard'));
+import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const UserDetail = () => {
@@ -19,7 +19,7 @@ const UserDetail = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [activeTab, setActiveTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState('posts');
   const [userPosts, setUserPosts] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,15 +37,12 @@ const UserDetail = () => {
 
   const fetchUserDetails = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${API_URL}/api/v2/users/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/api/v2/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.status === 200) {
         setUser(response.data);
         fetchUserFollowers();
@@ -54,12 +51,12 @@ const UserDetail = () => {
           fetchUserPosts();
         }
       } else {
-        setError("Failed to fetch user details");
+        setError('Failed to fetch user details');
       }
     } catch (error) {
-      console.error("Error fetching user details:", error.message);
+      console.error('Error fetching user details:', error.message);
       setError(
-        "Something went wrong. Please check your internet connection or try again later."
+        'Something went wrong. Please check your internet connection or try again later.'
       );
     }
   };
@@ -76,7 +73,7 @@ const UserDetail = () => {
 
   const fetchUserPosts = async (userId) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axios.get(
         `${API_URL}/api/v2/posts/list/${userId}`,
         {
@@ -88,27 +85,27 @@ const UserDetail = () => {
       if (response.status === 200) {
         const sortedPosts = response.data.sort(
           (a, b) =>
-            new Date(b.postDate + " " + b.postTime) -
-            new Date(a.postDate + " " + a.postTime)
+            new Date(b.postDate + ' ' + b.postTime) -
+            new Date(a.postDate + ' ' + a.postTime)
         );
         setUserPosts(sortedPosts);
       } else {
-        console.error("Failed to fetch user posts");
+        console.error('Failed to fetch user posts');
       }
     } catch (error) {
-      console.error("Error fetching user posts:", error.message);
+      console.error('Error fetching user posts:', error.message);
     }
   };
 
   useEffect(() => {
     const fetchPostCount = async () => {
       if (!userId) {
-        console.error("User ID not found in token.");
+        console.error('User ID not found in token.');
         return;
       }
 
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/posts/list/count/${userId}`,
           {
@@ -118,15 +115,15 @@ const UserDetail = () => {
           }
         );
 
-        console.log("Backend response:", response.data);
+        console.log('Backend response:', response.data);
 
         if (response.status === 200) {
           setPostCount(response.data);
         } else {
-          console.error("Failed to fetch post count.");
+          console.error('Failed to fetch post count.');
         }
       } catch (error) {
-        console.error("Error fetching post count:", error.message);
+        console.error('Error fetching post count:', error.message);
       }
     };
 
@@ -136,7 +133,7 @@ const UserDetail = () => {
   const fetchUserFollowers = async () => {
     if (userId) {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/users/${userId}/followers/count`,
           {
@@ -148,10 +145,10 @@ const UserDetail = () => {
         if (response.status === 200) {
           setFollowersCount(response.data);
         } else {
-          console.error("Failed to fetch followers count");
+          console.error('Failed to fetch followers count');
         }
       } catch (error) {
-        console.error("Error fetching followers:", error.message);
+        console.error('Error fetching followers:', error.message);
       }
     }
   };
@@ -159,7 +156,7 @@ const UserDetail = () => {
   const fetchUserFollowing = async () => {
     if (userId) {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/users/${userId}/following/count`,
           {
@@ -171,10 +168,10 @@ const UserDetail = () => {
         if (response.status === 200) {
           setFollowingCount(response.data);
         } else {
-          console.error("Failed to fetch following count");
+          console.error('Failed to fetch following count');
         }
       } catch (error) {
-        console.error("Error fetching following:", error.message);
+        console.error('Error fetching following:', error.message);
       }
     }
   };
@@ -183,7 +180,7 @@ const UserDetail = () => {
     const loggedInUserId = getUserIdFromToken();
     if (loggedInUserId && userId) {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/users/${loggedInUserId}/following`,
           {
@@ -196,10 +193,10 @@ const UserDetail = () => {
           const isFollowing = response.data.includes(userId);
           setIsFollowing(isFollowing);
         } else {
-          console.error("Failed to check following status");
+          console.error('Failed to check following status');
         }
       } catch (error) {
-        console.error("Error checking following status:", error.message);
+        console.error('Error checking following status:', error.message);
       }
     }
   };
@@ -208,7 +205,7 @@ const UserDetail = () => {
     const loggedInUserId = getUserIdFromToken();
     if (loggedInUserId && userId) {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const apiEndpoint = isFollowing
           ? `${API_URL}/api/v2/users/${loggedInUserId}/unfollow/${userId}`
           : `${API_URL}/api/v2/users/follow/${loggedInUserId}/follow/${userId}`;
@@ -218,7 +215,7 @@ const UserDetail = () => {
           {},
           {
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           }
@@ -228,96 +225,96 @@ const UserDetail = () => {
           setIsFollowing(!isFollowing);
           fetchUserFollowers();
         } else {
-          console.error("Failed to update follow status");
+          console.error('Failed to update follow status');
         }
       } catch (error) {
-        console.error("Error updating follow status:", error.message);
+        console.error('Error updating follow status:', error.message);
       }
     }
   };
 
   const getServiceIcon = (url) => {
     const serviceIcons = {
-      "github.com": "GitHubIcon",
-      "instagram.com": "InstagramIcon",
-      "twitter.com": "TwitterIcon",
-      "youtube.com": "YouTubeIcon",
-      "linkedin.com": "LinkedInIcon",
-      "facebook.com": "FacebookIcon",
-      "reddit.com": "RedditIcon",
+      'github.com': 'GitHubIcon',
+      'instagram.com': 'InstagramIcon',
+      'twitter.com': 'TwitterIcon',
+      'youtube.com': 'YouTubeIcon',
+      'linkedin.com': 'LinkedInIcon',
+      'facebook.com': 'FacebookIcon',
+      'reddit.com': 'RedditIcon',
     };
     const domain = new URL(url).hostname;
-    return serviceIcons[domain] || "UnknownIcon";
+    return serviceIcons[domain] || 'UnknownIcon';
   };
 
   if (error) {
-    return <div style={{ color: "red" }}>{error}</div>;
+    return <div style={{ color: 'red' }}>{error}</div>;
   }
 
   return (
     <>
       {isLoading ? (
-        <div className="loader-overlay">
+        <div className='loader-overlay'>
           <img
             src={loaderImage}
-            alt="Loading..."
+            alt='Loading...'
             className={styles.loader_image}
           />
         </div>
       ) : (
         <div
           style={{
-            width: "80%",
-            maxWidth: "1200px",
-            margin: "30px auto",
+            width: '80%',
+            maxWidth: '1200px',
+            margin: '30px auto',
             padding: 15,
             top: 50,
-            position: "relative",
-            boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2)",
-            background: "white",
+            position: 'relative',
+            boxShadow: '0 8px 12px rgba(0, 0, 0, 0.2)',
+            background: 'white',
           }}
         >
-          <div style={{ position: "relative", width: "100%", height: "300px" }}>
+          <div style={{ position: 'relative', width: '100%', height: '300px' }}>
             <img
               src={placeHolderImage}
-              alt="Cover"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              alt='Cover'
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
             <div
-              style={{ position: "absolute", bottom: "-50px", left: "20px" }}
+              style={{ position: 'absolute', bottom: '-50px', left: '20px' }}
             >
               <Image
                 src={profileImage}
                 roundedCircle
                 style={{
-                  width: "120px",
-                  height: "120px",
-                  border: "4px solid white",
+                  width: '120px',
+                  height: '120px',
+                  border: '4px solid white',
                 }}
               />
             </div>
           </div>
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              marginTop: "80px",
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              marginTop: '80px',
             }}
           >
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <h3 style={{ margin: 0 }}>{user?.username}</h3>
               <Button
                 className={`${styles.light} ${styles.me_1} ${styles.button_edit}`}
                 onClick={handleFollowToggle}
-                style={{ marginLeft: "10px" }}
+                style={{ marginLeft: '10px' }}
               >
-                {isFollowing ? "Following" : "Follow"}
+                {isFollowing ? 'Following' : 'Follow'}
               </Button>
             </div>
             <h6>{user?.title}</h6>
             <p>{user?.bio}</p>
-            <div style={{ display: "flex", gap: "20px" }}>
+            <div style={{ display: 'flex', gap: '20px' }}>
               <div>
                 <strong>{postCount}</strong> Posts
               </div>
@@ -329,32 +326,32 @@ const UserDetail = () => {
               </div>
             </div>
           </div>
-          <div style={{ marginTop: "20px" }}>
+          <div style={{ marginTop: '20px' }}>
             {user?.links?.length > 0 && (
               <div
                 style={{
-                  marginBottom: "20px",
-                  justifyContent: "center",
-                  display: "flex",
+                  marginBottom: '20px',
+                  justifyContent: 'center',
+                  display: 'flex',
                 }}
               >
                 {user.links.map((link, index) => (
                   <div
                     key={index}
                     style={{
-                      marginBottom: "10px",
-                      display: "flex",
-                      alignItems: "center",
+                      marginBottom: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
                     <a
                       href={link}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target='_blank'
+                      rel='noopener noreferrer'
                       style={{
-                        marginRight: "10px",
-                        display: "flex",
-                        alignItems: "center",
+                        marginRight: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
                       {getServiceIcon(link)}
@@ -366,21 +363,21 @@ const UserDetail = () => {
             )}
           </div>
           <div
-            onClick={() => setActiveTab("posts")}
+            onClick={() => setActiveTab('posts')}
             style={{
-              fontWeight: activeTab === "posts" ? "bold" : "normal",
-              padding: "10px",
+              fontWeight: activeTab === 'posts' ? 'bold' : 'normal',
+              padding: '10px',
               borderBottom:
-                activeTab === "posts" ? "2px solid #1c1c1d;" : "none",
-              cursor: "pointer",
-              textAlign: "center",
-              marginTop: "20px",
+                activeTab === 'posts' ? '2px solid #1c1c1d;' : 'none',
+              cursor: 'pointer',
+              textAlign: 'center',
+              marginTop: '20px',
             }}
           >
             Posts
           </div>
-          <div style={{ marginTop: "20px" }}>
-            {activeTab === "posts" && (
+          <div style={{ marginTop: '20px' }}>
+            {activeTab === 'posts' && (
               <div className={styles.post_list}>
                 {userPosts.length > 0 ? (
                   userPosts.map((post) => (
@@ -398,8 +395,8 @@ const UserDetail = () => {
                 ) : (
                   <p>
                     {userId === currentUserId
-                      ? "You haven’t created any posts yet. Share something interesting!"
-                      : "This user hasn’t posted anything yet!"}
+                      ? 'You haven’t created any posts yet. Share something interesting!'
+                      : 'This user hasn’t posted anything yet!'}
                   </p>
                 )}
               </div>

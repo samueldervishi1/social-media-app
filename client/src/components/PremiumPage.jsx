@@ -1,5 +1,5 @@
-import React from "react";
-import styles from "../styles/premium.module.css";
+import React from 'react';
+import styles from '../styles/premium.module.css';
 
 const PremiumPage = () => {
   return (

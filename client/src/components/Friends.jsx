@@ -47,7 +47,9 @@ const Friends = () => {
     <div className={styles.friends_container}>
       <div className={styles.userCardsContainer}>
         {users.length === 0 ? (
-          <div className={styles.noUsers}>We are havng trouble finding you friends at this moment!</div>
+          <div className={styles.noUsers}>
+            We are havng trouble finding you friends at this moment!
+          </div>
         ) : (
           users.map((user) => (
             <div className={styles.userCard} key={user.id}>

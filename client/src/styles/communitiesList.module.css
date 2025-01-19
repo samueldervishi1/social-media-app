@@ -84,7 +84,7 @@ span.members_count {
   margin-top: 20px;
 }
 
-.no_communities{
+.no_communities {
   text-align: center;
   margin-top: 50px;
 }
@@ -205,7 +205,6 @@ span.members_count {
 .create_button:active {
   background-color: #003f7f;
 }
-
 
 @media screen and (min-width: 1025px) {
   .card {

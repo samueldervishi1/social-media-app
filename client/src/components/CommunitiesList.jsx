@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import placeHolderImage from "../assets/placeholder.png";
-import placeHolderLogo from "../assets/logo-placeholder-image.png";
-import loader from "../assets/ZKZg.gif";
-import { Snackbar, Alert } from "@mui/material";
-import { Modal, Button, Form } from "react-bootstrap";
-import styles from "../styles/communitiesList.module.css";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import placeHolderImage from '../assets/placeholder.png';
+import placeHolderLogo from '../assets/logo-placeholder-image.png';
+import loader from '../assets/ZKZg.gif';
+import { Snackbar, Alert } from '@mui/material';
+import { Modal, Button, Form } from 'react-bootstrap';
+import styles from '../styles/communitiesList.module.css';
 
-import { getUserIdFromToken } from "../auth/authUtils";
+import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const CommunitiesList = () => {
@@ -19,37 +19,34 @@ const CommunitiesList = () => {
   const [dropdownVisible, setDropdownVisible] = useState(null);
   const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [communityName, setCommunityName] = useState("");
-  const [communityDescription, setCommunityDescription] = useState("");
+  const [communityName, setCommunityName] = useState('');
+  const [communityDescription, setCommunityDescription] = useState('');
 
   const navigate = useNavigate();
 
   const getMemberText = (count) => {
-    if (count === 1) return "1 member";
+    if (count === 1) return '1 member';
     if (count >= 0) return `${count} members`;
-    return "Loading...";
+    return 'Loading...';
   };
 
   const isValidCommunityName = (name) => {
-    return !name.includes(" ");
+    return !name.includes(' ');
   };
 
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `${API_URL}/api/v2/communities/list`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/api/v2/communities/list`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setCommunities(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError(err.message);
@@ -66,7 +63,7 @@ const CommunitiesList = () => {
   useEffect(() => {
     const fetchMembersCount = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
 
         const counts = await Promise.all(
           communities.map(async (community) => {
@@ -99,25 +96,25 @@ const CommunitiesList = () => {
 
         setMembersCounts(countsMap);
       } catch (err) {
-        console.error("Failed to fetch member counts:", err.message);
+        console.error('Failed to fetch member counts:', err.message);
       }
     };
 
     if (communities.length > 0) {
       fetchMembersCount();
     } else {
-      console.log("No communities available to fetch counts.");
+      console.log('No communities available to fetch counts.');
     }
   }, [communities]);
 
   const handleJoinCommunity = async (communityId) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const userId = getUserIdFromToken();
 
       if (!userId) {
-        setSnackbarMessage("User is not authenticated.");
-        setSnackbarSeverity("error");
+        setSnackbarMessage('User is not authenticated.');
+        setSnackbarSeverity('error');
         setSnackbarOpen(true);
         return;
       }
@@ -134,29 +131,29 @@ const CommunitiesList = () => {
 
       if (response.status === 200) {
         setJoinedCommunities((prev) => [...prev, communityId]);
-        setSnackbarMessage("You joined the community successfully!");
-        setSnackbarSeverity("success");
+        setSnackbarMessage('You joined the community successfully!');
+        setSnackbarSeverity('success');
         setSnackbarOpen(true);
       }
     } catch (err) {
       setError(err.message);
-      setSnackbarMessage("Something went wrong. Please try again.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Something went wrong. Please try again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
   };
 
   const handleCreateCommunity = async () => {
     if (!isValidCommunityName(communityName)) {
-      setSnackbarMessage("Community name cannot contain spaces.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Community name cannot contain spaces.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
       return;
     }
 
     try {
       const userId = getUserIdFromToken();
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
 
       const response = await axios.post(
         `${API_URL}/api/v2/communities/create/${userId}`,
@@ -172,13 +169,13 @@ const CommunitiesList = () => {
       );
 
       if (response.status === 200) {
-        setSnackbarMessage("Community created successfully!");
-        setSnackbarSeverity("success");
+        setSnackbarMessage('Community created successfully!');
+        setSnackbarSeverity('success');
         setSnackbarOpen(true);
 
         setShowCreateModal(false);
-        setCommunityName("");
-        setCommunityDescription("");
+        setCommunityName('');
+        setCommunityDescription('');
 
         setCommunities((prevCommunities) => [
           ...prevCommunities,
@@ -188,8 +185,8 @@ const CommunitiesList = () => {
         window.location.reload();
       }
     } catch (err) {
-      setSnackbarMessage("Failed to create community.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Failed to create community.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
       console.log;
     }
@@ -227,7 +224,7 @@ const CommunitiesList = () => {
         <div className={styles.loading_community}>
           <img
             src={loader}
-            alt="Loading..."
+            alt='Loading...'
             className={styles.spinner_community}
           />
         </div>
@@ -267,7 +264,7 @@ const CommunitiesList = () => {
                         }}
                         disabled={isUserJoined}
                       >
-                        {isUserJoined ? "Joined" : "Join"}
+                        {isUserJoined ? 'Joined' : 'Join'}
                       </button>
 
                       <button
@@ -282,9 +279,9 @@ const CommunitiesList = () => {
 
                       {dropdownVisible === community.communityId && (
                         <div className={styles.dropdown_community}>
-                          <a href="#">Add to favourites</a>
-                          <a href="#">Add to custom feed</a>
-                          <a href="#">Share community</a>
+                          <a href='#'>Add to favourites</a>
+                          <a href='#'>Add to custom feed</a>
+                          <a href='#'>Share community</a>
                         </div>
                       )}
                     </div>
@@ -295,7 +292,7 @@ const CommunitiesList = () => {
                         <span className={styles.members_count}>
                           {membersCounts[community.name] !== undefined
                             ? getMemberText(membersCounts[community.name])
-                            : "Loading..."}
+                            : 'Loading...'}
                         </span>
                       </h2>
                     </div>
@@ -314,12 +311,12 @@ const CommunitiesList = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {snackbarMessage}
         </Alert>
@@ -332,33 +329,33 @@ const CommunitiesList = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group className="mb-3">
+            <Form.Group className='mb-3'>
               <Form.Label>Community Name</Form.Label>
               <Form.Control
-                type="text"
+                type='text'
                 value={communityName}
                 onChange={(e) => setCommunityName(e.target.value)}
-                placeholder="Enter community name"
+                placeholder='Enter community name'
               />
             </Form.Group>
-            <Form.Group className="mb-3">
+            <Form.Group className='mb-3'>
               <Form.Label>Description</Form.Label>
               <Form.Control
-                as="textarea"
+                as='textarea'
                 rows={3}
                 value={communityDescription}
                 onChange={(e) => setCommunityDescription(e.target.value)}
-                placeholder="Enter description"
+                placeholder='Enter description'
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+          <Button variant='secondary' onClick={() => setShowCreateModal(false)}>
             Close
           </Button>
           <Button
-            variant="primary"
+            variant='primary'
             onClick={handleCreateCommunity}
             disabled={!communityName || !communityDescription}
           >

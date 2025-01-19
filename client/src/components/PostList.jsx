@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import loaderImage from "../assets/ZKZg.gif";
-import "../styles/post-card.css";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import loaderImage from '../assets/ZKZg.gif';
+import '../styles/post-card.css';
 
-const PostCard = React.lazy(() => import("./PostCard"));
+const PostCard = React.lazy(() => import('./PostCard'));
 const API_URL = import.meta.env.VITE_API_URL;
 
 const PostList = () => {
@@ -20,14 +20,11 @@ const PostList = () => {
 
   const fetchPosts = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
 
-      const userPostsResponse = await axios.get(
-        `${API_URL}/api/v2/posts/all`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const userPostsResponse = await axios.get(`${API_URL}/api/v2/posts/all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const allPosts = [...userPostsResponse.data];
 
@@ -43,8 +40,8 @@ const PostList = () => {
 
       setPosts(filteredPosts);
     } catch (error) {
-      console.error("Error fetching posts:", error.message);
-      setError("Something went wrong. Please try again later.");
+      console.error('Error fetching posts:', error.message);
+      setError('Something went wrong. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +49,7 @@ const PostList = () => {
 
   if (error) {
     return (
-      <div className="error-message">
+      <div className='error-message'>
         <p>{error}</p>
       </div>
     );
@@ -60,11 +57,11 @@ const PostList = () => {
 
   if (isLoading || !delayOver) {
     return (
-      <div className="text-loader">
+      <div className='text-loader'>
         <img
           src={loaderImage}
-          alt="Loading..."
-          className="list-loader"
+          alt='Loading...'
+          className='list-loader'
           style={{ width: 30 }}
         />
       </div>
@@ -74,18 +71,18 @@ const PostList = () => {
   if (posts.length === 0) {
     return (
       <div
-        className="no-posts-message"
-        style={{ textAlign: "center", marginTop: "20px", color: "white" }}
+        className='no-posts-message'
+        style={{ textAlign: 'center', marginTop: '20px', color: 'white' }}
       >
-        <p style={{ color: "black" }}>No more posts.</p>
+        <p style={{ color: 'black' }}>No more posts.</p>
       </div>
     );
   }
 
   return (
-    <div className="post-list" style={{ marginBottom: 15 }}>
+    <div className='post-list' style={{ marginBottom: 15 }}>
       {posts.map((post) => (
-        <div key={post.id} className="post-card-wrapper">
+        <div key={post.id} className='post-card-wrapper'>
           <PostCard
             id={post.id}
             content={post.content}

@@ -28,23 +28,20 @@ const LoginScript = () => {
       setFormState((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
-        const response = await fetch(
-          `${API_URL}/api/v2/auth/login`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              username: formState.username,
-              password: formState.password,
-            }),
-          }
-        );
+        const response = await fetch(`${API_URL}/api/v2/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: formState.username,
+            password: formState.password,
+          }),
+        });
 
         if (!response.ok) {
           const errorMessage = await response.text();
-          throw new Error(errorMessage || 'Login failed. Please try again.');
+          throw new Error('You are offline. Please try again later.');
         }
 
         const token = await response.text();

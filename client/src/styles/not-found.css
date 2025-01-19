@@ -34,10 +34,10 @@ path#XMLID_2_ {
   color: #16a085;
 }
 .message-notfound:after {
-  content: "]";
+  content: ']';
 }
 .message-notfound:before {
-  content: "[";
+  content: '[';
 }
 
 .message-notfound:after,

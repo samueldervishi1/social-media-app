@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import axios from "axios";
-import styles from "../styles/inbox.module.css";
-import defaultUserIcon from "../assets/user.webp";
-import customLoadingGif from "../assets/ZKZg.gif";
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
+import styles from '../styles/inbox.module.css';
+import defaultUserIcon from '../assets/user.webp';
+import customLoadingGif from '../assets/ZKZg.gif';
 
-const MessageComponent = React.lazy(() => import("./Message"));
-import { getUserIdFromToken } from "../auth/authUtils";
+const MessageComponent = React.lazy(() => import('./Message'));
+import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Inbox = ({ user }) => {
@@ -14,7 +14,7 @@ const Inbox = ({ user }) => {
   const [receiverId, setReceiverId] = useState(null);
   const [followers, setFollowers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
   // Fetch followers
@@ -22,12 +22,12 @@ const Inbox = ({ user }) => {
     const fetchFollowers = async () => {
       const userId = getUserIdFromToken();
       if (!userId) {
-        console.error("No token found or userId not present.");
+        console.error('No token found or userId not present.');
         return;
       }
 
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/users/list/${userId}`,
           {
@@ -53,7 +53,7 @@ const Inbox = ({ user }) => {
                 const followerData = followerResponse.data;
                 return {
                   ...followerData,
-                  username: followerData.username || "Unknown",
+                  username: followerData.username || 'Unknown',
                 };
               })
             );
@@ -70,9 +70,9 @@ const Inbox = ({ user }) => {
             "You don't have any followers yet. Follow people to start chatting!"
           );
         } else if (response.status === 500) {
-          console.error("Server error: 500");
+          console.error('Server error: 500');
           setErrorMessage(
-            "An error occurred on the server. Please try again later."
+            'An error occurred on the server. Please try again later.'
           );
         }
       } catch (error) {
@@ -82,9 +82,9 @@ const Inbox = ({ user }) => {
             "You don't have any followers yet. Follow people to start chatting!"
           );
         } else {
-          console.error("Error fetching followers:", error);
+          console.error('Error fetching followers:', error);
           setErrorMessage(
-            "Unable to fetch followers. Please check your internet connection."
+            'Unable to fetch followers. Please check your internet connection.'
           );
         }
       } finally {
@@ -113,7 +113,7 @@ const Inbox = ({ user }) => {
     <div className={styles.inbox_container}>
       <div
         className={`${styles.message_container} ${
-          showMessageComponent ? styles.open : ""
+          showMessageComponent ? styles.open : ''
         }`}
       >
         {showMessageComponent && receiverId && selectedUser && (
@@ -131,7 +131,7 @@ const Inbox = ({ user }) => {
           <div className={styles.loadingContainer}>
             <img
               src={customLoadingGif}
-              alt="Loading..."
+              alt='Loading...'
               className={styles.loadingGif}
             />
           </div>
@@ -148,7 +148,7 @@ const Inbox = ({ user }) => {
                 <img
                   src={defaultUserIcon}
                   className={styles.follower_avatar}
-                  alt="User Avatar"
+                  alt='User Avatar'
                 />
                 <p className={styles.follower_username}>{follower.username}</p>
               </button>

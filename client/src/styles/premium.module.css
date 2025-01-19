@@ -56,9 +56,8 @@
 .new_price {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #10b981; 
+  color: #10b981;
 }
-
 
 .pricing_plan {
   background-color: #ffffff;
@@ -98,7 +97,7 @@
 }
 
 .tick {
-  color: #10b981; 
+  color: #10b981;
   font-weight: bold;
   margin-right: 8px;
   font-size: 1.2rem;

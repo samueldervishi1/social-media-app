@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
-import { Modal } from "react-bootstrap";
-import { IoCreateOutline } from "react-icons/io5";
-import { TiArrowDownThick, TiArrowUpThick } from "react-icons/ti";
-import placeHolderImage from "../assets/placeholder.png";
-import placeHolderLogo from "../assets/logo-placeholder-image.png";
-import defaultUserIcon from "../assets/user.webp";
-import loader from "../assets/ZKZg.gif";
-import styles from "../styles/communityDetails.module.css";
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Modal } from 'react-bootstrap';
+import { IoCreateOutline } from 'react-icons/io5';
+import { TiArrowDownThick, TiArrowUpThick } from 'react-icons/ti';
+import placeHolderImage from '../assets/placeholder.png';
+import placeHolderLogo from '../assets/logo-placeholder-image.png';
+import defaultUserIcon from '../assets/user.webp';
+import loader from '../assets/ZKZg.gif';
+import styles from '../styles/communityDetails.module.css';
 
-import { getUserIdFromToken } from "../auth/authUtils";
+import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const CommunityDetails = () => {
@@ -22,14 +22,14 @@ const CommunityDetails = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewDropdownVisible, setViewDropdownVisible] = useState(false);
   const [sortDropdownVisible, setSortDropdownVisible] = useState(false);
-  const [currentView, setCurrentView] = useState("Feed");
+  const [currentView, setCurrentView] = useState('Feed');
   const [loading, setLoading] = useState(true);
   const [likeStatus, setLikeStatus] = useState({});
   const [activeQuestion, setActiveQuestion] = useState(null);
   const [likeCount, setLikeCount] = useState(0);
 
   const [showPostModal, setShowPostModal] = useState(false);
-  const [postContent, setPostContent] = useState("");
+  const [postContent, setPostContent] = useState('');
   const navigate = useNavigate();
 
   const dropdownRef = useRef(null);
@@ -37,16 +37,16 @@ const CommunityDetails = () => {
   const sortDropdownRef = useRef(null);
 
   const getMemberText = (count) => {
-    if (count === 1) return "1 member";
+    if (count === 1) return '1 member';
     if (count >= 0) return `${count} members`;
-    return "Loading...";
+    return 'Loading...';
   };
 
   //fetch community details
   useEffect(() => {
     const fetchCommunityDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/communities/${name}`,
           {
@@ -58,7 +58,7 @@ const CommunityDetails = () => {
         setCommunity(response.data);
         fetchPosts(response.data.postIds);
       } catch (err) {
-        setError("Failed to fetch community details");
+        setError('Failed to fetch community details');
       } finally {
         setTimeout(() => {
           setLoading(false);
@@ -74,7 +74,7 @@ const CommunityDetails = () => {
     if (!postIds || postIds.length === 0) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const postDetailsPromises = postIds.map(async (postId) => {
         try {
           const postResponse = await axios.get(
@@ -108,16 +108,16 @@ const CommunityDetails = () => {
               `Failed to fetch user details for ownerId ${post.ownerId}:`,
               userError.message
             );
-            post.author = "Unknown";
+            post.author = 'Unknown';
           }
 
           return post;
         } catch (err) {
           if (err.response && err.response.status === 404) {
-            console.error("Post not found for postId:", postId);
+            console.error('Post not found for postId:', postId);
             return null;
           } else {
-            console.error("Error fetching post details:", err.message);
+            console.error('Error fetching post details:', err.message);
             return null;
           }
         }
@@ -127,13 +127,13 @@ const CommunityDetails = () => {
       const validPosts = postDetails.filter((post) => post !== null);
 
       if (validPosts.length === 0) {
-        setError("No posts found.");
+        setError('No posts found.');
       } else {
         setPosts(validPosts);
       }
     } catch (err) {
-      console.error("Error fetching posts:", err.message);
-      setError("Failed to load posts.");
+      console.error('Error fetching posts:', err.message);
+      setError('Failed to load posts.');
       setPosts([]);
     }
   };
@@ -142,11 +142,9 @@ const CommunityDetails = () => {
   useEffect(() => {
     const fetchMembersCount = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await axios.get(
-          `${API_URL}/api/v2/communities/c/count/${encodeURIComponent(
-            name
-          )}`,
+          `${API_URL}/api/v2/communities/c/count/${encodeURIComponent(name)}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -154,8 +152,8 @@ const CommunityDetails = () => {
 
         setMembersCount(response.data);
       } catch (err) {
-        console.error("Error fetching member count:", err.message);
-        setMembersCount("N/A");
+        console.error('Error fetching member count:', err.message);
+        setMembersCount('N/A');
       }
     };
 
@@ -167,11 +165,11 @@ const CommunityDetails = () => {
   //join community
   const handleJoinCommunity = async (communityId) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const userId = getUserIdFromToken();
 
       if (!userId) {
-        alert("User is not authenticated");
+        alert('User is not authenticated');
         return;
       }
 
@@ -186,7 +184,7 @@ const CommunityDetails = () => {
       );
 
       if (response.status === 200) {
-        alert("You joined the community successfully!");
+        alert('You joined the community successfully!');
       }
     } catch (err) {
       setError(err.message);
@@ -195,11 +193,11 @@ const CommunityDetails = () => {
 
   //handle create community post
   const handleCreatePost = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     const userId = getUserIdFromToken();
 
     if (!postContent.trim()) {
-      alert("Post content cannot be empty");
+      alert('Post content cannot be empty');
       return;
     }
 
@@ -214,20 +212,20 @@ const CommunityDetails = () => {
         postData,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
       if (response.status === 200) {
-        alert("Post created successfully!");
-        setPostContent("");
+        alert('Post created successfully!');
+        setPostContent('');
         setShowPostModal(false);
         window.location.reload();
       }
     } catch (err) {
-      alert("Error creating post: " + err.message);
+      alert('Error creating post: ' + err.message);
     }
   };
 
@@ -235,7 +233,7 @@ const CommunityDetails = () => {
     e.stopPropagation();
     const loggedInUserId = getUserIdFromToken();
     if (userId === loggedInUserId) {
-      navigate("/profile");
+      navigate('/profile');
     } else {
       navigate(`/users/${userId}`);
     }
@@ -271,10 +269,10 @@ const CommunityDetails = () => {
   };
 
   useEffect(() => {
-    document.addEventListener("click", closeDropdowns);
+    document.addEventListener('click', closeDropdowns);
 
     return () => {
-      document.removeEventListener("click", closeDropdowns);
+      document.removeEventListener('click', closeDropdowns);
     };
   }, []);
 
@@ -284,26 +282,26 @@ const CommunityDetails = () => {
     const seconds = Math.floor((new Date() - postDateTime) / 1000);
     let interval = Math.floor(seconds / 31536000);
 
-    if (interval >= 1) return interval + "y ago";
+    if (interval >= 1) return interval + 'y ago';
     interval = Math.floor(seconds / 2592000);
-    if (interval >= 1) return interval + "mo ago";
+    if (interval >= 1) return interval + 'mo ago';
     interval = Math.floor(seconds / 86400);
-    if (interval >= 1) return interval + "d ago";
+    if (interval >= 1) return interval + 'd ago';
     interval = Math.floor(seconds / 3600);
-    if (interval >= 1) return interval + "h ago";
+    if (interval >= 1) return interval + 'h ago';
     interval = Math.floor(seconds / 60);
-    if (interval >= 1) return interval + "min ago";
-    return seconds < 10 ? "just now" : seconds + "s ago";
+    if (interval >= 1) return interval + 'min ago';
+    return seconds < 10 ? 'just now' : seconds + 's ago';
   };
 
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "short", day: "numeric" };
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", options);
+    return date.toLocaleDateString('en-US', options);
   };
 
   const handleLike = async (postId) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     const userId = getUserIdFromToken(token);
     const communityName = name;
 
@@ -321,18 +319,18 @@ const CommunityDetails = () => {
         setLikeCount(likeResponse.data);
         setLikeStatus((prev) => ({
           ...prev,
-          [postId]: prev[postId] === "like" ? null : "like",
+          [postId]: prev[postId] === 'like' ? null : 'like',
         }));
       }
     } catch (error) {
-      console.error("Error toggling like:", error.message);
+      console.error('Error toggling like:', error.message);
     }
   };
 
   const handleDislike = (postId) => {
     setLikeStatus((prev) => ({
       ...prev,
-      [postId]: prev[postId] === "dislike" ? null : "dislike",
+      [postId]: prev[postId] === 'dislike' ? null : 'dislike',
     }));
   };
 
@@ -342,12 +340,12 @@ const CommunityDetails = () => {
 
   const questionsAndAnswers = [
     {
-      question: "No songs from the Hall of Fame",
+      question: 'No songs from the Hall of Fame',
       answer:
-        "Songs listed in our Hall of Fame will be automatically removed. ",
+        'Songs listed in our Hall of Fame will be automatically removed. ',
     },
     {
-      question: "No discussions `about, of, or` for the author",
+      question: 'No discussions `about, of, or` for the author',
       answer:
         "Please ensure that all discussion posts are `for` the community. Sharing your own story is fine, so long as it's part of a larger discussion post that's conducive to discussion.",
     },
@@ -363,7 +361,7 @@ const CommunityDetails = () => {
   if (loading) {
     return (
       <div className={styles.loading_details}>
-        <img src={loader} alt="Loading..." className={styles.spinner_details} />
+        <img src={loader} alt='Loading...' className={styles.spinner_details} />
       </div>
     );
   }
@@ -392,7 +390,7 @@ const CommunityDetails = () => {
         <h2 className={styles.community_name}>
           c/{community.name} <span>-</span>
           <span className={styles.members_count}>
-            {membersCount !== null ? getMemberText(membersCount) : "Loading..."}
+            {membersCount !== null ? getMemberText(membersCount) : 'Loading...'}
           </span>
         </h2>
 
@@ -408,7 +406,7 @@ const CommunityDetails = () => {
           onClick={() => handleJoinCommunity(community.communityId)}
           disabled={isUserJoined}
         >
-          {isUserJoined ? "Joined" : "Join"}
+          {isUserJoined ? 'Joined' : 'Join'}
         </button>
 
         <button
@@ -420,9 +418,9 @@ const CommunityDetails = () => {
 
         {dropdownVisible && (
           <div ref={dropdownRef} className={styles.community_dropdown_menu}>
-            <a href="#">Add to favourites</a>
-            <a href="#">Add to custom feed</a>
-            <a href="#">Share community</a>
+            <a href='#'>Add to favourites</a>
+            <a href='#'>Add to custom feed</a>
+            <a href='#'>Share community</a>
           </div>
         )}
       </div>
@@ -431,7 +429,7 @@ const CommunityDetails = () => {
         <div className={styles.community_buttons}>
           <button
             className={styles.feed_button}
-            onClick={() => setCurrentView("Feed")}
+            onClick={() => setCurrentView('Feed')}
           >
             Feed
           </button>
@@ -443,8 +441,8 @@ const CommunityDetails = () => {
             </button>
             {viewDropdownVisible && (
               <div className={styles.view_dropdown_menu}>
-                <a href="#">View 1</a>
-                <a href="#">View 2</a>
+                <a href='#'>View 1</a>
+                <a href='#'>View 2</a>
               </div>
             )}
           </div>
@@ -454,8 +452,8 @@ const CommunityDetails = () => {
             </button>
             {sortDropdownVisible && (
               <div className={styles.sort_dropdown_menu}>
-                <a href="#">Sort A-Z</a>
-                <a href="#">Sort Z-A</a>
+                <a href='#'>Sort A-Z</a>
+                <a href='#'>Sort Z-A</a>
               </div>
             )}
           </div>
@@ -467,7 +465,7 @@ const CommunityDetails = () => {
         <div className={styles.left_side}>
           {error ? (
             <div className={styles.no_posts_message}>Error: {error}</div>
-          ) : currentView === "Feed" && posts.length === 0 ? (
+          ) : currentView === 'Feed' && posts.length === 0 ? (
             <div className={styles.no_posts_message}>
               No posts found in this community.
             </div>
@@ -476,20 +474,20 @@ const CommunityDetails = () => {
               <div
                 key={post.id}
                 className={`${styles.post_community_card} ${
-                  likeStatus[post.id] === "like"
-                    ? "liked"
-                    : likeStatus[post.id] === "dislike"
-                    ? "disliked"
-                    : ""
+                  likeStatus[post.id] === 'like'
+                    ? 'liked'
+                    : likeStatus[post.id] === 'dislike'
+                    ? 'disliked'
+                    : ''
                 }`}
               >
                 <div onClick={handleProfileLinkClick}>
                   <img
                     src={defaultUserIcon}
-                    alt="User Icon"
+                    alt='User Icon'
                     className={styles.user_community_icon}
                   />
-                  @{post.author}{" "}
+                  @{post.author}{' '}
                   <span className={styles.post_community_time}>
                     • {timeSincePost(post.createTime)}
                   </span>
@@ -499,16 +497,16 @@ const CommunityDetails = () => {
                 <div className={styles.community_action}>
                   <div
                     className={`${styles.like_buttons} ${
-                      likeStatus[post.id] === "like"
-                        ? "liked"
-                        : likeStatus[post.id] === "dislike"
-                        ? "disliked"
-                        : ""
+                      likeStatus[post.id] === 'like'
+                        ? 'liked'
+                        : likeStatus[post.id] === 'dislike'
+                        ? 'disliked'
+                        : ''
                     }`}
                   >
                     <button
                       className={`${styles.like_button} ${
-                        likeStatus[post.id] === "like" ? "active" : ""
+                        likeStatus[post.id] === 'like' ? 'active' : ''
                       }`}
                       onClick={() => handleLike(post.id)}
                     >
@@ -519,7 +517,7 @@ const CommunityDetails = () => {
                     </span>
                     <button
                       className={`${styles.dislike_button} ${
-                        likeStatus[post.id] === "dislike" ? "active" : ""
+                        likeStatus[post.id] === 'dislike' ? 'active' : ''
                       }`}
                       onClick={() => handleDislike(post.id)}
                     >
@@ -544,10 +542,10 @@ const CommunityDetails = () => {
                 <strong>Created on:</strong> {formatDate(community.createTime)}
               </div>
               <div className={styles.community_members}>
-                <strong>Members:</strong>{" "}
+                <strong>Members:</strong>{' '}
                 {membersCount !== null
                   ? getMemberText(membersCount)
-                  : "Loading..."}
+                  : 'Loading...'}
               </div>
             </div>
             <div className={styles.community_faq}>
@@ -559,7 +557,7 @@ const CommunityDetails = () => {
                     onClick={() => toggleAnswer(index)}
                   >
                     <strong>{qa.question}</strong>
-                    <span>{activeQuestion === index ? "−" : "+"}</span>{" "}
+                    <span>{activeQuestion === index ? '−' : '+'}</span>{' '}
                   </div>
                   {activeQuestion === index && (
                     <div className={styles.faq_answer}>
@@ -579,19 +577,19 @@ const CommunityDetails = () => {
         </Modal.Header>
         <Modal.Body>
           <textarea
-            className="form-control"
-            rows="5"
+            className='form-control'
+            rows='5'
             placeholder="What's on your mind?"
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
           ></textarea>
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-primary" onClick={handleCreatePost}>
+          <button className='btn btn-primary' onClick={handleCreatePost}>
             Post
           </button>
           <button
-            className="btn btn-secondary"
+            className='btn btn-secondary'
             onClick={() => setShowPostModal(false)}
           >
             Close

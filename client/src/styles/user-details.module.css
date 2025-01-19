@@ -20,15 +20,15 @@
   font-size: 12px;
   background-color: lightgrey;
   border: none;
-  color: #1c1c1d;;
+  color: #1c1c1d;
   width: 150px;
 }
 .butt_edit:hover {
-  color: #1c1c1d;;
+  color: #1c1c1d;
   background-color: lightgrey;
 }
 
-.loader_image{
+.loader_image {
   width: 30px;
   top: 50%;
   left: 50%;
@@ -78,7 +78,7 @@
     font-size: 12px;
     background-color: lightgrey;
     border: none;
-    color: #1c1c1d;;
+    color: #1c1c1d;
   }
   .again {
     background-color: white;
