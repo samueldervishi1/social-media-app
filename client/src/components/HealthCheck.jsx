@@ -1,56 +1,110 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Alert } from 'react-bootstrap';
 
 const CHECK_URL = import.meta.env.VITE_CHECK_URL;
 
 const HealthCheck = () => {
-  const [status, setStatus] = useState(null);
-  const [message, setMessage] = useState('');
-  const [emoji, setEmoji] = useState('');
+  const [statusData, setStatusData] = useState([]);
+  const [hoverDetails, setHoverDetails] = useState('');
+  const [selectedDay, setSelectedDay] = useState(null);
 
   useEffect(() => {
-    const fetchHealthStatus = async () => {
+    const fetchHealthHistory = async () => {
       try {
-        const response = await axios.get(`${CHECK_URL}/api/v2/health`);
-
-        if (response.data.status === 'Server is running smoothly!') {
-          setStatus('success');
-          setMessage('Server is running smoothly!');
-          setEmoji('😊');
-        } else {
-          setStatus('warning');
-          setMessage('Server responded with an unexpected result.');
-          setEmoji('🤔');
-        }
+        const response = await axios.get(`${CHECK_URL}/api/v2/health-history`);
+        const statusHistory = response.data.history.map((dayData) => {
+          let statusColor = 'green';
+          if (
+            dayData.status === 'Server is experiencing an outage right now.'
+          ) {
+            statusColor = 'red';
+          } else if (
+            dayData.status === 'Server responded with an unexpected result.'
+          ) {
+            statusColor = 'yellow';
+          }
+          return {
+            ...dayData,
+            color: statusColor,
+          };
+        });
+        setStatusData(statusHistory.reverse());
       } catch (error) {
-        if (error.code === 'ERR_NETWORK') {
-          setStatus('info');
-          setMessage(
-            'Server might be running, but the status checker is down!'
-          );
-          setEmoji('😶');
-        } else {
-          setStatus('danger');
-          setMessage(
-            'Server is experiencing an outage right now. We are working to bring it up  as soon as possible. Please be patient!'
-          );
-          setEmoji('😢');
-        }
+        console.error('Error fetching health history:', error);
       }
     };
 
-    fetchHealthStatus();
+    fetchHealthHistory();
   }, []);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'green':
+        return 'bg-success';
+      case 'yellow':
+        return 'bg-warning';
+      case 'red':
+        return 'bg-danger';
+      default:
+        return 'bg-secondary';
+    }
+  };
+
+  const handleClick = (dayData) => {
+    setSelectedDay(dayData);
+  };
 
   return (
     <div className='container text-center mt-5'>
-      <h1>Server Health Check</h1>
-      {status && (
-        <Alert className={`alert alert-${status} mt-4`}>
-          <div style={{ fontSize: '3rem' }}>{emoji}</div>
-          <p className='mt-3'>{message}</p>
-        </Alert>
+      <h1>Server Health Check (Past 7 Days)</h1>
+      <div
+        className='d-flex justify-content-center mt-4'
+        style={{ position: 'relative' }}
+      >
+        {statusData.length > 0 ? (
+          statusData.map((dayData, index) => (
+            <div
+              key={index}
+              className={`bar ${getStatusColor(dayData.color)} mx-1`}
+              style={{
+                height: '30px',
+                width: '40px',
+                cursor: 'pointer',
+                position: 'relative',
+              }}
+              onClick={() => handleClick(dayData)}
+            >
+              {selectedDay === dayData && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '35px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    padding: '5px 10px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
+                    borderRadius: '5px',
+                    fontSize: '12px',
+                    opacity: 1,
+                    transition: 'opacity 0.2s ease',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {dayData.details}
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+      {selectedDay && (
+        <div className='mt-4'>
+          <h3>Status for {7 - selectedDay.day} Day(s) Ago:</h3>
+          <p>{selectedDay.details}</p>
+        </div>
       )}
     </div>
   );
