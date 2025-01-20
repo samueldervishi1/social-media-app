@@ -25,6 +25,7 @@ const CommunitiesList = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [communityName, setCommunityName] = useState('');
   const [communityDescription, setCommunityDescription] = useState('');
+  const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
 
   const navigate = useNavigate();
 
@@ -32,6 +33,21 @@ const CommunitiesList = () => {
     if (count === 1) return '1 member';
     if (count >= 0) return `${count} members`;
     return 'Loading...';
+  };
+
+  const handleFaqChange = (index, field, value) => {
+    const newFaqs = [...faqs];
+    newFaqs[index][field] = value;
+    setFaqs(newFaqs);
+  };
+
+  const addFaq = () => {
+    setFaqs([...faqs, { question: '', answer: '' }]);
+  };
+
+  const removeFaq = (index) => {
+    const newFaqs = faqs.filter((_, i) => i !== index);
+    setFaqs(newFaqs);
   };
 
   const isValidCommunityName = (name) => {
@@ -156,12 +172,17 @@ const CommunitiesList = () => {
       const userId = getUserIdFromToken();
       const token = localStorage.getItem('token');
 
+      const requestData = {
+        name: communityName,
+        description: communityDescription,
+        faqs: faqs,
+      };
+
+      console.log('Sending data to backend:', requestData);
+
       const response = await axios.post(
         `${API_URL}/api/v2/communities/create/${userId}`,
-        {
-          name: communityName,
-          description: communityDescription,
-        },
+        requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -177,6 +198,7 @@ const CommunitiesList = () => {
         setShowCreateModal(false);
         setCommunityName('');
         setCommunityDescription('');
+        setFaqs([{ question: '', answer: '' }]);
 
         setCommunities((prevCommunities) => [
           ...prevCommunities,
@@ -189,7 +211,7 @@ const CommunitiesList = () => {
       setSnackbarMessage('Failed to create community.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
-      console.log;
+      console.log(err);
     }
   };
 
@@ -307,7 +329,6 @@ const CommunitiesList = () => {
         </>
       )}
 
-      {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
@@ -349,8 +370,46 @@ const CommunitiesList = () => {
                 placeholder='Enter description'
               />
             </Form.Group>
+            <div>
+              <h5>FAQs</h5>
+              {faqs.map((faq, index) => (
+                <div key={index}>
+                  <Form.Group className='mb-3'>
+                    <Form.Label>Question {index + 1}</Form.Label>
+                    <Form.Control
+                      type='text'
+                      value={faq.question}
+                      onChange={(e) =>
+                        handleFaqChange(index, 'question', e.target.value)
+                      }
+                      placeholder='Enter the question'
+                    />
+                  </Form.Group>
+                  <Form.Group className='mb-3'>
+                    <Form.Label>Answer</Form.Label>
+                    <Form.Control
+                      type='text'
+                      value={faq.answer}
+                      onChange={(e) =>
+                        handleFaqChange(index, 'answer', e.target.value)
+                      }
+                      placeholder='Enter the answer'
+                    />
+                  </Form.Group>
+                  <div className={styles.button_row}>
+                    <Button variant='danger' onClick={() => removeFaq(index)}>
+                      Remove FAQ
+                    </Button>
+                    <Button variant='primary' onClick={addFaq}>
+                      Add FAQ
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </Form>
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant='secondary' onClick={() => setShowCreateModal(false)}>
             Close

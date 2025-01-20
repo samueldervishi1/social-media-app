@@ -3,7 +3,6 @@ package com.chirp.server.controllers;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.*;
 import com.chirp.server.services.CommunityService;
-import com.chirp.server.services.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -110,17 +109,17 @@ public class CommunityController {
 
 	@PostMapping("/create/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {
-		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription());
+		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription(), community.getFaqs());
 
 		return new ResponseEntity<>(community , HttpStatus.CREATED);
 	}
 
-//	@PostMapping("/{communityName}/posts")
-//	public CommunityPost createPostForCommunity(
-//			@PathVariable String communityName ,
-//			@RequestBody CommunityPost communityPost) {
-//		return communityService.createCommunityPost(communityName , communityPost.getOwnerId() , communityPost.getContent());
-//	}
+	@PostMapping("/{communityName}/posts")
+	public CommunityPost createPostForCommunity(
+			@PathVariable String communityName ,
+			@RequestBody CommunityPost communityPost) {
+		return communityService.createCommunityPost(communityName , communityPost.getOwnerId() , communityPost.getContent());
+	}
 
 	@PostMapping("/join/{communityId}/{userId}")
 	public ResponseEntity<String> joinCommunity(@PathVariable String communityId , @PathVariable String userId) {
@@ -132,16 +131,16 @@ public class CommunityController {
 		}
 	}
 
-//	@PostMapping("/{communityName}/posts/{postId}/like")
-//	public ResponseEntity<CommunityLikePost> likePost(
-//			@PathVariable String communityName ,
-//			@PathVariable String postId ,
-//			@RequestParam String userId) throws Exception {
-//		try {
-//			CommunityLikePost newLike = communityService.likePostForCommunity(userId , postId , communityName);
-//			return new ResponseEntity<>(newLike , HttpStatus.CREATED);
-//		} catch (Exception e) {
-//			return new ResponseEntity<>(null , HttpStatus.BAD_REQUEST);
-//		}
-//	}
+	@PostMapping("/{communityName}/posts/{postId}/like")
+	public ResponseEntity<CommunityLikePost> likePost(
+			@PathVariable String communityName ,
+			@PathVariable String postId ,
+			@RequestParam String userId) throws Exception {
+		try {
+			CommunityLikePost newLike = communityService.likePost(userId , postId , communityName);
+			return new ResponseEntity<>(newLike , HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null , HttpStatus.BAD_REQUEST);
+		}
+	}
 }

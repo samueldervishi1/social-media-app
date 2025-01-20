@@ -21,6 +21,15 @@ public class Community {
 
 	private List<String> postIds = new ArrayList<>();
 	private List<String> userIds = new ArrayList<>();
+	private List<Faq> faqs = new ArrayList<>();
+
+	public List<Faq> getFaqs() {
+		return faqs;
+	}
+
+	public void setFaqs(List<Faq> faqs) {
+		this.faqs = faqs;
+	}
 
 	public Community(String name , String ownerId , String description) {
 		this.communityId = UUID.randomUUID().toString();

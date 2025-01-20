@@ -26,11 +26,9 @@ const CommunityDetails = () => {
   const [loading, setLoading] = useState(true);
   const [likeStatus, setLikeStatus] = useState({});
   const [activeQuestion, setActiveQuestion] = useState(null);
-  const [likeCount, setLikeCount] = useState(0);
 
   const [showPostModal, setShowPostModal] = useState(false);
   const [postContent, setPostContent] = useState('');
-  const navigate = useNavigate();
 
   const dropdownRef = useRef(null);
   const viewDropdownRef = useRef(null);
@@ -83,58 +81,32 @@ const CommunityDetails = () => {
           );
           const post = postResponse.data;
 
-          try {
-            const likesResponse = await axios.get(
-              `${API_URL}/api/v2/communities/count/${postId}`,
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
-            post.likesCount = likesResponse.data;
-          } catch (likesError) {
-            console.error(
-              `Failed to fetch likes count for postId ${postId}:`,
-              likesError.message
-            );
-            post.likesCount = 0;
+          if (!post.id) {
+            return null;
           }
 
-          try {
-            const userResponse = await axios.get(
-              `${API_URL}/api/v2/users/${post.ownerId}`,
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
-            post.author = userResponse.data.username;
-          } catch (userError) {
-            console.error(
-              `Failed to fetch user details for ownerId ${post.ownerId}:`,
-              userError.message
-            );
-            post.author = 'Unknown';
-          }
+          const likesResponse = await axios.get(
+            `${API_URL}/api/v2/communities/count/${postId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          post.likesCount = likesResponse.data;
+
+          const userResponse = await axios.get(
+            `${API_URL}/api/v2/users/${post.ownerId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          post.author = userResponse.data.username;
 
           return post;
-        } catch (err) {
-          if (err.response && err.response.status === 404) {
-            console.error('Post not found for postId:', postId);
-            return null;
-          } else {
-            console.error('Error fetching post details:', err.message);
-            return null;
-          }
+        } catch {
+          return null;
         }
       });
 
       const postDetails = await Promise.all(postDetailsPromises);
-      const validPosts = postDetails.filter((post) => post !== null);
-
-      if (validPosts.length === 0) {
-        setError('No posts found.');
-      } else {
-        setPosts(validPosts);
-      }
+      setPosts(postDetails.filter((post) => post !== null));
     } catch (err) {
-      console.error('Error fetching posts:', err.message);
       setError('Failed to load posts.');
-      setPosts([]);
     }
   };
 
@@ -229,16 +201,6 @@ const CommunityDetails = () => {
     }
   };
 
-  const handleProfileLinkClick = (e) => {
-    e.stopPropagation();
-    const loggedInUserId = getUserIdFromToken();
-    if (userId === loggedInUserId) {
-      navigate('/profile');
-    } else {
-      navigate(`/users/${userId}`);
-    }
-  };
-
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
@@ -300,61 +262,9 @@ const CommunityDetails = () => {
     return date.toLocaleDateString('en-US', options);
   };
 
-  const handleLike = async (postId) => {
-    const token = localStorage.getItem('token');
-    const userId = getUserIdFromToken(token);
-    const communityName = name;
-
-    try {
-      const likeResponse = await axios.get(
-        `{{url}}api/v2/communities/${communityName}/posts/${postId}/like?userId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (likeResponse.status === 200) {
-        setLikeCount(likeResponse.data);
-        setLikeStatus((prev) => ({
-          ...prev,
-          [postId]: prev[postId] === 'like' ? null : 'like',
-        }));
-      }
-    } catch (error) {
-      console.error('Error toggling like:', error.message);
-    }
-  };
-
-  const handleDislike = (postId) => {
-    setLikeStatus((prev) => ({
-      ...prev,
-      [postId]: prev[postId] === 'dislike' ? null : 'dislike',
-    }));
-  };
-
   const toggleAnswer = (index) => {
     setActiveQuestion(activeQuestion === index ? null : index);
   };
-
-  const questionsAndAnswers = [
-    {
-      question: 'No songs from the Hall of Fame',
-      answer:
-        'Songs listed in our Hall of Fame will be automatically removed. ',
-    },
-    {
-      question: 'No discussions `about, of, or` for the author',
-      answer:
-        "Please ensure that all discussion posts are `for` the community. Sharing your own story is fine, so long as it's part of a larger discussion post that's conducive to discussion.",
-    },
-    {
-      question: "Don't post your own music ",
-      answer:
-        "It is your responsibility to read and understand Reddit's guidelines on self-promotion before submitting your own music. Famous musical celebrities are exempt. For verification, contact the staff privately. For original music, double-check your submission after 2-3 minutes. Ensure the flair is set to 'I Made This'",
-    },
-  ];
 
   if (error) return <div>Error: {error}</div>;
 
@@ -481,7 +391,7 @@ const CommunityDetails = () => {
                     : ''
                 }`}
               >
-                <div onClick={handleProfileLinkClick}>
+                <div>
                   <img
                     src={defaultUserIcon}
                     alt='User Icon'
@@ -550,7 +460,7 @@ const CommunityDetails = () => {
             </div>
             <div className={styles.community_faq}>
               <h4>Frequently Asked Questions</h4>
-              {questionsAndAnswers.map((qa, index) => (
+              {community.faqs.map((qa, index) => (
                 <div key={index} className={styles.faq_item}>
                   <div
                     className={styles.faq_question}

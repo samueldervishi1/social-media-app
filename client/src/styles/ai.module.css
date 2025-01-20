@@ -48,6 +48,27 @@
   scroll-behavior: smooth;
 }
 
+.predefined_questions {
+  margin-top: 20px;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.predefined_button {
+  margin: 5px;
+  padding: 8px 15px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.predefined_button:hover {
+  background-color: #e0e0e0;
+}
+
 .terminal_block {
   background-color: lightgrey;
   color: #ffffff;
@@ -129,8 +150,8 @@
 }
 
 .profile img {
-  width: 60%;
-  height: 60%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -170,6 +191,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 3px;
+  margin-bottom: 25px;
   background: white;
   color: #1c1c1d;
   display: flex;
@@ -205,11 +227,11 @@
 }
 
 .info_text {
-  margin-top: 10px;
   color: black;
-  font-size: 12px;
-  text-align: center;
-  margin-bottom: 7px;
+  font-size: 10px;
+  text-align: right;
+  margin-right: 55px;
+  margin-bottom: 10px;
 }
 
 .code_block {

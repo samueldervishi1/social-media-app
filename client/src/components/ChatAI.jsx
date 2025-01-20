@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import bot from '../assets/bot.svg';
+import bot from '../assets/logo1.svg';
 import user from '../assets/user.svg';
 import send from '../assets/send.svg';
 import loaderGif from '../assets/ZKZg.gif';
@@ -280,6 +280,18 @@ const ChatAI = () => {
     return Math.min(lines * lineHeight, 120);
   };
 
+  const predefinedQuestions = [
+    'Summarize text',
+    'Help me write',
+    'Surprise me',
+    'Make a plan',
+  ];
+
+  const handleClickPredefinedQuestion = (question) => {
+    setUserInput(question);
+    setHideHeading(true);
+  };
+
   return (
     <div className={styles.sidebar1_container}>
       <div
@@ -311,7 +323,22 @@ const ChatAI = () => {
 
       <div className={styles.main_content_ai}>
         {!hideHeading && (
-          <h1 className={styles.heading_center}>What do you need help with?</h1>
+          <div>
+            <h1 className={styles.heading_center}>
+              What do you need help with?
+            </h1>
+            <div className={styles.predefined_questions}>
+              {predefinedQuestions.map((question, index) => (
+                <button
+                  key={index}
+                  className={styles.predefined_button}
+                  onClick={() => handleClickPredefinedQuestion(question)}
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
         <div
           id={styles.chat_container}
@@ -356,6 +383,13 @@ const ChatAI = () => {
             </div>
           )}
         </div>
+        <p className={styles.info_text}>
+          {isRateLimited
+            ? countdown > 0
+              ? `Too many requests. Please wait ${countdown} seconds before trying again.`
+              : 'You can continue now.'
+            : 'Sypher can make mistakes. Check important info.'}
+        </p>
         <form className={styles.ai_form} onSubmit={handleSubmit}>
           <textarea
             className={styles.ai_textArea}
@@ -390,13 +424,6 @@ const ChatAI = () => {
             )}
           </button>
         </form>
-        <p className={styles.info_text}>
-          {isRateLimited
-            ? countdown > 0
-              ? `Too many requests. Please wait ${countdown} seconds before trying again.`
-              : 'You can continue now.'
-            : 'Sypher can make mistakes. Check important info.'}
-        </p>
       </div>
     </div>
   );
