@@ -1,12 +1,12 @@
-import asyncio
-import datetime
-import os
-import requests
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
-import motor.motor_asyncio
+import os
 from dotenv import load_dotenv
+import httpx
+import motor.motor_asyncio
+import datetime
+import asyncio
 
 load_dotenv()
 
@@ -29,67 +29,71 @@ app.add_middleware(
 )
 
 
-async def save_health_status(status: str, details: str):
+async def save_health_status_for_day(date: str, message: str):
+    existing_doc = await health_collection.find_one({"date": date})
+
+    if existing_doc:
+        last_check_time = existing_doc['health_checks'][-1]['timestamp']
+        last_check_time = datetime.datetime.strptime(last_check_time, "%Y-%m-%d %H:%M")
+        current_time = datetime.datetime.utcnow()
+        if (current_time - last_check_time).total_seconds() < 1800:
+            print(f"Duplicate health check attempt detected for {date}. Skipping save.")
+            return
+
     health_record = {
-        "status": status,
-        "details": details,
-        "timestamp": datetime.datetime.utcnow(),
+        "timestamp": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
+        "message": message
     }
-    print(f"Saving health status: {status}, {details}")
-    result = await health_collection.insert_one(health_record)
-    print(f"Inserted health record with ID: {result.inserted_id}")
+
+    if existing_doc:
+        await health_collection.update_one(
+            {"date": date},
+            {"$push": {"health_checks": health_record}}
+        )
+    else:
+        new_doc = {
+            "date": date,
+            "health_checks": [health_record]
+        }
+        await health_collection.insert_one(new_doc)
+
+    print(f"Health check saved for {date}: {message}")
 
 
 @app.get("/api/v2/health")
-async def check_health(background_tasks: BackgroundTasks):
+async def check_health():
     url = f"{BACKEND_URL}/api/v2/ping"
     print(f"Making request to: {url}")
+
     try:
-        response = requests.get(url)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+
         print(f"Response Status Code: {response.status_code}")
         print(f"Response Text: {response.text}")
 
-        if response.status_code == 200:
-            status = "Server is running smoothly!"
-            details = response.text
-        else:
-            status = "Server responded with an unexpected result."
-            details = response.text
+        status = "Server is reachable" if response.status_code == 200 else "Server responded with an unexpected result"
+        details = response.text if response.status_code != 200 else None
 
-        background_tasks.add_task(save_health_status, status, details)
+        current_date = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+        message = f"{status} at {datetime.datetime.utcnow().strftime('%H:%M')}"
+        await save_health_status_for_day(current_date, message)
 
-        return {"status": status, "details": details}
+        return {"status": status, "details": details or ""}
 
-    except requests.exceptions.RequestException as e:
-        status = "Server is experiencing an outage right now."
-        details = str(e)
+    except httpx.RequestError as e:
+        status = "Server is experiencing an outage right now"
+        message = f"{status} at {datetime.datetime.utcnow().strftime('%H:%M')}"
+        current_date = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+        await save_health_status_for_day(current_date, message)
 
-        background_tasks.add_task(save_health_status, status, details)
-
-        return JSONResponse(status_code=503, content={"status": status, "details": details})
-
-
-@app.get("/api/v2/health-history")
-async def get_health_history():
-    seven_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-    health_records = await health_collection.find({"timestamp": {"$gte": seven_days_ago}}).to_list(length=7)
-
-    formatted_records = [
-        {
-            "date": record["timestamp"].strftime("%d %b %Y"),
-            "status": record["status"],
-            "details": record["details"],
-        }
-        for record in health_records
-    ]
-
-    return {"history": formatted_records}
+        return JSONResponse(status_code=503, content={"status": status, "details": str(e)})
 
 
 async def periodic_health_check():
     while True:
-        await check_health(BackgroundTasks())
-        await asyncio.sleep(300)
+        await check_health()
+        await asyncio.sleep(1800)
 
 
 @app.on_event("startup")

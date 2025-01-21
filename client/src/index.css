@@ -1,4 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Afacad+Flux:slnt,wght@-14..14,300&display=swap');
+
+html {
+  font-family: 'Afacad Flux', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
 body {
   font-family: 'Afacad Flux', sans-serif;
   font-optical-sizing: auto;

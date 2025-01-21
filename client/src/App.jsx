@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -34,6 +34,29 @@ const FAQ = lazy(() => import('./components/FAQ'));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
+  let devToolsLogged = false;
+
+  const detectDevTools = () => {
+    if (devToolsLogged) return;
+    const devTools = /./;
+    devTools.toString = function() {
+      devToolsLogged = true;
+      console.log(
+        `%c
+ oooooooo8 ooooo  oooo oooooooooo  
+888         888    88   888    888 
+ 888oooooo  888    88   888oooo88  
+        888 888    88   888        
+o88oooo888   888oo88   o888o `,
+        'font-size: 10px; color: white; text-transform: uppercase;'
+      );
+    };
+    devTools.toString();
+  };
+
+  useEffect(() => {
+    detectDevTools();
+  }, []);
 
   return (
     <Router>
@@ -49,20 +72,62 @@ const App = () => {
             <Route path='/register' element={<Register />} />
 
             {/* Protected Routes */}
-            <Route path='/home' element={isAuthenticated ? <Home /> : <Login />} />
-            <Route path='/u/profile' element={isAuthenticated ? <Profile /> : <Login />} />
-            <Route path='/u/users/:userId' element={isAuthenticated ? <UserDetails /> : <Login />} />
-            <Route path='/messages' element={isAuthenticated ? <Inbox /> : <Login />} />
-            <Route path='/chat' element={isAuthenticated ? <ChatAI /> : <Login />} />
-            <Route path='/u/:userId' element={isAuthenticated ? <UserDetails /> : <Login />} />
-            <Route path='/c/communities' element={isAuthenticated ? <CommunitiesList /> : <Login />} />
-            <Route path='/c/community/:name' element={isAuthenticated ? <CommunityDetails /> : <Login />} />
-            <Route path='/c/user/communities' element={isAuthenticated ? <UserCommunities /> : <Login />} />
-            <Route path='/security/2fa/enable' element={isAuthenticated ? <Enable2FA /> : <Login />} />
-            <Route path='/user/saved' element={isAuthenticated ? <SavedPosts /> : <Login />} />
-            <Route path='/user/friends' element={isAuthenticated ? <Friends /> : <Login />} />
-            <Route path='/c/events' element={isAuthenticated ? <Events /> : <Login />} />
-            <Route path='/c/activity' element={isAuthenticated ? <Activity /> : <Login />} />
+            <Route
+              path='/home'
+              element={isAuthenticated ? <Home /> : <Login />}
+            />
+            <Route
+              path='/u/profile'
+              element={isAuthenticated ? <Profile /> : <Login />}
+            />
+            <Route
+              path='/u/users/:userId'
+              element={isAuthenticated ? <UserDetails /> : <Login />}
+            />
+            <Route
+              path='/messages'
+              element={isAuthenticated ? <Inbox /> : <Login />}
+            />
+            <Route
+              path='/chat'
+              element={isAuthenticated ? <ChatAI /> : <Login />}
+            />
+            <Route
+              path='/u/:userId'
+              element={isAuthenticated ? <UserDetails /> : <Login />}
+            />
+            <Route
+              path='/c/communities'
+              element={isAuthenticated ? <CommunitiesList /> : <Login />}
+            />
+            <Route
+              path='/c/community/:name'
+              element={isAuthenticated ? <CommunityDetails /> : <Login />}
+            />
+            <Route
+              path='/c/user/communities'
+              element={isAuthenticated ? <UserCommunities /> : <Login />}
+            />
+            <Route
+              path='/security/2fa/enable'
+              element={isAuthenticated ? <Enable2FA /> : <Login />}
+            />
+            <Route
+              path='/user/saved'
+              element={isAuthenticated ? <SavedPosts /> : <Login />}
+            />
+            <Route
+              path='/user/friends'
+              element={isAuthenticated ? <Friends /> : <Login />}
+            />
+            <Route
+              path='/c/events'
+              element={isAuthenticated ? <Events /> : <Login />}
+            />
+            <Route
+              path='/c/activity'
+              element={isAuthenticated ? <Activity /> : <Login />}
+            />
 
             {/* Static Pages */}
             <Route path='/terms' element={<TermsAndServices />} />
