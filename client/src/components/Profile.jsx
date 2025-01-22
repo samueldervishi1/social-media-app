@@ -19,20 +19,17 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Runs on component mount to fetch data and manage loading state
   useEffect(() => {
-    fetchData(); // Fetches profile, followers, and posts data
+    fetchData();
     const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetches user profile, followers, following, and posts data
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
       const username = getUsernameFromToken();
 
-      // Fetches user profile information
       if (username) {
         const profileResponse = await axios.get(
           `${API_URL}/api/v2/users/info/${username}`,

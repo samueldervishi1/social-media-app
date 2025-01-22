@@ -38,14 +38,39 @@ public class LikesService {
 
 	@Transactional
 	public Like likePost(String userId , String postId) {
-		Like like = handleLike(userId , postId , true);
-		activityService.updateOrCreateActivity(
-				userId ,
-				new ActivityModel.ActionType(Collections.singletonList("Liked post")) ,
-				"Post liked successfully"
-		);
-		return like;
+		logger.info("Received like request for postId: {} by userId: {}" , postId , userId);
+
+		Post post = postRepository.findById(postId)
+				.orElseThrow(() -> {
+					logger.error("Post with postId: {} not found" , postId);
+					return new ResourceNotFoundException("Post not found");
+				});
+		logger.info("Post found: {}" , post);
+
+		if (post.getLikes().contains(userId)) {
+			logger.info("UserId: {} already liked postId: {}" , userId , postId);
+			return null;
+		} else {
+			logger.info("UserId: {} is liking postId: {}" , userId , postId);
+			post.getLikes().add(userId);
+			postRepository.save(post);
+
+			Like like = new Like(userId);
+			like.getPostId().add(postId);
+			likesRepository.save(like);
+
+			logger.info("New like created for postId: {}" , postId);
+
+			activityService.updateOrCreateActivity(
+					userId ,
+					new ActivityModel.ActionType(Collections.singletonList("Liked post")) ,
+					"Post liked successfully"
+			);
+
+			return like;
+		}
 	}
+
 
 	@Transactional
 	public Like likeComment(String userId , String commentId) {

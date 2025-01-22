@@ -40,7 +40,6 @@ body.register_page::before {
   margin-right: 10px;
   box-sizing: border-box;
   position: relative;
-  margin-top: 10%;
 }
 
 .regTitle {
@@ -93,8 +92,35 @@ a {
   justify-content: center;
   align-items: center;
   position: relative;
+  flex-direction: column;
   height: auto;
   gap: 10px;
+}
+
+.info_register {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  background-color: #332701;
+  color: #ba9d46;
+  border: 2px solid #997404;
+  border-radius: 12px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.info_register_info {
+  font-size: 30px;
+  margin-right: 10px;
+}
+
+.info_text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #ba9d46;
 }
 
 @media (max-width: 768px) {

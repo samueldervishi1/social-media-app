@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Snackbar, Alert } from '@mui/material';
+import { CiCircleInfo } from 'react-icons/ci';
 import styles from '../styles/register.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -40,7 +41,6 @@ const Register = () => {
       [name]: '',
     }));
   };
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,18 +104,22 @@ const Register = () => {
     };
   }, []);
 
-  const toggleMessage = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
     <div id='main'>
       <div className={styles.screen}>
+        <p className={styles.info_register}>
+          <CiCircleInfo className={styles.info_register_info} />
+          <span className={styles.info_text}>
+            For your privacy, we recommend using a username that does not
+            include your real name. This will help keep your identity secure
+            while interacting with others.
+          </span>
+        </p>
+
         <form id='registrationForm' onSubmit={handleSubmit}>
           <div className={styles.container_sign}>
             <p className={styles.fill}>AЯYHƆ</p>
             <hr />
-
             {error && <p className={styles.error_message_register}>{error}</p>}
 
             <label htmlFor='fullName'>

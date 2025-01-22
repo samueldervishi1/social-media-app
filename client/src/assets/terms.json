@@ -22,28 +22,18 @@
     },
     {
       "id": 5,
+      "title": "Secure Username",
+      "content": "For your privacy, we recommend using a username that does not include your real name. This will help keep your identity secure while interacting with others on CHYRA. Please ensure that your username is unique and does not compromise your security."
+    },
+    {
+      "id": 6,
       "title": "Termination of Service",
       "content": "CHYRA reserves the right to suspend or terminate your access at any time for conduct that violates these terms or is harmful to other users, CHYRA, or third parties. If your account is terminated, you may lose access to any content or data associated with your account. CHYRA is not responsible for any loss of data or content resulting from the termination of your account. If you wish to terminate your account voluntarily, you may do so through the platform. If your account is terminated due to violations, you may be prohibited from rejoining the platform. You can appeal terminations by contacting CHYRA support."
     },
     {
-      "id": 6,
+      "id": 7,
       "title": "Limitation of Liability",
       "content": "To the fullest extent permitted by law, CHYRA and its affiliates are not liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, revenues, data, or goodwill, resulting from your access to or use of CHYRA, or inability to access or use CHYRA. This limitation applies regardless of the legal theory under which such damages are sought. In no event will CHYRA's total liability exceed the amount you paid for access to the platform in the six (6) months preceding the claim."
-    },
-    {
-      "id": 7,
-      "title": "Premium Version Terms",
-      "content": "The Premium version of CHYRA includes the following features: Half Ads in For You and Following, Larger reply boost, Get paid to post, Checkmark, and Creator Subscription. By subscribing to Premium, you agree to these additional terms and acknowledge that the features provided are subject to change. CHYRA reserves the right to modify or discontinue Premium features at any time without notice. Your subscription will be automatically renewed unless you cancel it through your account settings. Any changes to the Premium service will be communicated, and continued use constitutes acceptance of updated terms."
-    },
-    {
-      "id": 8,
-      "title": "Premium+ Version Terms",
-      "content": "The Premium+ version of CHYRA includes all features of Premium, plus: No Ads in For You and Following, Largest reply boost, CHYRA Pro, Analytics, Media Studio, and Write articles. By subscribing to Premium+, you agree to these additional terms. CHYRA reserves the right to modify or discontinue Premium+ features at any time without notice. Your subscription will be automatically renewed unless canceled. You may cancel your subscription at any time through your account settings. CHYRA may update these features or discontinue them with prior notice."
-    },
-    {
-      "id": 9,
-      "title": "Subscription Billing and Cancellation",
-      "content": "Subscriptions to Premium and Premium+ are billed on a monthly or annual basis, as selected during the purchase process. You may cancel your subscription at any time through your account settings. Upon cancellation, your subscription will continue until the end of the current billing period. No refunds will be provided for unused portions of the subscription. Changes to pricing or billing terms will be communicated to you in advance."
     }
   ]
 }

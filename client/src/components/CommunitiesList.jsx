@@ -64,7 +64,6 @@ const CommunitiesList = () => {
           },
         });
         setCommunities(Array.isArray(response.data) ? response.data : []);
-        console.log(response);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -119,8 +118,6 @@ const CommunitiesList = () => {
 
     if (communities.length > 0) {
       fetchMembersCount();
-    } else {
-      console.log('No communities available to fetch counts.');
     }
   }, [communities]);
 
@@ -178,8 +175,6 @@ const CommunitiesList = () => {
         faqs: faqs,
       };
 
-      console.log('Sending data to backend:', requestData);
-
       const response = await axios.post(
         `${API_URL}/api/v2/communities/create/${userId}`,
         requestData,
@@ -190,7 +185,7 @@ const CommunitiesList = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         setSnackbarMessage('Community created successfully!');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);

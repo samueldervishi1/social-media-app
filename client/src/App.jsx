@@ -12,23 +12,16 @@ const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
 const Home = lazy(() => import('./components/Home'));
 const Profile = lazy(() => import('./components/Profile'));
-const UserDetails = lazy(() => import('./components/UserDetails'));
 const UserCommunities = lazy(() => import('./components/UserCommunities'));
-const SavedPosts = lazy(() => import('./components/SavedPosts'));
-const Activity = lazy(() => import('./components/Activity'));
 const Navbar = lazy(() => import('./components/Navbar'));
-const Inbox = lazy(() => import('./components/Inbox'));
 const ChatAI = lazy(() => import('./components/ChatAI'));
-const Friends = lazy(() => import('./components/Friends'));
 const CommunitiesList = lazy(() => import('./components/CommunitiesList'));
 const CommunityDetails = lazy(() => import('./components/CommunityDetails'));
 const Enable2FA = lazy(() => import('./components/Enable2FA'));
-const Events = lazy(() => import('./components/Events'));
 const TermsAndServices = lazy(() => import('./components/Terms'));
 const About = lazy(() => import('./components/About'));
 const Contact = lazy(() => import('./components/Contact'));
 const NotFound = lazy(() => import('./components/NotFound'));
-const PremiumPage = lazy(() => import('./components/PremiumPage'));
 const HealthCheck = lazy(() => import('./components/HealthCheck'));
 const FAQ = lazy(() => import('./components/FAQ'));
 
@@ -43,11 +36,12 @@ const App = () => {
       devToolsLogged = true;
       console.log(
         `%c
- oooooooo8 ooooo  oooo oooooooooo  
-888         888    88   888    888 
- 888oooooo  888    88   888oooo88  
-        888 888    88   888        
-o88oooo888   888oo88   o888o `,
+ oooooooo8 ooooo  oooo oooooooooo         ooooooo8  
+888         888    88   888    888      o888    88  
+ 888oooooo  888    88   888oooo88       888    oooo 
+        888 888    88   888             888o    88  
+o88oooo888   888oo88   o888o             888ooo888  
+                                                     `,
         'font-size: 10px; color: white; text-transform: uppercase;'
       );
     };
@@ -81,20 +75,8 @@ o88oooo888   888oo88   o888o `,
               element={isAuthenticated ? <Profile /> : <Login />}
             />
             <Route
-              path='/u/users/:userId'
-              element={isAuthenticated ? <UserDetails /> : <Login />}
-            />
-            <Route
-              path='/messages'
-              element={isAuthenticated ? <Inbox /> : <Login />}
-            />
-            <Route
               path='/chat'
               element={isAuthenticated ? <ChatAI /> : <Login />}
-            />
-            <Route
-              path='/u/:userId'
-              element={isAuthenticated ? <UserDetails /> : <Login />}
             />
             <Route
               path='/c/communities'
@@ -112,26 +94,9 @@ o88oooo888   888oo88   o888o `,
               path='/security/2fa/enable'
               element={isAuthenticated ? <Enable2FA /> : <Login />}
             />
-            <Route
-              path='/user/saved'
-              element={isAuthenticated ? <SavedPosts /> : <Login />}
-            />
-            <Route
-              path='/user/friends'
-              element={isAuthenticated ? <Friends /> : <Login />}
-            />
-            <Route
-              path='/c/events'
-              element={isAuthenticated ? <Events /> : <Login />}
-            />
-            <Route
-              path='/c/activity'
-              element={isAuthenticated ? <Activity /> : <Login />}
-            />
 
             {/* Static Pages */}
             <Route path='/terms' element={<TermsAndServices />} />
-            <Route path='/premium' element={<PremiumPage />} />
             <Route path='/about' element={<About />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/health' element={<HealthCheck />} />

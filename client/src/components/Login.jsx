@@ -44,20 +44,22 @@ const LoginScript = () => {
           throw new Error('You are offline. Please try again later.');
         }
 
-        const token = await response.text();
+        const data = await response.json();
 
-        if (!token?.startsWith('eyJhbGciOi')) {
-          throw new Error('Unexpected response from the server.');
+        if (data.code === '200' && data.token) {
+          const token = data.token;
+          login(token);
+
+          const decodedToken = JSON.parse(atob(token.split('.')[1]));
+          if (decodedToken.twoFa === undefined) {
+            console.log('twoFa field is not present in the token.');
+          }
+          localStorage.setItem('token', token);
+
+          navigate('/home');
+        } else {
+          throw new Error('Unexpected response structure');
         }
-
-        login(token);
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
-
-        if (decodedToken.twoFa === undefined) {
-          console.log('twoFa field is not present in the token.');
-        }
-
-        navigate('/home');
       } catch (error) {
         console.error('Error during login:', error.message);
         setFormState((prev) => ({

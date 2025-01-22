@@ -14,10 +14,9 @@ import org.springframework.stereotype.Service;
 public class LoginService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
-	private static final String USER_NOT_FOUND = "Username not found";
+	private static final String USER_NOT_FOUND = "username is incorrect";
 	private static final String USER_DELETED = "This user does not exist.";
-	private static final String INVALID_CREDENTIALS = "Invalid username or password";
-	private static final String LOGIN_ERROR = "An error occurred during login.";
+	private static final String INVALID_CREDENTIALS = "password is incorrect";
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -32,24 +31,21 @@ public class LoginService {
 	public String login(String username , String password) {
 		logger.info("Attempting to login with username {}" , username);
 
-		try {
-			User user = findAndValidateUser(username);
-			validatePassword(password , user);
-			return generateUserToken(user);
-		} catch (NotFoundException | BadRequestException e) {
-			throw e;
-		} catch (Exception e) {
-			logger.error("Unexpected error during login attempt for user {}: {}" , username , e.getMessage());
-			throw new BadRequestException(LOGIN_ERROR);
-		}
+		User user = findAndValidateUser(username);
+		validatePassword(password , user);
+
+		return generateUserToken(user);
 	}
 
 	private User findAndValidateUser(String username) {
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+				.orElseThrow(() -> {
+					logger.error("Login failed for username {}: {}" , username , USER_NOT_FOUND);
+					return new NotFoundException(USER_NOT_FOUND);
+				});
 
 		if (user.isDeleted()) {
-			logger.info("User does not exist");
+			logger.error("Login failed for username {}: {}" , username , USER_DELETED);
 			throw new NotFoundException(USER_DELETED);
 		}
 

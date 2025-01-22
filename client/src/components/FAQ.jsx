@@ -145,7 +145,7 @@ const FAQ = () => {
       )}
       <section>
         <div>
-          <h2>FAQ</h2>
+          <h2 style={{textAlign : "center"}}>FAQ</h2>
           {faqs.map((faq, index) => (
             <div key={index} style={styles.faqItem}>
               <p onClick={() => toggleQuestion(index)} style={styles.question}>

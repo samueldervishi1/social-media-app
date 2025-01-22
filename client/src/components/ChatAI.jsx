@@ -3,9 +3,9 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import bot from '../assets/logo1.svg';
 import user from '../assets/user.svg';
-import send from '../assets/send.svg';
 import loaderGif from '../assets/ZKZg.gif';
 import { FaRegPenToSquare } from 'react-icons/fa6';
+import { LuSendHorizontal } from 'react-icons/lu';
 import styles from '../styles/ai.module.css';
 
 import { getUserIdFromToken } from '../auth/authUtils';
@@ -420,7 +420,7 @@ const ChatAI = () => {
                 style={{ width: '20px', height: '20px' }}
               />
             ) : (
-              <img src={send} alt='Send' />
+              <LuSendHorizontal style={{ fontSize: 23 }} />
             )}
           </button>
         </form>

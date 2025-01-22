@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
 import { AiOutlineComment } from 'react-icons/ai';
 import { IoSend } from 'react-icons/io5';
-import { IoBookmark, IoBookmarkOutline } from 'react-icons/io5';
 import Modal from 'react-bootstrap/Modal';
 import { Snackbar, Alert } from '@mui/material';
 import defaultUserIcon from '../assets/user.webp';
@@ -23,12 +20,8 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const [user, setUser] = useState(null);
   const [commentsList, setCommentsList] = useState([]);
   const [commentCount, setCommentCount] = useState(0);
-  const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
-  const [communityName, setCommunityName] = useState('');
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [usernames, setUsernames] = useState({});
   const [showMenu, setShowMenu] = useState(false);
@@ -46,8 +39,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-
-  const navigate = useNavigate();
 
   const isUserPostOwner = getUserIdFromToken() === userId;
 
@@ -113,50 +104,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     fetchUserDetails();
   }, [userId]);
 
-  //fetch liked posts
-  useEffect(() => {
-    const fetchLikedPosts = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/v2/likes/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.status === 200) {
-          const likedPosts = response.data[0]?.postId || [];
-          setLiked(likedPosts.includes(id));
-        }
-      } catch (error) {
-        console.error('Error fetching liked posts:', error.message);
-      }
-    };
-
-    fetchLikedPosts();
-  }, [id, userId]);
-
-  //fetch liked count per post
-  useEffect(() => {
-    const fetchLikeCount = async () => {
-      try {
-        const likeResponse = await axios.get(
-          `${API_URL}/api/v2/likes/post/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (likeResponse.status === 200) {
-          setLikeCount(likeResponse.data);
-        } else {
-          console.error('Failed to fetch like count');
-        }
-      } catch (error) {
-        console.error('Error fetching like count:', error.message);
-      }
-    };
-
-    fetchLikeCount();
-  }, [id]);
-
   //fetch post details
   const fetchPostDetails = async () => {
     try {
@@ -195,34 +142,9 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     fetchPostDetails();
   }, [id]);
 
-  //fetch saved posts
-  useEffect(() => {
-    const fetchSavedPosts = async () => {
-      try {
-        const response = await axios.get(
-          `${API_URL}/api/v2/save/posts/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (response.status === 200) {
-          const savedPostIds = response.data.postIds || [];
-          setSaved(savedPostIds.includes(id));
-        }
-      } catch (error) {
-        console.error('Error fetching saved posts:', error.message);
-      }
-    };
-
-    fetchSavedPosts();
-  }, [id, userId]);
-
   //create comment
   const navigateToAddComment = async () => {
-    if (!userId) {
-      console.error('User not authenticated or token invalid.');
-      return;
-    }
+    const userId = getUserIdFromToken();
 
     if (newComment.trim() === '') {
       console.error('Empty comment cannot be posted.');
@@ -251,62 +173,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
       console.error('Error posting comment:', error.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  //like a post
-  const toggleLike = async () => {
-    try {
-      if (liked) {
-        await axios.delete(`${API_URL}/api/v2/likes/${userId}/post/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } else {
-        await axios.post(
-          `${API_URL}/api/v2/likes/${userId}/post/${id}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-      }
-      setLiked(!liked);
-    } catch (error) {
-      console.error('Error toggling like:', error.message);
-    }
-  };
-
-  //save a post
-  const toggleSave = async (e) => {
-    e.stopPropagation();
-    if (!userId) {
-      console.error('User not authenticated or token invalid.');
-      return;
-    }
-
-    try {
-      if (!saved) {
-        await axios.post(`${API_URL}/api/v2/save/posts/${userId}`, [id], {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setSaved(true);
-        window.alert('Post saved successfully!');
-      } else {
-        await axios.delete(`${API_URL}/api/v2/save/posts/${userId}/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: 'include',
-        });
-        setSaved(false);
-        window.alert('Post unsaved successfully!');
-      }
-    } catch (error) {
-      console.error('Error toggling save:', error.message);
-      window.alert('An error occurred. Please try again.');
     }
   };
 
@@ -457,16 +323,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
     setNewComment(e.target.value);
   };
 
-  const handleProfileLinkClick = (e) => {
-    e.stopPropagation();
-    const loggedInUserId = getUserIdFromToken();
-    if (userId === loggedInUserId) {
-      navigate('/u/profile');
-    } else {
-      navigate(`/u/users/${userId}`);
-    }
-  };
-
   const formatDate = (postDate) => {
     const date = new Date(postDate);
     return format(date, 'MMM dd, yyyy');
@@ -485,7 +341,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   return (
     <div className='post-card'>
       <div className='post-header'>
-        <div onClick={handleProfileLinkClick}>
+        <div>
           <img
             src={user ? user.profileImage || defaultUserIcon : defaultUserIcon}
             alt='User Icon'
@@ -493,7 +349,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           />
         </div>
         <div className='post-header-text'>
-          <h2 onClick={handleProfileLinkClick}>
+          <h2>
             <span className='username'>
               @{username ? user.username : 'Error'}
             </span>
@@ -519,15 +375,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           </div>
         )}
       </div>
-      {communityName && (
-        <span
-          className='community-name-card'
-          onClick={() => navigate(`/c/community/${communityName}`)}
-          style={{ cursor: 'pointer' }}
-        >
-          c/{communityName}
-        </span>
-      )}
 
       <div className='post-body'>
         <div>
@@ -555,26 +402,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
             <AiOutlineComment className='icon' />
             <p className='comment-num'>{commentCount}</p>
           </div>
-
-          <div>
-            {liked ? (
-              <IoMdHeart className='icon liked' onClick={toggleLike} />
-            ) : (
-              <IoMdHeartEmpty className='icon' onClick={toggleLike} />
-            )}
-            <span className='like-count'>{likeCount}</span>
-          </div>
-
-          <div>
-            {saved ? (
-              <IoBookmark className='icon saved' onClick={toggleSave} />
-            ) : (
-              <IoBookmarkOutline className='icon' onClick={toggleSave} />
-            )}
-          </div>
         </div>
-
-        {/*Comments modal */}
         <Modal
           show={showCommentsModal}
           onHide={handleCloseCommentsModal}

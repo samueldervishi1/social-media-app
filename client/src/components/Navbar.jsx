@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
@@ -12,10 +12,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { GoHome } from 'react-icons/go';
 import { IoPersonCircleOutline, IoSettingsOutline } from 'react-icons/io5';
-import { AiOutlineMessage } from 'react-icons/ai';
 import { CiLogout, CiServer } from 'react-icons/ci';
 import { GiArtificialHive } from 'react-icons/gi';
-import { TbLogs } from 'react-icons/tb';
 import {
   MdDeleteForever,
   MdOutlinePrivacyTip,
@@ -23,12 +21,9 @@ import {
   MdOutlineHelpOutline,
   MdClose,
 } from 'react-icons/md';
-import { TbPremiumRights, TbAuth2Fa } from 'react-icons/tb';
+import { TbAuth2Fa } from 'react-icons/tb';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
-import { LiaUserFriendsSolid } from 'react-icons/lia';
-import { CiSaveDown2 } from 'react-icons/ci';
-import { SiEventstore } from 'react-icons/si';
 import loaderImage from '../assets/ZKZg.gif';
 import styles from '../styles/navbar.module.css';
 
@@ -38,14 +33,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const searchBarRef = useRef(null);
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [showNoResults, setShowNoResults] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
@@ -59,18 +50,14 @@ const Navbar = () => {
       icon: <IoPersonCircleOutline className={styles.icon_p} />,
     },
     {
-      name: 'Find friends',
-      icon: <LiaUserFriendsSolid className={styles.icon_p} />,
+      name: 'Your communities',
+      icon: <RiUserCommunityLine className={styles.icon_p} />,
     },
-    { name: 'Saved', icon: <CiSaveDown2 className={styles.icon_p} /> },
-    { name: 'Events', icon: <SiEventstore className={styles.icon_p} /> },
-    { name: 'Activity', icon: <TbLogs className={styles.icon_p} /> },
     { name: 'Logout', icon: <CiLogout className={styles.icon_p} /> },
   ];
 
   const settings = [
     { name: 'Enable 2FA', icon: <TbAuth2Fa className={styles.icon_p} /> },
-    { name: 'Premium', icon: <TbPremiumRights className={styles.icon_p} /> },
     {
       name: 'About',
       icon: <IoIosInformationCircleOutline className={styles.icon_p} />,
@@ -84,62 +71,9 @@ const Navbar = () => {
     { name: 'Server health', icon: <CiServer className={styles.icon_p} /> },
   ];
 
-  // Memoized search function
-  const searchUsers = useCallback(async (username) => {
-    if (!username) {
-      setResults([]);
-      setShowNoResults(false);
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await axios.get(
-        `${API_URL}/api/v2/search/users?username=${encodeURIComponent(
-          username
-        )}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const filteredResults = response.data.filter((user) => !user.deleted);
-
-      if (filteredResults.length === 0) {
-        setShowNoResults(true);
-        setResults([]);
-      } else {
-        setResults(filteredResults);
-        setShowNoResults(false);
-      }
-    } catch (error) {
-      console.error('Error searching users: ', error.message);
-      setResults([]);
-      setShowNoResults(true);
-    }
-  }, []);
-
-  // Debounced search effect
   useEffect(() => {
-    if (query.trim() === '') {
-      setShowDropdown(false);
-      setResults([]);
-      return;
-    }
-
-    const timeoutId = setTimeout(() => {
-      searchUsers(query);
-      setShowDropdown(true);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [query, searchUsers]);
+    setIsMenuOpen(false);
+  }, [location]);
 
   // Handle account deletion
   const handleDeleteAccount = useCallback(async () => {
@@ -165,32 +99,6 @@ const Navbar = () => {
     }
   }, [userId]);
 
-  // Click outside handler
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        !searchBarRef.current?.contains(event.target) &&
-        !event.target.closest('.drpp')
-      ) {
-        setShowDropdown(false);
-        setQuery('');
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleUserClick = useCallback(
-    (clickedUserId) => {
-      setIsMenuOpen(false);
-      navigate(clickedUserId === userId ? '/u/profile' : `/u/${clickedUserId}`);
-      setQuery('');
-      setShowDropdown(false);
-    },
-    [userId, navigate]
-  );
-
   const handleLogout = useCallback(() => {
     setIsLoggingOut(true);
     localStorage.removeItem('token');
@@ -209,16 +117,8 @@ const Navbar = () => {
     (settingName) => {
       if (settingName === `Your profile ${username}`) {
         navigate('/u/profile');
-      } else if (settingName === 'Find friends') {
-        navigate('/user/friends');
-      } else if (settingName === 'Saved') {
-        navigate('/user/saved');
       } else if (settingName === 'Your communities') {
         navigate('/c/user/communities');
-      } else if (settingName === 'Activity') {
-        navigate('/c/activity');
-      } else if (settingName === 'Events') {
-        navigate('/c/events');
       } else if (settingName === 'Logout') {
         handleLogout();
       }
@@ -231,7 +131,6 @@ const Navbar = () => {
     (settingName) => {
       const routes = {
         'Enable 2FA': '/security/2fa/enable',
-        Premium: '/premium',
         About: '/about',
         'Terms & Services': '/terms',
         Contact: '/contact',
@@ -327,7 +226,10 @@ const Navbar = () => {
           </Box>
           <div
             className={styles.hamburger}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => {
+              setIsMenuOpen(!isMenuOpen);
+              console.log('isMenuOpen:', !isMenuOpen);
+            }}
           >
             <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
             <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
@@ -335,51 +237,10 @@ const Navbar = () => {
           </div>
           {isMenuOpen && (
             <div className={styles.mobile_menu}>
-              <div className={styles.search_bar_container1} ref={searchBarRef}>
-                <div className={styles.search_container}>
-                  <input
-                    type='text'
-                    placeholder='Search...'
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onFocus={() => setShowDropdown(true)}
-                  />
-                </div>
-
-                {showDropdown && (
-                  <div className={styles.drpp}>
-                    {showNoResults ? (
-                      <p className={styles.drpp_hld}>Nothing found</p>
-                    ) : results.length === 0 ? (
-                      <p className={styles.drpp_hld}>
-                        Search for friends and more...
-                      </p>
-                    ) : (
-                      <ul className={styles.drpp_rsl}>
-                        {results.map((user) => (
-                          <li
-                            key={user.id}
-                            className={styles.drpp_t}
-                            onClick={() => handleUserClick(user.id)}
-                          >
-                            {user.username}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                )}
-              </div>
               <a href='/home' className={styles.menu_item}>
                 <IconButton style={{ fontSize: '15px' }}>
                   <GoHome className={styles.icon_p} />
                   Home
-                </IconButton>
-              </a>
-              <a href='/messages' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
-                  <AiOutlineMessage className={styles.icon_p} />
-                  Messages
                 </IconButton>
               </a>
               <a href='/chat' className={styles.menu_item}>
@@ -450,12 +311,6 @@ const Navbar = () => {
               <IconButton style={{ fontSize: '15px' }}>
                 <GoHome className={styles.icon_p} />
                 Home
-              </IconButton>
-            </a>
-            <a href='/messages' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px' }}>
-                <AiOutlineMessage className={styles.icon_p} />
-                Messages
               </IconButton>
             </a>
             <a href='/chat' className={styles.menu_item}>

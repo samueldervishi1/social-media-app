@@ -32,8 +32,8 @@ const HealthCheck = () => {
     } catch (error) {
       console.error('Error fetching health status:', error);
       setStatusData({
-        status: 'Service Unavailable. Please try again later.',
-        color: 'red',
+        status: 'Health checker is unavailable. Please try again later.',
+        color: 'yellow',
         date: new Date().toLocaleDateString(),
       });
     }

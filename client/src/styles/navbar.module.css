@@ -172,131 +172,6 @@
   display: flex;
 }
 
-.search_bar_container1 {
-  position: relative;
-}
-
-.search_container {
-  margin-bottom: 20px;
-  position: relative;
-  top: 20px;
-  left: 2%;
-  width: 100%;
-}
-
-.search_container input {
-  padding: 5px !important;
-  border: 1px solid grey !important;
-  border-radius: 30px !important;
-  background-color: white !important;
-  color: black !important;
-  outline: none !important;
-}
-
-.search_container input:focus {
-  background-color: black;
-  border-color: grey;
-}
-
-.search_bar {
-  display: flex;
-  align-items: center;
-  margin-left: 15px;
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.search_input {
-  border: none;
-  outline: none;
-  font-size: 13px;
-  flex: 1;
-  background-color: transparent;
-  color: #333;
-  height: 0px;
-  margin: 0 !important;
-}
-
-.search_input::placeholder {
-  color: #aaa;
-  font-style: italic;
-}
-
-.search_r {
-  position: absolute;
-  top: 72%;
-  background-color: white;
-  border-radius: 15px;
-  border: 1px solid grey;
-  color: black;
-  overflow-y: auto;
-  z-index: 10;
-  width: 175px;
-}
-
-.search_hld {
-  text-align: center;
-  color: black;
-  padding: 10px 0;
-}
-
-.search_rsl {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.search_t {
-  padding: 10px;
-  border-bottom: 1px solid grey;
-  cursor: pointer;
-  text-align: left;
-}
-
-.search_t:last-child {
-  border-bottom: none;
-}
-
-.drpp {
-  position: absolute;
-  width: 95%;
-  top: 72%;
-  left: 1%;
-  background-color: white;
-  border-radius: 15px;
-  border: 1px solid grey;
-  color: black;
-  max-height: 100px;
-  overflow-y: auto;
-  z-index: 10;
-  padding: 6px 0;
-}
-
-.drpp_hld {
-  text-align: center;
-  color: black;
-  padding: 10px 0;
-}
-
-.drpp_rsl {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.drpp_t {
-  padding: 10px;
-  border-bottom: 1px solid grey;
-  cursor: pointer;
-  text-align: left;
-}
-
-.drpp_t:last-child {
-  border-bottom: none;
-}
-
 .divider_delete {
   color: black !important;
 }
@@ -326,10 +201,7 @@
   .mobile_menu {
     display: flex;
     border-radius: 20px;
-  }
-
-  .search_container input {
-    width: 95% !important;
+    padding: 10px;
   }
 
   .mobile_menu_item {
@@ -342,9 +214,6 @@
 
   .mobile_menu_item:hover {
     background-color: none !important;
-  }
-  .search_bar {
-    display: none;
   }
 }
 

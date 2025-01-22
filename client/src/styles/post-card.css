@@ -177,7 +177,7 @@
   background: none;
   border: none;
   font-size: 10px;
-  margin-left: 190px;
+  margin-left: 150px;
   top: 0px;
   position: relative;
   padding: 0;
@@ -235,9 +235,8 @@
 
 .footer-icons {
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
   position: relative;
+  left: 10px;
 }
 
 .icon {
