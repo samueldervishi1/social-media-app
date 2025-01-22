@@ -80,8 +80,8 @@ npm run dev
 
 ## Usage
 - Register as a new user or log in with existing credentials.
-- Explore the app, follow other users, and interact with posts.
-- Create new posts and share updates with your followers.
+- Explore the app, interact with posts.
+- Create new posts and share updates.
 - Ask Questions: Enter your questions or queries into the chat interface.
 - Get Responses: Receive responses from the chatbot based on the input provided.
 - Engage in Conversation: Engage in conversations with the chatbot on various topics.
