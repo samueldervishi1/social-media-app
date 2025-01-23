@@ -77,7 +77,7 @@ const HealthCheck = () => {
                 : styles.red
             }`}
           >
-            <p>{statusData.status}</p>
+            <p style={{fontSize: 30, color: "black"}}>{statusData.status}</p>
           </div>
 
           <div className={styles.statusDetails}>

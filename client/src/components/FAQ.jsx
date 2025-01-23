@@ -14,8 +14,6 @@ const FAQ = () => {
     error: '',
   });
 
-  const faqs = faqData;
-
   const toggleQuestion = (index) =>
     setActiveIndex(activeIndex === index ? null : index);
 
@@ -32,7 +30,7 @@ const FAQ = () => {
       return;
     }
 
-    setFormState((prev) => ({ ...prev, isSubmitted: true }));
+    setFormState((prev) => ({ ...prev, isSubmitted: true, error: '' }));
 
     setTimeout(() => {
       setFormState({
@@ -46,7 +44,11 @@ const FAQ = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormState((prev) => ({ ...prev, [name]: value }));
+    setFormState((prev) => ({
+      ...prev,
+      [name]: value,
+      error: name === 'email' ? '' : prev.error,
+    }));
   };
 
   const styles = {
@@ -99,6 +101,31 @@ const FAQ = () => {
       color: '#fff',
       border: 'none',
       borderRadius: '5px',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s',
+      '&:hover': {
+        backgroundColor: '#0056b3',
+      },
+    },
+    title: {
+      textAlign: 'center',
+      margin: '0 auto 40px auto',
+      backgroundImage: `url(${background})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      padding: '40px',
+      borderRadius: '4px',
+      fontSize: 70,
+      fontWeight: 700,
+    },
+    successMessage: {
+      color: 'green',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    errorMessage: {
+      color: 'red',
+      fontSize: '12px',
     },
   };
 
@@ -111,23 +138,8 @@ const FAQ = () => {
       )}
       <section>
         <div>
-          <h2
-            style={{
-              textAlign: 'center',
-              margin: '0 auto 40px auto',
-              backgroundImage: `url(${background})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              padding: '40px',
-              borderRadius: '4px',
-              textAlign: 'center',
-              fontSize: 70,
-              fontWeight: 700,
-            }}
-          >
-            FAQ
-          </h2>
-          {faqs.map((faq, index) => (
+          <h2 style={styles.title}>FAQ</h2>
+          {faqData.map((faq, index) => (
             <div key={index} style={styles.faqItem}>
               <p onClick={() => toggleQuestion(index)} style={styles.question}>
                 {activeIndex === index ? (
@@ -150,10 +162,12 @@ const FAQ = () => {
         </div>
 
         <div style={{ marginTop: '40px' }}>
-          <h3 style={{textAlign: "center"}}>Still have questions? Contact us!</h3>
+          <h3 style={{ textAlign: 'center' }}>
+            Still have questions? Contact us!
+          </h3>
           <div style={styles.form}>
             {formState.isSubmitted ? (
-              <div style={{ color: 'green', fontWeight: 'bold', textAlign: "center"}}>
+              <div style={styles.successMessage}>
                 Thank you for your message! We will get back to you soon.
               </div>
             ) : (
@@ -171,9 +185,7 @@ const FAQ = () => {
                     style={styles.input}
                   />
                   {formState.error && (
-                    <div style={{ color: 'red', fontSize: '12px' }}>
-                      {formState.error}
-                    </div>
+                    <div style={styles.errorMessage}>{formState.error}</div>
                   )}
                 </div>
                 <div>

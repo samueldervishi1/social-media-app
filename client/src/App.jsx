@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+import './index.css'
 
 import { useAuth } from './auth/AuthContext';
 

@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
+import PropTypes from 'prop-types';
 
 const AuthContext = createContext();
 
@@ -7,83 +14,77 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  const decodeToken = useCallback((tokenToDecode) => {
+    try {
+      return JSON.parse(atob(tokenToDecode.split('.')[1]));
+    } catch (error) {
+      console.error('Error decoding token: ', error.message);
+      return null;
+    }
+  }, []);
+
+  const validateToken = useCallback(
+    (tokenToValidate) => {
+      if (!tokenToValidate) return false;
+
+      const decodedToken = decodeToken(tokenToValidate);
+      if (!decodedToken) return false;
+
+      const isValid = Date.now() < decodedToken.exp * 1000;
+      if (!isValid) {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        setToken(null);
+      }
+      return isValid;
+    },
+    [decodeToken]
+  );
 
   useEffect(() => {
     if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-        if (Date.now() < expirationTime) {
-          setIsAuthenticated(true);
-        } else {
-          localStorage.removeItem("token");
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
+      const decodedToken = decodeToken(token);
+      if (decodedToken && validateToken(token)) {
+        setIsAuthenticated(true);
+      } else {
         setIsAuthenticated(false);
       }
     } else {
       setIsAuthenticated(false);
     }
-  }, [token]);
+  }, [token, decodeToken, validateToken]);
 
-  const login = (newToken) => {
-    localStorage.setItem("token", newToken);
-    const decodedToken = JSON.parse(atob(newToken.split(".")[1]));
+  const login = useCallback(
+    (newToken) => {
+      localStorage.setItem('token', newToken);
+      const decodedToken = decodeToken(newToken);
 
-    if (decodedToken.twoFa) {
-      setIsAuthenticated(false);
-    } else {
-      setIsAuthenticated(true);
-    }
+      setIsAuthenticated(!decodedToken?.twoFa);
+      setToken(newToken);
+    },
+    [decodeToken]
+  );
 
-    setToken(newToken);
-  };
-
-  const validateToken = () => {
-    if (token) {
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = decodedToken.exp * 1000;
-
-        if (Date.now() >= expirationTime) {
-          localStorage.removeItem("token");
-          setIsAuthenticated(false);
-          setToken(null);
-          return false;
-        }
-        return true;
-      } catch (error) {
-        console.error("Error decoding token: ", error.message);
-        localStorage.removeItem("token");
-        setIsAuthenticated(false);
-        setToken(null);
-        return false;
-      }
-    }
-    return false;
-  };
-
-
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logout = useCallback(() => {
+    localStorage.removeItem('token');
     setIsAuthenticated(false);
     setToken(null);
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      isAuthenticated,
+      login,
+      logout,
+      validateToken: () => validateToken(token),
+    }),
+    [isAuthenticated, login, logout, validateToken, token]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        login,
-        logout,
-        validateToken,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
