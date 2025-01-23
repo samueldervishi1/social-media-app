@@ -1,7 +1,6 @@
 package com.chirp.server.services;
 
 import com.chirp.server.exceptions.NotFoundException;
-import com.chirp.server.models.ActivityModel;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,13 +20,11 @@ public class ProfileService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final ActivityService activityService;
 
 	@Autowired
-	public ProfileService(UserRepository userRepository , PasswordEncoder passwordEncoder , ActivityService activityService) {
+	public ProfileService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.activityService = activityService;
 	}
 
 	public User updateProfile(String userId , User updatedUser) {
@@ -39,12 +35,6 @@ public class ProfileService {
 		User user = findUserById(userId);
 		updateUserFields(user , updatedUser);
 		User updatedUserRecord = userRepository.save(user);
-
-		activityService.updateOrCreateActivity(
-				userId ,
-				new ActivityModel.ActionType(List.of("Updated profile")) ,
-				"Profile updated successfully"
-		);
 
 		logger.info("User updated successfully: {}" , user.getId());
 		return updatedUserRecord;
@@ -71,22 +61,6 @@ public class ProfileService {
 		logger.info("User soft deleted for user ID: {}" , userId);
 	}
 
-	private void updateLinks(User user , List<String> newLinks) {
-		if (newLinks == null || newLinks.isEmpty()) {
-			return;
-		}
-
-		List<String> filteredNewLinks = newLinks.stream()
-				.filter(link -> link != null && !link.trim().isEmpty())
-				.map(String::toLowerCase)
-				.distinct()
-				.toList();
-
-		user.getLinks().clear();
-		user.getLinks().addAll(filteredNewLinks);
-		logger.debug("User links updated for user ID: {}" , user.getId());
-	}
-
 	private void updateUserFields(User user , User updatedUser) {
 		Optional.ofNullable(updatedUser.getFullName()).ifPresent(user::setFullName);
 		Optional.ofNullable(updatedUser.getBio()).ifPresent(user::setBio);
@@ -94,7 +68,6 @@ public class ProfileService {
 		Optional.ofNullable(updatedUser.getTitle()).ifPresent(user::setTitle);
 		Optional.ofNullable(updatedUser.getEmail()).ifPresent(user::setEmail);
 		user.setTwoFa(updatedUser.isTwoFa());
-		updateLinks(user , updatedUser.getLinks());
 		logger.debug("Fields updated for user ID: {}" , user.getId());
 	}
 

@@ -6,13 +6,11 @@ import com.chirp.server.models.Post;
 import com.chirp.server.models.Report;
 import com.chirp.server.repositories.PostRepository;
 import com.chirp.server.repositories.ReportPostRepository;
-import com.chirp.server.models.ActivityModel.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ReportService {
@@ -24,12 +22,10 @@ public class ReportService {
 
 	private final ReportPostRepository reportPostRepository;
 	private final PostRepository postRepository;
-	private final ActivityService activityService;
 
-	public ReportService(ReportPostRepository reportPostRepository , PostRepository postRepository , ActivityService activityService) {
+	public ReportService(ReportPostRepository reportPostRepository , PostRepository postRepository) {
 		this.reportPostRepository = reportPostRepository;
 		this.postRepository = postRepository;
-		this.activityService = activityService;
 	}
 
 	public Report report(Report report) {
@@ -41,7 +37,6 @@ public class ReportService {
 
 			validateAndHandleDuplicateReport(userId , postId);
 			handlePostReporting(postId);
-			createReportActivity(userId , postId);
 
 			report.setReportTime(LocalDateTime.now());
 			Report savedReport = reportPostRepository.save(report);
@@ -72,14 +67,5 @@ public class ReportService {
 			postRepository.save(post);
 			logger.info("Post marked as reported - postId: {}" , postId);
 		}
-	}
-
-	private void createReportActivity(String userId , String postId) {
-		String actionTypeString = userId + " reported post " + postId;
-		activityService.updateOrCreateActivity(
-				userId ,
-				new ActionType(List.of(actionTypeString)) ,
-				"Post reported successfully"
-		);
 	}
 }

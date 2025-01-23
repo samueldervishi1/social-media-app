@@ -4,7 +4,6 @@ import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.exceptions.BadRequestException;
 import com.chirp.server.models.*;
-import com.chirp.server.repositories.CommunityLikePostRepository;
 import com.chirp.server.repositories.CommunityPostRepository;
 import com.chirp.server.repositories.CommunityRepository;
 import org.slf4j.Logger;
@@ -22,21 +21,13 @@ public class CommunityService {
 	private static final String COMMUNITY_NOT_FOUND = "Community with %s does not exist";
 	private static final String POST_NOT_FOUND = "Post with ID %s does not exist";
 	private static final String COMMUNITY_EXISTS = "Community with name %s already exists";
-	private static final String USER_NOT_IN_COMMUNITY = "User is not part of the community";
-	private static final String POST_NOT_IN_COMMUNITY = "Post does not exist in the community";
-	private static final String ALREADY_LIKED = "User has already liked the post in the community";
 
 	private final CommunityRepository communityRepository;
 	private final CommunityPostRepository communityPostRepository;
-	private final CommunityLikePostRepository communityLikePostRepository;
-	private final ActivityService activityService;
 
-	public CommunityService(CommunityRepository communityRepository , CommunityPostRepository communityPostRepository ,
-	                        CommunityLikePostRepository communityLikePostRepository , ActivityService activityService) {
+	public CommunityService(CommunityRepository communityRepository , CommunityPostRepository communityPostRepository) {
 		this.communityRepository = communityRepository;
 		this.communityPostRepository = communityPostRepository;
-		this.communityLikePostRepository = communityLikePostRepository;
-		this.activityService = activityService;
 	}
 
 	//create community
@@ -53,8 +44,6 @@ public class CommunityService {
 
 		Community savedCommunity = communityRepository.save(community);
 		logger.info("Community created successfully with ID: {}" , savedCommunity.getCommunityId());
-
-		logActivity(ownerId , "Created community" , "Created community: " + name);
 		return savedCommunity;
 	}
 
@@ -69,7 +58,6 @@ public class CommunityService {
 		communityPost.setContent(description);
 		communityPost.setCreateTime(LocalDateTime.now());
 		communityPost.setComments(new ArrayList<>());
-		communityPost.setLikes(new ArrayList<>());
 		communityPost.setDeleted(false);
 
 		CommunityPost savedPost = communityPostRepository.save(communityPost);
@@ -78,56 +66,7 @@ public class CommunityService {
 		communityRepository.save(community);
 
 		logger.info("Post created successfully with ID: {}, for community: {}" , savedPost.getId() , name);
-		logActivity(ownerId , "Created post" , "Created a post in community:" + name);
 		return savedPost;
-	}
-
-	//like post in community
-	public CommunityLikePost likePost(String userId , String postId , String communityName) {
-		logger.info("Liking a post with ID: {}, community: {} " , postId , communityName);
-
-		Community community = getCommunityByName(communityName);
-		validateUserInCommunity(userId , community);
-		validatePostInCommunity(postId , community);
-
-		CommunityLikePost communityLikePost = communityLikePostRepository
-				.findByUserIdAndCommunityName(userId , communityName)
-				.orElseGet(() -> createNewCommunityLikePost(userId , communityName));
-
-		if (communityLikePost.getPostIds().contains(postId)) {
-			throw new BadRequestException("You have already liked this post.");
-		}
-
-		communityLikePost.getPostIds().add(postId);
-		communityLikePostRepository.save(communityLikePost);
-		updateCommunityPostLikes(postId , userId);
-
-		logger.info("User {} liked post {} in community {}" , userId , postId , communityName);
-		logActivity(userId , "Liked post" , "Liked a post in community: " + communityName);
-
-		return communityLikePost;
-	}
-
-	private CommunityLikePost createNewCommunityLikePost(String userId , String communityName) {
-		CommunityLikePost likePost = new CommunityLikePost();
-		likePost.setUserId(userId);
-		likePost.setCommunityName(communityName);
-		likePost.setPostIds(new ArrayList<>());
-		likePost.setCreatedAt(LocalDateTime.now());
-		return communityLikePostRepository.save(likePost);
-	}
-
-	private void updateCommunityPostLikes(String postId , String userId) {
-		communityPostRepository.findById(postId).ifPresentOrElse(post -> {
-			Like newLike = new Like(userId);
-			if (!post.getLikes().contains(newLike)) {
-				post.getLikes().add(newLike);
-				communityPostRepository.save(post);
-				logger.info("Updated likes for postId: {}" , postId);
-			}
-		} , () -> {
-			throw new NotFoundException(String.format("Post with ID %s not found" , postId));
-		});
 	}
 
 	//get member count per community
@@ -150,7 +89,6 @@ public class CommunityService {
 			community.getUserIds().add(userId);
 			communityRepository.save(community);
 			logger.info("User {} joined community {}" , userId , communityId);
-			logActivity(userId , "Joined community" , "Joined community: " + communityId);
 		}
 	}
 
@@ -191,26 +129,5 @@ public class CommunityService {
 
 	public List<CommunityPost> getAllDBPosts() {
 		return communityPostRepository.findAll();
-	}
-
-	//get likes count per post in community
-	public int getLikesCountForPost(String postId) {
-		return communityLikePostRepository.findByPostIdsContaining(postId).size();
-	}
-
-	private void validateUserInCommunity(String userId , Community community) {
-		if (!community.getUserIds().contains(userId)) {
-			throw new BadRequestException("User is not part of the community.");
-		}
-	}
-
-	private void validatePostInCommunity(String postId , Community community) {
-		if (!community.getPostIds().contains(postId)) {
-			throw new BadRequestException("Post does not exist in the community.");
-		}
-	}
-
-	private void logActivity(String userId , String action , String description) {
-		activityService.updateOrCreateActivity(userId , new ActivityModel.ActionType(List.of(action)) , description);
 	}
 }

@@ -16,7 +16,6 @@ public class CommunityPost {
 	private String communityName;
 	private String content;
 	private LocalDateTime createTime;
-	private List<Like> likes = new ArrayList<>();
 	private List<Comments> comments = new ArrayList<>();
 	private boolean deleted;
 
@@ -28,7 +27,6 @@ public class CommunityPost {
 		this.communityName = communityName;
 		this.content = content;
 		this.createTime = createTime;
-		this.likes = new ArrayList<>();
 		this.comments = new ArrayList<>();
 		this.deleted = false;
 	}
@@ -71,14 +69,6 @@ public class CommunityPost {
 
 	public void setCreateTime(LocalDateTime createTime) {
 		this.createTime = createTime;
-	}
-
-	public List<Like> getLikes() {
-		return likes;
-	}
-
-	public void setLikes(List<Like> likes) {
-		this.likes = likes;
 	}
 
 	public List<Comments> getComments() {

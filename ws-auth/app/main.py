@@ -1,12 +1,14 @@
+import asyncio
+import datetime
+import os
+
+import httpx
+import motor.motor_asyncio
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
-import os
-from dotenv import load_dotenv
-import httpx
-import motor.motor_asyncio
-import datetime
-import asyncio
+from totp_routes import router as totp_router
 
 load_dotenv()
 
@@ -100,6 +102,8 @@ async def periodic_health_check():
 async def startup_event():
     asyncio.create_task(periodic_health_check())
 
+
+app.include_router(totp_router)
 
 if __name__ == "__main__":
     import uvicorn

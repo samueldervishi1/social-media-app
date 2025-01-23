@@ -40,12 +40,6 @@ public class CommunityController {
 		}
 	}
 
-	@GetMapping("/count/{postId}")
-	public ResponseEntity<Integer> getLikesCountForPost(@PathVariable String postId) {
-		int count = communityService.getLikesCountForPost(postId);
-		return ResponseEntity.ok(count);
-	}
-
 	@GetMapping("/c/{communityId}")
 	public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
 		try {
@@ -128,19 +122,6 @@ public class CommunityController {
 			return new ResponseEntity<>("User has successfully joined the community." , HttpStatus.OK);
 		} catch (IllegalArgumentException e) {
 			return new ResponseEntity<>(e.getMessage() , HttpStatus.NOT_FOUND);
-		}
-	}
-
-	@PostMapping("/{communityName}/posts/{postId}/like")
-	public ResponseEntity<CommunityLikePost> likePost(
-			@PathVariable String communityName ,
-			@PathVariable String postId ,
-			@RequestParam String userId) throws Exception {
-		try {
-			CommunityLikePost newLike = communityService.likePost(userId , postId , communityName);
-			return new ResponseEntity<>(newLike , HttpStatus.CREATED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null , HttpStatus.BAD_REQUEST);
 		}
 	}
 }

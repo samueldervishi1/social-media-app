@@ -5,7 +5,6 @@ import { Image } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { FaGithub, FaLinkedin, FaTwitter, FaGlobe } from 'react-icons/fa';
 import { IoIosCalendar } from 'react-icons/io';
 import profileImage from '../assets/user.webp';
 import placeHolderImage from '../assets/placeholder.png';
@@ -15,7 +14,7 @@ const PostCard = React.lazy(() => import('./PostCard'));
 import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
-const ProfileHeader = ({ followers, following, profile }) => {
+const ProfileHeader = ({ profile }) => {
   const [showModal, setShowModal] = useState(false);
   const [bioInput, setBioInput] = useState('');
   const [titleInput, setTitleInput] = useState('');
@@ -173,25 +172,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
     return <div style={{ marginTop: 150 }}>Loading profile...</div>;
   }
 
-  const linkIconMapping = {
-    github: <FaGithub />,
-    linkedin: <FaLinkedin />,
-    twitter: <FaTwitter />,
-    default: <FaGlobe />,
-  };
-
-  const getLinkIcon = (url) => {
-    try {
-      const { hostname } = new URL(url);
-      if (hostname.includes('github.com')) return linkIconMapping.github;
-      if (hostname.includes('linkedin.com')) return linkIconMapping.linkedin;
-      if (hostname.includes('twitter.com')) return linkIconMapping.twitter;
-      return linkIconMapping.default;
-    } catch {
-      return linkIconMapping.default;
-    }
-  };
-
   return (
     <div
       className={styles.constructor_container}
@@ -258,36 +238,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
           <div>
             <strong>{postCount}</strong> Posts
           </div>
-          <div>
-            <strong>{followers}</strong> Followers
-          </div>
-          <div>
-            <strong>{following}</strong> Following
-          </div>
-        </div>
-        <div style={{ marginTop: '20px' }}>
-          {profile.links?.length > 0 && (
-            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-              {profile.links.map((link, index) => (
-                <a
-                  key={index}
-                  href={link}
-                  target='_blank'
-                  rel='noreferrer'
-                  style={{
-                    color: 'black',
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  <span style={{ marginRight: '5px' }}>
-                    {getLinkIcon(link)}
-                  </span>
-                </a>
-              ))}
-            </div>
-          )}
         </div>
       </div>
       <div
@@ -378,19 +328,6 @@ const ProfileHeader = ({ followers, following, profile }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>
-            To help keep our community authentic, we’re showing information
-            about accounts on AЯYHƆ. People can see this by tapping on the
-            username on your profile.
-            <a
-              href='/importance'
-              style={{ color: 'blue', textDecoration: 'underline' }}
-            >
-              {' '}
-              <br />
-              See why this information is important.
-            </a>
-          </p>
           <p
             style={{
               display: 'flex',
@@ -415,15 +352,12 @@ const ProfileHeader = ({ followers, following, profile }) => {
 };
 
 ProfileHeader.propTypes = {
-  followers: PropTypes.number.isRequired,
-  following: PropTypes.number.isRequired,
   profile: PropTypes.shape({
     bio: PropTypes.string,
     title: PropTypes.string,
     fullName: PropTypes.string,
     email: PropTypes.string,
     username: PropTypes.string,
-    links: PropTypes.array,
     accountCreationDate: PropTypes.string.isRequired,
   }).isRequired,
 };

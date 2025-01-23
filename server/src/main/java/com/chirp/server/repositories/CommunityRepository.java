@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface CommunityRepository extends MongoRepository<Community, String> {
 	Optional<Community> findByName(String name);
 
-	List<Community> findByNameContaining(String name);
-
 	@Aggregation(pipeline = {
         "{ $match: { 'name': { $regex: ?0, $options: 'i' } } }",
         "{ $project: { userCount: { $size: '$userIds' } } }"

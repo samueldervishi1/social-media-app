@@ -18,7 +18,6 @@ public class User {
 	private String salt;
 	private String fullName;
 	private String email;
-	private List<String> links = new ArrayList<>();
 	private String bio;
 	private String title;
 	private String role = "simple_account";
@@ -97,14 +96,6 @@ public class User {
 
 	public void setBio(String bio) {
 		this.bio = bio;
-	}
-
-	public List<String> getLinks() {
-		return links;
-	}
-
-	public void setLinks(List<String> links) {
-		this.links = links;
 	}
 
 	public String getRole() {

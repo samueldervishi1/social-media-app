@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
-import { CiLocationArrow1 } from 'react-icons/ci';
 import { MdOutlineEmojiEmotions, MdDelete } from 'react-icons/md';
 import Picker from 'emoji-picker-react';
 import { LuSendHorizontal } from 'react-icons/lu';
@@ -119,55 +118,6 @@ const PostForm = () => {
     return () => window.removeEventListener('online', sendOfflinePosts);
   }, [sendOfflinePosts]);
 
-  const handleLocation = useCallback(async () => {
-    if (!navigator.geolocation) {
-      showSnackbar('Geolocation is not supported by your browser.', 'error');
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-
-        try {
-          const response = await axios.get(
-            'https://nominatim.openstreetmap.org/reverse',
-            {
-              params: {
-                lat: latitude,
-                lon: longitude,
-                format: 'json',
-              },
-              headers: {
-                'Accept-Language': 'en',
-              },
-            }
-          );
-
-          const address = response.data.address;
-          const city =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.hamlet ||
-            'Unknown City';
-          const country = address.country || 'Unknown Country';
-
-          setPostContent((prev) => `${prev} 📍 Location: ${city}, ${country}`);
-        } catch (error) {
-          showSnackbar('Error fetching location details.', 'error');
-          setPostContent(
-            (prev) =>
-              `${prev} 📍 Location: (${latitude.toFixed(
-                4
-              )}, ${longitude.toFixed(4)})`
-          );
-        }
-      },
-      () => showSnackbar('Unable to retrieve your location.', 'error')
-    );
-  }, [showSnackbar]);
-
   const placeholderText = useMemo(
     () => `What's on your mind today, ${getUsernameFromToken()}?`,
     []
@@ -209,11 +159,6 @@ const PostForm = () => {
             className={styles.icon}
             onClick={() => setShowEmojiPicker((prev) => !prev)}
             title='Pick an emoji you like'
-          />
-          <CiLocationArrow1
-            className={styles.icon}
-            onClick={handleLocation}
-            title='Share your location'
           />
           <button
             type='submit'

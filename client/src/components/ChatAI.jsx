@@ -383,13 +383,6 @@ const ChatAI = () => {
             </div>
           )}
         </div>
-        <p className={styles.info_text}>
-          {isRateLimited
-            ? countdown > 0
-              ? `Too many requests. Please wait ${countdown} seconds before trying again.`
-              : 'You can continue now.'
-            : 'Sypher can make mistakes. Check important info.'}
-        </p>
         <form className={styles.ai_form} onSubmit={handleSubmit}>
           <textarea
             className={styles.ai_textArea}
@@ -424,6 +417,13 @@ const ChatAI = () => {
             )}
           </button>
         </form>
+        <p className={styles.info_text}>
+          {isRateLimited
+            ? countdown > 0
+              ? `Too many requests. Please wait ${countdown} seconds before trying again.`
+              : 'You can continue now.'
+            : 'Sypher can make mistakes. Check important info.'}
+        </p>
       </div>
     </div>
   );

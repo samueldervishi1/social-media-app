@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import background from '../assets/background.jpg';
+import faqData from '../assets/faq.json';
 
 const FAQ = () => {
   const token = localStorage.getItem('token');
@@ -12,43 +14,7 @@ const FAQ = () => {
     error: '',
   });
 
-  const faqs = [
-    {
-      question: 'What are the main features of CHYRA?',
-      answer:
-        'CHYRA offers text posts, images, videos, group creation, topic following, and robust privacy controls to ensure a personalized and safe experience for its users.',
-    },
-    {
-      question: 'How can I create and join communities on CHYRA?',
-      answer:
-        'On CHYRA, users can create communities based on shared interests and join existing communities to participate in discussions and connect with other members.',
-    },
-    {
-      question: 'Can I follow topics on CHYRA?',
-      answer:
-        'Yes, CHYRA allows users to follow topics of interest, ensuring that your content feed is tailored to your preferences.',
-    },
-    {
-      question: 'How does CHYRA foster a culture of kindness and respect?',
-      answer:
-        'By promoting healthy interactions, discouraging harmful behavior, and encouraging users to engage in thoughtful conversations, CHYRA ensures a supportive and positive environment.',
-    },
-    {
-      question: 'How does CHYRA protect my privacy?',
-      answer:
-        'CHYRA employs cutting-edge security measures to protect your personal data and gives you full control over your information and privacy settings.',
-    },
-    {
-      question: 'What security measures does CHYRA have in place?',
-      answer:
-        'CHYRA utilizes advanced encryption and data protection techniques to ensure the safety of your personal information and prevent unauthorized access.',
-    },
-    {
-      question: 'Can I control who sees my posts on CHYRA?',
-      answer:
-        'Yes, CHYRA provides robust privacy controls that allow you to manage who can view your posts and personal information.',
-    },
-  ];
+  const faqs = faqData;
 
   const toggleQuestion = (index) =>
     setActiveIndex(activeIndex === index ? null : index);
@@ -145,7 +111,22 @@ const FAQ = () => {
       )}
       <section>
         <div>
-          <h2 style={{textAlign : "center"}}>FAQ</h2>
+          <h2
+            style={{
+              textAlign: 'center',
+              margin: '0 auto 40px auto',
+              backgroundImage: `url(${background})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              padding: '40px',
+              borderRadius: '4px',
+              textAlign: 'center',
+              fontSize: 70,
+              fontWeight: 700,
+            }}
+          >
+            FAQ
+          </h2>
           {faqs.map((faq, index) => (
             <div key={index} style={styles.faqItem}>
               <p onClick={() => toggleQuestion(index)} style={styles.question}>
@@ -169,10 +150,10 @@ const FAQ = () => {
         </div>
 
         <div style={{ marginTop: '40px' }}>
-          <h3>Still have questions? Contact us!</h3>
+          <h3 style={{textAlign: "center"}}>Still have questions? Contact us!</h3>
           <div style={styles.form}>
             {formState.isSubmitted ? (
-              <div style={{ color: 'green', fontWeight: 'bold' }}>
+              <div style={{ color: 'green', fontWeight: 'bold', textAlign: "center"}}>
                 Thank you for your message! We will get back to you soon.
               </div>
             ) : (
