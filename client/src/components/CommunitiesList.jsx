@@ -10,6 +10,8 @@ import styles from '../styles/communitiesList.module.css';
 
 import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem('token');
+const userId = getUserIdFromToken();
 
 const CommunitiesList = () => {
   const [communities, setCommunities] = useState([]);
@@ -57,7 +59,6 @@ const CommunitiesList = () => {
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.get(`${API_URL}/api/v2/communities/list`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,8 +80,6 @@ const CommunitiesList = () => {
   useEffect(() => {
     const fetchMembersCount = async () => {
       try {
-        const token = localStorage.getItem('token');
-
         const counts = await Promise.all(
           communities.map(async (community) => {
             try {
@@ -123,9 +122,6 @@ const CommunitiesList = () => {
 
   const handleJoinCommunity = async (communityId) => {
     try {
-      const token = localStorage.getItem('token');
-      const userId = getUserIdFromToken();
-
       if (!userId) {
         setSnackbarMessage('User is not authenticated.');
         setSnackbarSeverity('error');
@@ -166,9 +162,6 @@ const CommunitiesList = () => {
     }
 
     try {
-      const userId = getUserIdFromToken();
-      const token = localStorage.getItem('token');
-
       const requestData = {
         name: communityName,
         description: communityDescription,
@@ -251,7 +244,6 @@ const CommunitiesList = () => {
           {communities.length > 0 ? (
             <div className={styles.card_container}>
               {communities.map((community) => {
-                const userId = getUserIdFromToken();
                 const isUserJoined =
                   community.userIds && community.userIds.includes(userId);
 

@@ -13,6 +13,8 @@ import styles from '../styles/profile-header.module.css';
 const PostCard = React.lazy(() => import('./PostCard'));
 import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem('token');
+const userId = getUserIdFromToken();
 
 const ProfileHeader = ({ profile }) => {
   const [showModal, setShowModal] = useState(false);
@@ -54,14 +56,14 @@ const ProfileHeader = ({ profile }) => {
   const handleCloseUsernameModal = () => setShowUsernameModal(false);
 
   const fetchPostCount = useCallback(async () => {
-    const userId = getUserIdFromToken();
+    
     if (!userId) {
       console.error('User ID not found in token.');
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
+      
       const response = await axios.get(
         `${API_URL}/api/v2/posts/list/count/${userId}`,
         {
@@ -84,14 +86,14 @@ const ProfileHeader = ({ profile }) => {
   }, [fetchPostCount]);
 
   const fetchUserPosts = useCallback(async () => {
-    const userId = getUserIdFromToken();
+    
     if (!userId) {
       console.error('User ID not found in token.');
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
+      
       const response = await axios.get(
         `${API_URL}/api/v2/posts/list/${userId}`,
         {
@@ -121,7 +123,7 @@ const ProfileHeader = ({ profile }) => {
   }, [activeTab, fetchUserPosts]);
 
   const handleUpdateProfile = async () => {
-    const userId = getUserIdFromToken();
+    
     if (!userId) {
       console.error('User ID not found in token.');
       return;
@@ -135,7 +137,7 @@ const ProfileHeader = ({ profile }) => {
     };
 
     try {
-      const token = localStorage.getItem('token');
+      
       const response = await axios.put(
         `${API_URL}/api/v2/users/update/${userId}`,
         updateData,

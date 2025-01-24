@@ -5,6 +5,8 @@ import { getUserIdFromToken } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CHECK_URL = import.meta.env.VITE_CHECK_URL;
+const token = localStorage.getItem('token');
+const userId = getUserIdFromToken();
 
 function Enable2FA() {
   const [qrCode, setQrCode] = useState(null);
@@ -13,11 +15,9 @@ function Enable2FA() {
   const [isVerified, setIsVerified] = useState(false);
   const [userTwoFAStatus, setUserTwoFAStatus] = useState(null);
   const navigate = useNavigate();
-  const userId = getUserIdFromToken();
 
   const checkTwoFAStatus = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
       const { data } = await axios.get(`${API_URL}/api/v2/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -48,7 +48,6 @@ function Enable2FA() {
       });
 
       if (data.valid) {
-        const token = localStorage.getItem('token');
         await axios.put(
           `${API_URL}/api/v2/users/update/${userId}`,
           { twoFa: true },

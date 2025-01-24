@@ -9,6 +9,7 @@ import styles from '../styles/post.module.css';
 
 import { getUsernameFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
+const username = getUsernameFromToken();
 
 const PostForm = () => {
   const [postContent, setPostContent] = useState('');
@@ -65,8 +66,6 @@ const PostForm = () => {
         setIsSubmitting(false);
         return;
       }
-
-      const username = getUsernameFromToken(token);
 
       try {
         const response = await axios.post(

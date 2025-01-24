@@ -12,6 +12,8 @@ import styles from '../styles/communityDetails.module.css';
 
 import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem('token');
+const userId = getUserIdFromToken();
 
 const CommunityDetails = () => {
   const { name } = useParams();
@@ -44,7 +46,6 @@ const CommunityDetails = () => {
   useEffect(() => {
     const fetchCommunityDetails = async () => {
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/communities/${name}`,
           {
@@ -72,7 +73,6 @@ const CommunityDetails = () => {
     if (!postIds || postIds.length === 0) return;
 
     try {
-      const token = localStorage.getItem('token');
       const postDetailsPromises = postIds.map(async (postId) => {
         try {
           const postResponse = await axios.get(
@@ -114,7 +114,6 @@ const CommunityDetails = () => {
   useEffect(() => {
     const fetchMembersCount = async () => {
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/communities/c/count/${encodeURIComponent(name)}`,
           {
@@ -137,9 +136,6 @@ const CommunityDetails = () => {
   //join community
   const handleJoinCommunity = async (communityId) => {
     try {
-      const token = localStorage.getItem('token');
-      const userId = getUserIdFromToken();
-
       if (!userId) {
         alert('User is not authenticated');
         return;
@@ -165,9 +161,6 @@ const CommunityDetails = () => {
 
   //handle create community post
   const handleCreatePost = async () => {
-    const token = localStorage.getItem('token');
-    const userId = getUserIdFromToken();
-
     if (!postContent.trim()) {
       alert('Post content cannot be empty');
       return;
@@ -278,7 +271,6 @@ const CommunityDetails = () => {
 
   if (!community) return <div>Loading...</div>;
 
-  const userId = getUserIdFromToken();
   const isUserJoined = community.userIds && community.userIds.includes(userId);
 
   return (

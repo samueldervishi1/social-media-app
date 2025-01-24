@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import background from '../assets/background.jpg';
 import faqData from '../assets/faq.json';
 
+const token = localStorage.getItem('token');
+
 const FAQ = () => {
-  const token = localStorage.getItem('token');
   const [activeIndex, setActiveIndex] = useState(null);
   const [formState, setFormState] = useState({
     isSubmitted: false,

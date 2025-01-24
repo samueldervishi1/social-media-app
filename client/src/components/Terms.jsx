@@ -2,9 +2,9 @@ import React from 'react';
 import termsData from '../assets/terms.json';
 import styles from '../styles/terms.module.css';
 import { Link } from 'react-router-dom';
+const token = localStorage.getItem('token');
 
 const TermsAndServices = () => {
-  const token = localStorage.getItem('token');
   const formatContent = (content) => (
     <p>
       {content.split('*').map((part, index) =>

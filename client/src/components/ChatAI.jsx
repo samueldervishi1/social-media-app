@@ -10,6 +10,8 @@ import styles from '../styles/ai.module.css';
 
 import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem('token');
+const userId = getUserIdFromToken();
 
 const ChatAI = () => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -115,7 +117,6 @@ const ChatAI = () => {
     console.log('Sending ping request to backend...');
 
     try {
-      const token = localStorage.getItem('token');
       await axios.get(`${API_URL}/api/v2/ping`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -158,8 +159,6 @@ const ChatAI = () => {
     };
 
     try {
-      const token = localStorage.getItem('token');
-
       const response = await axios.post(
         `${API_URL}/api/v2/ask`,
         {
@@ -177,8 +176,6 @@ const ChatAI = () => {
         const responseData = response.data.answer;
         simulateTypingEffect(responseData);
         setIsThinking(false);
-
-        const userId = getUserIdFromToken();
         const sessionId = getSessionId();
         await axios.post(
           `${API_URL}/api/v2/history/save/${userId}/session/${sessionId}`,

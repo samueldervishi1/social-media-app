@@ -8,6 +8,7 @@ import styles from '../styles/profile.module.css';
 import { getUsernameFromToken } from '../auth/authUtils';
 const ProfileHeader = React.lazy(() => import('./ProfileHeader'));
 const API_URL = import.meta.env.VITE_API_URL;
+const username = getUsernameFromToken();
 
 export const ProfileContext = createContext(null);
 
@@ -26,7 +27,6 @@ const Profile = () => {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const username = getUsernameFromToken();
 
       if (username) {
         const profileResponse = await axios.get(

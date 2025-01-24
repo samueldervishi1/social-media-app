@@ -5,6 +5,7 @@ import '../styles/post-card.css';
 
 const PostCard = React.lazy(() => import('./PostCard'));
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem('token');
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -20,7 +21,6 @@ const PostList = () => {
 
   const fetchPosts = async () => {
     try {
-      const token = localStorage.getItem('token');
 
       const userPostsResponse = await axios.get(`${API_URL}/api/v2/posts/all`, {
         headers: { Authorization: `Bearer ${token}` },

@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import aboutData from '../assets/about.json';
 import styles from '../styles/about.module.css';
 
+const token = localStorage.getItem('token');
 const About = () => {
-  const token = localStorage.getItem('token');
   const { about_container, about_section, about_title, about_content, login_link, h1_container } = styles;
 
   const loginSection = useMemo(() => (

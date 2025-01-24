@@ -3,6 +3,8 @@ import axios from 'axios';
 import { getUserIdFromToken } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem('token');
+const userId = getUserIdFromToken();
 
 const UserCommunities = () => {
   const [communities, setCommunities] = useState([]);
@@ -11,7 +13,6 @@ const UserCommunities = () => {
 
   useEffect(() => {
     const fetchCommunities = async () => {
-      const userId = getUserIdFromToken();
 
       if (!userId) {
         setError('User ID not found in token.');
@@ -20,7 +21,6 @@ const UserCommunities = () => {
       }
 
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${API_URL}/api/v2/communities/user/${userId}`,
           {

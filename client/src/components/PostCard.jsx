@@ -11,7 +11,7 @@ import '../styles/post-card.css';
 
 import { getUserIdFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
-
+const userId = getUserIdFromToken();
 const token = localStorage.getItem('token');
 
 const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
@@ -144,7 +144,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   //create comment
   const navigateToAddComment = async () => {
-    const userId = getUserIdFromToken();
 
     if (newComment.trim() === '') {
       console.error('Empty comment cannot be posted.');

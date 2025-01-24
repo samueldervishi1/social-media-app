@@ -29,6 +29,9 @@ import styles from '../styles/navbar.module.css';
 
 import { getUserIdFromToken, getUsernameFromToken } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem('token');
+const userId = getUserIdFromToken();
+const username = getUsernameFromToken();
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -40,9 +43,6 @@ const Navbar = () => {
 
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
-
-  const userId = getUserIdFromToken();
-  const username = getUsernameFromToken();
 
   const userSettings = [
     {
@@ -79,7 +79,6 @@ const Navbar = () => {
   const handleDeleteAccount = useCallback(async () => {
     setIsDeleting(true);
     try {
-      const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
       await axios.delete(`${API_URL}/api/v2/users/update/delete/${userId}`, {

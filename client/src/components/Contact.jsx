@@ -3,8 +3,9 @@ import { FaInstagram } from 'react-icons/fa';
 import styles from '../styles/contact.module.css';
 import { Link } from 'react-router-dom';
 
+const token = localStorage.getItem('token');
+
 const Contact = () => {
-  const token = localStorage.getItem('token');
   return (
     <div className={styles.contact_container}>
       {!token && (
