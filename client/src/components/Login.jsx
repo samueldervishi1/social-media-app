@@ -41,7 +41,10 @@ const LoginScript = () => {
 
         if (!response.ok) {
           const errorMessage = await response.text();
-          throw new Error('You are offline. Please try again later.');
+          throw new Error(
+            errorMessage ||
+              'The server is currently busy. Please try again later.'
+          );
         }
 
         const data = await response.json();
@@ -61,12 +64,18 @@ const LoginScript = () => {
           throw new Error('Unexpected response structure');
         }
       } catch (error) {
-        console.error('Error during login:', error.message);
+        console.error('Error during login:', error);
+
+        const isNetworkError =
+          error.message === 'Failed to fetch' ||
+          error.message.includes('NetworkError');
+        const generalErrorMessage = isNetworkError
+          ? 'Unable to connect to the server. Please check your internet connection or try again later.'
+          : error.message || 'Something went wrong. Please try again.';
+
         setFormState((prev) => ({
           ...prev,
-          error:
-            error.message ||
-            'Something went wrong, please check your internet connection or try again later.',
+          error: generalErrorMessage,
           loading: false,
         }));
       }
