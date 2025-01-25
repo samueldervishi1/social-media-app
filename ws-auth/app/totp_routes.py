@@ -12,8 +12,10 @@ DB_NAME = os.getenv("DB_NAME")
 router = APIRouter()
 authenticator = TOTPAuthenticator(DB_URL, DB_NAME)
 
+
 class VerifyRequest(BaseModel):
     code: str
+
 
 @router.get("/totp/generate/{user_id}")
 def generate_totp(user_id: str):

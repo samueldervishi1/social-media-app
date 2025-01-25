@@ -4,6 +4,7 @@ import com.chirp.server.exceptions.BadRequestException;
 import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
+import com.chirp.server.utils.EncryptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,14 +34,18 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final EncryptionUtil encryptionUtil;
 
-	public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
+	public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder , EncryptionUtil encryptionUtil) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.encryptionUtil = encryptionUtil;
 	}
 
 	public User createUser(User user) {
 		validateUser(user);
+		user.setEmail(encryptionUtil.encrypt(user.getEmail()));
+		user.setFullName(encryptionUtil.encrypt(user.getFullName()));
 
 		String salt = generateSalt();
 		user.setPassword(passwordEncoder.encode(user.getPassword() + salt));
@@ -91,19 +96,27 @@ public class UserService {
 	}
 
 	public User getUserInfo(String username) {
-		return userRepository.findByUsername(username)
+		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> {
 					logger.error("User not found with username: {}" , username);
 					return new NotFoundException("User not found with username: " + username);
 				});
+		user.setEmail(encryptionUtil.decrypt(user.getEmail()));
+		user.setFullName(encryptionUtil.decrypt(user.getFullName()));
+
+		return user;
 	}
 
 	public User getUserInfoById(String id) {
-		return userRepository.findUserById(id)
+		User user = userRepository.findUserById(id)
 				.orElseThrow(() -> {
 					logger.error("User not found with ID: {}" , id);
 					return new NotFoundException("User not found with ID: " + id);
 				});
+		user.setEmail(encryptionUtil.decrypt(user.getEmail()));
+		user.setFullName(encryptionUtil.decrypt(user.getFullName()));
+
+		return user;
 	}
 
 	public Optional<User> findById(String userId) {

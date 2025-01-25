@@ -9,3 +9,4 @@ ws-auth/model/bot.py
 /ws-auth/model
 ws-auth/model/model.py
 *.py
+ws-auth/.venv/pyvenv.cfg
