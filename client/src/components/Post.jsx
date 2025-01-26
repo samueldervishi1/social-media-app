@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
+import { openDB } from 'idb';
 import { MdOutlineEmojiEmotions, MdDelete } from 'react-icons/md';
 import Picker from 'emoji-picker-react';
 import { LuSendHorizontal } from 'react-icons/lu';
 import { Snackbar, Alert } from '@mui/material';
-import { openDB } from 'idb';
 import styles from '../styles/post.module.css';
 
 import { getUsernameFromToken } from '../auth/authUtils';

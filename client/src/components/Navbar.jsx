@@ -24,7 +24,7 @@ import {
 import { TbAuth2Fa } from 'react-icons/tb';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
-import loaderImage from '../assets/ZKZg.gif';
+import loaderImage from '../assets/logo.gif';
 import styles from '../styles/navbar.module.css';
 
 import { getUserIdFromToken, getUsernameFromToken } from '../auth/authUtils';

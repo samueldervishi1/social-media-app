@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import customLoadingGif from '../assets/ZKZg.gif';
+import customLoadingGif from '../assets/logo.gif';
 import styles from '../styles/login.module.css';
-import { useAuth } from '../auth/AuthContext';
 
+import { useAuth } from '../auth/AuthContext';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const LoginScript = () => {

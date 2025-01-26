@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { createContext } from 'react';
 import { Container } from 'react-bootstrap';
-import loaderImage from '../assets/ZKZg.gif';
+import loaderImage from '../assets/logo.gif';
 import styles from '../styles/profile.module.css';
 
 import { getUsernameFromToken } from '../auth/authUtils';
