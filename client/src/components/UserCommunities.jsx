@@ -45,7 +45,7 @@ const UserCommunities = () => {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'center', marginTop: 10 }}>Your Communities</h2>
+      <h2 style={{ textAlign: 'center', marginTop: 10, color: 'white' }}>Your Communities</h2>
       <div style={styles.container}>
         {communities.length > 0 ? (
           communities.map((community) => (
@@ -56,7 +56,7 @@ const UserCommunities = () => {
             </div>
           ))
         ) : (
-          <div>You are not part of any communities.</div>
+          <div style={{color: 'white'}}>You are not part of any communities.</div>
         )}
       </div>
     </div>

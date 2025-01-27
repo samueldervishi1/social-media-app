@@ -37,12 +37,12 @@ body.login_page::before {
 .container_login {
   width: 100%;
   max-width: 400px;
-  background-color: white;
+  background-color: black;
   padding: 20px;
-  color: black;
+  color: white;
   border-radius: 1px;
   border: 0.1px solid grey;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px rgba(226, 226, 226, 0.445);
 }
 
 .text_center {
@@ -98,7 +98,7 @@ input[type='password'] {
   display: inline-block;
   border: 0.1px solid grey;
   background: transparent;
-  color: black;
+  color: white;
   border-radius: 1px;
   transition: background-color 0.2s ease-in-out;
 }
@@ -111,7 +111,7 @@ input[type='password']:focus {
 }
 
 hr {
-  border: 1px solid black;
+  border: 1px solid white;
   margin-bottom: 25px;
 }
 

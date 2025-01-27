@@ -69,7 +69,7 @@ function Enable2FA() {
 
   return (
     <div className='container mt-4'>
-      {!userTwoFAStatus && <h2>Enable Two-Factor Authentication (2FA)</h2>}
+      {!userTwoFAStatus && <h2 style={{color: 'white'}}>Enable Two-Factor Authentication (2FA)</h2>}
 
       {userTwoFAStatus ? (
         <div
@@ -93,7 +93,7 @@ function Enable2FA() {
           </button>
         ) : (
           <div>
-            <h4>Scan the QR code or enter the secret manually</h4>
+            <h4 style={{color: 'white'}}>Scan the QR code or enter the secret manually</h4>
             <div className='mb-4'>
               <img
                 src={`data:image/png;base64,${qrCode}`}
@@ -101,11 +101,11 @@ function Enable2FA() {
                 className='img-fluid'
               />
             </div>
-            <p>
+            <p style={{color: 'white'}}>
               Secret: <strong>{secret}</strong>
             </p>
 
-            <div className='form-group'>
+            <div className='form-group' style={{color: 'white'}}>
               <input
                 type='text'
                 className='form-control'

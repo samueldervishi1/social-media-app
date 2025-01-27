@@ -103,6 +103,10 @@
 .icon_p {
   font-size: 20px;
   margin-right: 5px;
+  color: white
+}
+.icon_button_color{
+  color: white;
 }
 
 .hamburger {
@@ -242,8 +246,9 @@
   right: 0;
   height: 100vh;
   width: 300px;
-  background: rgb(255, 255, 255);
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  background: #1c1c1d;
+  color: white;
+  box-shadow: 2px 0 15px rgba(255, 255, 255, 0.548);
   transform: translateX(100%);
   z-index: 1500;
   backdrop-filter: blur(7.6px);
@@ -289,7 +294,7 @@
 }
 
 .settings_item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(218, 218, 218, 0.521);
 }
 
 .settings_overlay {
@@ -317,8 +322,9 @@
   left: 0;
   height: 100vh;
   width: 300px;
-  background: rgb(255, 255, 255);
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  background:  #1c1c1d;
+  color: white;
+  box-shadow: 2px 0 15px rgba(255, 255, 255, 0.548);
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out, visibility 0s linear 0.3s,
     opacity 0.3s ease-in-out;
@@ -366,7 +372,7 @@
 }
 
 .user_item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(218, 218, 218, 0.521);
 }
 
 .user_overlay {

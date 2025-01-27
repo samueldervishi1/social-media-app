@@ -50,14 +50,9 @@
 .button_posts,
 .button_settings {
   font-size: 12px;
-  background-color: lightgrey;
+  background: 'linear-gradient(to right, #0072ff, #00c6ff)';
+  color: 'white';
   border: none;
-  color: #1c1c1d;
-}
-
-.button_edit:hover {
-  color: #1c1c1d;
-  background-color: lightgrey;
 }
 
 .useri {

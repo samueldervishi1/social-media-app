@@ -64,7 +64,7 @@ const HealthCheck = () => {
       {isLoading ? (
         <div className={styles.loader}>
           <div className={styles.spinner}></div>
-          <p>Loading server status...</p>
+          <p style={{color: 'white'}}>Loading server status...</p>
         </div>
       ) : (
         <div className={styles.statusMessage}>

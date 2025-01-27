@@ -11,7 +11,7 @@
   position: relative;
   border: 1px solid lightgray;
   border-radius: 15px;
-  background-color: #f0f2f5;
+  background-color: black;
   align-items: center;
   padding-right: 10px;
 }
@@ -21,7 +21,7 @@
   border: none;
   border-radius: 15px;
   background-color: transparent;
-  color: black;
+  color: white;
   font-size: 14px;
   width: 100%;
   resize: none;
@@ -35,14 +35,14 @@
 }
 
 .icon {
-  color: black;
+  color: white;
   cursor: pointer;
   font-size: 20px;
 }
 
 .post_the_post {
   background: transparent;
-  color: black;
+  color: white;
   border: none;
   cursor: pointer;
   position: relative;

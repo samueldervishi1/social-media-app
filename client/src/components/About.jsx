@@ -33,7 +33,7 @@ const About = () => {
 
     return aboutData.aboutApp.map((section) => (
       <div key={section.id} className={about_section}>
-        <h2 className={about_title}>{section.title}</h2>
+        <h2 style={{color: 'white'}} className={about_title}>{section.title}</h2>
         <div className={about_content}>
           {formatContent(section.content)}
         </div>

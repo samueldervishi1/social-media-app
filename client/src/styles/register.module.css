@@ -32,9 +32,9 @@ body.register_page::before {
 }
 
 .container_sign {
-  background: white;
-  color: black;
-  box-shadow: 0 6px 12px rgb(0, 0, 0);
+  background: black;
+  color: white;
+  box-shadow: 0 6px 12px rgba(226, 226, 226, 0.445);
   width: 600px;
   padding: 20px;
   margin-right: 10px;
@@ -73,7 +73,7 @@ label {
 .password_toggle_icon {
   position: absolute;
   top: 71%;
-  color: #1c1c1d;
+  color: white;
   right: 35px;
   transform: translateY(-50%);
   cursor: pointer;

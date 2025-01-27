@@ -187,7 +187,7 @@ const Navbar = () => {
               <div className={styles.user_header}>
                 <Typography variant='h6'>Profile settings</Typography>
                 <IconButton onClick={handleCloseUserMenu}>
-                  <MdClose />
+                  <MdClose style={{ color: 'white' }} />
                 </IconButton>
               </div>
               <div className={styles.user_content}>
@@ -217,7 +217,7 @@ const Navbar = () => {
               <IconButton
                 href='/home'
                 sx={{ p: 0 }}
-                style={{ fontSize: '25px' }}
+                style={{ fontSize: '25px', color: 'white' }}
               >
                 AЯYHƆ
               </IconButton>
@@ -307,19 +307,19 @@ const Navbar = () => {
           {/*desktop layout */}
           <div className={styles.history_links}>
             <a href='/home' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px' }}>
+              <IconButton style={{ fontSize: '15px', color: 'white' }}>
                 <GoHome className={styles.icon_p} />
                 Home
               </IconButton>
             </a>
             <a href='/chat' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px' }}>
+              <IconButton style={{ fontSize: '15px', color: 'white' }}>
                 <GiArtificialHive className={styles.icon_p} />
                 Sypher
               </IconButton>
             </a>
             <a href='/c/communities' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px' }}>
+              <IconButton style={{ fontSize: '15px', color: 'white' }}>
                 <RiUserCommunityLine className={styles.icon_p} />
                 Communities
               </IconButton>
@@ -329,7 +329,7 @@ const Navbar = () => {
                 <IconButton
                   onClick={handleOpenSettingsMenu}
                   sx={{ p: 0 }}
-                  style={{ fontSize: '15px' }}
+                  style={{ fontSize: '15px', color: 'white' }}
                 >
                   <IoSettingsOutline className={styles.icon_p} /> Settings
                 </IconButton>
@@ -350,7 +350,7 @@ const Navbar = () => {
                 <div className={styles.settings_header}>
                   <Typography variant='h6'>Settings</Typography>
                   <IconButton onClick={handleCloseSettingsMenu}>
-                    <MdClose />
+                    <MdClose style={{ color: 'white' }} />
                   </IconButton>
                 </div>
                 <div className={styles.settings_content}>
@@ -396,14 +396,14 @@ const Navbar = () => {
       </div>
 
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
+        <Modal.Header style={{ backgroundColor: 'black', color: 'white' }}>
           <Modal.Title>Delete Account</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ color: 'white', backgroundColor: 'black' }}>
           Are you sure you want to delete your account? This action cannot be
           undone.
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: 'black' }}>
           <Button variant='secondary' onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>

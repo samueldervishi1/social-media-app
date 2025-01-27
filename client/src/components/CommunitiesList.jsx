@@ -333,54 +333,56 @@ const CommunitiesList = () => {
 
       {/* Create Community Modal */}
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
-        <Modal.Header closeButton>
+        <Modal.Header style={{ backgroundColor: 'black', color: 'white' }}>
           <Modal.Title>Create New Community</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: 'black', color: 'white' }}>
           <Form>
             <Form.Group className='mb-3'>
-              <Form.Label>Community Name</Form.Label>
+              <Form.Label style={{ color: 'white' }}>Community Name</Form.Label>
               <Form.Control
                 type='text'
                 value={communityName}
                 onChange={(e) => setCommunityName(e.target.value)}
-                placeholder='Enter community name'
+                style={{ color: 'white', backgroundColor: '#333' }}
               />
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label>Description</Form.Label>
+              <Form.Label style={{ color: 'white' }}>Description</Form.Label>
               <Form.Control
                 as='textarea'
                 rows={3}
                 value={communityDescription}
                 onChange={(e) => setCommunityDescription(e.target.value)}
-                placeholder='Enter description'
+                style={{ color: 'white', backgroundColor: '#333' }}
               />
             </Form.Group>
             <div>
-              <h5>FAQs</h5>
+              <h5 style={{ color: 'white' }}>FAQs</h5>
               {faqs.map((faq, index) => (
                 <div key={index}>
                   <Form.Group className='mb-3'>
-                    <Form.Label>Question {index + 1}</Form.Label>
+                    <Form.Label style={{ color: 'white' }}>
+                      Question {index + 1}
+                    </Form.Label>
                     <Form.Control
                       type='text'
                       value={faq.question}
                       onChange={(e) =>
                         handleFaqChange(index, 'question', e.target.value)
                       }
-                      placeholder='Enter the question'
+                      style={{ color: 'white', backgroundColor: '#333' }}
                     />
                   </Form.Group>
                   <Form.Group className='mb-3'>
-                    <Form.Label>Answer</Form.Label>
+                    <Form.Label style={{ color: 'white' }}>Answer</Form.Label>
                     <Form.Control
                       type='text'
                       value={faq.answer}
                       onChange={(e) =>
                         handleFaqChange(index, 'answer', e.target.value)
                       }
-                      placeholder='Enter the answer'
+                      style={{ color: 'white', backgroundColor: '#333' }}
                     />
                   </Form.Group>
                   <div className={styles.button_row}>
@@ -397,7 +399,7 @@ const CommunitiesList = () => {
           </Form>
         </Modal.Body>
 
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: 'black' }}>
           <Button variant='secondary' onClick={() => setShowCreateModal(false)}>
             Close
           </Button>

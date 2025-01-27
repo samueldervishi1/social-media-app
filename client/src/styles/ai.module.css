@@ -18,7 +18,7 @@
   text-align: center;
   margin-top: 20px;
   font-size: 20px;
-  color: black;
+  color: white;
 }
 
 .sidebar1 {
@@ -59,29 +59,23 @@
 .predefined_button {
   margin: 5px;
   padding: 8px 15px;
-  background-color: #f0f0f0;
+  background-color: #1c1c1d;
   border: 1px solid #ccc;
+  color: white;
   border-radius: 20px;
   cursor: pointer;
 }
 
-.predefined_button:hover {
-  background-color: #e0e0e0;
-}
-
 .terminal_block {
   background-color: lightgrey;
-  color: #ffffff;
+  color: white;
   border-radius: 20px;
   margin: 10px 0;
-  padding: 10px;
 }
 
 .terminal_header {
   color: black;
   font-style: italic;
-  padding: 5px;
-  border-radius: 3px;
   font-weight: bold;
 }
 
@@ -157,7 +151,7 @@
 
 .message {
   flex: 1;
-  color: black;
+  color: white;
   font-size: 20px;
   max-width: 100%;
   overflow-wrap: anywhere;
@@ -192,8 +186,8 @@
   margin: 0 auto;
   padding: 3px;
   margin-bottom: 15px;
-  background: white;
-  color: #1c1c1d;
+  background: #1c1c1d;
+  color: white;
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -204,7 +198,7 @@
 
 .ai_textArea {
   width: 100%;
-  color: #1c1c1d;
+  color: white;
   font-size: 18px;
   padding: 10px;
   background: transparent;
@@ -219,6 +213,7 @@
   cursor: pointer;
   background: transparent;
   width: 75px;
+  color: white;
 }
 
 .ai_form img {

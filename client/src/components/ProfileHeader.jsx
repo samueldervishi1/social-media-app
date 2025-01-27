@@ -56,14 +56,12 @@ const ProfileHeader = ({ profile }) => {
   const handleCloseUsernameModal = () => setShowUsernameModal(false);
 
   const fetchPostCount = useCallback(async () => {
-    
     if (!userId) {
       console.error('User ID not found in token.');
       return;
     }
 
     try {
-      
       const response = await axios.get(
         `${API_URL}/api/v2/posts/list/count/${userId}`,
         {
@@ -86,14 +84,12 @@ const ProfileHeader = ({ profile }) => {
   }, [fetchPostCount]);
 
   const fetchUserPosts = useCallback(async () => {
-    
     if (!userId) {
       console.error('User ID not found in token.');
       return;
     }
 
     try {
-      
       const response = await axios.get(
         `${API_URL}/api/v2/posts/list/${userId}`,
         {
@@ -123,7 +119,6 @@ const ProfileHeader = ({ profile }) => {
   }, [activeTab, fetchUserPosts]);
 
   const handleUpdateProfile = async () => {
-    
     if (!userId) {
       console.error('User ID not found in token.');
       return;
@@ -137,7 +132,6 @@ const ProfileHeader = ({ profile }) => {
     };
 
     try {
-      
       const response = await axios.put(
         `${API_URL}/api/v2/users/update/${userId}`,
         updateData,
@@ -181,8 +175,8 @@ const ProfileHeader = ({ profile }) => {
         border: '0.2px solid lightgrey',
         position: 'relative',
         boxShadow: '0 8px 12px rgba(0, 0, 0, 0.2)',
-        background: 'white',
-        color: 'black',
+        background: 'black',
+        color: 'white',
         marginBottom: 40,
         marginTop: 20,
         borderRadius: 20,
@@ -267,13 +261,23 @@ const ProfileHeader = ({ profile }) => {
         )}
       </div>
       <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
+        <Modal.Header
+          style={{
+            color: 'white',
+            backgroundColor: 'black',
+            boxShadow: '2px 0 15px rgba(255, 255, 255, 0.548)',
+          }}
+        >
           <Modal.Title>Update your profile</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <Form.Group controlId='formGivenName'>
+        <Modal.Body style={{ color: 'white', backgroundColor: 'black' }}>
+          <Form.Group controlId='formGivenName' style={{ color: 'white' }}>
             <Form.Label>Given Name</Form.Label>
             <Form.Control
+              style={{
+                color: 'white',
+                backgroundColor: 'black',
+              }}
               type='text'
               name='fullName'
               value={fullNameInput}
@@ -284,6 +288,10 @@ const ProfileHeader = ({ profile }) => {
           <Form.Group controlId='formBio'>
             <Form.Label>Bio</Form.Label>
             <Form.Control
+              style={{
+                color: 'white',
+                backgroundColor: 'black',
+              }}
               type='text'
               name='bio'
               value={bioInput}
@@ -293,6 +301,10 @@ const ProfileHeader = ({ profile }) => {
           <Form.Group controlId='formTitle'>
             <Form.Label>Title</Form.Label>
             <Form.Control
+              style={{
+                color: 'white',
+                backgroundColor: 'black',
+              }}
               type='text'
               name='title'
               value={titleInput}
@@ -302,6 +314,10 @@ const ProfileHeader = ({ profile }) => {
           <Form.Group controlId='formEmail'>
             <Form.Label>Email</Form.Label>
             <Form.Control
+              style={{
+                color: 'white',
+                backgroundColor: 'black',
+              }}
               type='email'
               name='email'
               value={emailInput}
@@ -311,7 +327,7 @@ const ProfileHeader = ({ profile }) => {
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
+        <Modal.Footer style={{ color: 'white', backgroundColor: 'black' }}>
           <Button variant='secondary' onClick={handleCloseModal}>
             Cancel
           </Button>

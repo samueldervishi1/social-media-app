@@ -1,5 +1,5 @@
 .post-card {
-  background-color: #fff;
+  background-color: #1c1c1d;
   border-radius: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
@@ -8,7 +8,7 @@
   position: relative;
   max-width: 650px;
   cursor: pointer;
-  color: black;
+  color: white;
   border: 0.2px solid grey;
 }
 
@@ -25,12 +25,12 @@
 }
 
 .share-title {
-  color: black;
-  background-color: white;
+  color: white;
+  background-color: black;
 }
 
 .icon-name {
-  color: black;
+  color: white;
 }
 
 .liked {
@@ -47,8 +47,8 @@
 }
 
 .share-body {
-  background-color: white;
-  color: black;
+  background-color: black;
+  color: white;
 }
 
 .list-loader {
@@ -286,7 +286,7 @@
 
 .small-timer {
   font-size: 10px;
-  color: grey;
+  color: white;
   display: flex;
   margin-top: 2px;
   margin-left: 2px;
@@ -319,7 +319,7 @@
 .post-details {
   display: flex;
   align-items: center;
-  color: grey;
+  color: white;
 }
 
 .username {
@@ -327,11 +327,11 @@
   font-size: 15px;
   cursor: pointer;
   text-decoration: none;
+  color: white;
 }
 
 .username:hover {
   text-decoration: underline;
-  color: black;
 }
 
 .separator {
@@ -340,7 +340,7 @@
 
 .post-date {
   font-size: 9px;
-  color: grey;
+  color: white;
 }
 
 .share-icons {
@@ -382,7 +382,7 @@
 
 .post-comment-button {
   background: transparent;
-  color: black;
+  color: white;
   border: none;
   width: 70px;
   padding: 7px 20px;
@@ -410,7 +410,7 @@
   resize: none;
   height: auto;
   overflow: hidden;
-  color: black;
+  color: white;
 }
 
 .new-comment-form textarea:focus {

@@ -60,14 +60,15 @@ const ChatAI = () => {
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;');
 
-        return `
-              <div class="terminal_block">
-                <div class="terminal_header">${
-                  lang ? lang.trim() : 'code'
-                }</div>
-                <pre><code>${escapedCode}</code></pre>
-              </div>
-            `;
+          return `
+          <div class="${styles.terminal_block}">
+            <div class="${styles.terminal_header}">
+              ${lang ? lang.trim() : 'code'}
+            </div>
+            <pre><code>${escapedCode}</code></pre>
+          </div>
+        `;
+        
       })
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .split('\n')
@@ -271,12 +272,6 @@ const ChatAI = () => {
     scrollToBottom();
   }, [chatMessages, isLoading]);
 
-  const calculateTextAreaHeight = (text) => {
-    const lineHeight = 24;
-    const lines = text.split('\n').length;
-    return Math.min(lines * lineHeight, 120);
-  };
-
   const predefinedQuestions = [
     'Summarize text',
     'Help me write',
@@ -307,9 +302,10 @@ const ChatAI = () => {
               borderRadius: 200,
               height: 35,
               textAlign: 'center',
-              color: 'black',
+              color: 'white',
               textDecoration: 'underline',
               cursor: 'pointer',
+              marginTop: 0
             }}
             onClick={resetChat}
           >
@@ -390,9 +386,6 @@ const ChatAI = () => {
             value={userInput}
             onChange={(e) => {
               setUserInput(e.target.value);
-              e.target.style.height = `${calculateTextAreaHeight(
-                e.target.value
-              )}px`;
             }}
             onKeyUp={handleKeyUp}
             disabled={isRateLimited || isThinking}

@@ -31,7 +31,7 @@ const TermsAndServices = () => {
       </div>
       {termsData.termsAndServices.map((term) => (
         <div key={term.id} className={styles.term_section}>
-          <h2 className={styles.term_title}>{term.title}</h2>
+          <h2 style={{color: 'white'}} className={styles.term_title}>{term.title}</h2>
           <div className={styles.term_content}>
             {formatContent(term.content)}
           </div>

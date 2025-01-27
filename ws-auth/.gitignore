@@ -5,3 +5,4 @@ model
 .idea
 .venv
 app/test.py
+/app/fine_tuned_model

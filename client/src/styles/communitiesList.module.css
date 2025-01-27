@@ -5,7 +5,7 @@
 .title {
   font-size: 2em;
   margin-bottom: 20px;
-  color: black;
+  color: white;
   text-align: center;
 }
 
@@ -95,6 +95,7 @@ span.members_count {
 .no_communities {
   text-align: center;
   margin-top: 50px;
+  color: white;
 }
 
 .members {
