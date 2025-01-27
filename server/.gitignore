@@ -40,3 +40,4 @@ src/main/resources/application.properties
 src/main/resources/localhost.key
 src/main/resources/localhost.crt
 src/main/resources/localhost.p12
+src/main/resources/test.txt
