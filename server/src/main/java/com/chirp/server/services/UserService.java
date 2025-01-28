@@ -1,9 +1,8 @@
 package com.chirp.server.services;
 
-import com.chirp.server.exceptions.BadRequestException;
-import com.chirp.server.exceptions.NotFoundException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.utils.EncryptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,19 +64,19 @@ public class UserService {
 
 	private void validateUser(User user) {
 		if (user == null) {
-			throw new BadRequestException("User cannot be null");
+			throw new CustomException(400 , "User cannot be null");
 		}
 
 		if (!isValidEmail(user.getEmail())) {
-			throw new BadRequestException(INVALID_EMAIL_FORMAT);
+			throw new CustomException(400 , INVALID_EMAIL_FORMAT);
 		}
 
 		if (!isValidLength(user.getFullName())) {
-			throw new BadRequestException(NAME_TOO_SHORT);
+			throw new CustomException(400 , NAME_TOO_SHORT);
 		}
 
 		if (!isValidPassword(user.getPassword())) {
-			throw new BadRequestException(INVALID_PASSWORD_FORMAT);
+			throw new CustomException(400 , INVALID_PASSWORD_FORMAT);
 		}
 
 		checkDuplicateCredentials(user);
@@ -86,21 +85,18 @@ public class UserService {
 	private void checkDuplicateCredentials(User user) {
 		if (userRepository.existsByEmail(user.getEmail())) {
 			logger.error("Email already exists: {}" , user.getEmail());
-			throw new BadRequestException(EMAIL_ALREADY_EXISTS);
+			throw new CustomException(400 , EMAIL_ALREADY_EXISTS);
 		}
 
 		if (userRepository.existsByUsername(user.getUsername())) {
 			logger.error("Username already exists: {}" , user.getUsername());
-			throw new BadRequestException(USERNAME_ALREADY_EXISTS);
+			throw new CustomException(400 , USERNAME_ALREADY_EXISTS);
 		}
 	}
 
 	public User getUserInfo(String username) {
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> {
-					logger.error("User not found with username: {}" , username);
-					return new NotFoundException("User not found with username: " + username);
-				});
+				.orElseThrow(() -> new CustomException(404 , "User not found with username: " + username));
 		user.setEmail(encryptionUtil.decrypt(user.getEmail()));
 		user.setFullName(encryptionUtil.decrypt(user.getFullName()));
 
@@ -109,10 +105,7 @@ public class UserService {
 
 	public User getUserInfoById(String id) {
 		User user = userRepository.findUserById(id)
-				.orElseThrow(() -> {
-					logger.error("User not found with ID: {}" , id);
-					return new NotFoundException("User not found with ID: " + id);
-				});
+				.orElseThrow(() -> new CustomException(404 , "User not found with ID: " + id));
 		user.setEmail(encryptionUtil.decrypt(user.getEmail()));
 		user.setFullName(encryptionUtil.decrypt(user.getFullName()));
 

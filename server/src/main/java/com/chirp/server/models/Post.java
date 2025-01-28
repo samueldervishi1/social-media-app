@@ -13,18 +13,17 @@ import java.util.UUID;
 public class Post {
 
 	@Id
-	private String id;
+	private UUID id;
 	private String userId;
 	private String content;
 	private List<Comments> commentsList = new ArrayList<>();
 	private String postDate;
 	private String postTime;
-	private String imageUrl;
 	private Boolean deleted = false;
 	private Boolean reported = false;
 
 	public Post(String content) {
-		this.id = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID();
 		this.content = content;
 		this.postDate = LocalDate.now().toString();
 		this.postTime = LocalTime.now().toString();
@@ -41,20 +40,12 @@ public class Post {
 		this.userId = userId;
 	}
 
-	public String getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public String getContent() {
-		return content;
-	}
-
-	public void setId(String id) {
+	public void setId(UUID id) {
 		this.id = id;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
 	}
 
 	public List<Comments> getCommentsList() {
@@ -73,20 +64,8 @@ public class Post {
 		this.postDate = postDate;
 	}
 
-	public String getPostTime() {
-		return postTime;
-	}
-
 	public void setPostTime(String postTime) {
 		this.postTime = postTime;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
-	public String getImageUrl() {
-		return imageUrl;
 	}
 
 	public boolean isDeleted() {
@@ -103,5 +82,9 @@ public class Post {
 
 	public void setReported(boolean reported) {
 		this.reported = reported;
+	}
+
+	public String getPostTime() {
+		return postTime;
 	}
 }

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import bot from '../assets/logo1.svg';
 import user from '../assets/user.svg';
-import loaderGif from '../assets/logo.gif';
+import loaderGif from '../assets/ssa.gif';
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { LuSendHorizontal } from 'react-icons/lu';
 import styles from '../styles/ai.module.css';

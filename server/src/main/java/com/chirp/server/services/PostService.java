@@ -1,6 +1,6 @@
 package com.chirp.server.services;
 
-import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.Post;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.PostRepository;
@@ -51,12 +51,12 @@ public class PostService {
 
 	public Post getPostById(String postId) {
 		return postRepository.findById(postId)
-				.orElseThrow(() -> new NotFoundException(POST_NOT_FOUND + postId));
+				.orElseThrow(() -> new CustomException(POST_NOT_FOUND + postId));
 	}
 
 	private User getUserByUsername(String username) {
 		return userRepository.findByUsername(username)
-				.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + username));
+				.orElseThrow(() -> new CustomException(USER_NOT_FOUND + username));
 	}
 
 	public List<Post> getUserPosts(String userId) {

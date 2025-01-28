@@ -1,7 +1,6 @@
 package com.chirp.server.services;
 
-import com.chirp.server.exceptions.BadRequestException;
-import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import com.chirp.server.utils.JwtTokenUtil;
@@ -41,12 +40,12 @@ public class LoginService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> {
 					logger.error("Login failed for username {}: {}" , username , USER_NOT_FOUND);
-					return new NotFoundException(USER_NOT_FOUND);
+					return new CustomException(404 , USER_NOT_FOUND);
 				});
 
 		if (user.isDeleted()) {
 			logger.error("Login failed for username {}: {}" , username , USER_DELETED);
-			throw new NotFoundException(USER_DELETED);
+			throw new CustomException(404 , USER_DELETED);
 		}
 
 		return user;
@@ -55,9 +54,10 @@ public class LoginService {
 	private void validatePassword(String rawPassword , User user) {
 		if (!passwordEncoder.matches(rawPassword + user.getSalt() , user.getPassword())) {
 			logger.warn("Password mismatch for user: {}" , user.getUsername());
-			throw new BadRequestException(INVALID_CREDENTIALS);
+			throw new CustomException(400 , INVALID_CREDENTIALS);
 		}
 	}
+
 
 	private String generateUserToken(User user) {
 		String token = jwtTokenUtil.generateToken(user.getUsername() , user.getId() , user.isTwoFa());

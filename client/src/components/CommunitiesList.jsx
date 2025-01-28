@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import placeHolderImage from '../assets/placeholder.png';
 import placeHolderLogo from '../assets/logo-placeholder-image.png';
-import loader from '../assets/logo.gif';
+import loader from '../assets/ssa.gif';
 import { Snackbar, Alert } from '@mui/material';
 import { Modal, Button, Form } from 'react-bootstrap';
 import styles from '../styles/communitiesList.module.css';

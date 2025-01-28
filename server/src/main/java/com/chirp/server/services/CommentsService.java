@@ -1,7 +1,6 @@
 package com.chirp.server.services;
 
-import com.chirp.server.exceptions.InternalServerErrorException;
-import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.Comments;
 import com.chirp.server.models.Post;
 import com.chirp.server.models.User;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentsService {
@@ -41,12 +41,12 @@ public class CommentsService {
 			Post savedPost = postRepository.save(post);
 			logger.info("Comment created with ID: {} for post: {}" , comment.getId() , savedPost.getId());
 			return comment;
-		} catch (NotFoundException e) {
+		} catch (CustomException e) {
 			logger.error("Error creating comment: {}" , e.getMessage());
 			throw e;
 		} catch (Exception e) {
 			logger.error("Unexpected error while creating comment: {}" , e.getMessage());
-			throw new InternalServerErrorException("An unexpected error occurred while creating the comment");
+			throw new CustomException(500 , "An unexpected error occurred while creating the comment");
 		}
 	}
 
@@ -54,7 +54,8 @@ public class CommentsService {
 	public void deleteComment(String postId , String commentId) {
 		try {
 			Post post = getPostById(postId);
-			Comments comment = getCommentFromPost(post , commentId);
+			Comments comment = getCommentFromPost(post , commentId).orElseThrow(() ->
+					new CustomException(404 , "Comment not found: " + commentId));
 
 			List<Comments> comments = post.getCommentsList();
 			comments.remove(comment);
@@ -62,49 +63,50 @@ public class CommentsService {
 
 			Post savedPost = postRepository.save(post);
 			logger.info("Comment {} deleted from post {}" , commentId , savedPost.getId());
-		} catch (NotFoundException e) {
+		} catch (CustomException e) {
 			logger.error("Error deleting comment: {}" , e.getMessage());
 			throw e;
 		} catch (Exception e) {
 			logger.error("Unexpected error while deleting comment: {}" , e.getMessage());
-			throw new InternalServerErrorException("An unexpected error occurred while deleting the comment");
+			throw new CustomException(500 , "An unexpected error occurred while deleting the comment");
 		}
 	}
 
-	public Comments getCommentById(String postId , String commentId) {
+	public Optional<Comments> getCommentById(String postId , String commentId) {
 		try {
 			Post post = getPostById(postId);
 			return getCommentFromPost(post , commentId);
-		} catch (NotFoundException e) {
+		} catch (CustomException e) {
 			logger.error("Error retrieving comment: {}" , e.getMessage());
 			throw e;
 		} catch (Exception e) {
 			logger.error("Unexpected error while retrieving comment: {}" , e.getMessage());
-			throw new InternalServerErrorException("An unexpected error occurred while retrieving the comment");
+			throw new CustomException(500 , "An unexpected error occurred while retrieving the comment");
 		}
 	}
 
 	private User getUserById(String userId) {
 		return userRepository.findById(userId).orElseThrow(() -> {
 			logger.warn("User not found: {}" , userId);
-			return new NotFoundException("User not found: " + userId);
+			return new CustomException(404 , "User not found: " + userId);
 		});
 	}
 
 	private Post getPostById(String postId) {
 		return postRepository.findById(postId).orElseThrow(() -> {
 			logger.warn("Post not found: {}" , postId);
-			return new NotFoundException("Post not found: " + postId);
+			return new CustomException(404 , "Post not found: " + postId);
 		});
 	}
 
-	private Comments getCommentFromPost(Post post , String commentId) {
+	private Optional<Comments> getCommentFromPost(Post post , String commentId) {
 		return post.getCommentsList().stream()
 				.filter(comment -> comment.getId().equals(commentId))
 				.findFirst()
+				.map(Optional::of)
 				.orElseThrow(() -> {
 					logger.warn("Comment {} not found in post {}" , commentId , post.getId());
-					return new NotFoundException("Comment not found: " + commentId);
+					return new CustomException(404 , "Comment not found: " + commentId);
 				});
 	}
 }

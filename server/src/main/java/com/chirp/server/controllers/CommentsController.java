@@ -1,10 +1,8 @@
 package com.chirp.server.controllers;
 
-import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.Comments;
 import com.chirp.server.services.CommentsService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +18,8 @@ public class CommentsController {
 	@GetMapping("/get/{postId}/{commentId}")
 	public Comments getCommentById(@PathVariable String postId , @PathVariable String commentId) {
 		System.out.println("Retrieving comment with ID: " + commentId + " for postId: " + postId);
-		return commentsService.getCommentById(postId , commentId);
+		return commentsService.getCommentById(postId , commentId)
+				.orElseThrow(() -> new CustomException(404 , "Comment not found for postId: " + postId));
 	}
 
 	@PostMapping("/create/{userId}/{postId}")
@@ -30,14 +29,13 @@ public class CommentsController {
 	}
 
 	@DeleteMapping("/delete/{postId}/{commentId}")
-	public ResponseEntity<String> deleteComment(@PathVariable String postId , @PathVariable String commentId) {
+	public String deleteComment(@PathVariable String postId , @PathVariable String commentId) {
+		System.out.println("Deleting comment with ID: " + commentId + " for postId: " + postId);
 		try {
 			commentsService.deleteComment(postId , commentId);
-			return ResponseEntity.ok("Comment with ID: " + commentId + " has been deleted successfully.");
-		} catch (NotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found.");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the comment.");
+			return "Comment with ID: " + commentId + " has been deleted successfully.";
+		} catch (CustomException e) {
+			return "Error: " + e.getMessage();
 		}
 	}
 }

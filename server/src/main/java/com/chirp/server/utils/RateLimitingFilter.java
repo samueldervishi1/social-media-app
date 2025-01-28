@@ -1,6 +1,6 @@
 package com.chirp.server.utils;
 
-import com.chirp.server.exceptions.TooManyRequestsException;
+import com.chirp.server.exceptions.CustomException;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
@@ -18,7 +18,6 @@ public class RateLimitingFilter implements Filter {
 
 	private static final int DEFAULT_LIMIT = 5;
 	private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1);
-	private static final Duration RETRY_AFTER_DURATION = Duration.ofSeconds(30);
 
 	private static final String RATE_LIMITED_URL = "/api/v2/ask";
 
@@ -40,7 +39,7 @@ public class RateLimitingFilter implements Filter {
 			if (bucket.tryConsume(1)) {
 				chain.doFilter(request , response);
 			} else {
-				throw new TooManyRequestsException("Too many requests. Please wait and try again." , RETRY_AFTER_DURATION.getSeconds());
+				throw new CustomException("Too many requests. Please wait and try again after 30 seconds.");
 			}
 		} else {
 			chain.doFilter(request , response);

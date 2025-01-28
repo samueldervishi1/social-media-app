@@ -7,7 +7,7 @@ import { TiArrowDownThick, TiArrowUpThick } from 'react-icons/ti';
 import placeHolderImage from '../assets/placeholder.png';
 import placeHolderLogo from '../assets/logo-placeholder-image.png';
 import defaultUserIcon from '../assets/user.webp';
-import loader from '../assets/logo.gif';
+import loader from '../assets/ssa.gif';
 import styles from '../styles/communityDetails.module.css';
 
 import { getUserIdFromToken } from '../auth/authUtils';

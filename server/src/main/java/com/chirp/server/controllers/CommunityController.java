@@ -1,6 +1,6 @@
 package com.chirp.server.controllers;
 
-import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.*;
 import com.chirp.server.services.CommunityService;
 import org.slf4j.Logger;
@@ -55,8 +55,11 @@ public class CommunityController {
 		try {
 			Community community = communityService.getCommunityByName(name);
 			return ResponseEntity.ok(community);
-		} catch (NotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (CustomException e) {
+			if (e.getCode() == 404) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			}
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
@@ -65,12 +68,16 @@ public class CommunityController {
 		try {
 			int count = communityService.getUserCountForCommunity(name);
 			return ResponseEntity.ok(count);
-		} catch (NotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
-		} catch (Exception e) {
+		} catch (CustomException e) {
+			if (e.getCode() == 404) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+			} else if (e.getCode() == 500) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
+			}
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
 		}
 	}
+
 
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<List<Community>> getCommunitiesByUserId(@PathVariable String userId) {
@@ -103,7 +110,7 @@ public class CommunityController {
 
 	@PostMapping("/create/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {
-		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription(), community.getFaqs());
+		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription() , community.getFaqs());
 
 		return new ResponseEntity<>(community , HttpStatus.CREATED);
 	}

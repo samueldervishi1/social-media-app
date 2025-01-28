@@ -1,6 +1,6 @@
 package com.chirp.server.utils;
 
-import com.chirp.server.exceptions.InternalServerErrorException;
+import com.chirp.server.exceptions.CustomException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -49,7 +49,7 @@ public class JwtTokenUtil {
 			return token;
 		} catch (Exception e) {
 			logger.error("Error generating JWT token for userId: {}: {}" , userId , e.getMessage());
-			throw new InternalServerErrorException("Error generating JWT token");
+			throw new CustomException("Error generating JWT token");
 		}
 	}
 

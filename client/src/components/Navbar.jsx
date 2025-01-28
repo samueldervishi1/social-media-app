@@ -24,7 +24,7 @@ import {
 import { TbAuth2Fa } from 'react-icons/tb';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
-import loaderImage from '../assets/logo.gif';
+import loaderImage from '../assets/ssa.gif';
 import styles from '../styles/navbar.module.css';
 
 import { getUserIdFromToken, getUsernameFromToken } from '../auth/authUtils';
@@ -102,6 +102,7 @@ const Navbar = () => {
     setIsLoggingOut(true);
     localStorage.removeItem('token');
     setTimeout(() => {
+      navigate('/login');
       window.location.reload();
     }, 1500);
   }, []);
@@ -237,19 +238,19 @@ const Navbar = () => {
           {isMenuOpen && (
             <div className={styles.mobile_menu}>
               <a href='/home' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
+                <IconButton style={{ fontSize: '15px', color: 'white' }}>
                   <GoHome className={styles.icon_p} />
                   Home
                 </IconButton>
               </a>
               <a href='/chat' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
+                <IconButton style={{ fontSize: '15px', color: 'white' }}>
                   <GiArtificialHive className={styles.icon_p} />
                   Sypher
                 </IconButton>
               </a>
               <a href='/c/communities' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
+                <IconButton style={{ fontSize: '15px', color: 'white' }}>
                   <RiUserCommunityLine className={styles.icon_p} />
                   Communities
                 </IconButton>
@@ -259,7 +260,7 @@ const Navbar = () => {
                   <IconButton
                     onClick={handleOpenSettingsMenu}
                     sx={{ p: 0 }}
-                    style={{ fontSize: '15px' }}
+                    style={{ fontSize: '15px', color: 'white' }}
                   >
                     <IoSettingsOutline className={styles.icon_p} /> Settings
                   </IconButton>
@@ -420,7 +421,7 @@ const Navbar = () => {
       {isLoggingOut && (
         <div className={styles.logout_loader}>
           <div className={styles.logout_box}>
-            <h2>Logging Out...</h2>
+            <h2 style={{color: 'white'}}>Logging Out...</h2>
             <img
               src={loaderImage}
               alt='Logging out...'

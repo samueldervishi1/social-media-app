@@ -1,8 +1,6 @@
 package com.chirp.server.services;
 
-import com.chirp.server.exceptions.InternalServerErrorException;
-import com.chirp.server.exceptions.NotFoundException;
-import com.chirp.server.exceptions.BadRequestException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.*;
 import com.chirp.server.repositories.CommunityPostRepository;
 import com.chirp.server.repositories.CommunityRepository;
@@ -30,12 +28,12 @@ public class CommunityService {
 		this.communityPostRepository = communityPostRepository;
 	}
 
-	//create community
+	// Create community
 	public Community createCommunity(String name , String ownerId , String description , List<Faq> faqs) {
 		logger.info("Creating a new community with name: {}, ownerId: {}" , name , ownerId);
 
 		communityRepository.findByName(name).ifPresent(community -> {
-			throw new BadRequestException(String.format(COMMUNITY_EXISTS , name));
+			throw new CustomException(400 , String.format(COMMUNITY_EXISTS , name));
 		});
 
 		Community community = new Community(name , ownerId , description);
@@ -47,7 +45,7 @@ public class CommunityService {
 		return savedCommunity;
 	}
 
-	//create post inside a community
+	// Create post inside a community
 	public CommunityPost createCommunityPost(String name , String ownerId , String description) {
 		logger.info("Creating a post for community: {}, by user: {}" , name , ownerId);
 		Community community = getCommunityByName(name);
@@ -69,18 +67,18 @@ public class CommunityService {
 		return savedPost;
 	}
 
-	//get member count per community
+	// Get member count per community
 	public int getUserCountForCommunity(String name) {
 		logger.info("Fetching user count for community: {}" , name);
 		try {
 			return communityRepository.getUserCountForCommunity(name).orElse(0);
 		} catch (Exception e) {
 			logger.error("Error fetching user count for community {}: {}" , name , e.getMessage() , e);
-			throw new InternalServerErrorException("Error fetching user count");
+			throw new CustomException(500 , "Error fetching user count");
 		}
 	}
 
-	//join community
+	// Join community
 	public void joinCommunity(String communityId , String userId) {
 		logger.info("User {} joining community {}" , userId , communityId);
 		Community community = getCommunityById(communityId);
@@ -92,41 +90,42 @@ public class CommunityService {
 		}
 	}
 
-	//get a community by ID
+	// Get a community by ID
 	public Community getCommunityById(String communityId) {
 		return communityRepository.findById(communityId)
-				.orElseThrow(() -> new NotFoundException(String.format(COMMUNITY_NOT_FOUND , communityId)));
+				.orElseThrow(() -> new CustomException(404 , String.format(COMMUNITY_NOT_FOUND , communityId)));
 	}
 
-	//get community by name
+	// Get community by name
 	public Community getCommunityByName(String name) {
 		return communityRepository.findByName(name)
-				.orElseThrow(() -> new NotFoundException(String.format(COMMUNITY_NOT_FOUND , name)));
+				.orElseThrow(() -> new CustomException(404 , String.format(COMMUNITY_NOT_FOUND , name)));
 	}
 
-	//get communities for the user from the user ID
+	// Get communities for the user from the user ID
 	public List<Community> getCommunitiesByUserId(String userId) {
 		logger.info("Fetching communities for user: {}" , userId);
 		try {
 			return communityRepository.findByUserIdsContaining(userId);
 		} catch (Exception e) {
 			logger.error("Error fetching communities for user {}: {}" , userId , e.getMessage() , e);
-			throw new InternalServerErrorException("Error fetching communities");
+			throw new CustomException(500 , "Error fetching communities");
 		}
 	}
 
-	//get post for a community using post ID
+	// Get post for a community using post ID
 	public CommunityPost getCommunityPostById(String postId) {
 		return communityPostRepository.findById(postId)
-				.orElseThrow(() -> new NotFoundException(String.format(POST_NOT_FOUND , postId)));
+				.orElseThrow(() -> new CustomException(404 , String.format(POST_NOT_FOUND , postId)));
 	}
 
-	//fetch all communities from database
+	// Fetch all communities from database
 	public List<Community> getAllCommunities() {
 		logger.info("Fetching all communities");
 		return communityRepository.findAll();
 	}
 
+	// Fetch all posts from the database
 	public List<CommunityPost> getAllDBPosts() {
 		return communityPostRepository.findAll();
 	}

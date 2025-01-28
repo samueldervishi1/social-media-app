@@ -1,6 +1,6 @@
 package com.chirp.server.services;
 
-import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -73,7 +73,7 @@ public class ProfileService {
 
 	private User findUserById(String userId) {
 		return userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + userId));
+				.orElseThrow(() -> new CustomException(USER_NOT_FOUND + userId));
 	}
 
 	private void validateUserId(String userId) {

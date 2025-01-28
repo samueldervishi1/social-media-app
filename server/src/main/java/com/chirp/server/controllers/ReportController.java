@@ -1,6 +1,6 @@
 package com.chirp.server.controllers;
 
-import com.chirp.server.exceptions.InternalServerErrorException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.Report;
 import com.chirp.server.services.ReportService;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class ReportController {
 			return ResponseEntity.ok(savedReport);
 		} catch (Exception e) {
 			logger.error("Something went wrong during reporting: {}" , e.getMessage() , e);
-			throw new InternalServerErrorException("Failed to create report");
+			throw new CustomException("Failed to create report");
 		}
 	}
 }

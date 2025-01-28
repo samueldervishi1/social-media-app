@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       if (!tokenToValidate) return false;
 
       const decodedToken = decodeToken(tokenToValidate);
-      if (!decodedToken) return false;
+      if (!decodedToken || !decodedToken.exp) return false;
 
       const isValid = Date.now() < decodedToken.exp * 1000;
       if (!isValid) {
@@ -55,6 +55,15 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
     }
   }, [token, decodeToken, validateToken]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (token && !validateToken(token)) {
+        logout();
+      }
+    }, 60000);
+    return () => clearInterval(intervalId);
+  }, [token, validateToken]);
 
   const login = useCallback(
     (newToken) => {

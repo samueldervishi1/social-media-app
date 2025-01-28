@@ -1,11 +1,10 @@
 package com.chirp.server.services;
 
-import com.chirp.server.exceptions.BadRequestException;
-import com.chirp.server.exceptions.InternalServerErrorException;
 import com.chirp.server.models.Post;
 import com.chirp.server.models.Report;
 import com.chirp.server.repositories.PostRepository;
 import com.chirp.server.repositories.ReportPostRepository;
+import com.chirp.server.exceptions.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -43,24 +42,22 @@ public class ReportService {
 			logger.info("Report successfully created - userId: {}, postId: {}" , userId , postId);
 
 			return savedReport;
-		} catch (BadRequestException e) {
-			throw e;
 		} catch (Exception e) {
 			logger.error("Error creating report: {}" , e.getMessage() , e);
-			throw new InternalServerErrorException(REPORT_ERROR);
+			throw new CustomException(500 , REPORT_ERROR);
 		}
 	}
 
 	private void validateAndHandleDuplicateReport(String userId , String postId) {
 		if (reportPostRepository.existsByUserIdAndPostId(userId , postId)) {
 			logger.warn("Duplicate report detected - userId: {}, postId: {}" , userId , postId);
-			throw new BadRequestException(String.format(USER_ALREADY_REPORTED , userId , postId));
+			throw new CustomException(400 , String.format(USER_ALREADY_REPORTED , userId , postId));
 		}
 	}
 
 	private void handlePostReporting(String postId) {
 		Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new BadRequestException(String.format(POST_NOT_FOUND , postId)));
+				.orElseThrow(() -> new CustomException(400 , String.format(POST_NOT_FOUND , postId)));
 
 		if (!post.isReported()) {
 			post.setReported(true);

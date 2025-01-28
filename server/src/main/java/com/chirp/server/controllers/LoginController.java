@@ -1,7 +1,6 @@
 package com.chirp.server.controllers;
 
-import com.chirp.server.exceptions.BadRequestException;
-import com.chirp.server.exceptions.NotFoundException;
+import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.Error;
 import com.chirp.server.models.User;
 import com.chirp.server.services.LoginService;
@@ -30,26 +29,24 @@ public class LoginController {
 		String password = user.getPassword();
 
 		if ((username == null || username.isEmpty()) && (password == null || password.isEmpty())) {
-			return createErrorResponse("400" , "username or password is empty");
+			return createErrorResponse(new CustomException(400 , "username or password is empty"));
 		}
 
 		if (username == null || username.isEmpty()) {
-			return createErrorResponse("400" , "username is empty");
+			return createErrorResponse(new CustomException(400 , "username is empty"));
 		}
 
 		if (password == null || password.isEmpty()) {
-			return createErrorResponse("400" , "password is empty");
+			return createErrorResponse(new CustomException(400 , "password is empty"));
 		}
 
 		try {
 			String token = loginService.login(username , password);
 			return createSuccessResponse(token);
-		} catch (NotFoundException e) {
-			return createErrorResponse("404" , e.getMessage());
-		} catch (BadRequestException e) {
-			return createErrorResponse("400" , e.getMessage());
+		} catch (CustomException e) {
+			return createErrorResponse(e);
 		} catch (Exception e) {
-			return createErrorResponse("500" , "An internal server error occurred");
+			return createErrorResponse(new CustomException(500 , "An internal server error occurred"));
 		}
 	}
 
@@ -60,8 +57,10 @@ public class LoginController {
 		return ResponseEntity.ok(response);
 	}
 
-	private ResponseEntity<Error> createErrorResponse(String code , String reason) {
-		Error errorResponse = new Error(code , reason);
-		return ResponseEntity.status(Integer.parseInt(code)).body(errorResponse);
+	private ResponseEntity<Error> createErrorResponse(CustomException exception) {
+		Error errorResponse = new Error();
+		errorResponse.setCode(String.valueOf(exception.getCode()));
+		errorResponse.setMessage(exception.getMessage());
+		return ResponseEntity.status(exception.getCode()).body(errorResponse);
 	}
 }

@@ -1,6 +1,6 @@
 package com.chirp.server.utils;
 
-import com.chirp.server.exceptions.UnauthorizedException;
+import com.chirp.server.exceptions.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -60,12 +60,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (Exception e) {
 				logger.error("Invalid token, error: {}" , e);
-				throw new UnauthorizedException("Invalid token");
+				throw new CustomException(401 , "Invalid token");
 			}
 		}
-
 		filterChain.doFilter(request , response);
 	}
+
 
 	private void setSecurityHeaders(HttpServletResponse response) {
 		response.setHeader("X-Frame-Options" , "DENY");
