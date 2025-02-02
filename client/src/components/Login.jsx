@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import customLoadingGif from '../assets/ssa.gif';
+import customLoadingGif from '../assets/loadingg.gif';
 import styles from '../styles/login.module.css';
 
 import { useAuth } from '../auth/AuthContext';

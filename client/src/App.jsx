@@ -12,7 +12,6 @@ import { useAuth } from './auth/AuthContext';
 const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
 const Home = lazy(() => import('./components/Home'));
-const Profile = lazy(() => import('./components/Profile'));
 const UserCommunities = lazy(() => import('./components/UserCommunities'));
 const Navbar = lazy(() => import('./components/Navbar'));
 const ChatAI = lazy(() => import('./components/ChatAI'));
@@ -70,10 +69,6 @@ o88oooo888   888oo88   o888o             888ooo888
             <Route
               path='/home'
               element={isAuthenticated ? <Home /> : <Login />}
-            />
-            <Route
-              path='/u/profile'
-              element={isAuthenticated ? <Profile /> : <Login />}
             />
             <Route
               path='/chat'

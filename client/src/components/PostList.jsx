@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import loaderImage from '../assets/ssa.gif';
+import loaderImage from '../assets/loadingg.gif';
 import '../styles/post-card.css';
 
 const PostCard = React.lazy(() => import('./PostCard'));

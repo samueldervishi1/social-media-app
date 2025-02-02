@@ -11,7 +11,7 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { GoHome } from 'react-icons/go';
-import { IoPersonCircleOutline, IoSettingsOutline } from 'react-icons/io5';
+import { IoSettingsOutline } from 'react-icons/io5';
 import { CiLogout, CiServer } from 'react-icons/ci';
 import { GiArtificialHive } from 'react-icons/gi';
 import {
@@ -24,7 +24,7 @@ import {
 import { TbAuth2Fa } from 'react-icons/tb';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
-import loaderImage from '../assets/ssa.gif';
+import loaderImage from '../assets/loadingg.gif';
 import styles from '../styles/navbar.module.css';
 
 import { getUserIdFromToken, getUsernameFromToken } from '../auth/authUtils';
@@ -45,10 +45,6 @@ const Navbar = () => {
   const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   const userSettings = [
-    {
-      name: `Your profile ${username}`,
-      icon: <IoPersonCircleOutline className={styles.icon_p} />,
-    },
     {
       name: 'Your communities',
       icon: <RiUserCommunityLine className={styles.icon_p} />,
