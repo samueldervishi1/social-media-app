@@ -9,9 +9,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @EnableScheduling
 @EnableCaching
-public class ServerApplication {
+public class CHYRAMAIN {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ServerApplication.class , args);
+		SpringApplication.run(CHYRAMAIN.class , args);
 	}
 }

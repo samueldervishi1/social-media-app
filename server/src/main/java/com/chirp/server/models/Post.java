@@ -13,7 +13,7 @@ import java.util.UUID;
 public class Post {
 
 	@Id
-	private UUID id;
+	private String id;
 	private String userId;
 	private String content;
 	private List<Comments> commentsList = new ArrayList<>();
@@ -23,7 +23,7 @@ public class Post {
 	private Boolean reported = false;
 
 	public Post(String content) {
-		this.id = UUID.randomUUID();
+		this.id = UUID.randomUUID().toString();
 		this.content = content;
 		this.postDate = LocalDate.now().toString();
 		this.postTime = LocalTime.now().toString();
@@ -40,11 +40,11 @@ public class Post {
 		this.userId = userId;
 	}
 
-	public UUID getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -86,5 +86,13 @@ public class Post {
 
 	public String getPostTime() {
 		return postTime;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 }

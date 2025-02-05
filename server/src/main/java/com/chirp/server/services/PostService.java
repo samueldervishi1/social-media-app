@@ -31,18 +31,28 @@ public class PostService {
 
 	@Transactional
 	public void createPost(String username , Post post) {
-		User user = getUserByUsername(username);
-		preparePost(post , user);
+		logger.info("Starting post creation for username: {}" , username);
 
-		Post savedPost = postRepository.save(post);
-		logger.info("Post successfully saved with ID: {}" , savedPost.getId());
+		try {
+			User user = getUserByUsername(username);
+			logger.debug("User retrieved: {}" , user);
+
+			preparePost(post , user);
+
+			Post savedPost = postRepository.save(post);
+			logger.info("Post successfully saved with ID: {}" , savedPost.getId());
+		} catch (Exception e) {
+			logger.error("Error occurred while creating post for username: {}" , username , e);
+			throw e;
+		}
 	}
 
 	private void preparePost(Post post , User user) {
+		logger.info("Preparing post for user ID: {}" , user.getId());
 		post.setUserId(user.getId());
 		post.setPostDate(LocalDate.now().toString());
 		post.setPostTime(LocalTime.now().toString());
-		logger.debug("Preparing to save post with date: {}" , post.getPostDate());
+		logger.info("Post prepared with date: {}, time: {}" , post.getPostDate() , post.getPostTime());
 	}
 
 	public List<Post> getAllPosts() {
