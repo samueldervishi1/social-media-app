@@ -27,14 +27,20 @@ public class SecurityConfig {
 	@Value("${build.url}")
 	private String buildUrl;
 
+	@Value("${app.url}")
+	private String appUrl;
+
+	@Value("${backend.url}")
+	private String backendUrl;
+
 	private static final List<String> ALLOWED_METHODS = List.of("GET" , "POST" , "PUT" , "DELETE" , "OPTIONS");
-	private static final List<String> ALLOWED_HEADERS = List.of("Authorization" , "*");
+	private static final List<String> ALLOWED_HEADERS = List.of("Authorization" , "Content-Type" , "*");
 	private static final List<String> PUBLIC_URLS = List.of(
 			"/api/v2/ping" ,
 			"/api/v2/auth/login" ,
 			"/api/v2/users/auth/register" ,
 			"/api/v2/auth/2fa-status/**" ,
-			"/api/v2/users/update-password",
+			"/api/v2/users/update-password" ,
 			"/api/v2/health"
 	);
 
@@ -63,6 +69,8 @@ public class SecurityConfig {
 			CorsConfiguration config = new CorsConfiguration();
 			config.addAllowedOrigin(frontendUrl);
 			config.addAllowedOrigin(buildUrl);
+			config.addAllowedOrigin(appUrl);
+			config.addAllowedOrigin(backendUrl);
 			config.setAllowedMethods(ALLOWED_METHODS);
 			config.setAllowedHeaders(ALLOWED_HEADERS);
 			config.setAllowCredentials(true);
