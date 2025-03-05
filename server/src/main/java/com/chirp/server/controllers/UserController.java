@@ -1,5 +1,6 @@
 package com.chirp.server.controllers;
 
+import com.chirp.server.models.Error;
 import com.chirp.server.models.User;
 import com.chirp.server.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -37,8 +38,11 @@ public class UserController {
 	}
 
 	@PostMapping("/auth/register")
-	public ResponseEntity<User> register(@RequestBody User user) {
+	public ResponseEntity<Error> register(@RequestBody User user) {
 		User createdUser = userService.createUser(user);
-		return ResponseEntity.status(HttpStatus.OK).body(createdUser);
+		Error response = new Error();
+		response.setCode("200");
+		response.setMessage("User registered successfully");
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 }
