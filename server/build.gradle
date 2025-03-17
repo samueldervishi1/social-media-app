@@ -32,6 +32,10 @@ dependencies {
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.27'
     implementation 'org.apache.commons:commons-pool2'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.4.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.apache.commons:commons-pool2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

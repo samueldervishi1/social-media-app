@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v2/ask")
+@RequestMapping("/hyper-api/auranet/v2.1.5/quantum-query")
 public class ChatBotController {
 
 	private final ChatBotService chatBotService;

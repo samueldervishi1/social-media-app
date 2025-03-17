@@ -5,8 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +14,6 @@ import java.util.Date;
 @Component
 public class JwtTokenUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
 	private static final String CLAIM_SUBJECT = "sub";
 	private static final String CLAIM_USER_ID = "userId";
 	private static final String CLAIM_TWOFACTORAUTHENTICATION = "twoFa";
@@ -44,11 +41,8 @@ public class JwtTokenUtil {
 					.setExpiration(expiryDate)
 					.signWith(secretKey)
 					.compact();
-
-			logger.info("Successfully generated token for userId: {}" , userId);
 			return token;
 		} catch (Exception e) {
-			logger.error("Error generating JWT token for userId: {}: {}" , userId , e.getMessage());
 			throw new CustomException("Error generating JWT token");
 		}
 	}

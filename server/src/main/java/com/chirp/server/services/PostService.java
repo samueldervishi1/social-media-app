@@ -5,8 +5,7 @@ import com.chirp.server.models.Post;
 import com.chirp.server.models.User;
 import com.chirp.server.repositories.PostRepository;
 import com.chirp.server.repositories.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,6 @@ import java.util.List;
 @Service
 public class PostService {
 
-	private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 	private static final String POST_NOT_FOUND = "Post not found with ID: ";
 	private static final String USER_NOT_FOUND = "User not found with username: ";
 
@@ -31,30 +29,18 @@ public class PostService {
 
 	@Transactional
 	public void createPost(String username , Post post) {
-		logger.info("Starting post creation for username: {}" , username);
-
-		try {
-			User user = getUserByUsername(username);
-			logger.debug("User retrieved: {}" , user);
-
-			preparePost(post , user);
-
-			Post savedPost = postRepository.save(post);
-			logger.info("Post successfully saved with ID: {}" , savedPost.getId());
-		} catch (Exception e) {
-			logger.error("Error occurred while creating post for username: {}" , username , e);
-			throw e;
-		}
+		User user = getUserByUsername(username);
+		preparePost(post , user);
+		postRepository.save(post);
 	}
 
 	private void preparePost(Post post , User user) {
-		logger.info("Preparing post for user ID: {}" , user.getId());
 		post.setUserId(user.getId());
 		post.setPostDate(LocalDate.now().toString());
 		post.setPostTime(LocalTime.now().toString());
-		logger.info("Post prepared with date: {}, time: {}" , post.getPostDate() , post.getPostTime());
 	}
 
+	@Cacheable(value = "allPosts")
 	public List<Post> getAllPosts() {
 		return postRepository.findAll();
 	}
@@ -69,10 +55,12 @@ public class PostService {
 				.orElseThrow(() -> new CustomException(USER_NOT_FOUND + username));
 	}
 
+	@Cacheable(value = "userPosts", key = "#userId")
 	public List<Post> getUserPosts(String userId) {
 		return postRepository.findByUserId(userId);
 	}
 
+	@Cacheable(value = "postCount", key = "#userId")
 	public long getPostCountPerUser(String userId) {
 		return postRepository.countByUserIdAndDeletedFalse(userId);
 	}
@@ -82,6 +70,5 @@ public class PostService {
 		Post post = getPostById(postId);
 		post.setDeleted(true);
 		postRepository.save(post);
-		logger.info("Post with ID {} marked as deleted" , postId);
 	}
 }

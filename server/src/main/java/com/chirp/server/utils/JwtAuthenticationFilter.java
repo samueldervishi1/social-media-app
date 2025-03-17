@@ -1,6 +1,6 @@
 package com.chirp.server.utils;
 
-import com.chirp.server.exceptions.CustomException;
+import com.mongodb.lang.NonNull;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,12 +23,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenUtil jwtTokenUtil;
 	private static final Set<String> EXCLUDED_URIS = new HashSet<>();
+	private static final String REQUIRED_HEADER = "X-App-Version";
 
 	static {
-		EXCLUDED_URIS.add("/api/v2/auth/register");
-		EXCLUDED_URIS.add("/api/v2/auth/login");
-		EXCLUDED_URIS.add("/api/v2/ping");
-		EXCLUDED_URIS.add("/api/v2/users/update-password");
+		EXCLUDED_URIS.add("/hyper-api/auranet/v2.1.5/access-core/init-sequence");
+		EXCLUDED_URIS.add("/hyper-api/auranet/v2.1.5/access-core/neural-link");
+		EXCLUDED_URIS.add("/hyper-api/auranet/v2.1.5/system-heartbeat");
+		EXCLUDED_URIS.add("/tmf-api/auranet/v2.1.5/profile/quantum-shift/cipher-reset");
 	}
 
 	@Autowired
@@ -36,10 +38,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request , HttpServletResponse response , FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request , @NonNull HttpServletResponse response , @NonNull FilterChain filterChain)
 			throws ServletException, IOException {
 
 		setSecurityHeaders(response);
+		if (request.getHeader(REQUIRED_HEADER) == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST , "Missing required header: " + REQUIRED_HEADER);
+			return;
+		}
 
 		if (isExcludedUri(request.getRequestURI())) {
 			filterChain.doFilter(request , response);
@@ -59,13 +65,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						new UsernamePasswordAuthenticationToken(username , null , null);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (Exception e) {
-				logger.error("Invalid token, error: {}" , e);
-				throw new CustomException(401 , "Invalid token");
+				logger.error("Invalid token: {}");
+				response.sendError(HttpServletResponse.SC_FORBIDDEN , "Invalid token");
+				return;
 			}
+		} else {
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "Authorization header is missing or invalid");
+			return;
 		}
+
 		filterChain.doFilter(request , response);
 	}
-
 
 	private void setSecurityHeaders(HttpServletResponse response) {
 		response.setHeader("X-Frame-Options" , "DENY");
@@ -77,10 +87,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private Claims parseToken(String token) {
+		SecretKey key = jwtTokenUtil.getSecretKey();
 		return Jwts.parser()
-				.setSigningKey(jwtTokenUtil.getSecretKey())
+				.verifyWith(key)
 				.build()
-				.parseClaimsJws(token)
-				.getBody();
+				.parseSignedClaims(token)
+				.getPayload();
 	}
 }

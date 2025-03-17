@@ -3,8 +3,6 @@ package com.chirp.server.controllers;
 import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.*;
 import com.chirp.server.services.CommunityService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v2/communities")
+@RequestMapping("/hyper-api/auranet/v2.1.5/neon-hub")
 public class CommunityController {
-
-	private static final Logger logger = LoggerFactory.getLogger(CommunityController.class);
 
 	private final CommunityService communityService;
 
@@ -23,24 +19,23 @@ public class CommunityController {
 		this.communityService = communityService;
 	}
 
-	@GetMapping("/list")
+	@GetMapping("/data-flux")
 	public ResponseEntity<List<Community>> getAllCommunities() {
 		List<Community> communities = communityService.getAllCommunities();
 		return new ResponseEntity<>(communities , HttpStatus.OK);
 	}
 
-	@GetMapping("/posts/all")
+	@GetMapping("/synth-stream")
 	public ResponseEntity<List<CommunityPost>> getAllPosts() {
 		try {
 			List<CommunityPost> posts = communityService.getAllDBPosts();
 			return ResponseEntity.ok(posts);
 		} catch (Exception e) {
-			logger.error("Error retrieving all posts: {}" , e.getMessage() , e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
-	@GetMapping("/c/{communityId}")
+	@GetMapping("/sector/{communityId}")
 	public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
 		try {
 			Community community = communityService.getCommunityById(communityId);
@@ -50,7 +45,7 @@ public class CommunityController {
 		}
 	}
 
-	@GetMapping("/{name}")
+	@GetMapping("/access-node/{name}")
 	public ResponseEntity<Community> getCommunityByName(@PathVariable String name) {
 		try {
 			Community community = communityService.getCommunityByName(name);
@@ -63,7 +58,7 @@ public class CommunityController {
 		}
 	}
 
-	@GetMapping("/c/count/{name}")
+	@GetMapping("/sector-metrics/{name}")
 	public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
 		try {
 			int count = communityService.getUserCountForCommunity(name);
@@ -79,7 +74,7 @@ public class CommunityController {
 	}
 
 
-	@GetMapping("/user/{userId}")
+	@GetMapping("/cyber-user/{userId}")
 	public ResponseEntity<List<Community>> getCommunitiesByUserId(@PathVariable String userId) {
 		try {
 			List<Community> communities = communityService.getCommunitiesByUserId(userId);
@@ -92,37 +87,33 @@ public class CommunityController {
 		}
 	}
 
-	@GetMapping("/post/{postId}")
+	@GetMapping("/data-stream/{postId}")
 	public ResponseEntity<CommunityPost> getCommunityPostById(@PathVariable String postId) {
-		logger.info("Attempting to fetch community post with ID: {}" , postId);
 		try {
 			CommunityPost post = communityService.getCommunityPostById(postId);
-			logger.info("Successfully retrieved community post with ID: {}" , postId);
 			return new ResponseEntity<>(post , HttpStatus.OK);
 		} catch (IllegalArgumentException e) {
-			logger.warn("Post with ID: {} not found" , postId);
 			return new ResponseEntity<>(null , HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
-			logger.error("Error retrieving post with ID: {}: {}" , postId , e.getMessage() , e);
 			return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@PostMapping("/create/{ownerId}")
+	@PostMapping("/deploy/{ownerId}")
 	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {
 		community = communityService.createCommunity(community.getName() , ownerId , community.getDescription() , community.getFaqs());
 
 		return new ResponseEntity<>(community , HttpStatus.CREATED);
 	}
 
-	@PostMapping("/{communityName}/posts")
+	@PostMapping("/{communityName}/uplink-posts")
 	public CommunityPost createPostForCommunity(
 			@PathVariable String communityName ,
 			@RequestBody CommunityPost communityPost) {
 		return communityService.createCommunityPost(communityName , communityPost.getOwnerId() , communityPost.getContent());
 	}
 
-	@PostMapping("/join/{communityId}/{userId}")
+	@PostMapping("/link-up/{communityId}/{userId}")
 	public ResponseEntity<String> joinCommunity(@PathVariable String communityId , @PathVariable String userId) {
 		try {
 			communityService.joinCommunity(communityId , userId);

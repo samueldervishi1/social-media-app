@@ -19,7 +19,7 @@ public class RateLimitingFilter implements Filter {
 	private static final int DEFAULT_LIMIT = 5;
 	private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1);
 
-	private static final String RATE_LIMITED_URL = "/api/v2/ask";
+	private static final String RATE_LIMITED_URL = "/api/v2.1.5/ask";
 
 	@Override
 	public void init(FilterConfig filterConfig) {

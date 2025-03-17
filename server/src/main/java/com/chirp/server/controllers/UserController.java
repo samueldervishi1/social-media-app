@@ -1,16 +1,14 @@
 package com.chirp.server.controllers;
 
-import com.chirp.server.models.Error;
 import com.chirp.server.models.User;
 import com.chirp.server.services.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v2/users")
+@RequestMapping("/hyper-api/auranet/v2.1.5/user-grid")
 public class UserController {
 
 	private final UserService userService;
@@ -19,30 +17,18 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@GetMapping
+	@GetMapping("/neon-sync")
 	public ResponseEntity<List<User>> getAllUsers() {
-		List<User> users = userService.getAllUsers();
-		return ResponseEntity.ok(users);
+		return ResponseEntity.ok(userService.getAllUsers());
 	}
 
-	@GetMapping("/info/{username}")
+	@GetMapping("/node-access/{username}")
 	public ResponseEntity<User> getUserInfo(@PathVariable String username) {
-		User user = userService.getUserInfo(username);
-		return ResponseEntity.ok(user);
+		return ResponseEntity.ok(userService.getUserInfo(username));
 	}
 
-	@GetMapping("/{userId}")
+	@GetMapping("/cipher-trace/{userId}")
 	public ResponseEntity<User> getUserInfoById(@PathVariable String userId) {
-		User user = userService.getUserInfoById(userId);
-		return ResponseEntity.ok(user);
-	}
-
-	@PostMapping("/auth/register")
-	public ResponseEntity<Error> register(@RequestBody User user) {
-		User createdUser = userService.createUser(user);
-		Error response = new Error();
-		response.setCode("200");
-		response.setMessage("User registered successfully");
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.ok(userService.getUserInfoById(userId));
 	}
 }

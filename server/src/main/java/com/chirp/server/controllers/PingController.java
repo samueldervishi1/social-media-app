@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/api/v2/ping")
+@RequestMapping("/hyper-api/auranet/v2.1.5/system-heartbeat")
 public class PingController {
 
 	private static final String[] RESPONSES = {

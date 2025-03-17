@@ -18,6 +18,12 @@ public class GlobalExceptionHandler {
 		Error error = new Error();
 		error.setCode("500");
 		error.setMessage("Something went wrong!");
+		error.setReason("Internal Server Error!");
+		error.setStatus("error");
+		error.referenceError("N/A");
+		error.baseType("error");
+		error.schemaLocation(generalException.getMessage());
+		error.type(generalException.getClass().getName());
 		return new ResponseEntity<>(error , HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

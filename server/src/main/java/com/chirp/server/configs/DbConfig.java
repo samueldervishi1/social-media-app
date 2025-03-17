@@ -2,6 +2,7 @@ package com.chirp.server.configs;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.lang.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
@@ -16,6 +17,7 @@ public class DbConfig extends AbstractMongoClientConfiguration {
 	private String mongoUri;
 
 	@Override
+	@NonNull
 	protected String getDatabaseName() {
 		return dbName;
 	}
