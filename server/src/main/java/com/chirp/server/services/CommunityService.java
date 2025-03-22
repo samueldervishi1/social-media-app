@@ -4,7 +4,6 @@ import com.chirp.server.exceptions.CustomException;
 import com.chirp.server.models.*;
 import com.chirp.server.repositories.CommunityPostRepository;
 import com.chirp.server.repositories.CommunityRepository;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -59,7 +58,6 @@ public class CommunityService {
 	}
 
 	// Get member count per community
-	@Cacheable(value = "communityUserCounts", key = "#name")
 	public int getUserCountForCommunity(String name) {
 		try {
 			return communityRepository.getUserCountForCommunity(name).orElse(0);
@@ -90,7 +88,6 @@ public class CommunityService {
 	}
 
 	// Get communities for the user from the user ID
-	@Cacheable(value = "userCommunities", key = "#userId")
 	public List<Community> getCommunitiesByUserId(String userId) {
 		try {
 			return communityRepository.findByUserIdsContaining(userId);
@@ -100,20 +97,17 @@ public class CommunityService {
 	}
 
 	// Get post for a community using post ID
-	@Cacheable(value = "communityPosts", key = "#postId")
 	public CommunityPost getCommunityPostById(String postId) {
 		return communityPostRepository.findById(postId)
 				.orElseThrow(() -> new CustomException(404 , String.format(POST_NOT_FOUND , postId)));
 	}
 
 	// Fetch all communities from database
-	@Cacheable(value = "allCommunities")
 	public List<Community> getAllCommunities() {
 		return communityRepository.findAll();
 	}
 
 	// Fetch all posts from the database
-	@Cacheable(value = "allCommunityPosts")
 	public List<CommunityPost> getAllDBPosts() {
 		return communityPostRepository.findAll();
 	}

@@ -22,6 +22,7 @@ public class CommunityController {
 	@GetMapping("/data-flux")
 	public ResponseEntity<List<Community>> getAllCommunities() {
 		List<Community> communities = communityService.getAllCommunities();
+		System.out.println("Retrieved communities: " + communities);
 		return new ResponseEntity<>(communities , HttpStatus.OK);
 	}
 

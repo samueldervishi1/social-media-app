@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		EXCLUDED_URIS.add("/hyper-api/auranet/v2.1.5/access-core/neural-link");
 		EXCLUDED_URIS.add("/hyper-api/auranet/v2.1.5/system-heartbeat");
 		EXCLUDED_URIS.add("/tmf-api/auranet/v2.1.5/profile/quantum-shift/cipher-reset");
+		EXCLUDED_URIS.add("/internal/token");
 	}
 
 	@Autowired

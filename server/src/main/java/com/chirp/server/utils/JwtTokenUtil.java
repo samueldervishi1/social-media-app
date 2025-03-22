@@ -51,6 +51,25 @@ public class JwtTokenUtil {
 		return secretKey;
 	}
 
+	public String generateRefreshToken(String username , String userId , boolean twoFa) {
+		try {
+			Date now = new Date();
+			Date expiryDate = new Date(now.getTime() + 3600000);
+
+			String token = Jwts.builder()
+					.claim(CLAIM_SUBJECT , username)
+					.claim(CLAIM_USER_ID , userId)
+					.claim(CLAIM_TWOFACTORAUTHENTICATION , twoFa)
+					.setIssuedAt(now)
+					.setExpiration(expiryDate)
+					.signWith(secretKey)
+					.compact();
+			return token;
+		} catch (Exception e) {
+			throw new CustomException("Error generating refresh JWT token");
+		}
+	}
+
 	private Date generateExpiryDate(Date now) {
 		if (expiration <= 0) {
 			throw new IllegalArgumentException("Invalid expiration time configured.");

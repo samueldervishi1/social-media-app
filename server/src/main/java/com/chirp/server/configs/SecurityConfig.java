@@ -26,12 +26,6 @@ public class SecurityConfig {
 	@Value("${frontend.url}")
 	private String frontendUrl;
 
-	@Value("${build.url}")
-	private String buildUrl;
-
-	@Value("${app.url}")
-	private String appUrl;
-
 	@Value("${backend.url}")
 	private String backendUrl;
 
@@ -41,7 +35,8 @@ public class SecurityConfig {
 			"/hyper-api/auranet/v2.1.5/system-heartbeat" ,
 			"/hyper-api/auranet/v2.1.5/access-core/neural-link" ,
 			"/hyper-api/auranet/v2.1.5/access-core/init-sequence" ,
-			"/tmf-api/auranet/v2.1.5/profile/quantum-shift/cipher-reset/"
+			"/tmf-api/auranet/v2.1.5/profile/quantum-shift/cipher-reset/" ,
+			"/internal/token"
 	);
 
 	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -72,8 +67,6 @@ public class SecurityConfig {
 		return request -> {
 			CorsConfiguration config = new CorsConfiguration();
 			config.addAllowedOrigin(frontendUrl);
-			config.addAllowedOrigin(buildUrl);
-			config.addAllowedOrigin(appUrl);
 			config.addAllowedOrigin(backendUrl);
 			config.setAllowedMethods(ALLOWED_METHODS);
 			config.setAllowedHeaders(ALLOWED_HEADERS);

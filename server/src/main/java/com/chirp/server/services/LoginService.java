@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
-	private static final String USER_NOT_FOUND = "username is incorrect";
+	private static final String USER_NOT_FOUND = "Username is incorrect";
 	private static final String USER_DELETED = "This user does not exist.";
-	private static final String INVALID_CREDENTIALS = "password is incorrect";
+	private static final String INVALID_CREDENTIALS = "Password is incorrect";
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
