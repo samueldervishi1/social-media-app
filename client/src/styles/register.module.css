@@ -32,8 +32,8 @@ body.register_page::before {
 }
 
 .container_sign {
-  background: black;
-  color: white;
+  background: white;
+  color: black;
   box-shadow: 0 6px 12px rgba(226, 226, 226, 0.445);
   width: 600px;
   padding: 20px;
@@ -104,7 +104,7 @@ a {
   max-width: 400px;
   margin-bottom: 20px;
   padding: 12px 20px;
-  background-color: #332701;
+  background-color: white;
   color: #ba9d46;
   border: 2px solid #997404;
   border-radius: 12px;

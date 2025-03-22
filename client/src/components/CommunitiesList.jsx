@@ -58,18 +58,25 @@ const CommunitiesList = () => {
 
   useEffect(() => {
     const fetchCommunities = async () => {
+      console.log('Fetching communities...');
+
       try {
-        const response = await axios.get(`${API_URL}/api/v2/communities/list`, {
+        const response = await axios.get(`${API_URL}neon-hub/data-flux`, {
           headers: {
             Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.1.5',
           },
         });
+
+        console.log('Communities fetched successfully:', response.data);
         setCommunities(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
+        console.error('Error fetching communities:', err.message);
         setError(err.message);
       } finally {
         setTimeout(() => {
           setLoading(false);
+          console.log('Community fetch process completed.');
         }, 2000);
       }
     };
@@ -79,19 +86,24 @@ const CommunitiesList = () => {
 
   useEffect(() => {
     const fetchMembersCount = async () => {
+      console.log('Fetching member counts for communities:', communities);
+
       try {
         const counts = await Promise.all(
           communities.map(async (community) => {
             try {
+              console.log(`Fetching count for community: ${community.name}`);
               const response = await axios.get(
-                `${API_URL}/api/v2/communities/c/count/${encodeURIComponent(
+                `${API_URL}neon-hub/sector-metrics/${encodeURIComponent(
                   community.name
                 )}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
+                  'X-App-Version': '2.1.5',
                 }
               );
 
+              console.log(`Count for ${community.name}:`, response.data);
               const count = response.data !== undefined ? response.data : 0;
               return { name: community.name, count };
             } catch (err) {
@@ -109,6 +121,7 @@ const CommunitiesList = () => {
           return acc;
         }, {});
 
+        console.log('Final member counts:', countsMap);
         setMembersCounts(countsMap);
       } catch (err) {
         console.error('Failed to fetch member counts:', err.message);
@@ -117,6 +130,8 @@ const CommunitiesList = () => {
 
     if (communities.length > 0) {
       fetchMembersCount();
+    } else {
+      console.log('No communities found, skipping member count fetch.');
     }
   }, [communities]);
 
@@ -130,11 +145,12 @@ const CommunitiesList = () => {
       }
 
       const response = await axios.post(
-        `${API_URL}/api/v2/communities/join/${communityId}/users/${userId}`,
+        `${API_URL}neon-hub/link-up/${communityId}/${userId}`,
         {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.1.5',
           },
         }
       );
@@ -169,11 +185,12 @@ const CommunitiesList = () => {
       };
 
       const response = await axios.post(
-        `${API_URL}/api/v2/communities/create/${userId}`,
+        `${API_URL}neon-hub/deploy/${userId}`,
         requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.1.5',
           },
         }
       );

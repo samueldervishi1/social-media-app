@@ -47,7 +47,7 @@ const CommunityDetails = () => {
     const fetchCommunityDetails = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/api/v2/communities/${name}`,
+          `${API_URL}neon-hub/access-node/${name}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ const CommunityDetails = () => {
       const postDetailsPromises = postIds.map(async (postId) => {
         try {
           const postResponse = await axios.get(
-            `${API_URL}/api/v2/communities/post/${postId}`,
+            `${API_URL}neon-hub/data-stream/${postId}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const post = postResponse.data;
@@ -86,7 +86,7 @@ const CommunityDetails = () => {
           }
 
           const likesResponse = await axios.get(
-            `${API_URL}/api/v2/communities/count/${postId}`,
+            `${API_URL}pulse-stream/stream-metrics/${postId}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           post.likesCount = likesResponse.data;

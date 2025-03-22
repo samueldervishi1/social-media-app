@@ -60,7 +60,7 @@ const ChatAI = () => {
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;');
 
-          return `
+        return `
           <div class="${styles.terminal_block}">
             <div class="${styles.terminal_header}">
               ${lang ? lang.trim() : 'code'}
@@ -68,7 +68,6 @@ const ChatAI = () => {
             <pre><code>${escapedCode}</code></pre>
           </div>
         `;
-        
       })
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .split('\n')
@@ -118,9 +117,10 @@ const ChatAI = () => {
     console.log('Sending ping request to backend...');
 
     try {
-      await axios.get(`${API_URL}/api/v2/ping`, {
+      await axios.get(`${API_URL}system-heartbeat`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'X-App-Version': '2.1.5',
         },
       });
     } catch (error) {
@@ -161,7 +161,7 @@ const ChatAI = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/api/v2/ask`,
+        `${API_URL}quantum-query`,
         {
           message: userInput,
         },
@@ -169,6 +169,7 @@ const ChatAI = () => {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.1.5',
           },
         }
       );
@@ -179,7 +180,7 @@ const ChatAI = () => {
         setIsThinking(false);
         const sessionId = getSessionId();
         await axios.post(
-          `${API_URL}/api/v2/history/save/${userId}/session/${sessionId}`,
+          `${API_URL}echo-trail/datacast/${userId}/session/${sessionId}`,
           {
             message: userInput,
             answer: responseData,
@@ -188,6 +189,7 @@ const ChatAI = () => {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-App-Version': '2.1.5',
             },
           }
         );
@@ -302,10 +304,10 @@ const ChatAI = () => {
               borderRadius: 200,
               height: 35,
               textAlign: 'center',
-              color: 'white',
+              color: 'black',
               textDecoration: 'underline',
               cursor: 'pointer',
-              marginTop: 0
+              marginTop: 0,
             }}
             onClick={resetChat}
           >

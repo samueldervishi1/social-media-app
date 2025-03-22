@@ -21,10 +21,15 @@ const PostList = () => {
 
   const fetchPosts = async () => {
     try {
-
-      const userPostsResponse = await axios.get(`${API_URL}/api/v2/posts/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const userPostsResponse = await axios.get(
+        `${API_URL}pulse-stream/neon-flow`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.1.5',
+          },
+        }
+      );
 
       const allPosts = [...userPostsResponse.data];
 
@@ -74,7 +79,7 @@ const PostList = () => {
         className='no-posts-message'
         style={{ textAlign: 'center', marginTop: '20px', color: 'white' }}
       >
-        <p style={{ color: 'white' }}>No more posts.</p>
+        <p style={{ color: 'black' }}>No more posts.</p>
       </div>
     );
   }

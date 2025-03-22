@@ -64,11 +64,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //fetch user username
   const fetchUsername = async (userId) => {
     try {
-      const response = await axios.get(`${API_URL}/api/v2/users/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${API_URL}user-grid/cipher-trace/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.1.5',
+          },
+        }
+      );
       if (response.status === 200) {
         setUsernames((prevUsernames) => ({
           ...prevUsernames,
@@ -87,11 +91,15 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/v2/users/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `${API_URL}user-grid/cipher-trace/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'X-App-Version': '2.1.5',
+            },
+          }
+        );
         if (response.status === 200) {
           setUser(response.data);
           setUsername(response.data.username);
@@ -107,9 +115,10 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
   //fetch post details
   const fetchPostDetails = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v2/posts/${id}`, {
+      const response = await axios.get(`${API_URL}pulse-stream/user-feed/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'X-App-Version': '2.1.5',
         },
       });
       if (response.status === 200) {
@@ -144,7 +153,6 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
 
   //create comment
   const navigateToAddComment = async () => {
-
     if (newComment.trim() === '') {
       console.error('Empty comment cannot be posted.');
       return;
@@ -160,6 +168,7 @@ const PostCard = ({ id, content, postDate, postTime, userId, imageUrl }) => {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.1.5',
           },
         }
       );

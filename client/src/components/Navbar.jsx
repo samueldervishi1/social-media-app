@@ -184,7 +184,7 @@ const Navbar = () => {
               <div className={styles.user_header}>
                 <Typography variant='h6'>Profile settings</Typography>
                 <IconButton onClick={handleCloseUserMenu}>
-                  <MdClose style={{ color: 'white' }} />
+                  <MdClose style={{ color: 'black' }} />
                 </IconButton>
               </div>
               <div className={styles.user_content}>
@@ -214,7 +214,7 @@ const Navbar = () => {
               <IconButton
                 href='/home'
                 sx={{ p: 0 }}
-                style={{ fontSize: '25px', color: 'white' }}
+                style={{ fontSize: '25px' }}
               >
                 AЯYHƆ
               </IconButton>
@@ -234,19 +234,19 @@ const Navbar = () => {
           {isMenuOpen && (
             <div className={styles.mobile_menu}>
               <a href='/home' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px', color: 'white' }}>
+                <IconButton style={{ fontSize: '15px' }}>
                   <GoHome className={styles.icon_p} />
                   Home
                 </IconButton>
               </a>
               <a href='/chat' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px', color: 'white' }}>
+                <IconButton style={{ fontSize: '15px' }}>
                   <GiArtificialHive className={styles.icon_p} />
                   Sypher
                 </IconButton>
               </a>
               <a href='/c/communities' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px', color: 'white' }}>
+                <IconButton style={{ fontSize: '15px' }}>
                   <RiUserCommunityLine className={styles.icon_p} />
                   Communities
                 </IconButton>
@@ -256,7 +256,7 @@ const Navbar = () => {
                   <IconButton
                     onClick={handleOpenSettingsMenu}
                     sx={{ p: 0 }}
-                    style={{ fontSize: '15px', color: 'white' }}
+                    style={{ fontSize: '15px' }}
                   >
                     <IoSettingsOutline className={styles.icon_p} /> Settings
                   </IconButton>
@@ -304,19 +304,19 @@ const Navbar = () => {
           {/*desktop layout */}
           <div className={styles.history_links}>
             <a href='/home' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px', color: 'white' }}>
+              <IconButton style={{ fontSize: '15px' }}>
                 <GoHome className={styles.icon_p} />
                 Home
               </IconButton>
             </a>
             <a href='/chat' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px', color: 'white' }}>
+              <IconButton style={{ fontSize: '15px' }}>
                 <GiArtificialHive className={styles.icon_p} />
                 Sypher
               </IconButton>
             </a>
             <a href='/c/communities' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px', color: 'white' }}>
+              <IconButton style={{ fontSize: '15px' }}>
                 <RiUserCommunityLine className={styles.icon_p} />
                 Communities
               </IconButton>
@@ -326,7 +326,7 @@ const Navbar = () => {
                 <IconButton
                   onClick={handleOpenSettingsMenu}
                   sx={{ p: 0 }}
-                  style={{ fontSize: '15px', color: 'white' }}
+                  style={{ fontSize: '15px' }}
                 >
                   <IoSettingsOutline className={styles.icon_p} /> Settings
                 </IconButton>
@@ -347,7 +347,7 @@ const Navbar = () => {
                 <div className={styles.settings_header}>
                   <Typography variant='h6'>Settings</Typography>
                   <IconButton onClick={handleCloseSettingsMenu}>
-                    <MdClose style={{ color: 'white' }} />
+                    <MdClose style={{ color: 'black' }} />
                   </IconButton>
                 </div>
                 <div className={styles.settings_content}>
@@ -393,7 +393,7 @@ const Navbar = () => {
       </div>
 
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header style={{ backgroundColor: 'black', color: 'white' }}>
+        <Modal.Header style={{ backgroundColor: 'black' }}>
           <Modal.Title>Delete Account</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ color: 'white', backgroundColor: 'black' }}>
@@ -417,7 +417,7 @@ const Navbar = () => {
       {isLoggingOut && (
         <div className={styles.logout_loader}>
           <div className={styles.logout_box}>
-            <h2 style={{color: 'white'}}>Logging Out...</h2>
+            <h2 style={{ color: 'white' }}>Logging Out...</h2>
             <img
               src={loaderImage}
               alt='Logging out...'

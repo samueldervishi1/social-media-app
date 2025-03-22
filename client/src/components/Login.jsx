@@ -28,23 +28,54 @@ const LoginScript = () => {
       setFormState((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
-        const response = await fetch(`${API_URL}/api/v2/auth/login`, {
+        const requestBody = {
+          details: {
+            'credential-type': {
+              $: 'client_credentials',
+              '@list-agency-name': 'CHYRA',
+            },
+          },
+          parts: {
+            specification: {
+              'characteristics-value': [
+                {
+                  '@characteristic-name': 'username',
+                  value: {
+                    $: formState.username,
+                  },
+                },
+                {
+                  '@characteristic-name': 'password',
+                  value: {
+                    $: formState.password,
+                  },
+                },
+              ],
+            },
+          },
+        };
+
+        const response = await fetch(`${API_URL}access-core/neural-link`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-App-Version': '2.1.5',
           },
-          body: JSON.stringify({
-            username: formState.username,
-            password: formState.password,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {
-          const errorMessage = await response.text();
-          throw new Error(
-            errorMessage ||
-              'The server is currently busy. Please try again later.'
-          );
+          const errorResponse = await response.json();
+          const errorMessage =
+            errorResponse.message || 'Invalid credentials. Please try again.';
+
+          setFormState((prev) => ({
+            ...prev,
+            error: errorMessage,
+            loading: false,
+          }));
+
+          return;
         }
 
         const data = await response.json();

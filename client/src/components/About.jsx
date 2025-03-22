@@ -6,15 +6,24 @@ import styles from '../styles/about.module.css';
 
 const token = localStorage.getItem('token');
 const About = () => {
-  const { about_container, about_section, about_title, about_content, login_link, h1_container } = styles;
+  const {
+    about_container,
+    about_section,
+    about_title,
+    about_content,
+    login_link,
+    h1_container,
+  } = styles;
 
-  const loginSection = useMemo(() => (
-    !token && (
-      <div className={login_link}>
-        <Link to='/login'>Login to get started</Link>
-      </div>
-    )
-  ), [token]);
+  const loginSection = useMemo(
+    () =>
+      !token && (
+        <div className={login_link}>
+          <Link to='/login'>Login to get started</Link>
+        </div>
+      ),
+    [token]
+  );
 
   const formattedSections = useMemo(() => {
     const formatContent = (content) => (
@@ -33,10 +42,10 @@ const About = () => {
 
     return aboutData.aboutApp.map((section) => (
       <div key={section.id} className={about_section}>
-        <h2 style={{color: 'white'}} className={about_title}>{section.title}</h2>
-        <div className={about_content}>
-          {formatContent(section.content)}
-        </div>
+        <h2 style={{ color: 'white' }} className={about_title}>
+          {section.title}
+        </h2>
+        <div className={about_content}>{formatContent(section.content)}</div>
       </div>
     ));
   }, []);

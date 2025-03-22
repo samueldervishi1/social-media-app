@@ -56,7 +56,7 @@ const UserCommunities = () => {
             </div>
           ))
         ) : (
-          <div style={{color: 'white'}}>You are not part of any communities.</div>
+          <div style={{color: 'black'}}>You are not part of any communities.</div>
         )}
       </div>
     </div>
