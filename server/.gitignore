@@ -1,9 +1,8 @@
 HELP.md
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
 ### STS ###
 .apt_generated
@@ -13,19 +12,12 @@ build/
 .settings
 .springBeans
 .sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-src/main/resources/application.properties
 
 ### NetBeans ###
 /nbproject/private/
@@ -33,12 +25,14 @@ src/main/resources/application.properties
 /dist/
 /nbdist/
 /.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
-src/main/resources/localhost.key
-src/main/resources/localhost.crt
-src/main/resources/localhost.p12
-src/main/resources/test.txt
-
-src/main/java/com/chirp/server/controllers/AuthController.java
+.mvn
+server/out/production/resources/application.properties
+server/src/main/resources/application.properties
+mvnw
+mvnw.cmd
