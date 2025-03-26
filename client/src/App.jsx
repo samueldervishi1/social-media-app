@@ -17,7 +17,6 @@ const Navbar = lazy(() => import('./components/Navbar'));
 const ChatAI = lazy(() => import('./components/ChatAI'));
 const CommunitiesList = lazy(() => import('./components/CommunitiesList'));
 const CommunityDetails = lazy(() => import('./components/CommunityDetails'));
-const Enable2FA = lazy(() => import('./components/Enable2FA'));
 const TermsAndServices = lazy(() => import('./components/Terms'));
 const About = lazy(() => import('./components/About'));
 const Contact = lazy(() => import('./components/Contact'));
@@ -85,10 +84,6 @@ o88oooo888   888oo88   o888o             888ooo888
             <Route
               path='/c/user/communities'
               element={isAuthenticated ? <UserCommunities /> : <Login />}
-            />
-            <Route
-              path='/security/2fa/enable'
-              element={isAuthenticated ? <Enable2FA /> : <Login />}
             />
 
             {/* Static Pages */}

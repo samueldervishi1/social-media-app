@@ -22,10 +22,11 @@ const UserCommunities = () => {
 
       try {
         const response = await axios.get(
-          `${API_URL}/api/v2/communities/user/${userId}`,
+          `${API_URL}cyber-user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              'X-App-Version': '2.2.10',
             },
           }
         );

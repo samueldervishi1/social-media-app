@@ -3,7 +3,6 @@ import { FaPlus, FaMinus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import background from '../assets/background.jpg';
 import faqData from '../assets/faq.json';
-import { colors } from '@mui/material';
 
 const token = localStorage.getItem('token');
 
@@ -77,15 +76,17 @@ const FAQ = () => {
       overflow: 'hidden',
       paddingLeft: '20px',
       transition: 'max-height 0.3s ease-in-out',
+      color: 'black',
     },
     answerHidden: {
       maxHeight: 0,
+      color: 'black',
     },
     form: {
-      backgroundColor: 'black',
-      color: 'white',
+      backgroundColor: 'white',
+      color: 'black',
       borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      boxShadow: '0 4px 8px rgb(2, 2, 2)',
       padding: '20px',
       width: '100%',
       margin: '0 auto',
@@ -96,8 +97,8 @@ const FAQ = () => {
       marginBottom: '10px',
       borderRadius: '5px',
       border: '1px solid #ccc',
-      backgroundColor: 'black',
-      color: 'white',
+      backgroundColor: 'white',
+      color: 'black',
     },
     button: {
       width: '100%',
@@ -160,7 +161,7 @@ const FAQ = () => {
                   ...(activeIndex !== index && styles.answerHidden),
                 }}
               >
-                <p style={{ color: 'white' }}>{faq.answer}</p>
+                <p style={{ color: 'black' }}>{faq.answer}</p>
               </div>
             </div>
           ))}

@@ -46,14 +46,12 @@ const CommunityDetails = () => {
   useEffect(() => {
     const fetchCommunityDetails = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}neon-hub/access-node/${name}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}access-node/${name}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'X-App-Version': '2.2.10',
+          },
+        });
         setCommunity(response.data);
         fetchPosts(response.data.postIds);
       } catch (err) {
@@ -76,8 +74,13 @@ const CommunityDetails = () => {
       const postDetailsPromises = postIds.map(async (postId) => {
         try {
           const postResponse = await axios.get(
-            `${API_URL}neon-hub/data-stream/${postId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            `${API_URL}data-stream/${postId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'X-App-Version': '2.2.10',
+              },
+            }
           );
           const post = postResponse.data;
 
@@ -86,14 +89,24 @@ const CommunityDetails = () => {
           }
 
           const likesResponse = await axios.get(
-            `${API_URL}pulse-stream/stream-metrics/${postId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            `${API_URL}stream-metrics/${postId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'X-App-Version': '2.2.10',
+              },
+            }
           );
           post.likesCount = likesResponse.data;
 
           const userResponse = await axios.get(
             `${API_URL}/api/v2/users/${post.ownerId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'X-App-Version': '2.2.10',
+              },
+            }
           );
           post.author = userResponse.data.username;
 
@@ -441,10 +454,10 @@ const CommunityDetails = () => {
 
             <div className={styles.community_info_details}>
               <div className={styles.community_created}>
-                <strong>Created on:</strong> {formatDate(community.createTime)}
+                <strong style={{color: 'black'}}>Created on:</strong> {formatDate(community.createTime)}
               </div>
               <div className={styles.community_members}>
-                <strong>Members:</strong>{' '}
+                <strong style={{color: 'black'}}>Members:</strong>{' '}
                 {membersCount !== null
                   ? getMemberText(membersCount)
                   : 'Loading...'}

@@ -114,30 +114,6 @@ const ChatAI = () => {
     setChatMessages((prevMessages) => [...prevMessages, message]);
     setUserInput('');
 
-    console.log('Sending ping request to backend...');
-
-    try {
-      await axios.get(`${API_URL}system-heartbeat`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'X-App-Version': '2.1.5',
-        },
-      });
-    } catch (error) {
-      setIsLoading(false);
-      setIsThinking(false);
-      const errorMessage = 'Check your internet connection.';
-      console.error('Error during ping request: ', error);
-      setTimeout(() => {
-        const errorResponse = {
-          content: errorMessage,
-          isUser: false,
-        };
-        setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
-      }, 5000);
-      return;
-    }
-
     console.log('Sending question to backend...');
 
     const handleRateLimit = () => {
@@ -169,15 +145,22 @@ const ChatAI = () => {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.1.5',
+            'X-App-Version': '2.2.10',
           },
         }
       );
 
       if (response.status === 200) {
         const responseData = response.data.answer;
+        
+        setChatMessages((prevMessages) => [
+          ...prevMessages,
+          { content: '', isUser: false },
+        ]);
+
         simulateTypingEffect(responseData);
         setIsThinking(false);
+
         const sessionId = getSessionId();
         await axios.post(
           `${API_URL}echo-trail/datacast/${userId}/session/${sessionId}`,
@@ -189,7 +172,7 @@ const ChatAI = () => {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-App-Version': '2.1.5',
+              'X-App-Version': '2.2.10',
             },
           }
         );
@@ -237,18 +220,14 @@ const ChatAI = () => {
         currentContent += chunk;
         const formattedContent = formatCodeBlocks(currentContent);
         setChatMessages((prevMessages) => {
-          const lastMessage = prevMessages[prevMessages.length - 1];
-          if (!lastMessage || lastMessage.isUser) {
-            return [
-              ...prevMessages,
-              { content: formattedContent, isUser: false },
-            ];
-          } else {
-            const updatedMessages = [...prevMessages];
-            updatedMessages[updatedMessages.length - 1].content =
-              formattedContent;
-            return updatedMessages;
+          const updatedMessages = [...prevMessages];
+          const lastIndex = updatedMessages.length - 1;
+
+          if (lastIndex >= 0 && !updatedMessages[lastIndex].isUser) {
+            updatedMessages[lastIndex].content = formattedContent;
           }
+
+          return updatedMessages;
         });
 
         if (index === chunks.length - 1) {

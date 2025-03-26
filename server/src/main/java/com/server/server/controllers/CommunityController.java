@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hyper-api/auranet/v2.1.5/neon-hub")
 public class CommunityController {
 
 	private final CommunityService communityService;

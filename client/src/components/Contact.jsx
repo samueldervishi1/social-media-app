@@ -18,7 +18,7 @@ const Contact = () => {
       </div>
 
       <div className={styles.contact_info}>
-        <p style={{ color: 'white' }}>
+        <p style={{ color: '#1da1f2' }}>
           You can contact us via the following platforms:
         </p>
 
@@ -33,7 +33,7 @@ const Contact = () => {
         </div>
 
         <div className={styles.email}>
-          <p style={{ color: 'white' }}>
+          <p style={{ color: '#1da1f2' }}>
             Email us at:{' '}
             <a href='mailto:support@chyra.com'>support@chyra.com</a>
           </p>

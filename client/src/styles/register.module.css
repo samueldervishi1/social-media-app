@@ -34,7 +34,7 @@ body.register_page::before {
 .container_sign {
   background: white;
   color: black;
-  box-shadow: 0 6px 12px rgba(226, 226, 226, 0.445);
+  box-shadow: 0 6px 12px rgba(17, 17, 17, 0.445);
   width: 600px;
   padding: 20px;
   margin-right: 10px;

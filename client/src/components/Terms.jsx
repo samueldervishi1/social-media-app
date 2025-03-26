@@ -1,7 +1,8 @@
 import React from 'react';
 import termsData from '../assets/terms.json';
-import styles from '../styles/terms.module.css';
 import { Link } from 'react-router-dom';
+import styles from '../styles/terms.module.css';
+
 const token = localStorage.getItem('token');
 
 const TermsAndServices = () => {
@@ -31,7 +32,7 @@ const TermsAndServices = () => {
       </div>
       {termsData.termsAndServices.map((term) => (
         <div key={term.id} className={styles.term_section}>
-          <h2 style={{color: 'white'}} className={styles.term_title}>{term.title}</h2>
+          <h2 style={{color: '#1da1f2'}} className={styles.term_title}>{term.title}</h2>
           <div className={styles.term_content}>
             {formatContent(term.content)}
           </div>

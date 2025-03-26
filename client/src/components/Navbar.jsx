@@ -53,7 +53,6 @@ const Navbar = () => {
   ];
 
   const settings = [
-    { name: 'Enable 2FA', icon: <TbAuth2Fa className={styles.icon_p} /> },
     {
       name: 'About',
       icon: <IoIosInformationCircleOutline className={styles.icon_p} />,
@@ -77,9 +76,10 @@ const Navbar = () => {
     try {
       if (!token) throw new Error('No authentication token found');
 
-      await axios.delete(`${API_URL}/api/v2/users/update/delete/${userId}`, {
+      await axios.delete(`${API_URL}profiles/${userId}/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'X-App-Version': '2.2.10',
         },
       });
 
@@ -126,7 +126,6 @@ const Navbar = () => {
   const handleActions = useCallback(
     (settingName) => {
       const routes = {
-        'Enable 2FA': '/security/2fa/enable',
         About: '/about',
         'Terms & Services': '/terms',
         Contact: '/contact',
@@ -393,14 +392,14 @@ const Navbar = () => {
       </div>
 
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header style={{ backgroundColor: 'black' }}>
+        <Modal.Header closeButton>
           <Modal.Title>Delete Account</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ color: 'white', backgroundColor: 'black' }}>
+        <Modal.Body>
           Are you sure you want to delete your account? This action cannot be
           undone.
         </Modal.Body>
-        <Modal.Footer style={{ backgroundColor: 'black' }}>
+        <Modal.Footer>
           <Button variant='secondary' onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>

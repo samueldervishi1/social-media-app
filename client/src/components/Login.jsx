@@ -55,26 +55,35 @@ const LoginScript = () => {
           },
         };
 
-        const response = await fetch(`${API_URL}access-core/neural-link`, {
+        const response = await fetch(`${API_URL}login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-App-Version': '2.1.5',
+            'X-App-Version': '2.2.10',
           },
           body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {
-          const errorResponse = await response.json();
-          const errorMessage =
-            errorResponse.message || 'Invalid credentials. Please try again.';
+          let errorMessage = 'Invalid credentials. Please try again.';
+          try {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              const errorResponse = await response.json();
+              errorMessage = errorResponse.message || errorMessage;
+            } else {
+              const text = await response.text();
+              console.warn('Non-JSON error response:', text);
+            }
+          } catch (parseError) {
+            console.warn('Error parsing response:', parseError);
+          }
 
           setFormState((prev) => ({
             ...prev,
             error: errorMessage,
             loading: false,
           }));
-
           return;
         }
 

@@ -57,10 +57,7 @@ public class PostController {
 	}
 
 	@PostMapping("/posts/build/{username}")
-	public ResponseEntity<String> create(
-			@PathVariable String username ,
-			@RequestBody Post post) {
-
+	public ResponseEntity<String> create(@PathVariable String username ,@RequestBody Post post) {
 		try {
 			postService.createPost(username , post);
 			return ResponseEntity.ok("Post created successfully");

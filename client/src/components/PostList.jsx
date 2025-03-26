@@ -3,7 +3,6 @@ import axios from 'axios';
 import loaderImage from '../assets/loadingg.gif';
 import '../styles/post-card.css';
 
-const PostCard = React.lazy(() => import('./PostCard'));
 const API_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem('token');
 
@@ -22,11 +21,11 @@ const PostList = () => {
   const fetchPosts = async () => {
     try {
       const userPostsResponse = await axios.get(
-        `${API_URL}pulse-stream/neon-flow`,
+        `${API_URL}posts`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.1.5',
+            'X-App-Version': '2.2.10',
           },
         }
       );
@@ -88,7 +87,7 @@ const PostList = () => {
     <div className='post-list' style={{ marginBottom: 15 }}>
       {posts.map((post) => (
         <div key={post.id} className='post-card-wrapper'>
-          <PostCard
+          {/* <PostCard
             id={post.id}
             content={post.content}
             commentsList={post.commentsList}
@@ -96,7 +95,7 @@ const PostList = () => {
             postTime={post.postTime}
             userId={post.ownerId || post.userId}
             imageUrl={post.imageUrl}
-          />
+          /> */}
         </div>
       ))}
     </div>

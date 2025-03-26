@@ -27,12 +27,12 @@
 .community_info {
   padding: 20px;
   border-radius: 10px;
-  color: white;
+  color: black;
 }
 
 .community_name {
   margin-left: 110px;
-  color: white;
+  color: black;
   font-size: 2.2em;
 }
 
@@ -71,9 +71,9 @@
 }
 
 .community_card {
-  background-color: #333;
+  background-color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.747);
   padding: 15px;
   border: 1px solid grey;
 }
@@ -81,12 +81,12 @@
 .community_description h3 {
   font-size: 1.6em;
   font-weight: bold;
-  color: white;
+  color: black;
 }
 
 .community_description p {
   font-size: 1.1em;
-  color: white;
+  color: black;
   margin-top: 10px;
 }
 
@@ -97,7 +97,7 @@
 .community_info_details div {
   margin-bottom: 10px;
   font-size: 1.1em;
-  color: white;
+  color: black;
 }
 
 .community_info_details strong {
@@ -106,7 +106,7 @@
 
 .community_created,
 .community_members {
-  color: white;
+  color: black;
 }
 
 .post_community_card {

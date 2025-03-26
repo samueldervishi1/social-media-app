@@ -59,7 +59,7 @@ const Home = () => {
   return (
     <div className={styles.home_container}>
       <div className={styles.main_content}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div style={{textAlign: "center"}}>Loading...</div>}>
           <Post refreshSuggestions={refreshSuggestions} />
           <PostList key={refreshPostList} />
         </Suspense>

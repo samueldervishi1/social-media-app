@@ -69,12 +69,13 @@ const PostForm = () => {
 
       try {
         const response = await axios.post(
-          `${API_URL}/api/v2/posts/create/${username}`,
+          `${API_URL}posts/build/${username}`,
           { content },
           {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-App-Version': '2.2.10'
             },
           }
         );

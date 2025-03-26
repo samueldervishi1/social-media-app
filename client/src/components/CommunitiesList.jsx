@@ -61,10 +61,10 @@ const CommunitiesList = () => {
       console.log('Fetching communities...');
 
       try {
-        const response = await axios.get(`${API_URL}neon-hub/data-flux`, {
+        const response = await axios.get(`${API_URL}data-flux`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.1.5',
+            'X-App-Version': '2.2.10',
           },
         });
 
@@ -94,12 +94,12 @@ const CommunitiesList = () => {
             try {
               console.log(`Fetching count for community: ${community.name}`);
               const response = await axios.get(
-                `${API_URL}neon-hub/sector-metrics/${encodeURIComponent(
+                `${API_URL}sector-metrics/${encodeURIComponent(
                   community.name
                 )}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
-                  'X-App-Version': '2.1.5',
+                  'X-App-Version': '2.2.10',
                 }
               );
 
@@ -145,12 +145,12 @@ const CommunitiesList = () => {
       }
 
       const response = await axios.post(
-        `${API_URL}neon-hub/link-up/${communityId}/${userId}`,
+        `${API_URL}link-up/${communityId}/${userId}`,
         {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.1.5',
+            'X-App-Version': '2.2.10',
           },
         }
       );
@@ -185,12 +185,12 @@ const CommunitiesList = () => {
       };
 
       const response = await axios.post(
-        `${API_URL}neon-hub/deploy/${userId}`,
+        `${API_URL}deploy/${userId}`,
         requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.1.5',
+            'X-App-Version': '2.2.10',
           },
         }
       );
