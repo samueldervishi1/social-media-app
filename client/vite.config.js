@@ -14,8 +14,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'My Social App',
-        short_name: 'SocialApp',
+        name: 'AЯYHƆ',
+        short_name: 'AЯYHƆ',
         description: 'A modern social media app built with React and Vite',
         theme_color: '#ffffff',
         background_color: '#ffffff',
@@ -70,5 +70,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
+  },
+  server: {
+    proxy: {
+      '/tmf/server/api/v2.2.10': 'http://localhost:8080',
+    },
   },
 });

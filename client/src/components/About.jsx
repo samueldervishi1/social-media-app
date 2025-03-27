@@ -4,26 +4,14 @@ import PropTypes from 'prop-types';
 import aboutData from '../assets/about.json';
 import styles from '../styles/about.module.css';
 
-const token = localStorage.getItem('token');
 const About = () => {
   const {
     about_container,
     about_section,
     about_title,
     about_content,
-    login_link,
     h1_container,
   } = styles;
-
-  const loginSection = useMemo(
-    () =>
-      !token && (
-        <div className={login_link}>
-          <Link to='/login'>Login to get started</Link>
-        </div>
-      ),
-    [token]
-  );
 
   const formattedSections = useMemo(() => {
     const formatContent = (content) => (
@@ -52,7 +40,6 @@ const About = () => {
 
   return (
     <div className={about_container}>
-      {loginSection}
       <div className={h1_container}>
         <h1 className={about_title}>About Us</h1>
       </div>

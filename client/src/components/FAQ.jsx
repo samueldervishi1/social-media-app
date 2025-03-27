@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import background from '../assets/background.jpg';
 import faqData from '../assets/faq.json';
 
-const token = localStorage.getItem('token');
-
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [formState, setFormState] = useState({
@@ -137,11 +135,6 @@ const FAQ = () => {
 
   return (
     <div style={styles.container}>
-      {!token && (
-        <div className={styles.login_link}>
-          <Link to='/login'>Login to get started</Link>
-        </div>
-      )}
       <section>
         <div>
           <h2 style={styles.title}>FAQ</h2>

@@ -57,9 +57,10 @@ const LoginScript = () => {
 
         const response = await fetch(`${API_URL}login`, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            'X-App-Version': '2.2.10',
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
           body: JSON.stringify(requestBody),
         });
@@ -87,22 +88,9 @@ const LoginScript = () => {
           return;
         }
 
-        const data = await response.json();
+        login(); 
 
-        if (data.code === '200' && data.token) {
-          const token = data.token;
-          login(token);
-
-          const decodedToken = JSON.parse(atob(token.split('.')[1]));
-          if (decodedToken.twoFa === undefined) {
-            console.log('twoFa field is not present in the token.');
-          }
-          localStorage.setItem('token', token);
-
-          navigate('/home');
-        } else {
-          throw new Error('Unexpected response structure');
-        }
+        navigate('/home');
       } catch (error) {
         console.error('Error during login:', error);
 

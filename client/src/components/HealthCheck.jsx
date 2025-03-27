@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '../styles/healthcheck.module.css';
 
-const CHECK_URL = import.meta.env.VITE_CHECK_URL;
+const CHECK_URL = import.meta.env.VITE_API_URL;
 
 const HealthCheck = () => {
   const [statusData, setStatusData] = useState(null);
@@ -10,7 +10,12 @@ const HealthCheck = () => {
 
   const fetchHealthStatus = async () => {
     try {
-      const response = await axios.get(`${CHECK_URL}/api/v2/health`);
+      const response = await axios.get(`${CHECK_URL}health`, {
+        withCredentials: true,
+        headers: {
+          'X-App-Version': import.meta.env.VITE_APP_VERSION,
+        },
+      });
       if (response.data.status) {
         let statusColor = 'green';
         if (
@@ -32,8 +37,8 @@ const HealthCheck = () => {
     } catch (error) {
       console.error('Error fetching health status:', error);
       setStatusData({
-        status: 'Health checker is unavailable. Please try again later.',
-        color: 'yellow',
+        status: 'Server is experiencing an outage right now. Please be patient while we try to fix it.',
+        color: 'red',
         date: new Date().toLocaleDateString(),
       });
     }
@@ -64,7 +69,7 @@ const HealthCheck = () => {
       {isLoading ? (
         <div className={styles.loader}>
           <div className={styles.spinner}></div>
-          <p style={{color: 'white'}}>Loading server status...</p>
+          <p style={{ color: 'white' }}>Loading server status...</p>
         </div>
       ) : (
         <div className={styles.statusMessage}>
@@ -77,7 +82,7 @@ const HealthCheck = () => {
                 : styles.red
             }`}
           >
-            <p style={{fontSize: 30, color: "black"}}>{statusData.status}</p>
+            <p style={{ fontSize: 30, color: 'black' }}>{statusData.status}</p>
           </div>
 
           <div className={styles.statusDetails}>

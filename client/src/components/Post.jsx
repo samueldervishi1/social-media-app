@@ -7,14 +7,16 @@ import { LuSendHorizontal } from 'react-icons/lu';
 import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/post.module.css';
 
-import { getUsernameFromToken } from '../auth/authUtils';
+import { getUsernameFromServer } from '../auth/authUtils';
+
 const API_URL = import.meta.env.VITE_API_URL;
-const username = getUsernameFromToken();
 
 const PostForm = () => {
   const [postContent, setPostContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [username, setUsername] = useState('');
+  const [loadingUsername, setLoadingUsername] = useState(true);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -60,22 +62,15 @@ const PostForm = () => {
       if (isSubmitting || (isOffline && !content)) return;
       setIsSubmitting(true);
 
-      const token = localStorage.getItem('token');
-      if (!token) {
-        showSnackbar('Token not found. Please log in again.', 'error');
-        setIsSubmitting(false);
-        return;
-      }
-
       try {
         const response = await axios.post(
           `${API_URL}posts/build/${username}`,
           { content },
           {
+            withCredentials: true,
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-              'X-App-Version': '2.2.10'
+              'X-App-Version': import.meta.env.VITE_APP_VERSION,
             },
           }
         );
@@ -118,10 +113,24 @@ const PostForm = () => {
     return () => window.removeEventListener('online', sendOfflinePosts);
   }, [sendOfflinePosts]);
 
-  const placeholderText = useMemo(
-    () => `What's on your mind today, ${getUsernameFromToken()}?`,
-    []
-  );
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const result = await getUsernameFromServer();
+      setUsername(result);
+      setLoadingUsername(false);
+    };
+
+    fetchUsername();
+  }, []);
+
+  const placeholderText = useMemo(() => {
+    if (loadingUsername) {
+      return "What's on your mind today,";
+    }
+    return `What's on your mind today, ${username}?`;
+  }, [loadingUsername, username]);
+
+  console.log(username);
 
   const handleClearInput = () => {
     setPostContent('');
@@ -149,6 +158,11 @@ const PostForm = () => {
             e.target.style.height = `${e.target.scrollHeight}px`;
           }}
         />
+        {loadingUsername && (
+          <span className={styles.animatedDots} aria-label='loading username'>
+            ...
+          </span>
+        )}
         <div className={styles.icons_container}>
           <MdDelete
             className={styles.icon}

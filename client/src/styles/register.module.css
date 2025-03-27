@@ -46,6 +46,11 @@ body.register_page::before {
   color: #1c1c1d;
 }
 
+.input_error {
+  color: red;
+  text-align: center;
+}
+
 .fill {
   text-align: center;
 }
@@ -73,7 +78,7 @@ label {
 .password_toggle_icon {
   position: absolute;
   top: 71%;
-  color: white;
+  color: black;
   right: 35px;
   transform: translateY(-50%);
   cursor: pointer;

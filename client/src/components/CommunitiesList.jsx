@@ -8,10 +8,9 @@ import { Snackbar, Alert } from '@mui/material';
 import { Modal, Button, Form } from 'react-bootstrap';
 import styles from '../styles/communitiesList.module.css';
 
-import { getUserIdFromToken } from '../auth/authUtils';
+import { getUserIdFromServer } from '../auth/authUtils';
+
 const API_URL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem('token');
-const userId = getUserIdFromToken();
 
 const CommunitiesList = () => {
   const [communities, setCommunities] = useState([]);
@@ -28,8 +27,17 @@ const CommunitiesList = () => {
   const [communityName, setCommunityName] = useState('');
   const [communityDescription, setCommunityDescription] = useState('');
   const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
-
   const navigate = useNavigate();
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const result = await getUserIdFromServer();
+      setUserId(result);
+    };
+
+    fetchUserId();
+  }, []);
 
   const getMemberText = (count) => {
     if (count === 1) return '1 member';
@@ -62,9 +70,9 @@ const CommunitiesList = () => {
 
       try {
         const response = await axios.get(`${API_URL}data-flux`, {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.2.10',
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
         });
 
@@ -98,8 +106,10 @@ const CommunitiesList = () => {
                   community.name
                 )}`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
-                  'X-App-Version': '2.2.10',
+                  withCredentials: true,
+                  headers: {
+                    'X-App-Version': import.meta.env.VITE_APP_VERSION,
+                  },
                 }
               );
 
@@ -148,9 +158,9 @@ const CommunitiesList = () => {
         `${API_URL}link-up/${communityId}/${userId}`,
         {},
         {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.2.10',
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
         }
       );
@@ -188,9 +198,9 @@ const CommunitiesList = () => {
         `${API_URL}deploy/${userId}`,
         requestData,
         {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.2.10',
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
         }
       );

@@ -18,7 +18,7 @@ const suggestions = [
 ];
 
 const Home = () => {
-  const { validateToken, logout } = useAuth();
+  const {logout } = useAuth();
   const [refreshPostList, setRefreshPostList] = useState(false);
   const [refreshSuggestions, setRefreshSuggestions] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -26,22 +26,14 @@ const Home = () => {
 
   useEffect(() => {
     const postIntervalId = setInterval(() => {
-      if (!validateToken()) {
-        logout();
-        return;
-      }
       setRefreshPostList((prev) => !prev);
     }, POST_REFRESH_INTERVAL);
 
     return () => clearInterval(postIntervalId);
-  }, [validateToken, logout]);
+  }, [logout]);
 
   useEffect(() => {
     const suggestionIntervalId = setInterval(() => {
-      if (!validateToken()) {
-        logout();
-        return;
-      }
       const randomSuggestion =
         suggestions[Math.floor(Math.random() * suggestions.length)];
       setSnackbarMessage(randomSuggestion);
@@ -50,7 +42,7 @@ const Home = () => {
     }, SUGGESTION_REFRESH_INTERVAL);
 
     return () => clearInterval(suggestionIntervalId);
-  }, [validateToken, logout]);
+  }, [logout]);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);

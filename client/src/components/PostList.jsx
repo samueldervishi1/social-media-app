@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import loaderImage from '../assets/loadingg.gif';
 import '../styles/post-card.css';
 
-const API_URL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem('token');
+//const API_URL = import.meta.env.VITE_API_URL;
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -13,43 +12,47 @@ const PostList = () => {
   const [delayOver, setDelayOver] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDelayOver(true), 2000);
-    fetchPosts();
+    const timer = setTimeout(() => {
+      setDelayOver(true);
+      setIsLoading(false);
+    }, 2000);
+
+    // fetchPosts();
     return () => clearTimeout(timer);
   }, []);
 
-  const fetchPosts = async () => {
-    try {
-      const userPostsResponse = await axios.get(
-        `${API_URL}posts`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.2.10',
-          },
-        }
-      );
+  // const fetchPosts = async () => {
+  //   try {
+  //     const userPostsResponse = await axios.get(
+  //       `${API_URL}posts`,
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           'X-App-Version': import.meta.env.VITE_APP_VERSION,
+  //         },
+  //       }
+  //     );
 
-      const allPosts = [...userPostsResponse.data];
+  //     const allPosts = [...userPostsResponse.data];
 
-      const filteredPosts = allPosts.filter(
-        (post) => !post.deleted && !post.reported
-      );
+  //     const filteredPosts = allPosts.filter(
+  //       (post) => !post.deleted && !post.reported
+  //     );
 
-      filteredPosts.sort((a, b) => {
-        const dateA = new Date(a.createTime || `${a.postDate}T${a.postTime}`);
-        const dateB = new Date(b.createTime || `${b.postDate}T${b.postTime}`);
-        return dateB - dateA;
-      });
+  //     filteredPosts.sort((a, b) => {
+  //       const dateA = new Date(a.createTime || `${a.postDate}T${a.postTime}`);
+  //       const dateB = new Date(b.createTime || `${b.postDate}T${b.postTime}`);
+  //       return dateB - dateA;
+  //     });
 
-      setPosts(filteredPosts);
-    } catch (error) {
-      console.error('Error fetching posts:', error.message);
-      setError('Something went wrong. Please try again later.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     setPosts(filteredPosts);
+  //   } catch (error) {
+  //     console.error('Error fetching posts:', error.message);
+  //     setError('Something went wrong. Please try again later.');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   if (error) {
     return (

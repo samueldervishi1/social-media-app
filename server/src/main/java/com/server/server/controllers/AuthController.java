@@ -3,14 +3,24 @@ package com.server.server.controllers;
 import com.server.server.exceptions.CustomException;
 import com.server.server.models.Error;
 import com.server.server.models.User;
+import com.server.server.models.UserInfo;
 import com.server.server.services.LoginService;
 import com.server.server.services.RegisterService;
+import com.server.server.utils.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -22,17 +32,20 @@ public class AuthController {
 
 	private final LoginService loginService;
 	private final RegisterService registerService;
+	private final JwtTokenUtil jwtTokenUtil;
 
-	public AuthController(LoginService loginService , RegisterService registerService) {
+	public AuthController(LoginService loginService , RegisterService registerService , JwtTokenUtil jwtTokenUtil) {
 		this.loginService = loginService;
 		this.registerService = registerService;
+		this.jwtTokenUtil = jwtTokenUtil;
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody Map<String, Object> loginRequest) {
+	public ResponseEntity<?> login(@RequestBody Map<String, Object> loginRequest , HttpServletResponse response) {
 		logger.debug("Received login request: {}" , loginRequest);
 		String username = null;
 		String password = null;
+
 		try {
 			if (loginRequest.containsKey("parts") && loginRequest.get("parts") instanceof Map) {
 				logger.debug("Processing 'parts' section");
@@ -89,11 +102,70 @@ public class AuthController {
 
 		try {
 			String token = loginService.login(username , password);
-			return createSuccessResponse(token);
+			ResponseCookie cookie = ResponseCookie.from("token" , token)
+					.httpOnly(true)
+					.secure(true)
+					.path("/")
+					.maxAge(Duration.ofHours(1))
+					.sameSite("None")
+					.build();
+
+			response.addHeader("Set-Cookie" , cookie.toString());
+
+			return ResponseEntity.ok("Login successful");
 		} catch (CustomException e) {
 			return createErrorResponse(e);
 		} catch (Exception e) {
 			return createErrorResponse(new CustomException(500 , "An internal server error occurred"));
+		}
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+		SecurityContextHolder.clearContext();
+		ResponseCookie cookie = ResponseCookie.from("token", "")
+				.httpOnly(true)
+				.secure(true)
+				.path("/")
+				.maxAge(0)
+				.sameSite("None")
+				.build();
+
+		response.setHeader("Set-Cookie", cookie.toString());
+
+		return ResponseEntity.ok("Logged out");
+	}
+
+	@GetMapping("/me")
+	public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+		String token = null;
+
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if ("token".equals(cookie.getName())) {
+					token = cookie.getValue();
+					break;
+				}
+			}
+		}
+
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
+		}
+
+		try {
+			Claims claims = jwtTokenUtil.parseToken(token);
+
+			UserInfo response = new UserInfo();
+			response.setUsername(claims.getSubject());
+			response.setUserId((String) claims.get("userId"));
+			response.setStatus("SUCCESS");
+			response.setMessage("User info retrieved from token");
+			logger.info("User info retrieved from token: {}", response);
+
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
 		}
 	}
 
@@ -193,7 +265,7 @@ public class AuthController {
 		Map<String, Object> response = new HashMap<>();
 		response.put("code" , "200");
 		response.put("token" , token);
-		response.put("expires_in", loginService.getTimeUntilExpiry(token));
+		response.put("expires_in" , loginService.getTimeUntilExpiry(token));
 
 		response.put("ids" , new ArrayList<>());
 

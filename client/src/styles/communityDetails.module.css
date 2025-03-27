@@ -252,6 +252,10 @@ span.members_count {
   font-size: 14px;
 }
 
+.community_action_button:hover {
+  background-color: #0056b3;
+}
+
 .community_post_button {
   position: absolute;
   top: 360px;
@@ -265,6 +269,10 @@ span.members_count {
   z-index: 4;
   font-size: 14px;
   border: 1px solid #444;
+}
+
+.community_post_button:hover {
+  background-color: #e0e0e0;
 }
 
 .community_action_button:disabled {
@@ -294,22 +302,29 @@ span.members_count {
 }
 
 .community_dropdown_menu {
-  position: absolute;
+  position: fixed;
+  right: 25px;
   background-color: white;
   color: black;
-  padding: 10px;
-  border-radius: 5px;
-  right: 20px;
-  bottom: 300px;
+  top: 33%;
+  padding: 10px 20px;
+  border-radius: 15px;
   width: 200px;
-  z-index: 12;
+  z-index: 999;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.795);
 }
 
 .community_dropdown_menu a {
   display: block;
   color: black;
   text-decoration: none;
-  padding: 10px 0;
+  padding: 10px 20px;
+}
+
+.community_dropdown_menu a:hover {
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .community_actions {
@@ -360,9 +375,10 @@ span.members_count {
   padding: 10px;
   position: absolute;
   top: 110%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.795);
   right: 0;
   width: 150px;
-  border-radius: 5px;
+  border-radius: 15px;
   z-index: 10;
 }
 
@@ -371,7 +387,14 @@ span.members_count {
   display: block;
   color: black;
   text-decoration: none;
-  padding: 10px 0;
+  padding: 10px 20px;
+}
+
+.view_dropdown_menu a:hover,
+.sort_dropdown_menu a:hover {
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .divider {

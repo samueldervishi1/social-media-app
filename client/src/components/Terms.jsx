@@ -3,8 +3,6 @@ import termsData from '../assets/terms.json';
 import { Link } from 'react-router-dom';
 import styles from '../styles/terms.module.css';
 
-const token = localStorage.getItem('token');
-
 const TermsAndServices = () => {
   const formatContent = (content) => (
     <p>
@@ -22,11 +20,6 @@ const TermsAndServices = () => {
 
   return (
     <div className={styles.terms_container}>
-      {!token && (
-        <div className={styles.login_link}>
-          <Link to='/login'>Login to get started</Link>
-        </div>
-      )}
       <div className={styles.h1_container}>
         <h1 style={{ color: 'black' }}>Terms of Service</h1>
       </div>

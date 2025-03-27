@@ -1,22 +1,27 @@
-const getToken = () => localStorage.getItem('token');
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL;
 
-const decodeToken = (token) => {
+export const getUserInfo = async () => {
   try {
-    return JSON.parse(atob(token.split('.')[1]));
+    const response = await axios.get(`${API_URL}me`, {
+      withCredentials: true,
+      headers: {
+        'X-App-Version': import.meta.env.VITE_APP_VERSION,
+      },
+    });
+    return response.data;
   } catch (error) {
-    console.error('Error decoding token:', error.message);
+    console.error('Failed to get user info:', error);
     return null;
   }
 };
 
-export const getUserIdFromToken = () => {
-  const token = getToken();
-  const decodedToken = token ? decodeToken(token) : null;
-  return decodedToken ? decodedToken.userId : null;
+export const getUserIdFromServer = async () => {
+  const userInfo = await getUserInfo();
+  return userInfo?.userId ?? null;
 };
 
-export const getUsernameFromToken = () => {
-  const token = getToken();
-  const decodedToken = token ? decodeToken(token) : null;
-  return decodedToken ? decodedToken.sub : null;
+export const getUsernameFromServer = async () => {
+  const userInfo = await getUserInfo();
+  return userInfo?.username ?? null;
 };

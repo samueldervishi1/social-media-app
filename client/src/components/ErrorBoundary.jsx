@@ -7,7 +7,7 @@ const SUPPORT_EMAIL = 'support@chyra.com';
 class ErrorBoundary extends Component {
   state = {
     hasError: false,
-    reloadAttempts: parseInt(localStorage.getItem('reloadAttempts') || '0', 10),
+    reloadAttempts: parseInt(localStorage.getItem('reloadAttempts') || '0', 2),
   };
 
   static getDerivedStateFromError() {
@@ -40,10 +40,12 @@ class ErrorBoundary extends Component {
       <div className='error-boundary-container'>
         <h1 className='error-heading'>Oops! Something went wrong.</h1>
         <p className='error-message'>
-          We're sorry for the inconvenience. Please try reloading the page.
+          We're sorry for the inconvenience. Please try reloading the page. If
+          reloading still doesn't work, please contact the admin at
+          <a href={`mailto:${SUPPORT_EMAIL}`}> {SUPPORT_EMAIL}</a>.
         </p>
         <button className='reload-button' onClick={this.handleReload}>
-          Reload Page
+          Reload Page.
         </button>
         {reloadAttempts >= MAX_RELOAD_ATTEMPTS && (
           <div className='contact-admin'>

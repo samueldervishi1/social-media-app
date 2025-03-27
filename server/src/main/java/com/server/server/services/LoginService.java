@@ -17,7 +17,7 @@ import java.util.Date;
 @Service
 public class LoginService {
 	private static final String USER_NOT_FOUND = "Username is incorrect";
-	private static final String USER_DELETED = "This user does not exist.";
+	private static final String USER_DELETED = "No account found with this username";
 	private static final String INVALID_CREDENTIALS = "Password is incorrect";
 
 	private final UserRepository userRepository;

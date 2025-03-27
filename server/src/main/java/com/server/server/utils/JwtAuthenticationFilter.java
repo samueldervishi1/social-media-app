@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +24,12 @@ import java.util.Set;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String REQUIRED_HEADER = "X-App-Version";
-	private static final Set<String> EXCLUDED_URIS = Set.of("/tmf/server/api/v2.2.10/login" , "/tmf/server/api/v2.2.10/register", "/tmf/server/api/v2.2.10/internal/token");
-
+	private static final Set<String> EXCLUDED_URIS = Set.of("/tmf/server/api/v2.2.10/login" ,
+			"/tmf/server/api/v2.2.10/register" ,
+			"/tmf/server/api/v2.2.10/internal/token",
+			"/tmf/server/api/v2.2.10/me",
+			"/tmf/server/api/v2.2.10/logout",
+			"/tmf/server/api/v2.2.10/health");
 	private final JwtTokenUtil jwtTokenUtil;
 
 	@Autowired
@@ -49,11 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String authorizationHeader = request.getHeader("Authorization");
+		String token = getTokenFromCookie(request);
 
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-			String token = authorizationHeader.substring(7);
-
+		if (token != null) {
 			try {
 				Claims claims = parseToken(token);
 
@@ -62,16 +65,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						new UsernamePasswordAuthenticationToken(username , null , null);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (Exception e) {
-				logger.error("Invalid token: {}");
+				logger.error("Invalid token" , e);
 				response.sendError(HttpServletResponse.SC_FORBIDDEN , "Invalid token");
 				return;
 			}
 		} else {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "Authorization header is missing or invalid");
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "Token cookie is missing");
 			return;
 		}
 
+
 		filterChain.doFilter(request , response);
+	}
+
+	private String getTokenFromCookie(HttpServletRequest request) {
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if ("token".equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
 	}
 
 	private void setSecurityHeaders(HttpServletResponse response) {

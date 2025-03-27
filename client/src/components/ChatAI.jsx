@@ -8,10 +8,9 @@ import { FaRegPenToSquare } from 'react-icons/fa6';
 import { LuSendHorizontal } from 'react-icons/lu';
 import styles from '../styles/ai.module.css';
 
-import { getUserIdFromToken } from '../auth/authUtils';
+import { getUserIdFromServer } from '../auth/authUtils';
+
 const API_URL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem('token');
-const userId = getUserIdFromToken();
 
 const ChatAI = () => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -25,6 +24,16 @@ const ChatAI = () => {
   const [isMobileView, setIsMobileView] = useState();
   const [isTypingFinished, setIsTypingFinished] = useState(true);
   const [showContinueMessage, setShowContinueMessage] = useState(false);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const result = await getUserIdFromServer();
+      setUserId(result);
+    };
+
+    fetchUserId();
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,23 +62,32 @@ const ChatAI = () => {
   const formatCodeBlocks = (text) => {
     const codeBlockRegex = /```(.*?)(\n([\s\S]*?))?```/gs;
 
-    const formattedText = text
-      .replace(codeBlockRegex, (match, lang, _, code) => {
-        const escapedCode = code
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
+    let formattedText = text.replace(codeBlockRegex, (match, lang, _, code) => {
+      const escapedCode = code
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 
-        return `
-          <div class="${styles.terminal_block}">
-            <div class="${styles.terminal_header}">
-              ${lang ? lang.trim() : 'code'}
-            </div>
-            <pre><code>${escapedCode}</code></pre>
+      return `
+        <div class="${styles.terminal_block}">
+          <div class="${styles.terminal_header}">
+            ${lang ? lang.trim() : 'code'}
           </div>
-        `;
-      })
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          <pre><code>${escapedCode}</code></pre>
+        </div>
+      `;
+    });
+    formattedText = formattedText.replace(
+      /\*\*(.*?)\*\*/g,
+      '<strong>$1</strong>'
+    );
+
+    formattedText = formattedText
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>');
+
+    formattedText = formattedText
       .split('\n')
       .map((line) =>
         line.startsWith('- ') ? `<li>${line.substring(2)}</li>` : line
@@ -142,17 +160,17 @@ const ChatAI = () => {
           message: userInput,
         },
         {
+          withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.2.10',
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
         }
       );
 
       if (response.status === 200) {
         const responseData = response.data.answer;
-        
+
         setChatMessages((prevMessages) => [
           ...prevMessages,
           { content: '', isUser: false },
@@ -163,16 +181,16 @@ const ChatAI = () => {
 
         const sessionId = getSessionId();
         await axios.post(
-          `${API_URL}echo-trail/datacast/${userId}/session/${sessionId}`,
+          `${API_URL}data-cast/${userId}/session/${sessionId}`,
           {
             message: userInput,
             answer: responseData,
           },
           {
+            withCredentials: true,
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-              'X-App-Version': '2.2.10',
+              'X-App-Version': import.meta.env.VITE_APP_VERSION,
             },
           }
         );

@@ -23,7 +23,12 @@ import org.springframework.context.annotation.Lazy;
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-	private static final List<String> PUBLIC_URLS = List.of("/tmf/server/api/v2.2.10/login", "/tmf/server/api/v2.2.10/register", "/tmf/server/api/v2.2.10/internal/token");
+	private static final List<String> PUBLIC_URLS = List.of("/tmf/server/api/v2.2.10/login",
+			"/tmf/server/api/v2.2.10/register",
+			"/tmf/server/api/v2.2.10/internal/token",
+			"/tmf/server/api/v2.2.10/me",
+			"/tmf/server/api/v2.2.10/logout",
+			"/tmf/server/api/v2.2.10/health");
 
 	public SecurityConfig(@Lazy JwtAuthenticationFilter jwtAuthenticationFilter) {
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;

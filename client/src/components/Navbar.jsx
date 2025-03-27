@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
@@ -21,17 +22,14 @@ import {
   MdOutlineHelpOutline,
   MdClose,
 } from 'react-icons/md';
-import { TbAuth2Fa } from 'react-icons/tb';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
 import loaderImage from '../assets/loadingg.gif';
 import styles from '../styles/navbar.module.css';
 
-import { getUserIdFromToken, getUsernameFromToken } from '../auth/authUtils';
+import { getUserIdFromServer } from '../auth/authUtils';
+
 const API_URL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem('token');
-const userId = getUserIdFromToken();
-const username = getUsernameFromToken();
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -39,10 +37,22 @@ const Navbar = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const location = useLocation();
 
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
+
+  const [userId, setUserId] = useState(null);
+  
+    useEffect(() => {
+      const fetchUserId = async () => {
+        const result = await getUserIdFromServer();
+        setUserId(result);
+      };
+  
+      fetchUserId();
+    }, []);
 
   const userSettings = [
     {
@@ -74,16 +84,13 @@ const Navbar = () => {
   const handleDeleteAccount = useCallback(async () => {
     setIsDeleting(true);
     try {
-      if (!token) throw new Error('No authentication token found');
-
       await axios.delete(`${API_URL}profiles/${userId}/delete`, {
+        withCredentials: true,
         headers: {
-          Authorization: `Bearer ${token}`,
-          'X-App-Version': '2.2.10',
+          'X-App-Version': import.meta.env.VITE_APP_VERSION,
         },
       });
 
-      localStorage.removeItem('token');
       setShowDeleteModal(false);
       window.location.href = '/login';
     } catch (error) {
@@ -94,14 +101,18 @@ const Navbar = () => {
     }
   }, [userId]);
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     setIsLoggingOut(true);
-    localStorage.removeItem('token');
-    setTimeout(() => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      await logout();
       navigate('/login');
-      window.location.reload();
-    }, 1500);
-  }, []);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      setIsLoggingOut(false);
+    }
+  }, [logout, navigate]);
 
   const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
   const handleCloseUserMenu = () => setAnchorElUser(null);
@@ -111,16 +122,14 @@ const Navbar = () => {
 
   const handleSettingAction = useCallback(
     (settingName) => {
-      if (settingName === `Your profile ${username}`) {
-        navigate('/u/profile');
-      } else if (settingName === 'Your communities') {
+      if (settingName === 'Your communities') {
         navigate('/c/user/communities');
       } else if (settingName === 'Logout') {
         handleLogout();
       }
       handleCloseUserMenu();
     },
-    [username, navigate, handleLogout]
+    [navigate, handleLogout]
   );
 
   const handleActions = useCallback(
@@ -420,7 +429,7 @@ const Navbar = () => {
             <img
               src={loaderImage}
               alt='Logging out...'
-              style={{ width: '30px', margin: '10px 0' }}
+              style={{ width: '50px', margin: '10px 0' }}
             />
           </div>
         </div>

@@ -45,24 +45,58 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const dynamicQueries = [
+      {
+        username: formData.username,
+        operator: 'A=1 | A=2 | A=3',
+      },
+      {
+        email: formData.email,
+        operator: 'A=1 | A=2 | A=3',
+      },
+      {
+        fullname: formData.fullName,
+        operator: 'A=1 | A=2 | A=3',
+      },
+      {
+        password: formData.password,
+        operator: 'A=1 | A=2 | A=3',
+      },
+    ];
+
+    const fullRequestBody = {
+      queries: [
+        ...dynamicQueries,
+        { query: '$.channelId=selfcare', operator: null },
+        { query: 'A=1 | A=2 | A=3', operator: 'AND' },
+        { query: '$.category=qr', operator: null },
+        { query: 'A=1 | A=2 | A=3', operator: 'AND' },
+        { query: '$.id=2DE002B9A6154288E0634E5C12C67F0B', operator: null },
+        { query: 'A=1 | A=2 | A=3', operator: 'AND' },
+      ],
+      queryOptions: {
+        fields: '',
+        filter: '',
+        pagination: {
+          count: 10,
+          limit: 0,
+        },
+        sorting: '',
+      },
+    };
+
     try {
-      const response = await axios.post(
-        `${API_URL}/api/v2/users/auth/register`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await axios.post(`${API_URL}register`, fullRequestBody, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-App-Version': import.meta.env.VITE_APP_VERSION,
+        },
+      });
 
       if (response.status === 200) {
         setSnackbarMessage('User registered successfully!');
         setSnackbarOpen(true);
-
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
+        setTimeout(() => navigate('/login'), 2000);
       } else {
         console.log('Unexpected response status:', response);
       }
@@ -70,29 +104,30 @@ const Register = () => {
       console.error('Error registering user:', error);
 
       if (error.response && error.response.data) {
-        console.log('Backend Error Response:', error.response.data);
-
         const { message } = error.response.data;
 
-        if (message === 'Email already exists') {
+        if (message?.toLowerCase().includes('email')) {
           setErrorMessages((prev) => ({
             ...prev,
-            email: 'This email is already registered.',
+            email: message,
           }));
-        } else if (message === 'Username already exists') {
+        } else if (message?.toLowerCase().includes('username')) {
           setErrorMessages((prev) => ({
             ...prev,
-            username: 'This username is already taken.',
+            username: message,
           }));
-        } else if (message === 'Invalid password format') {
+        } else if (message?.toLowerCase().includes('password')) {
           setErrorMessages((prev) => ({
             ...prev,
-            password:
-              'Password must be at least 8 characters long, including one letter, one symbol, and one number.',
+            password: message,
           }));
         } else {
-          setError('An unexpected error occurred. Please try again later.');
+          if (!error.response || error.response.status >= 500 || !message) {
+            setError('An unexpected error occurred. Please try again later.');
+          }
         }
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
       }
     }
   };
@@ -148,7 +183,7 @@ const Register = () => {
               required
             />
             {errorMessages.email && (
-              <p className={styles.error_message}>{errorMessages.email}</p>
+              <p className={errorMessages.email ? styles.input_error : ''}>{errorMessages.email}</p>
             )}
 
             <label htmlFor='username'>
@@ -164,7 +199,7 @@ const Register = () => {
               required
             />
             {errorMessages.username && (
-              <p className={styles.error_message}>{errorMessages.username}</p>
+              <p className={errorMessages.username ? styles.input_error : ''}>{errorMessages.username}</p>
             )}
 
             <label htmlFor='password'>

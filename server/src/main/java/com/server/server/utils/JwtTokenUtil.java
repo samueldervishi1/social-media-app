@@ -1,6 +1,7 @@
 package com.server.server.utils;
 
 import com.server.server.exceptions.CustomException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -82,6 +83,19 @@ public class JwtTokenUtil {
 				.parseSignedClaims(token)
 				.getPayload()
 				.getExpiration();
+	}
+
+	public Claims parseToken(String token) {
+		try {
+			return Jwts.parser()
+					.verifyWith(secretKey)
+					.build()
+					.parseSignedClaims(token)
+					.getPayload();
+		} catch (Exception e) {
+			log.error("Error parsing JWT token" , e);
+			throw new CustomException("Invalid token");
+		}
 	}
 
 	private Instant calculateExpiryDate(Instant now) {

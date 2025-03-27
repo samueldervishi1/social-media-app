@@ -1,32 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getUserIdFromToken } from '../auth/authUtils';
+import { getUserIdFromServer } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem('token');
-const userId = getUserIdFromToken();
 
 const UserCommunities = () => {
   const [communities, setCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const result = await getUserIdFromServer();
+      setUserId(result);
+    };
+
+    fetchUserId();
+  }, []);
 
   useEffect(() => {
     const fetchCommunities = async () => {
-
-      if (!userId) {
-        setError('User ID not found in token.');
-        setLoading(false);
-        return;
-      }
-
       try {
         const response = await axios.get(
           `${API_URL}cyber-user/${userId}`,
           {
+            withCredentials: true,
             headers: {
-              Authorization: `Bearer ${token}`,
-              'X-App-Version': '2.2.10',
+              'X-App-Version': import.meta.env.VITE_APP_VERSION,
             },
           }
         );

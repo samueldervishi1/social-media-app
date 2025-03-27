@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -6,80 +6,62 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import PropTypes from 'prop-types';
+import axios from 'axios';
 
 const AuthContext = createContext();
-
 export const useAuth = () => useContext(AuthContext);
+
+const API_URL = import.meta.env.VITE_API_URL;
+const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem('token'));
 
-  const decodeToken = useCallback((tokenToDecode) => {
-    try {
-      return JSON.parse(atob(tokenToDecode.split('.')[1]));
-    } catch (error) {
-      console.error('Error decoding token: ', error.message);
-      return null;
-    }
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await axios.get(`${API_URL}me`, {
+          withCredentials: true,
+          headers: {
+            'X-App-Version': APP_VERSION,
+          },
+        });
+
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        if (error.response?.status === 401) {
+          console.log('User not logged in yet.');
+        } else {
+          console.error('Session check failed:', error);
+        }
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkSession();
   }, []);
 
-  const validateToken = useCallback(
-    (tokenToValidate) => {
-      if (!tokenToValidate) return false;
+  const login = useCallback(() => {
+    setIsAuthenticated(true);
+  }, []);
 
-      const decodedToken = decodeToken(tokenToValidate);
-      if (!decodedToken || !decodedToken.exp) return false;
-
-      const isValid = Date.now() < decodedToken.exp * 1000;
-      if (!isValid) {
-        localStorage.removeItem('token');
-        setIsAuthenticated(false);
-        setToken(null);
-      }
-      return isValid;
-    },
-    [decodeToken]
-  );
-
-  useEffect(() => {
-    if (token) {
-      const decodedToken = decodeToken(token);
-      if (decodedToken && validateToken(token)) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } else {
-      setIsAuthenticated(false);
+  const logout = useCallback(async () => {
+    try {
+      await axios.post(`${API_URL}logout`, null, {
+        withCredentials: true,
+        headers: {
+          'X-App-Version': APP_VERSION,
+        },
+      });
+    } catch (e) {
+      console.error('Logout failed', e);
     }
-  }, [token, decodeToken, validateToken]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (token && !validateToken(token)) {
-        logout();
-      }
-    }, 60000);
-    return () => clearInterval(intervalId);
-  }, [token, validateToken]);
-
-  const login = useCallback(
-    (newToken) => {
-      localStorage.setItem('token', newToken);
-      const decodedToken = decodeToken(newToken);
-
-      setIsAuthenticated(!decodedToken?.twoFa);
-      setToken(newToken);
-    },
-    [decodeToken]
-  );
-
-  const logout = useCallback(() => {
-    localStorage.removeItem('token');
     setIsAuthenticated(false);
-    setToken(null);
   }, []);
 
   const contextValue = useMemo(
@@ -87,16 +69,11 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       login,
       logout,
-      validateToken: () => validateToken(token),
     }),
-    [isAuthenticated, login, logout, validateToken, token]
+    [isAuthenticated, login, logout]
   );
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
-};
-
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
 };

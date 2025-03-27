@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import { IoCreateOutline } from 'react-icons/io5';
 import { TiArrowDownThick, TiArrowUpThick } from 'react-icons/ti';
@@ -10,10 +10,9 @@ import defaultUserIcon from '../assets/user.webp';
 import loader from '../assets/loadingg.gif';
 import styles from '../styles/communityDetails.module.css';
 
-import { getUserIdFromToken } from '../auth/authUtils';
+import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
+
 const API_URL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem('token');
-const userId = getUserIdFromToken();
 
 const CommunityDetails = () => {
   const { name } = useParams();
@@ -36,20 +35,50 @@ const CommunityDetails = () => {
   const viewDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
 
+  const [username, setUsername] = useState('');
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const result = await getUserIdFromServer();
+      setUserId(result);
+    };
+
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const result = await getUsernameFromServer();
+      setUsername(result);
+    };
+
+    fetchUsername();
+  }, []);
+
   const getMemberText = (count) => {
     if (count === 1) return '1 member';
     if (count >= 0) return `${count} members`;
     return 'Loading...';
   };
 
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const result = await getUserIdFromServer();
+      setUserId(result);
+    };
+
+    fetchUserId();
+  }, []);
+
   //fetch community details
   useEffect(() => {
     const fetchCommunityDetails = async () => {
       try {
         const response = await axios.get(`${API_URL}access-node/${name}`, {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
-            'X-App-Version': '2.2.10',
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
         });
         setCommunity(response.data);
@@ -76,9 +105,9 @@ const CommunityDetails = () => {
           const postResponse = await axios.get(
             `${API_URL}data-stream/${postId}`,
             {
+              withCredentials: true,
               headers: {
-                Authorization: `Bearer ${token}`,
-                'X-App-Version': '2.2.10',
+                'X-App-Version': import.meta.env.VITE_APP_VERSION,
               },
             }
           );
@@ -88,28 +117,16 @@ const CommunityDetails = () => {
             return null;
           }
 
-          const likesResponse = await axios.get(
-            `${API_URL}stream-metrics/${postId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'X-App-Version': '2.2.10',
-              },
-            }
-          );
-          post.likesCount = likesResponse.data;
-
-          const userResponse = await axios.get(
-            `${API_URL}/api/v2/users/${post.ownerId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'X-App-Version': '2.2.10',
-              },
-            }
-          );
-          post.author = userResponse.data.username;
-
+          // const userResponse = await axios.get(
+          //   `${API_URL}/api/v2/users/${post.ownerId}`,
+          //   {
+          //     withCredentials: true,
+          //     headers: {
+          //       'X-App-Version': import.meta.env.VITE_APP_VERSION,
+          //     },
+          //   }
+          // );
+          // post.author = userResponse.data.username;
           return post;
         } catch {
           return null;
@@ -128,9 +145,12 @@ const CommunityDetails = () => {
     const fetchMembersCount = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/api/v2/communities/c/count/${encodeURIComponent(name)}`,
+          `${API_URL}sector-metrics/${encodeURIComponent(name)}`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+            headers: {
+              'X-App-Version': import.meta.env.VITE_APP_VERSION,
+            },
           }
         );
 
@@ -155,11 +175,12 @@ const CommunityDetails = () => {
       }
 
       const response = await axios.post(
-        `${API_URL}/api/v2/communities/join/${communityId}/${userId}`,
+        `${API_URL}link-up/${communityId}/${userId}`,
         {},
         {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
         }
       );
@@ -186,12 +207,13 @@ const CommunityDetails = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/api/v2/communities/${name}/posts`,
+        `${API_URL}${name}/uplink-posts`,
         postData,
         {
+          withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
           },
         }
       );
@@ -326,7 +348,10 @@ const CommunityDetails = () => {
 
         <button
           className={styles.community_menu_button}
-          onClick={toggleDropdown}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleDropdown();
+          }}
         >
           &#8230;
         </button>
@@ -334,7 +359,6 @@ const CommunityDetails = () => {
         {dropdownVisible && (
           <div ref={dropdownRef} className={styles.community_dropdown_menu}>
             <a href='#'>Add to favourites</a>
-            <a href='#'>Add to custom feed</a>
             <a href='#'>Share community</a>
           </div>
         )}
@@ -454,10 +478,11 @@ const CommunityDetails = () => {
 
             <div className={styles.community_info_details}>
               <div className={styles.community_created}>
-                <strong style={{color: 'black'}}>Created on:</strong> {formatDate(community.createTime)}
+                <strong style={{ color: 'black' }}>Created on:</strong>{' '}
+                {formatDate(community.createTime)}
               </div>
               <div className={styles.community_members}>
-                <strong style={{color: 'black'}}>Members:</strong>{' '}
+                <strong style={{ color: 'black' }}>Members:</strong>{' '}
                 {membersCount !== null
                   ? getMemberText(membersCount)
                   : 'Loading...'}
