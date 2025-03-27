@@ -24,7 +24,7 @@ import {
 } from 'react-icons/md';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
-import loaderImage from '../assets/loadingg.gif';
+import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
 
 import { getUserIdFromServer } from '../auth/authUtils';

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 import background from '../assets/background.jpg';
 import faqData from '../assets/faq.json';
 

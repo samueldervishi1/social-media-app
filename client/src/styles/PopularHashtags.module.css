@@ -1,0 +1,56 @@
+.hashtagsContainer {
+  padding: 16px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  margin: 16px 0;
+  display: block;
+}
+
+.title {
+  font-size: 1.8em;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.cardContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hashtagItem {
+  margin: 4px 0;
+}
+
+.hashtagLink {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.viewCount {
+  color: #888;
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.separator {
+  margin: 0 5px;
+  color: #888;
+}

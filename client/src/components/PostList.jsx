@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 //import axios from 'axios';
-import loaderImage from '../assets/loadingg.gif';
+import loaderImage from '../assets/377.gif';
 import '../styles/post-card.css';
 
 //const API_URL = import.meta.env.VITE_API_URL;

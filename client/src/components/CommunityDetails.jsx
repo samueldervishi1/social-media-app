@@ -7,9 +7,9 @@ import { TiArrowDownThick, TiArrowUpThick } from 'react-icons/ti';
 import placeHolderImage from '../assets/placeholder.png';
 import placeHolderLogo from '../assets/logo-placeholder-image.png';
 import defaultUserIcon from '../assets/user.webp';
-import loader from '../assets/loadingg.gif';
+import loader from '../assets/377.gif';
 import styles from '../styles/communityDetails.module.css';
-
+import Snackbar from '@mui/material/Snackbar';
 import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -30,6 +30,8 @@ const CommunityDetails = () => {
 
   const [showPostModal, setShowPostModal] = useState(false);
   const [postContent, setPostContent] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const dropdownRef = useRef(null);
   const viewDropdownRef = useRef(null);
@@ -117,16 +119,6 @@ const CommunityDetails = () => {
             return null;
           }
 
-          // const userResponse = await axios.get(
-          //   `${API_URL}/api/v2/users/${post.ownerId}`,
-          //   {
-          //     withCredentials: true,
-          //     headers: {
-          //       'X-App-Version': import.meta.env.VITE_APP_VERSION,
-          //     },
-          //   }
-          // );
-          // post.author = userResponse.data.username;
           return post;
         } catch {
           return null;
@@ -170,7 +162,8 @@ const CommunityDetails = () => {
   const handleJoinCommunity = async (communityId) => {
     try {
       if (!userId) {
-        alert('User is not authenticated');
+        setSnackbarMessage('User is not authenticated');
+        setSnackbarOpen(true);
         return;
       }
 
@@ -186,17 +179,20 @@ const CommunityDetails = () => {
       );
 
       if (response.status === 200) {
-        alert('You joined the community successfully!');
+        setSnackbarMessage('You joined the community successfully!');
+        setSnackbarOpen(true);
       }
     } catch (err) {
-      setError(err.message);
+      setSnackbarMessage(err.message);
+      setSnackbarOpen(true);
     }
   };
 
   //handle create community post
   const handleCreatePost = async () => {
     if (!postContent.trim()) {
-      alert('Post content cannot be empty');
+      setSnackbarMessage('Post content cannot be empty');
+      setSnackbarOpen(true);
       return;
     }
 
@@ -219,13 +215,17 @@ const CommunityDetails = () => {
       );
 
       if (response.status === 200) {
-        alert('Post created successfully!');
+        setSnackbarMessage('Post created successfully!');
+        setSnackbarOpen(true);
         setPostContent('');
         setShowPostModal(false);
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (err) {
-      alert('Error creating post: ' + err.message);
+      setSnackbarMessage('Error creating post: ' + err.message);
+      setSnackbarOpen(true);
     }
   };
 
@@ -536,6 +536,14 @@ const CommunityDetails = () => {
           </button>
         </Modal.Footer>
       </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      />
     </div>
   );
 };

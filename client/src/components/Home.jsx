@@ -1,10 +1,12 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { Snackbar, Alert } from '@mui/material';
+import hashtagsData from '../assets/hashtags.json';
 import styles from '../styles/home.module.css';
 
 const Post = React.lazy(() => import('./Post'));
 const PostList = React.lazy(() => import('./PostList'));
+const PopularHashtags = React.lazy(() => import("./PopularHashtags"));
 
 const POST_REFRESH_INTERVAL = 300000;
 const SUGGESTION_REFRESH_INTERVAL = 1800000;
@@ -18,7 +20,7 @@ const suggestions = [
 ];
 
 const Home = () => {
-  const {logout } = useAuth();
+  const { logout } = useAuth();
   const [refreshPostList, setRefreshPostList] = useState(false);
   const [refreshSuggestions, setRefreshSuggestions] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -48,12 +50,23 @@ const Home = () => {
     setSnackbarOpen(false);
   };
 
+  const hashtags = hashtagsData;
+
   return (
     <div className={styles.home_container}>
       <div className={styles.main_content}>
-        <Suspense fallback={<div style={{textAlign: "center"}}>Loading...</div>}>
+        <Suspense
+          fallback={<div style={{ textAlign: 'center' }}>Loading...</div>}
+        >
           <Post refreshSuggestions={refreshSuggestions} />
           <PostList key={refreshPostList} />
+        </Suspense>
+      </div>
+      <div className={styles.health_check}>
+        <Suspense
+          fallback={<div style={{ textAlign: 'center' }}>Loading...</div>}
+        >
+          <PopularHashtags hashtags={hashtags} />
         </Suspense>
       </div>
       <Snackbar

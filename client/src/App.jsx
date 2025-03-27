@@ -8,7 +8,7 @@ import {
 import './index.css'
 
 import { useAuth } from './auth/AuthContext';
-
+import PopularHashtags from './components/PopularHashtags';
 const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
 const Home = lazy(() => import('./components/Home'));

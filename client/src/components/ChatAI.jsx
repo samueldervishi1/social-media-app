@@ -3,7 +3,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import bot from '../assets/logo1.svg';
 import user from '../assets/user.svg';
-import loaderGif from '../assets/loadingg.gif';
+import loaderGif from '../assets/377.gif';
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { LuSendHorizontal } from 'react-icons/lu';
 import styles from '../styles/ai.module.css';
@@ -22,9 +22,9 @@ const ChatAI = () => {
   const [isThinking, setIsThinking] = useState(false);
   const [hideHeading, setHideHeading] = useState(false);
   const [isMobileView, setIsMobileView] = useState();
-  const [isTypingFinished, setIsTypingFinished] = useState(true);
   const [showContinueMessage, setShowContinueMessage] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [isTypingFinished, setIsTypingFinished] = useState(true);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -171,10 +171,11 @@ const ChatAI = () => {
       if (response.status === 200) {
         const responseData = response.data.answer;
 
-        setChatMessages((prevMessages) => [
-          ...prevMessages,
-          { content: '', isUser: false },
-        ]);
+        // Remove this line as it's causing duplicate bot messages
+        // setChatMessages((prevMessages) => [
+        //   ...prevMessages,
+        //   { content: '', isUser: false },
+        // ]);
 
         simulateTypingEffect(responseData);
         setIsThinking(false);
@@ -231,7 +232,10 @@ const ChatAI = () => {
     let currentContent = '';
     const interval = 40;
 
-    setIsTypingFinished(false);
+    setChatMessages((prevMessages) => [
+      ...prevMessages,
+      { content: '', isUser: false },
+    ]);
 
     chunks.forEach((chunk, index) => {
       setTimeout(() => {
@@ -249,8 +253,8 @@ const ChatAI = () => {
         });
 
         if (index === chunks.length - 1) {
-          setIsTypingFinished(true);
           setIsThinking(false);
+          setIsTypingFinished(true);
           scrollToBottom();
         }
       }, interval * index);

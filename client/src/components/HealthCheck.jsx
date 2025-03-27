@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import loaderGif from '../assets/377.gif';
 import styles from '../styles/healthcheck.module.css';
 
 const CHECK_URL = import.meta.env.VITE_API_URL;
@@ -37,7 +38,8 @@ const HealthCheck = () => {
     } catch (error) {
       console.error('Error fetching health status:', error);
       setStatusData({
-        status: 'Server is experiencing an outage right now. Please be patient while we try to fix it.',
+        status:
+          'Server is experiencing an outage right now. Please be patient while we try to fix it.',
         color: 'red',
         date: new Date().toLocaleDateString(),
       });
@@ -68,7 +70,11 @@ const HealthCheck = () => {
 
       {isLoading ? (
         <div className={styles.loader}>
-          <div className={styles.spinner}></div>
+          <img
+            src={loaderGif}
+            alt='Loading...'
+            style={{ width: '30px', height: '30px' }}
+          />
           <p style={{ color: 'white' }}>Loading server status...</p>
         </div>
       ) : (

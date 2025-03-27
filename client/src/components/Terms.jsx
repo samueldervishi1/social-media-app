@@ -1,6 +1,5 @@
 import React from 'react';
 import termsData from '../assets/terms.json';
-import { Link } from 'react-router-dom';
 import styles from '../styles/terms.module.css';
 
 const TermsAndServices = () => {
