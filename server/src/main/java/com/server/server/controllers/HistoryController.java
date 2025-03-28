@@ -63,13 +63,17 @@ public class HistoryController {
 	public ResponseEntity<History> saveChatHistory(
 			@PathVariable String userId ,
 			@PathVariable String sessionId ,
-			@RequestBody HashMap<String, String> request
+			@RequestBody QuestionAnswerPair request
 	) {
-		String message = request.get("message");
-		String answer = request.get("answer");
 		try {
-			QuestionAnswerPair questionAnswerPair = new QuestionAnswerPair(message , answer);
-			History savedHistory = historyService.saveHistory(sessionId , userId , List.of(questionAnswerPair));
+			QuestionAnswerPair questionAnswerPair = new QuestionAnswerPair(
+					request.getContent() , request.getAnswer()
+			);
+
+			History savedHistory = historyService.saveHistory(
+					sessionId , userId , List.of(questionAnswerPair)
+			);
+
 			return new ResponseEntity<>(savedHistory , HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);

@@ -12,3 +12,4 @@ ws-auth/model/model.py
 ws-auth/.venv/pyvenv.cfg
 server/out/production/resources/application.properties
 server/src/main/resources/application.properties
+client/src/assets/bot.png

@@ -139,9 +139,21 @@ const Register = () => {
     };
   }, []);
 
+  const healthLinkStyle = {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    color: '#0072ff',
+    textDecoration: 'none',
+    fontSize: '14px',
+  };
+
   return (
     <div id='main'>
       <div className={styles.screen}>
+        <Link to='/health' style={healthLinkStyle}>
+          Server Health
+        </Link>
         <p className={styles.info_register}>
           <CiCircleInfo className={styles.info_register_info} />
           <span className={styles.info_text}>
@@ -183,7 +195,9 @@ const Register = () => {
               required
             />
             {errorMessages.email && (
-              <p className={errorMessages.email ? styles.input_error : ''}>{errorMessages.email}</p>
+              <p className={errorMessages.email ? styles.input_error : ''}>
+                {errorMessages.email}
+              </p>
             )}
 
             <label htmlFor='username'>
@@ -199,7 +213,9 @@ const Register = () => {
               required
             />
             {errorMessages.username && (
-              <p className={errorMessages.username ? styles.input_error : ''}>{errorMessages.username}</p>
+              <p className={errorMessages.username ? styles.input_error : ''}>
+                {errorMessages.username}
+              </p>
             )}
 
             <label htmlFor='password'>

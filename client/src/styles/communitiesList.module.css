@@ -153,11 +153,20 @@ span.members_count {
   flex-direction: column;
   right: 15px;
   top: 145px;
+  padding: 10px 15px;
+  border-radius: 15px;
   width: 130px;
   background-color: white;
+  z-index: 999;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.795);
-  color: black;
-  z-index: 10;
+  transition: all 0.3s ease;
+  transform: none;
+}
+
+.dropdown_community a:hover {
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown_community a {
@@ -297,4 +306,29 @@ span.members_count {
     top: 20px;
     position: relative;
   }
+}
+
+
+.share_links {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.share_links a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  margin: 0 10px;
+}
+
+.share_links a:hover {
+  color: #007bff;
+}
+
+.share_links svg {
+  margin-right: 5px;
+  font-size: 1.2em;
 }

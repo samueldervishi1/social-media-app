@@ -3,13 +3,14 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import { IoCreateOutline } from 'react-icons/io5';
+import { FaFacebook, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import { TiArrowDownThick, TiArrowUpThick } from 'react-icons/ti';
 import placeHolderImage from '../assets/placeholder.png';
 import placeHolderLogo from '../assets/logo-placeholder-image.png';
 import defaultUserIcon from '../assets/user.webp';
 import loader from '../assets/377.gif';
-import styles from '../styles/communityDetails.module.css';
 import Snackbar from '@mui/material/Snackbar';
+import styles from '../styles/communityDetails.module.css';
 import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -32,6 +33,8 @@ const CommunityDetails = () => {
   const [postContent, setPostContent] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const dropdownRef = useRef(null);
   const viewDropdownRef = useRef(null);
@@ -243,6 +246,10 @@ const CommunityDetails = () => {
     if (viewDropdownVisible) setViewDropdownVisible(false);
   };
 
+  const toggleShareModal = () => {
+    setShowShareModal(!showShareModal);
+  };
+
   const closeDropdowns = (e) => {
     if (
       dropdownRef.current &&
@@ -358,8 +365,9 @@ const CommunityDetails = () => {
 
         {dropdownVisible && (
           <div ref={dropdownRef} className={styles.community_dropdown_menu}>
-            <a href='#'>Add to favourites</a>
-            <a href='#'>Share community</a>
+            <a href='#' onClick={toggleShareModal}>
+              Share community
+            </a>
           </div>
         )}
       </div>
@@ -531,6 +539,53 @@ const CommunityDetails = () => {
           <button
             className='btn btn-secondary'
             onClick={() => setShowPostModal(false)}
+          >
+            Close
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showShareModal} onHide={() => setShowShareModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Share Community</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Share this community using the links below:</p>
+          <div className={styles.share_links}>
+            <a
+              href={`https://wa.me/?text=Check out this community: ${window.location.origin}/c/community/${community.name}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <FaWhatsapp /> WhatsApp
+            </a>
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}/c/community/${community.name}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <FaFacebook /> Facebook
+            </a>
+            <a
+              href={`https://twitter.com/intent/tweet?url=${window.location.origin}/c/community/${community.name}&text=Check out this community:`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <FaTwitter /> Twitter
+            </a>
+            <a
+              href={`https://www.instagram.com/?url=${window.location.origin}/c/community/${community.name}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <FaInstagram /> Instagram
+            </a>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className='btn btn-secondary'
+            onClick={() => setShowShareModal(false)}
           >
             Close
           </button>

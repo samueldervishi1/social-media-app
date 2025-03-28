@@ -88,7 +88,7 @@ const LoginScript = () => {
           return;
         }
 
-        login(); 
+        login();
 
         navigate('/home');
       } catch (error) {
@@ -145,8 +145,20 @@ const LoginScript = () => {
     alignItems: 'center',
   };
 
+  const healthLinkStyle = {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    color: '#0072ff',
+    textDecoration: 'none',
+    fontSize: '14px',
+  };
+
   return (
     <div className={styles.form_container}>
+      <Link to='/health' style={healthLinkStyle}>
+        Server Health
+      </Link>
       <form onSubmit={handleSubmit} className={styles.login_form}>
         <div className={styles.container_login}>
           <p className={styles.fill}>AЯYHƆ</p>

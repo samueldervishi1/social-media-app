@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import bot from '../assets/logo1.svg';
-import user from '../assets/user.svg';
+import bot from '../assets/bot.png';
+import user from '../assets/reshot-icon-user-G3RUDHZMQ6.svg';
 import loaderGif from '../assets/377.gif';
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { LuSendHorizontal } from 'react-icons/lu';
@@ -25,6 +25,7 @@ const ChatAI = () => {
   const [showContinueMessage, setShowContinueMessage] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isTypingFinished, setIsTypingFinished] = useState(true);
+  const [isProcessingResponse, setIsProcessingResponse] = useState(false);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -114,7 +115,7 @@ const ChatAI = () => {
 
     setHideHeading(true);
 
-    if (isRateLimited) return;
+    if (isRateLimited || isProcessingResponse) return;
 
     if (userInput.length > 4000) {
       const errorResponse = {
@@ -127,6 +128,7 @@ const ChatAI = () => {
 
     setIsLoading(true);
     setIsThinking(true);
+    setIsProcessingResponse(true);
 
     const message = { content: userInput, isUser: true };
     setChatMessages((prevMessages) => [...prevMessages, message]);
@@ -169,13 +171,12 @@ const ChatAI = () => {
       );
 
       if (response.status === 200) {
-        const responseData = response.data.answer;
+        const responseData = response.data.answer || 'No response.';
 
-        // Remove this line as it's causing duplicate bot messages
-        // setChatMessages((prevMessages) => [
-        //   ...prevMessages,
-        //   { content: '', isUser: false },
-        // ]);
+        setChatMessages((prevMessages) => [
+          ...prevMessages,
+          { content: '', isUser: false },
+        ]);
 
         simulateTypingEffect(responseData);
         setIsThinking(false);
@@ -198,6 +199,7 @@ const ChatAI = () => {
       } else {
         console.error('Error: ', response.statusText);
         setIsThinking(false);
+        setIsProcessingResponse(false);
       }
     } catch (error) {
       if (error.response?.status === 405) {
@@ -221,6 +223,7 @@ const ChatAI = () => {
         setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
         setIsThinking(false);
       }
+      setIsProcessingResponse(false);
     }
 
     setIsLoading(false);
@@ -228,37 +231,43 @@ const ChatAI = () => {
 
   //simulate a typing effect
   const simulateTypingEffect = (text) => {
+    setIsTypingFinished(false);
     const chunks = text.split(/(\s+)/);
     let currentContent = '';
-    const interval = 40;
+    const interval = 20;
+    const batchSize = 3;
 
-    setChatMessages((prevMessages) => [
-      ...prevMessages,
-      { content: '', isUser: false },
-    ]);
+    for (let i = 0; i < chunks.length; i += batchSize) {
+      const batch = chunks.slice(i, i + batchSize);
 
-    chunks.forEach((chunk, index) => {
       setTimeout(() => {
-        currentContent += chunk;
+        currentContent += batch.join('');
         const formattedContent = formatCodeBlocks(currentContent);
+
         setChatMessages((prevMessages) => {
           const updatedMessages = [...prevMessages];
           const lastIndex = updatedMessages.length - 1;
 
           if (lastIndex >= 0 && !updatedMessages[lastIndex].isUser) {
             updatedMessages[lastIndex].content = formattedContent;
+          } else {
+            updatedMessages.push({
+              content: formattedContent,
+              isUser: false,
+            });
           }
 
           return updatedMessages;
         });
 
-        if (index === chunks.length - 1) {
+        if (i + batchSize >= chunks.length) {
           setIsThinking(false);
           setIsTypingFinished(true);
+          setIsProcessingResponse(false);
           scrollToBottom();
         }
-      }, interval * index);
-    });
+      }, interval * (i / batchSize));
+    }
   };
 
   const handleKeyUp = (e) => {
@@ -350,7 +359,13 @@ const ChatAI = () => {
             >
               <div className={styles.chat}>
                 <div className={styles.profile}>
-                  <img src={!message.isUser ? bot : user} alt='bot' />
+                  <img
+                    src={!message.isUser ? bot : user}
+                    alt={!message.isUser ? 'bot' : 'user'}
+                    className={
+                      !message.isUser ? styles.botImage : styles.userImage
+                    }
+                  />
                 </div>
                 <div
                   className={styles.message}
@@ -365,7 +380,7 @@ const ChatAI = () => {
             <div className={`${styles.wrapper} ${styles.ai}`}>
               <div className={styles.chat}>
                 <div className={styles.profile}>
-                  <img src={bot} alt='bot' />
+                  <img className={styles.botImage} src={bot} alt='bot' />
                 </div>
                 <div
                   className={styles.message + ' ' + styles.thinking_placeholder}
@@ -391,15 +406,15 @@ const ChatAI = () => {
               setUserInput(e.target.value);
             }}
             onKeyUp={handleKeyUp}
-            disabled={isRateLimited || isThinking}
+            disabled={isRateLimited || isThinking || isProcessingResponse}
             maxLength={4000}
           />
           <button
             className={styles.ai_submit}
             type='submit'
-            disabled={isRateLimited || isThinking}
+            disabled={isRateLimited || isThinking || isProcessingResponse}
           >
-            {isThinking ? (
+            {isThinking || isProcessingResponse ? (
               <img
                 src={loaderGif}
                 alt='Loading'

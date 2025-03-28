@@ -1,6 +1,6 @@
 package com.server.server.controllers;
 
-import com.server.server.services.ChatBot;
+import com.server.server.services.ChatBotService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +11,9 @@ import java.util.Map;
 @RestController
 public class ChatBotContoller {
 
-	private final ChatBot chatBotService;
+	private final ChatBotService chatBotService;
 
-	public ChatBotContoller(ChatBot chatBotService) {
+	public ChatBotContoller(ChatBotService chatBotService) {
 		this.chatBotService = chatBotService;
 	}
 

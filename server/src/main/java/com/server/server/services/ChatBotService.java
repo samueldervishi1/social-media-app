@@ -9,16 +9,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Service
-public class SummaryService {
+public class ChatBotService {
 
 	private static final String ERROR_MODEL_API_URL = "Model API URL is not configured properly.";
 	private static final String ERROR_MODEL = "Model is not configured properly.";
-	private static final String ERROR_UNEXPECTED = "An unexpected error occurred while summarizing content.";
-	private static final String ERROR_UNEXPECTED_FORMAT = "Unexpected response format";
+	private static final String ERROR_UNEXPECTED = "An unexpected error occurred while processing the message.";
+	private static final String ERROR_UNEXPECTED_FORMAT = "Unexpected response format.";
 
 	@Value("${model.api.key}")
 	private String apiKey;
@@ -26,19 +27,13 @@ public class SummaryService {
 	@Value("${model.api.url}")
 	private String modelApiUrl;
 
-	@Value("${model.api.temperature}")
-	private double temperature;
-
-	@Value("${model.api.prompt_truncation}")
-	private String promptTruncation;
-
 	@Value("${model.api.model}")
 	private String model;
 
 	private final RestTemplate restTemplate;
 	private final HttpHeaders headers;
 
-	public SummaryService() {
+	public ChatBotService() {
 		this.restTemplate = new RestTemplate();
 		this.headers = new HttpHeaders();
 		this.headers.setContentType(MediaType.APPLICATION_JSON);
@@ -52,13 +47,18 @@ public class SummaryService {
 		headers.set("Authorization" , "Bearer " + apiKey);
 	}
 
-	public String summarize(String message) {
+	public Map<String, Object> getResponses(String message) {
 		try {
 			Map<String, Object> requestBody = Map.of(
 					"model" , model ,
-					"message" , message ,
-					"temperature" , temperature ,
-					"prompt_truncation" , promptTruncation
+					"messages" , List.of(
+							Map.of(
+									"role" , "user" ,
+									"content" , List.of(
+											Map.of("type" , "text" , "text" , message)
+									)
+							)
+					)
 			);
 
 			ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(
@@ -70,14 +70,24 @@ public class SummaryService {
 			);
 
 			Map<String, Object> responseBody = responseEntity.getBody();
-			if (responseBody == null || !responseBody.containsKey("text")) {
-				return ERROR_UNEXPECTED_FORMAT;
+			if (responseBody == null || !responseBody.containsKey("choices")) {
+				return Map.of("answer" , ERROR_UNEXPECTED_FORMAT);
 			}
 
-			return (String) responseBody.get("text");
+			List<?> choices = (List<?>) responseBody.get("choices");
+			if (choices.isEmpty()) {
+				return Map.of("answer" , "No response received.");
+			}
+
+			Map<?, ?> firstChoice = (Map<?, ?>) choices.get(0);
+			Map<?, ?> messageMap = (Map<?, ?>) firstChoice.get("message");
+
+			String answer = (String) messageMap.get("content");
+			return Map.of("message" , message , "answer" , answer);
 
 		} catch (Exception e) {
-			return ERROR_UNEXPECTED;
+			log.error("Error while calling model API" , e);
+			return Map.of("answer" , ERROR_UNEXPECTED);
 		}
 	}
 }
