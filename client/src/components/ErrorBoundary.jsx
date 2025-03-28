@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../styles/errorBoundary.css';
 
 const MAX_RELOAD_ATTEMPTS = 3;
-const SUPPORT_EMAIL = 'support@chyra.com';
+const SUPPORT_EMAIL = 'support@ch.com';
 
 class ErrorBoundary extends Component {
   state = {

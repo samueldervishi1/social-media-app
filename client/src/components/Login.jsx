@@ -32,7 +32,7 @@ const LoginScript = () => {
           details: {
             'credential-type': {
               $: 'client_credentials',
-              '@list-agency-name': 'CHYRA',
+              '@list-agency-name': 'Chattr',
             },
           },
           parts: {

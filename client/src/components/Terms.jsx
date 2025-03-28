@@ -7,7 +7,7 @@ const TermsAndServices = () => {
     <p>
       {content.split('*').map((part, index) =>
         index % 2 === 1 ? (
-          <span className='bold-text' key={index}>
+          <span className={styles.bold_text} key={index}>
             {part}
           </span>
         ) : (
@@ -20,16 +20,21 @@ const TermsAndServices = () => {
   return (
     <div className={styles.terms_container}>
       <div className={styles.h1_container}>
-        <h1 style={{ color: 'black' }}>Terms of Service</h1>
+        <h1>Terms of Service</h1>
       </div>
-      {termsData.termsAndServices.map((term) => (
-        <div key={term.id} className={styles.term_section}>
-          <h2 style={{color: '#1da1f2'}} className={styles.term_title}>{term.title}</h2>
-          <div className={styles.term_content}>
-            {formatContent(term.content)}
-          </div>
+
+      <div className={styles.terms_card}>
+        <div className={styles.terms_sections}>
+          {termsData.termsAndServices.map((term) => (
+            <div key={term.id} className={styles.term_section}>
+              <h2 className={styles.term_title}>{term.title}</h2>
+              <div className={styles.term_content}>
+                {formatContent(term.content)}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 };

@@ -297,38 +297,21 @@ const ChatAI = () => {
   };
 
   return (
-    <div className={styles.sidebar1_container}>
-      <div
-        className={styles.button_container}
-        style={{
-          display: 'flex',
-          margin: '6px 0',
-        }}
-      >
-        <div style={{ position: 'relative' }}>
-          <button
-            style={{
-              border: 'none',
-              background: 'transparent',
-              padding: 15,
-              borderRadius: 200,
-              height: 35,
-              textAlign: 'center',
-              color: 'black',
-              textDecoration: 'underline',
-              cursor: 'pointer',
-              marginTop: 0,
-            }}
-            onClick={resetChat}
-          >
-            <FaRegPenToSquare />
-          </button>
-        </div>
+    <div className={styles.chat_container_wrapper}>
+      <div className={styles.chat_header}>
+        <button
+          className={styles.new_chat_button}
+          onClick={resetChat}
+          title="New Chat"
+        >
+          <FaRegPenToSquare />
+          <span>New Chat</span>
+        </button>
       </div>
 
       <div className={styles.main_content_ai}>
         {!hideHeading && (
-          <div>
+          <div className={styles.welcome_section}>
             <h1 className={styles.heading_center}>
               What do you need help with?
             </h1>
@@ -345,10 +328,11 @@ const ChatAI = () => {
             </div>
           </div>
         )}
+        
         <div
           id={styles.chat_container}
           ref={chatContainerRef}
-          style={{ flex: 1, overflowY: 'auto' }}
+          className={hideHeading ? styles.chat_active : ''}
         >
           {chatMessages.map((message, index) => (
             <div
@@ -376,6 +360,7 @@ const ChatAI = () => {
               </div>
             </div>
           ))}
+          
           {isThinking && (
             <div className={`${styles.wrapper} ${styles.ai}`}>
               <div className={styles.chat}>
@@ -394,44 +379,47 @@ const ChatAI = () => {
             </div>
           )}
         </div>
-        <form className={styles.ai_form} onSubmit={handleSubmit}>
-          <textarea
-            className={styles.ai_textArea}
-            name='message'
-            rows='1'
-            cols='1'
-            placeholder='Ask Sypher...'
-            value={userInput}
-            onChange={(e) => {
-              setUserInput(e.target.value);
-            }}
-            onKeyUp={handleKeyUp}
-            disabled={isRateLimited || isThinking || isProcessingResponse}
-            maxLength={4000}
-          />
-          <button
-            className={styles.ai_submit}
-            type='submit'
-            disabled={isRateLimited || isThinking || isProcessingResponse}
-          >
-            {isThinking || isProcessingResponse ? (
-              <img
-                src={loaderGif}
-                alt='Loading'
-                style={{ width: '20px', height: '20px' }}
-              />
-            ) : (
-              <LuSendHorizontal style={{ fontSize: 23 }} />
-            )}
-          </button>
-        </form>
-        <p className={styles.info_text}>
-          {isRateLimited
-            ? countdown > 0
-              ? `Too many requests. Please wait ${countdown} seconds before trying again.`
-              : 'You can continue now.'
-            : 'Sypher can make mistakes. Check important info.'}
-        </p>
+        
+        <div className={styles.chat_input_area}>
+          <form className={styles.ai_form} onSubmit={handleSubmit}>
+            <textarea
+              className={styles.ai_textArea}
+              name='message'
+              rows='1'
+              cols='1'
+              placeholder='Ask Sypher...'
+              value={userInput}
+              onChange={(e) => {
+                setUserInput(e.target.value);
+              }}
+              onKeyUp={handleKeyUp}
+              disabled={isRateLimited || isThinking || isProcessingResponse}
+              maxLength={4000}
+            />
+            <button
+              className={styles.ai_submit}
+              type='submit'
+              disabled={isRateLimited || isThinking || isProcessingResponse}
+            >
+              {isThinking || isProcessingResponse ? (
+                <img
+                  src={loaderGif}
+                  alt='Loading'
+                  className={styles.loader_icon}
+                />
+              ) : (
+                <LuSendHorizontal />
+              )}
+            </button>
+          </form>
+          <p className={styles.info_text}>
+            {isRateLimited
+              ? countdown > 0
+                ? `Too many requests. Please wait ${countdown} seconds before trying again.`
+                : 'You can continue now.'
+              : 'Sypher can make mistakes. Check important info.'}
+          </p>
+        </div>
       </div>
     </div>
   );

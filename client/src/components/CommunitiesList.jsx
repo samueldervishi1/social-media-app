@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import placeHolderImage from '../assets/placeholder.png';
-import placeHolderLogo from '../assets/logo-placeholder-image.png';
 import loader from '../assets/377.gif';
 import { Snackbar, Alert } from '@mui/material';
 import { Modal, Button, Form } from 'react-bootstrap';
@@ -246,9 +245,12 @@ const CommunitiesList = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Popular Communities</h1>
-        <div>
+      <div className={styles.h1_container}>
+        <h1>Popular Communities</h1>
+      </div>
+      
+      <div className={styles.content_container}>
+        <div className={styles.header_actions}>
           <Button
             className={styles.create_button}
             onClick={() => setShowCreateModal(true)}
@@ -256,105 +258,113 @@ const CommunitiesList = () => {
             Create New Community
           </Button>
         </div>
-      </div>
 
-      {error && (
-        <p className={styles.error}>
-          Something went wrong. Please try again later.
-        </p>
-      )}
+        {error && (
+          <div className={styles.error_container}>
+            <p className={styles.error}>
+              Something went wrong. Please try again later.
+            </p>
+          </div>
+        )}
 
-      {loading ? (
-        <div className={styles.loading_community}>
-          <img
-            src={loader}
-            alt='Loading...'
-            className={styles.spinner_community}
-          />
-        </div>
-      ) : (
-        <>
-          {communities.length > 0 ? (
-            <div className={styles.card_container}>
-              {communities.map((community) => {
-                const isUserJoined =
-                  community.userIds && community.userIds.includes(userId);
+        {loading ? (
+          <div className={styles.loading_container}>
+            <img
+              src={loader}
+              alt='Loading...'
+              className={styles.spinner}
+            />
+          </div>
+        ) : (
+          <>
+            {communities.length > 0 ? (
+              <div className={styles.card_container}>
+                {communities.map((community) => {
+                  const isUserJoined =
+                    community.userIds && community.userIds.includes(userId);
 
-                return (
-                  <div
-                    key={community.communityId}
-                    className={styles.card}
-                    onClick={() => navigate(`/c/community/${community.name}`)}
-                  >
-                    <div className={styles.banner}>
-                      <img
-                        src={placeHolderImage}
-                        alt={`${community.name} banner`}
-                        className={styles.banner_img}
-                      />
-                      <img
-                        src={placeHolderLogo}
-                        alt={`${community.name} profile`}
-                        className={styles.profile_img}
-                      />
-                      <button
-                        className={styles.join_button}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isUserJoined) {
-                            handleJoinCommunity(community.communityId);
-                          }
-                        }}
-                        disabled={isUserJoined}
-                      >
-                        {isUserJoined ? 'Joined' : 'Join'}
-                      </button>
-
-                      <button
-                        className={styles.menu_button}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleDropdown(community.communityId);
-                        }}
-                      >
-                        &#8230;
-                      </button>
-
-                      {dropdownVisible === community.communityId && (
-                        <div className={styles.dropdown_community}>
-                          <a
-                            href='#'
+                  return (
+                    <div
+                      key={community.communityId}
+                      className={styles.card}
+                      onClick={() => navigate(`/c/community/${community.name}`)}
+                    >
+                      <div className={styles.banner}>
+                        <img
+                          src={placeHolderImage}
+                          alt={`${community.name} banner`}
+                          className={styles.banner_img}
+                        />
+                        <div className={styles.banner_overlay}></div>
+                        <img
+                          src={placeHolderImage}
+                          alt={`${community.name} profile`}
+                          className={styles.profile_img}
+                        />
+                        <div className={styles.card_actions}>
+                          <button
+                            className={`${styles.join_button} ${isUserJoined ? styles.joined : ''}`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setCommunityName(community.name);
-                              toggleShareModal();
+                              if (!isUserJoined) {
+                                handleJoinCommunity(community.communityId);
+                              }
+                            }}
+                            disabled={isUserJoined}
+                          >
+                            {isUserJoined ? 'Joined' : 'Join'}
+                          </button>
+
+                          <button
+                            className={styles.menu_button}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleDropdown(community.communityId);
                             }}
                           >
-                            Share community
-                          </a>
-                        </div>
-                      )}
-                    </div>
+                            &#8230;
+                          </button>
 
-                    <div className={styles.card_content}>
-                      <h2>
-                        c/{community.name} <span>-</span>
-                        <span className={styles.members_count}>
+                          {dropdownVisible === community.communityId && (
+                            <div className={styles.dropdown_menu}>
+                              <a
+                                href='#'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCommunityName(community.name);
+                                  toggleShareModal();
+                                }}
+                              >
+                                Share community
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className={styles.card_content}>
+                        <h2 className={styles.community_name}>
+                          c/{community.name}
+                        </h2>
+                        <div className={styles.members_count}>
                           {membersCounts[community.name] !== undefined
                             ? getMemberText(membersCounts[community.name])
                             : 'Loading...'}
-                        </span>
-                      </h2>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className={styles.no_communities}>No communities available. </p>
-          )}
-        </>
-      )}
+                  );
+                })}
+              </div>
+            ) : (
+              <div className={styles.empty_state}>
+                <p>No communities available.</p>
+                <p>Create a new community to get started!</p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       <Snackbar
         open={snackbarOpen}
@@ -460,13 +470,6 @@ const CommunitiesList = () => {
         <Modal.Body>
           <p>Share this community using the links below:</p>
           <div className={styles.share_links}>
-            <a
-              href={`https://wa.me/?text=Check out this community: ${window.location.origin}/c/community/${communityName}`}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              <FaWhatsapp /> WhatsApp
-            </a>
             <a
               href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}/c/community/${communityName}`}
               target='_blank'

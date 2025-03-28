@@ -1,30 +1,33 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { Snackbar, Alert } from '@mui/material';
-import hashtagsData from '../assets/hashtags.json';
 import styles from '../styles/home.module.css';
+import termsData from '../assets/terms.json';
+import suggestionsData from '../assets/suggestions.json';
 
 const Post = React.lazy(() => import('./Post'));
 const PostList = React.lazy(() => import('./PostList'));
-const PopularHashtags = React.lazy(() => import("./PopularHashtags"));
+const PopularHashtags = React.lazy(() => import('./PopularHashtags'));
 
 const POST_REFRESH_INTERVAL = 300000;
-const SUGGESTION_REFRESH_INTERVAL = 1800000;
-
-const suggestions = [
-  'Click on your username to view your profile.',
-  'Try exploring different events on Events page',
-  'Check out the AI feature for personalized recommendations.',
-  'Explore trending topics to stay updated.',
-  'Join discussions in the community for more insights.',
-];
+const SUGGESTION_REFRESH_INTERVAL = 60000; 
 
 const Home = () => {
   const { logout } = useAuth();
+
   const [refreshPostList, setRefreshPostList] = useState(false);
   const [refreshSuggestions, setRefreshSuggestions] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+
+  useEffect(() => {
+    const combinedSuggestions = [
+      ...suggestionsData.suggestions,
+      ...termsData.termsAndServices.map((term) => term.content),
+    ];
+    setSuggestions(combinedSuggestions);
+  }, []);
 
   useEffect(() => {
     const postIntervalId = setInterval(() => {
@@ -35,22 +38,29 @@ const Home = () => {
   }, [logout]);
 
   useEffect(() => {
-    const suggestionIntervalId = setInterval(() => {
+    const showRandomSuggestion = () => {
+      if (suggestions.length === 0) return;
+
       const randomSuggestion =
         suggestions[Math.floor(Math.random() * suggestions.length)];
       setSnackbarMessage(randomSuggestion);
       setSnackbarOpen(true);
       setRefreshSuggestions((prev) => !prev);
-    }, SUGGESTION_REFRESH_INTERVAL);
+    };
+
+    showRandomSuggestion();
+
+    const suggestionIntervalId = setInterval(
+      showRandomSuggestion,
+      SUGGESTION_REFRESH_INTERVAL
+    );
 
     return () => clearInterval(suggestionIntervalId);
-  }, [logout]);
+  }, [suggestions, logout]);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
-
-  const hashtags = hashtagsData;
 
   return (
     <div className={styles.home_container}>
@@ -66,7 +76,7 @@ const Home = () => {
         <Suspense
           fallback={<div style={{ textAlign: 'center' }}>Loading...</div>}
         >
-          <PopularHashtags hashtags={hashtags} />
+          <PopularHashtags />
         </Suspense>
       </div>
       <Snackbar

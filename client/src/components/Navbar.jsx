@@ -224,7 +224,7 @@ const Navbar = () => {
                 sx={{ p: 0 }}
                 style={{ fontSize: '25px' }}
               >
-                AЯYHƆ
+                Chattr
               </IconButton>
             </Tooltip>
           </Box>

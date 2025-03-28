@@ -1,49 +1,43 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import aboutData from '../assets/about.json';
 import styles from '../styles/about.module.css';
 
 const About = () => {
-  const {
-    about_container,
-    about_section,
-    about_title,
-    about_content,
-    h1_container,
-  } = styles;
+  const formatContent = (content) => (
+    <p>
+      {content.split('*').map((part, index) =>
+        index % 2 === 1 ? (
+          <span className={styles.bold_text} key={index}>
+            {part}
+          </span>
+        ) : (
+          part
+        )
+      )}
+    </p>
+  );
 
   const formattedSections = useMemo(() => {
-    const formatContent = (content) => (
-      <p>
-        {content.split('*').map((part, index) =>
-          index % 2 === 1 ? (
-            <span className='bold-text' key={index}>
-              {part}
-            </span>
-          ) : (
-            part
-          )
-        )}
-      </p>
-    );
-
     return aboutData.aboutApp.map((section) => (
-      <div key={section.id} className={about_section}>
-        <h2 style={{ color: '#1da1f2' }} className={about_title}>
-          {section.title}
-        </h2>
-        <div className={about_content}>{formatContent(section.content)}</div>
+      <div key={section.id} className={styles.about_section}>
+        <h2 className={styles.about_title}>{section.title}</h2>
+        <div className={styles.about_content}>
+          {formatContent(section.content)}
+        </div>
       </div>
     ));
   }, []);
 
   return (
-    <div className={about_container}>
-      <div className={h1_container}>
-        <h1 className={about_title}>About Us</h1>
+    <div className={styles.about_container}>
+      <div className={styles.h1_container}>
+        <h1>About Us</h1>
       </div>
-      {formattedSections}
+
+      <div className={styles.about_card}>
+        <div className={styles.about_sections}>{formattedSections}</div>
+      </div>
     </div>
   );
 };

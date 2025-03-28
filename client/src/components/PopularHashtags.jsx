@@ -35,43 +35,37 @@ const PopularHashtags = () => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.container}>
       <h2 className={styles.title}>Popular Hashtags</h2>
       <div className={styles.card}>
         {loading ? (
-          <div
-            className={styles.hashtagsContainer}
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: '100px',
-            }}
-          >
-            <img
-              src={loadingGif}
-              alt='Loading...'
-              style={{ width: '30px', height: '30px' }}
-            />
+          <div className={styles.loadingContainer}>
+            <img src={loadingGif} alt='Loading...' className={styles.spinner} />
           </div>
         ) : (
           <div className={styles.hashtagsContainer}>
-            {hashtags.map((hashtag, index) => (
-              <div key={index} className={styles.hashtagItem}>
-                <a
-                  href={hashtag.link}
-                  className={styles.hashtagLink}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  {hashtag.name}
-                </a>
-                <span className={styles.separator}> — </span>
-                <span className={styles.viewCount}>
-                  ({hashtag.views} views)
-                </span>
+            {hashtags.length > 0 ? (
+              hashtags.map((hashtag, index) => (
+                <div key={index} className={styles.hashtagItem}>
+                  <a
+                    href={hashtag.link}
+                    className={styles.hashtagLink}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    #{hashtag.name}
+                  </a>
+                  <span className={styles.separator}>—</span>
+                  <span className={styles.viewCount}>
+                    {hashtag.views} views
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className={styles.emptyState}>
+                <p>No trending hashtags available at the moment.</p>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>

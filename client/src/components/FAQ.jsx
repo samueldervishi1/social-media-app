@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { FaPlus, FaMinus } from 'react-icons/fa';
-import background from '../assets/background.jpg';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import faqData from '../assets/faq.json';
+import styles from '../styles/faq.module.css';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -49,164 +49,86 @@ const FAQ = () => {
     }));
   };
 
-  const styles = {
-    container: {
-      maxWidth: '1000px',
-      margin: '0 auto',
-      padding: '20px',
-    },
-    faqItem: {
-      marginBottom: '20px',
-      borderBottom: '1px solid #ddd',
-      paddingBottom: '15px',
-    },
-    question: {
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      color: '#007bff',
-      marginBottom: '5px',
-      display: 'flex',
-      alignItems: 'center',
-    },
-    answer: {
-      maxHeight: '200px',
-      overflow: 'hidden',
-      paddingLeft: '20px',
-      transition: 'max-height 0.3s ease-in-out',
-      color: 'black',
-    },
-    answerHidden: {
-      maxHeight: 0,
-      color: 'black',
-    },
-    form: {
-      backgroundColor: 'white',
-      color: 'black',
-      borderRadius: '8px',
-      boxShadow: '0 4px 8px rgb(2, 2, 2)',
-      padding: '20px',
-      width: '100%',
-      margin: '0 auto',
-    },
-    input: {
-      width: '100%',
-      padding: '10px',
-      marginBottom: '10px',
-      borderRadius: '5px',
-      border: '1px solid #ccc',
-      backgroundColor: 'white',
-      color: 'black',
-    },
-    button: {
-      width: '100%',
-      padding: '10px',
-      backgroundColor: '#007bff',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s',
-      '&:hover': {
-        backgroundColor: '#0056b3',
-      },
-    },
-    title: {
-      textAlign: 'center',
-      margin: '0 auto 40px auto',
-      backgroundImage: `url(${background})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      padding: '40px',
-      borderRadius: '4px',
-      fontSize: 70,
-      fontWeight: 700,
-    },
-    successMessage: {
-      color: 'green',
-      fontWeight: 'bold',
-      textAlign: 'center',
-    },
-    errorMessage: {
-      color: 'red',
-      fontSize: '12px',
-    },
-  };
-
   return (
-    <div style={styles.container}>
-      <section>
-        <div>
-          <h2 style={styles.title}>FAQ</h2>
-          {faqData.map((faq, index) => (
-            <div key={index} style={styles.faqItem}>
-              <p onClick={() => toggleQuestion(index)} style={styles.question}>
-                {activeIndex === index ? (
-                  <FaMinus style={{ marginRight: '10px' }} />
-                ) : (
-                  <FaPlus style={{ marginRight: '10px' }} />
-                )}
-                {faq.question}
-              </p>
-              <div
-                style={{
-                  ...styles.answer,
-                  ...(activeIndex !== index && styles.answerHidden),
-                }}
-              >
-                <p style={{ color: 'black' }}>{faq.answer}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className={styles.faq_container}>
+      <div className={styles.h1_container}>
+        <h1>FAQ</h1>
+      </div>
 
-        <div style={{ marginTop: '40px' }}>
-          <h3 style={{ textAlign: 'center', color: 'white' }}>
-            Still have questions? Contact us!
-          </h3>
-          <div style={styles.form}>
-            {formState.isSubmitted ? (
-              <div style={styles.successMessage}>
-                Thank you for your message! We will get back to you soon.
-              </div>
-            ) : (
-              <form onSubmit={handleFormSubmit}>
-                <div>
-                  <label htmlFor='email'>Email address:</label>
-                  <input
-                    id='email'
-                    name='email'
-                    type='email'
-                    required
-                    value={formState.email}
-                    onChange={handleInputChange}
-                    placeholder='Enter your email'
-                    style={styles.input}
-                  />
-                  {formState.error && (
-                    <div style={styles.errorMessage}>{formState.error}</div>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor='message'>Message:</label>
-                  <textarea
-                    id='message'
-                    name='message'
-                    rows='4'
-                    required
-                    value={formState.message}
-                    onChange={handleInputChange}
-                    placeholder='Enter your message'
-                    style={styles.input}
-                  />
-                </div>
-                <button type='submit' style={styles.button}>
-                  Send
-                </button>
-              </form>
-            )}
+      <div className={styles.faq_card}>
+        {faqData.map((faq, index) => (
+          <div key={index} className={styles.faq_item}>
+            <div
+              onClick={() => toggleQuestion(index)}
+              className={styles.question}
+            >
+              {activeIndex === index ? (
+                <FaChevronUp className={`${styles.icon} ${styles.rotate}`} />
+              ) : (
+                <FaChevronDown className={styles.icon} />
+              )}
+              {faq.question}
+            </div>
+            <div
+              className={`${styles.answer} ${
+                activeIndex !== index ? styles.answer_hidden : ''
+              }`}
+            >
+              <p>{faq.answer}</p>
+            </div>
           </div>
+        ))}
+      </div>
+
+      <div className={styles.contact_section}>
+        <h2 className={styles.contact_title}>Still have questions?</h2>
+        <div className={styles.form_container}>
+          {formState.isSubmitted ? (
+            <div className={styles.success_message}>
+              Thank you for your message! We will get back to you soon.
+            </div>
+          ) : (
+            <form onSubmit={handleFormSubmit}>
+              <div className={styles.form_group}>
+                <label htmlFor='email' className={styles.form_label}>
+                  Email address
+                </label>
+                <input
+                  id='email'
+                  name='email'
+                  type='email'
+                  required
+                  value={formState.email}
+                  onChange={handleInputChange}
+                  placeholder='Enter your email'
+                  className={styles.form_input}
+                />
+                {formState.error && (
+                  <div className={styles.error_message}>{formState.error}</div>
+                )}
+              </div>
+              <div className={styles.form_group}>
+                <label htmlFor='message' className={styles.form_label}>
+                  Message
+                </label>
+                <textarea
+                  id='message'
+                  name='message'
+                  rows='4'
+                  required
+                  value={formState.message}
+                  onChange={handleInputChange}
+                  placeholder='Enter your message'
+                  className={styles.form_input}
+                />
+              </div>
+              <button type='submit' className={styles.submit_button}>
+                Send Message
+              </button>
+            </form>
+          )}
         </div>
-      </section>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 .hashtagsContainer {
-  padding: 16px;
-  background-color: #f0f0f0;
+  padding: 20px;
+  background-color: white;
   border-radius: 8px;
   margin: 16px 0;
   display: block;
@@ -8,37 +8,71 @@
 
 .title {
   font-size: 1.8em;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   text-align: center;
+  color: #333;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: #1da1f2;
+  border-radius: 3px;
 }
 
 .cardContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
 }
 
 .card {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 15px;
-  padding: 16px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
   margin: 16px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .hashtagItem {
-  margin: 4px 0;
+  margin: 12px 0;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.hashtagItem:hover {
+  background-color: #f8f9fa;
 }
 
 .hashtagLink {
   text-decoration: none;
-  color: #007bff;
-  font-weight: bold;
+  color: #1da1f2;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.hashtagLink:hover {
+  color: #0c85d0;
+  text-decoration: underline;
 }
 
 .viewCount {
-  color: #888;
+  color: #666;
   font-size: 0.9em;
   margin-left: 4px;
 }
@@ -47,10 +81,30 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px;
+  height: 150px;
 }
 
 .separator {
   margin: 0 5px;
   color: #888;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hashtagsContainer {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 1.5em;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .hashtagItem {
+    margin: 8px 0;
+    padding: 8px;
+  }
 }
