@@ -66,16 +66,14 @@ const HealthCheck = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Server Status</h1>
+      <div className={styles.h1_container}>
+        <h1 className={styles.title}>Server Status</h1>
+      </div>
 
       {isLoading ? (
         <div className={styles.loader}>
-          <img
-            src={loaderGif}
-            alt='Loading...'
-            style={{ width: '30px', height: '30px' }}
-          />
-          <p style={{ color: 'white' }}>Loading server status...</p>
+          <img src={loaderGif} alt='Loading...' className={styles.spinner} />
+          <p>Loading server status...</p>
         </div>
       ) : (
         <div className={styles.statusMessage}>
@@ -88,13 +86,25 @@ const HealthCheck = () => {
                 : styles.red
             }`}
           >
-            <p style={{ fontSize: 30, color: 'black' }}>{statusData.status}</p>
+            <p>{statusData.status}</p>
           </div>
 
           <div className={styles.statusDetails}>
-            <p>Date: {new Date().toLocaleString()}</p>
+            <p>Last checked: {new Date().toLocaleString()}</p>
             {statusData.color === 'red' && (
-              <p>We are currently checking on it. Please be patient.</p>
+              <p>
+                We are currently working on resolving the issue. Please check
+                back later.
+              </p>
+            )}
+            {statusData.color === 'yellow' && (
+              <p>
+                The server is operational but may experience intermittent
+                issues.
+              </p>
+            )}
+            {statusData.color === 'green' && (
+              <p>All systems are operational and running smoothly.</p>
             )}
           </div>
         </div>

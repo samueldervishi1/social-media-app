@@ -5,7 +5,7 @@ import placeHolderImage from '../assets/placeholder.png';
 import loader from '../assets/377.gif';
 import { Snackbar, Alert } from '@mui/material';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { FaFacebook, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 import styles from '../styles/communitiesList.module.css';
 
 import { getUserIdFromServer } from '../auth/authUtils';
@@ -248,7 +248,7 @@ const CommunitiesList = () => {
       <div className={styles.h1_container}>
         <h1>Popular Communities</h1>
       </div>
-      
+
       <div className={styles.content_container}>
         <div className={styles.header_actions}>
           <Button
@@ -269,11 +269,7 @@ const CommunitiesList = () => {
 
         {loading ? (
           <div className={styles.loading_container}>
-            <img
-              src={loader}
-              alt='Loading...'
-              className={styles.spinner}
-            />
+            <img src={loader} alt='Loading...' className={styles.spinner} />
           </div>
         ) : (
           <>
@@ -303,7 +299,9 @@ const CommunitiesList = () => {
                         />
                         <div className={styles.card_actions}>
                           <button
-                            className={`${styles.join_button} ${isUserJoined ? styles.joined : ''}`}
+                            className={`${styles.join_button} ${
+                              isUserJoined ? styles.joined : ''
+                            }`}
                             onClick={(e) => {
                               e.stopPropagation();
                               if (!isUserJoined) {
@@ -383,56 +381,50 @@ const CommunitiesList = () => {
 
       {/* Create Community Modal */}
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
-        <Modal.Header style={{ backgroundColor: 'black', color: 'white' }}>
+        <Modal.Header closeButton>
           <Modal.Title>Create New Community</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ backgroundColor: 'black', color: 'white' }}>
+        <Modal.Body>
           <Form>
             <Form.Group className='mb-3'>
-              <Form.Label style={{ color: 'white' }}>Community Name</Form.Label>
+              <Form.Label>Community Name</Form.Label>
               <Form.Control
                 type='text'
                 value={communityName}
                 onChange={(e) => setCommunityName(e.target.value)}
-                style={{ color: 'white', backgroundColor: '#333' }}
               />
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label style={{ color: 'white' }}>Description</Form.Label>
+              <Form.Label>Description</Form.Label>
               <Form.Control
                 as='textarea'
                 rows={3}
                 value={communityDescription}
                 onChange={(e) => setCommunityDescription(e.target.value)}
-                style={{ color: 'white', backgroundColor: '#333' }}
               />
             </Form.Group>
             <div>
-              <h5 style={{ color: 'white' }}>FAQs</h5>
+              <h5>FAQs</h5>
               {faqs.map((faq, index) => (
                 <div key={index}>
                   <Form.Group className='mb-3'>
-                    <Form.Label style={{ color: 'white' }}>
-                      Question {index + 1}
-                    </Form.Label>
+                    <Form.Label>Question {index + 1}</Form.Label>
                     <Form.Control
                       type='text'
                       value={faq.question}
                       onChange={(e) =>
                         handleFaqChange(index, 'question', e.target.value)
                       }
-                      style={{ color: 'white', backgroundColor: '#333' }}
                     />
                   </Form.Group>
                   <Form.Group className='mb-3'>
-                    <Form.Label style={{ color: 'white' }}>Answer</Form.Label>
+                    <Form.Label>Answer</Form.Label>
                     <Form.Control
                       type='text'
                       value={faq.answer}
                       onChange={(e) =>
                         handleFaqChange(index, 'answer', e.target.value)
                       }
-                      style={{ color: 'white', backgroundColor: '#333' }}
                     />
                   </Form.Group>
                   <div className={styles.button_row}>
@@ -449,7 +441,7 @@ const CommunitiesList = () => {
           </Form>
         </Modal.Body>
 
-        <Modal.Footer style={{ backgroundColor: 'black' }}>
+        <Modal.Footer>
           <Button variant='secondary' onClick={() => setShowCreateModal(false)}>
             Close
           </Button>

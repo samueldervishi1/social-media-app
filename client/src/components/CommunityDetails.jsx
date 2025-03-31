@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import { IoCreateOutline } from 'react-icons/io5';
-import { FaFacebook, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram  } from 'react-icons/fa';
 import { TiArrowDownThick, TiArrowUpThick } from 'react-icons/ti';
 import placeHolderImage from '../assets/placeholder.png';
 import placeHolderLogo from '../assets/logo-placeholder-image.png';
@@ -552,13 +552,6 @@ const CommunityDetails = () => {
         <Modal.Body>
           <p>Share this community using the links below:</p>
           <div className={styles.share_links}>
-            <a
-              href={`https://wa.me/?text=Check out this community: ${window.location.origin}/c/community/${community.name}`}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              <FaWhatsapp /> WhatsApp
-            </a>
             <a
               href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}/c/community/${community.name}`}
               target='_blank'

@@ -62,6 +62,11 @@ h1 {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
 }
 
+.button_row{
+  gap: 10px;
+  display: flex;
+}
+
 .create_button:hover {
   background-color: #0c85d0 !important;
   transform: translateY(-2px) !important;
