@@ -1,4 +1,4 @@
-# Simple Social Media App | CHYRA (stylized as AЯYHƆ)
+# Simple Social Media App | Chattr
 
 This is a simple social media application that is still under development. It combines a Java backend with a ReactJS frontend built using Vite.
 
@@ -87,10 +87,6 @@ npm run dev
 - Engage in Conversation: Engage in conversations with the chatbot on various topics.
 
 **Note:** Answers might not always be as expected as the chatbot is still under development and training.
-
-## Future Improvements
-This project is actively being developed. Planned improvements include:
-- Real-time notifications.
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute to the project, please follow these steps:
