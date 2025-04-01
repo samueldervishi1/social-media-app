@@ -1,4 +1,4 @@
-package com.server.server.config;
+package com.server.server.controllers;
 
 import com.server.server.models.PredefineQuestions;
 import com.server.server.services.PredefinedQuestionsService;
