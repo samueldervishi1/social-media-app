@@ -165,7 +165,7 @@ const Register = () => {
 
         <form id='registrationForm' onSubmit={handleSubmit}>
           <div className={styles.container_sign}>
-            <p className={styles.fill}>AЯYHƆ</p>
+            <p className={styles.fill}>Chattr</p>
             <hr />
             {error && <p className={styles.error_message_register}>{error}</p>}
 

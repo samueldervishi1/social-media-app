@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import axios from 'axios';
+import { getUserIdFromServer } from '../auth/authUtils';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
 import Box from '@mui/material/Box';
@@ -25,9 +26,8 @@ import {
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { RiUserCommunityLine } from 'react-icons/ri';
 import loaderImage from '../assets/377.gif';
+import logo from '/new_logo1.png';
 import styles from '../styles/navbar.module.css';
-
-import { getUserIdFromServer } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -44,17 +44,21 @@ const Navbar = () => {
   const [anchorElSettings, setAnchorElSettings] = useState(null);
 
   const [userId, setUserId] = useState(null);
-  
-    useEffect(() => {
-      const fetchUserId = async () => {
-        const result = await getUserIdFromServer();
-        setUserId(result);
-      };
-  
-      fetchUserId();
-    }, []);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const result = await getUserIdFromServer();
+      setUserId(result);
+    };
+
+    fetchUserId();
+  }, []);
 
   const userSettings = [
+    {
+      name: 'Home',
+      icon: <GoHome className={styles.icon_p} />,
+    },
     {
       name: 'Your communities',
       icon: <RiUserCommunityLine className={styles.icon_p} />,
@@ -122,7 +126,9 @@ const Navbar = () => {
 
   const handleSettingAction = useCallback(
     (settingName) => {
-      if (settingName === 'Your communities') {
+      if (settingName === 'Home') {
+        navigate('/home');
+      } else if (settingName === 'Your communities') {
         navigate('/c/user/communities');
       } else if (settingName === 'Logout') {
         handleLogout();
@@ -170,200 +176,38 @@ const Navbar = () => {
     <>
       <div className={styles.chat_history1}>
         <div className={styles.history_div_2}>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title='Open profile settings'>
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar />
-              </IconButton>
-            </Tooltip>
-
-            {/* User Profile Sliding Panel */}
-            <div
-              className={`${styles.user_overlay} ${
-                Boolean(anchorElUser) ? styles.open : ''
-              }`}
-              onClick={handleCloseUserMenu}
-            />
-            <div
-              className={`${styles.user_sidebar} ${
-                Boolean(anchorElUser) ? styles.open : ''
-              }`}
-            >
-              <div className={styles.user_header}>
-                <Typography variant='h6'>Profile settings</Typography>
-                <IconButton onClick={handleCloseUserMenu}>
-                  <MdClose style={{ color: 'black' }} />
-                </IconButton>
-              </div>
-              <div className={styles.user_content}>
-                {userSettings.map((setting, index) => (
-                  <div
-                    key={index}
-                    className={styles.user_item}
-                    onClick={() => handleSettingAction(setting.name)}
-                  >
-                    <Typography
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                      }}
-                    >
-                      {setting.icon}
-                      {setting.name}
-                    </Typography>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Box>
-          <Box sx={{ marginLeft: 2 }}>
-            <Tooltip title='Home'>
-              <IconButton
-                href='/home'
-                sx={{ p: 0 }}
-                style={{ fontSize: '25px' }}
-              >
-                Chattr
-              </IconButton>
-            </Tooltip>
-          </Box>
-          <div
-            className={styles.hamburger}
-            onClick={() => {
-              setIsMenuOpen(!isMenuOpen);
-              console.log('isMenuOpen:', !isMenuOpen);
-            }}
-          >
-            <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
-            <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
-            <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
-          </div>
-          {isMenuOpen && (
-            <div className={styles.mobile_menu}>
-              <a href='/home' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
-                  <GoHome className={styles.icon_p} />
-                  Home
-                </IconButton>
-              </a>
-              <a href='/chat' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
-                  <GiArtificialHive className={styles.icon_p} />
-                  Sypher
-                </IconButton>
-              </a>
-              <a href='/c/communities' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
-                  <RiUserCommunityLine className={styles.icon_p} />
-                  Communities
-                </IconButton>
-              </a>
-              <Box sx={{ marginLeft: 1 }}>
-                <Tooltip title='Open settings'>
-                  <IconButton
-                    onClick={handleOpenSettingsMenu}
-                    sx={{ p: 0 }}
-                    style={{ fontSize: '15px' }}
-                  >
-                    <IoSettingsOutline className={styles.icon_p} /> Settings
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: '45px' }}
-                  anchorEl={anchorElSettings}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={Boolean(anchorElSettings)}
-                  onClose={handleCloseSettingsMenu}
-                >
-                  {settings.map((setting, index) => (
-                    <MenuItem
-                      key={index}
-                      onClick={() => handleActions(setting.name)}
-                    >
-                      <Typography
-                        sx={{ display: 'flex', alignItems: 'center' }}
-                      >
-                        {setting.icon}
-                        {setting.name}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                  <MenuItem
-                    onClick={() => setShowDeleteModal(true)}
-                    sx={{ color: 'red' }}
-                  >
-                    <MdDeleteForever className={styles.icon_p} />
-                    Delete Account
-                  </MenuItem>
-                </Menu>
-              </Box>
-            </div>
-          )}
-
-          {/*desktop layout */}
-          <div className={styles.history_links}>
-            <a href='/home' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px' }}>
-                <GoHome className={styles.icon_p} />
-                Home
-              </IconButton>
-            </a>
-            <a href='/chat' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px' }}>
-                <GiArtificialHive className={styles.icon_p} />
-                Sypher
-              </IconButton>
-            </a>
-            <a href='/c/communities' className={styles.menu_item}>
-              <IconButton style={{ fontSize: '15px' }}>
-                <RiUserCommunityLine className={styles.icon_p} />
-                Communities
-              </IconButton>
-            </a>
-            <Box sx={{ marginLeft: 0, marginTop: 0.7 }}>
-              <Tooltip title='Open settings'>
-                <IconButton
-                  onClick={handleOpenSettingsMenu}
-                  sx={{ p: 0 }}
-                  style={{ fontSize: '15px' }}
-                >
-                  <IoSettingsOutline className={styles.icon_p} /> Settings
+          <div className={styles.navbar_left}>
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title='Open profile settings'>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar className={styles.avatar} />
                 </IconButton>
               </Tooltip>
 
-              {/* Settings Sliding Panel */}
+              {/* User Profile Sliding Panel */}
               <div
-                className={`${styles.settings_overlay} ${
-                  Boolean(anchorElSettings) ? styles.open : ''
+                className={`${styles.user_overlay} ${
+                  Boolean(anchorElUser) ? styles.open : ''
                 }`}
-                onClick={handleCloseSettingsMenu}
+                onClick={handleCloseUserMenu}
               />
               <div
-                className={`${styles.settings_sidebar} ${
-                  Boolean(anchorElSettings) ? styles.open : ''
+                className={`${styles.user_sidebar} ${
+                  Boolean(anchorElUser) ? styles.open : ''
                 }`}
               >
-                <div className={styles.settings_header}>
-                  <Typography variant='h6'>Settings</Typography>
-                  <IconButton onClick={handleCloseSettingsMenu}>
+                <div className={styles.user_header}>
+                  <Typography variant='h6'>Profile settings</Typography>
+                  <IconButton onClick={handleCloseUserMenu}>
                     <MdClose style={{ color: 'black' }} />
                   </IconButton>
                 </div>
-                <div className={styles.settings_content}>
-                  {settings.map((setting, index) => (
+                <div className={styles.user_content}>
+                  {userSettings.map((setting, index) => (
                     <div
                       key={index}
-                      className={styles.settings_item}
-                      onClick={() => handleActions(setting.name)}
+                      className={styles.user_item}
+                      onClick={() => handleSettingAction(setting.name)}
                     >
                       <Typography
                         sx={{
@@ -377,25 +221,186 @@ const Navbar = () => {
                       </Typography>
                     </div>
                   ))}
-                  <div
-                    className={styles.settings_item}
-                    onClick={() => setShowDeleteModal(true)}
-                    style={{ color: 'red' }}
-                  >
-                    <Typography
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                      }}
-                    >
-                      <MdDeleteForever className={styles.icon_p} />
-                      Delete Account
-                    </Typography>
-                  </div>
                 </div>
               </div>
             </Box>
+
+            <Box sx={{ marginLeft: 2 }}>
+              <a href="/home"><img src={logo} alt='Logo' className={styles.logo_text} /></a>
+            </Box>
+          </div>
+
+          <div className={styles.navbar_right}>
+            <div
+              className={styles.hamburger}
+              onClick={() => {
+                setIsMenuOpen(!isMenuOpen);
+                console.log('isMenuOpen:', !isMenuOpen);
+              }}
+            >
+              <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
+              <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
+              <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
+            </div>
+
+            {isMenuOpen && (
+              <div className={styles.mobile_menu}>
+                <a href='/home' className={styles.menu_item}>
+                  <IconButton style={{ fontSize: '15px' }}>
+                    <GoHome className={styles.icon_p} />
+                    Home
+                  </IconButton>
+                </a>
+                <a href='/chat' className={styles.menu_item}>
+                  <IconButton style={{ fontSize: '15px' }}>
+                    <GiArtificialHive className={styles.icon_p} />
+                    Eido
+                  </IconButton>
+                </a>
+                <a href='/c/communities' className={styles.menu_item}>
+                  <IconButton style={{ fontSize: '15px' }}>
+                    <RiUserCommunityLine className={styles.icon_p} />
+                    Communities
+                  </IconButton>
+                </a>
+                <Box sx={{ marginLeft: 1 }}>
+                  <Tooltip title='Open settings'>
+                    <IconButton
+                      onClick={handleOpenSettingsMenu}
+                      sx={{ p: 0 }}
+                      style={{ fontSize: '15px' }}
+                    >
+                      <IoSettingsOutline className={styles.icon_p} /> Settings
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: '45px' }}
+                    anchorEl={anchorElSettings}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={Boolean(anchorElSettings)}
+                    onClose={handleCloseSettingsMenu}
+                  >
+                    {settings.map((setting, index) => (
+                      <MenuItem
+                        key={index}
+                        onClick={() => handleActions(setting.name)}
+                      >
+                        <Typography
+                          sx={{ display: 'flex', alignItems: 'center' }}
+                        >
+                          {setting.icon}
+                          {setting.name}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                    <MenuItem
+                      onClick={() => setShowDeleteModal(true)}
+                      sx={{ color: 'red' }}
+                    >
+                      <MdDeleteForever className={styles.icon_p} />
+                      Delete Account
+                    </MenuItem>
+                  </Menu>
+                </Box>
+              </div>
+            )}
+
+            <div className={styles.history_links}>
+              <a href='/home' className={styles.menu_item}>
+                <IconButton className={styles.nav_button}>
+                  <GoHome className={styles.icon_p} />
+                  <span className={styles.nav_text}>Home</span>
+                </IconButton>
+              </a>
+              <a href='/chat' className={styles.menu_item}>
+                <IconButton className={styles.nav_button}>
+                  <GiArtificialHive className={styles.icon_p} />
+                  <span className={styles.nav_text}>Eido</span>
+                </IconButton>
+              </a>
+              <a href='/c/communities' className={styles.menu_item}>
+                <IconButton className={styles.nav_button}>
+                  <RiUserCommunityLine className={styles.icon_p} />
+                  <span className={styles.nav_text}>Communities</span>
+                </IconButton>
+              </a>
+              <Box sx={{ marginLeft: 0, marginTop: 0.7 }}>
+                <Tooltip title='Open settings'>
+                  <IconButton
+                    onClick={handleOpenSettingsMenu}
+                    sx={{ p: 0 }}
+                    className={styles.nav_button}
+                  >
+                    <IoSettingsOutline className={styles.icon_p} />
+                    <span className={styles.nav_text}>Settings</span>
+                  </IconButton>
+                </Tooltip>
+
+                {/* Settings Sliding Panel */}
+                <div
+                  className={`${styles.settings_overlay} ${
+                    Boolean(anchorElSettings) ? styles.open : ''
+                  }`}
+                  onClick={handleCloseSettingsMenu}
+                />
+                <div
+                  className={`${styles.settings_sidebar} ${
+                    Boolean(anchorElSettings) ? styles.open : ''
+                  }`}
+                >
+                  <div className={styles.settings_header}>
+                    <Typography variant='h6'>Settings</Typography>
+                    <IconButton onClick={handleCloseSettingsMenu}>
+                      <MdClose style={{ color: 'black' }} />
+                    </IconButton>
+                  </div>
+                  <div className={styles.settings_content}>
+                    {settings.map((setting, index) => (
+                      <div
+                        key={index}
+                        className={styles.settings_item}
+                        onClick={() => handleActions(setting.name)}
+                      >
+                        <Typography
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                          }}
+                        >
+                          {setting.icon}
+                          {setting.name}
+                        </Typography>
+                      </div>
+                    ))}
+                    <div
+                      className={styles.settings_item}
+                      onClick={() => setShowDeleteModal(true)}
+                      style={{ color: 'red' }}
+                    >
+                      <Typography
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                        }}
+                      >
+                        <MdDeleteForever className={styles.icon_p} />
+                        Delete Account
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </Box>
+            </div>
           </div>
         </div>
       </div>

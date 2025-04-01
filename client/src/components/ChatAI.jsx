@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import bot from '../assets/bot.png';
+import { toast } from 'react-toastify';
+import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
+import bot from '../assets/image2vector.svg';
 import user from '../assets/reshot-icon-user-G3RUDHZMQ6.svg';
 import loaderGif from '../assets/377.gif';
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { LuSendHorizontal } from 'react-icons/lu';
 import styles from '../styles/ai.module.css';
-
-import { getUserIdFromServer } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -26,6 +26,10 @@ const ChatAI = () => {
   const [userId, setUserId] = useState(null);
   const [isTypingFinished, setIsTypingFinished] = useState(true);
   const [isProcessingResponse, setIsProcessingResponse] = useState(false);
+  const [isNearLimit, setIsNearLimit] = useState(false);
+  const [username, setUsername] = useState('');
+  const [predefinedQuestions, setPredefinedQuestions] = useState([]);
+  const [loadingUsername, setLoadingUsername] = useState(true);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -34,6 +38,22 @@ const ChatAI = () => {
     };
 
     fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const result = await getUsernameFromServer();
+      if (result) {
+        const formattedUsername =
+          result.charAt(0).toUpperCase() + result.slice(1);
+        setUsername(formattedUsername);
+      } else {
+        setUsername(result);
+      }
+      setLoadingUsername(false);
+    };
+
+    fetchUsername();
   }, []);
 
   useEffect(() => {
@@ -91,7 +111,7 @@ const ChatAI = () => {
     formattedText = formattedText
       .split('\n')
       .map((line) =>
-        line.startsWith('- ') ? `<li>${line.substring(2)}</li>` : line
+        /^[*-] /.test(line) ? `<li>${line.substring(2)}</li>` : line
       )
       .join('<br />')
       .replace(/(<li>.*<\/li>\s*){2,}/g, '<ul>$&</ul>');
@@ -105,7 +125,26 @@ const ChatAI = () => {
     return localStorage.getItem('sessionId');
   };
 
-  //send the question to the model
+  const formatTimestamp = () => {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getGreetingByTime = () => {
+    const hour = new Date().getHours();
+    let greeting = '';
+
+    if (hour >= 5 && hour < 12) {
+      greeting = 'Good morning';
+    } else if (hour >= 12 && hour < 18) {
+      greeting = 'Good afternoon';
+    } else {
+      greeting = 'Good evening';
+    }
+
+    return `${greeting}, ${username}! How can I help you today?`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -121,6 +160,7 @@ const ChatAI = () => {
       const errorResponse = {
         content: 'Your input exceeds the 4000 character limit.',
         isUser: false,
+        timestamp: formatTimestamp(),
       };
       setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
       return;
@@ -130,7 +170,11 @@ const ChatAI = () => {
     setIsThinking(true);
     setIsProcessingResponse(true);
 
-    const message = { content: userInput, isUser: true };
+    const message = {
+      content: userInput,
+      isUser: true,
+      timestamp: formatTimestamp(),
+    };
     setChatMessages((prevMessages) => [...prevMessages, message]);
     setUserInput('');
 
@@ -209,6 +253,7 @@ const ChatAI = () => {
         const errorResponse = {
           content: errorMessage,
           isUser: false,
+          timestamp: formatTimestamp(),
         };
         setIsThinking(false);
         setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
@@ -219,6 +264,7 @@ const ChatAI = () => {
         const errorResponse = {
           content: errorMessage,
           isUser: false,
+          timestamp: formatTimestamp(),
         };
         setChatMessages((prevMessages) => [...prevMessages, errorResponse]);
         setIsThinking(false);
@@ -229,13 +275,13 @@ const ChatAI = () => {
     setIsLoading(false);
   };
 
-  //simulate a typing effect
   const simulateTypingEffect = (text) => {
     setIsTypingFinished(false);
     const chunks = text.split(/(\s+)/);
     let currentContent = '';
     const interval = 20;
     const batchSize = 3;
+    const timestamp = formatTimestamp();
 
     for (let i = 0; i < chunks.length; i += batchSize) {
       const batch = chunks.slice(i, i + batchSize);
@@ -250,10 +296,12 @@ const ChatAI = () => {
 
           if (lastIndex >= 0 && !updatedMessages[lastIndex].isUser) {
             updatedMessages[lastIndex].content = formattedContent;
+            updatedMessages[lastIndex].timestamp = timestamp;
           } else {
             updatedMessages.push({
               content: formattedContent,
               isUser: false,
+              timestamp: timestamp,
             });
           }
 
@@ -270,9 +318,92 @@ const ChatAI = () => {
     }
   };
 
-  const handleKeyUp = (e) => {
-    if (e.keyCode === 13) {
-      handleSubmit(e);
+  const autoResizeTextarea = (e) => {
+    const textarea = e.target;
+    const text = textarea.value;
+
+    if (text.length > 4000) {
+      setUserInput(text.substring(0, 4000));
+
+      if (toast) {
+        toast.warning('Text has been truncated to 4000 characters');
+      } else {
+        setIsNearLimit(true);
+        setTimeout(() => setIsNearLimit(false), 3000);
+      }
+    } else {
+      setUserInput(text);
+
+      setIsNearLimit(text.length > 3800);
+    }
+
+    textarea.style.height = 'auto';
+
+    const lineHeight = 24;
+    const lines = text.split('\n').length;
+    const maxInitialLines = 3;
+    const newHeight = Math.min(
+      Math.max(lineHeight, textarea.scrollHeight),
+      lineHeight * maxInitialLines
+    );
+
+    textarea.style.height = `${newHeight}px`;
+  };
+
+  const handlePaste = (e) => {
+    const clipboardData = e.clipboardData || window.clipboardData;
+    const pastedText = clipboardData.getData('text');
+
+    const cursorPosition = e.target.selectionStart;
+    const currentText = userInput;
+    const newText =
+      currentText.substring(0, cursorPosition) +
+      pastedText +
+      currentText.substring(e.target.selectionEnd);
+
+    if (newText.length > 4000) {
+      e.preventDefault();
+
+      const availableSpace =
+        4000 - (currentText.length - (e.target.selectionEnd - cursorPosition));
+
+      if (availableSpace <= 0) {
+        if (toast) {
+          toast.error('Character limit reached. Cannot paste more text.');
+        }
+        return;
+      }
+
+      const truncatedPaste = pastedText.substring(0, availableSpace);
+
+      const truncatedText =
+        currentText.substring(0, cursorPosition) +
+        truncatedPaste +
+        currentText.substring(e.target.selectionEnd);
+
+      setUserInput(truncatedText);
+
+      if (toast) {
+        toast.warning(
+          'Pasted text has been truncated to fit the 4000 character limit'
+        );
+      } else {
+        setIsNearLimit(true);
+        setTimeout(() => setIsNearLimit(false), 3000);
+      }
+
+      setTimeout(() => {
+        const textarea = e.target;
+        textarea.style.height = 'auto';
+        const lineHeight = 24;
+        const lines = truncatedText.split('\n').length;
+        const maxInitialLines = 3;
+        const newHeight = Math.min(
+          Math.max(lineHeight, textarea.scrollHeight),
+          lineHeight * maxInitialLines
+        );
+        textarea.style.height = `${newHeight}px`;
+      }, 0);
     }
   };
 
@@ -284,12 +415,34 @@ const ChatAI = () => {
     scrollToBottom();
   }, [chatMessages, isLoading]);
 
-  const predefinedQuestions = [
-    'Summarize text',
-    'Help me write',
-    'Surprise me',
-    'Make a plan',
-  ];
+  useEffect(() => {
+    const fetchPredefinedQuestions = async () => {
+      try {
+        const response = await axios.get(`${API_URL}get/predefined`, {
+          withCredentials: true,
+          headers: {
+            'X-App-Version': import.meta.env.VITE_APP_VERSION,
+          },
+        });
+
+        if (response.data && Array.isArray(response.data)) {
+          setPredefinedQuestions(response.data);
+          localStorage.setItem(
+            'predefinedQuestions',
+            JSON.stringify(response.data)
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching predefined questions:', error);
+        setPredefinedQuestions([]);
+      }
+    };
+    const cached = localStorage.getItem('predefinedQuestions');
+    if (cached) {
+      setPredefinedQuestions(JSON.parse(cached));
+    }
+    fetchPredefinedQuestions();
+  }, []);
 
   const handleClickPredefinedQuestion = (question) => {
     setUserInput(question);
@@ -302,7 +455,7 @@ const ChatAI = () => {
         <button
           className={styles.new_chat_button}
           onClick={resetChat}
-          title="New Chat"
+          title='New Chat'
         >
           <FaRegPenToSquare />
           <span>New Chat</span>
@@ -312,23 +465,30 @@ const ChatAI = () => {
       <div className={styles.main_content_ai}>
         {!hideHeading && (
           <div className={styles.welcome_section}>
-            <h1 className={styles.heading_center}>
-              What do you need help with?
-            </h1>
+            <h1 className={styles.heading_center}>{getGreetingByTime()}</h1>
             <div className={styles.predefined_questions}>
               {predefinedQuestions.map((question, index) => (
                 <button
                   key={index}
                   className={styles.predefined_button}
-                  onClick={() => handleClickPredefinedQuestion(question)}
+                  onClick={() =>
+                    handleClickPredefinedQuestion(question.question)
+                  }
                 >
-                  {question}
+                  <img
+                    src={question.iconUrl}
+                    alt={question.question}
+                    width='24'
+                    height='24'
+                    className={styles.icon_svg}
+                  />
+                  {question.question}
                 </button>
               ))}
             </div>
           </div>
         )}
-        
+
         <div
           id={styles.chat_container}
           ref={chatContainerRef}
@@ -342,34 +502,40 @@ const ChatAI = () => {
               }`}
             >
               <div className={styles.chat}>
-                <div className={styles.profile}>
-                  <img
-                    src={!message.isUser ? bot : user}
-                    alt={!message.isUser ? 'bot' : 'user'}
-                    className={
-                      !message.isUser ? styles.botImage : styles.userImage
-                    }
-                  />
+                {!message.isUser && (
+                  <div className={styles.profile}>
+                    <img src={bot} alt='bot' className={styles.botImage} />
+                  </div>
+                )}
+                <div>
+                  <div
+                    className={styles.message}
+                    dangerouslySetInnerHTML={{
+                      __html: formatCodeBlocks(message.content),
+                    }}
+                  ></div>
+                  {message.timestamp && (
+                    <div className={styles.message_time}>
+                      {message.timestamp}
+                    </div>
+                  )}
                 </div>
-                <div
-                  className={styles.message}
-                  dangerouslySetInnerHTML={{
-                    __html: formatCodeBlocks(message.content),
-                  }}
-                ></div>
+                {message.isUser && (
+                  <div className={styles.profile}>
+                    <img src={user} alt='user' className={styles.userImage} />
+                  </div>
+                )}
               </div>
             </div>
           ))}
-          
+
           {isThinking && (
             <div className={`${styles.wrapper} ${styles.ai}`}>
               <div className={styles.chat}>
                 <div className={styles.profile}>
                   <img className={styles.botImage} src={bot} alt='bot' />
                 </div>
-                <div
-                  className={styles.message + ' ' + styles.thinking_placeholder}
-                >
+                <div className={styles.thinking_placeholder}>
                   Thinking
                   <span className={styles.dot}>.</span>
                   <span className={styles.dot}>.</span>
@@ -379,23 +545,51 @@ const ChatAI = () => {
             </div>
           )}
         </div>
-        
+
         <div className={styles.chat_input_area}>
           <form className={styles.ai_form} onSubmit={handleSubmit}>
             <textarea
               className={styles.ai_textArea}
               name='message'
               rows='1'
-              cols='1'
-              placeholder='Ask Sypher...'
+              placeholder='Ask Eido...'
               value={userInput}
-              onChange={(e) => {
-                setUserInput(e.target.value);
+              onChange={autoResizeTextarea}
+              onPaste={handlePaste}
+              onKeyUp={(e) => {
+                if (e.keyCode === 13 && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                } else {
+                  autoResizeTextarea(e);
+                }
               }}
-              onKeyUp={handleKeyUp}
+              onKeyDown={(e) => {
+                if (e.keyCode === 13 && !e.shiftKey) {
+                  e.preventDefault();
+                }
+              }}
               disabled={isRateLimited || isThinking || isProcessingResponse}
               maxLength={4000}
             />
+            <div
+              className={`${styles.char_counter} ${
+                userInput.length > 500 ? styles.visible : ''
+              } ${userInput.length > 3800 ? styles.near_limit : ''} ${
+                userInput.length >= 4000 ? styles.at_limit : ''
+              }`}
+            >
+              {userInput.length}/4000
+            </div>
+            {isNearLimit && (
+              <div
+                className={`${styles.limit_warning} ${
+                  isNearLimit ? styles.visible : ''
+                }`}
+              >
+                You are approaching or have reached the 4000 character limit
+              </div>
+            )}
             <button
               className={styles.ai_submit}
               type='submit'
@@ -417,7 +611,7 @@ const ChatAI = () => {
               ? countdown > 0
                 ? `Too many requests. Please wait ${countdown} seconds before trying again.`
                 : 'You can continue now.'
-              : 'Sypher can make mistakes. Check important info.'}
+              : 'Eido can make mistakes. Check important info.'}
           </p>
         </div>
       </div>

@@ -31,7 +31,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			"/tmf/server/api/v2.2.10/logout",
 			"/tmf/server/api/v2.2.10/health",
 			"/tmf/server/api/v2.2.10/hashtags/get",
-			"/tmf/server/api/v2.2.10/hashtags/save"
+			"/tmf/server/api/v2.2.10/hashtags/save",
+			"/tmf/server/api/v2.2.10/create/questions"
 	);
 	private final JwtTokenUtil jwtTokenUtil;
 

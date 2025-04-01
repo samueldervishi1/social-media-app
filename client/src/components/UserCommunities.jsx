@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getUserIdFromServer } from '../auth/authUtils';
 import { FaUsers } from 'react-icons/fa';
-import { motion } from 'framer-motion';
 import loader from '../assets/377.gif';
 import { Link } from 'react-router-dom';
 
@@ -75,20 +74,15 @@ const UserCommunities = () => {
     );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div style={styles.fadeIn}>
       <h2 style={styles.heading}>Your Communities</h2>
       <div style={styles.container}>
         {communities.length > 0 ? (
           communities.map((community) => (
-            <motion.div
+            <div
               key={`${community.id}-${community.name}`}
               style={styles.card}
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              className='community-card'
             >
               <div style={styles.cardHeader}>
                 <Link
@@ -103,26 +97,25 @@ const UserCommunities = () => {
                 <FaUsers style={styles.userIcon} />
                 <span>{community.userIds.length} members</span>
               </div>
-            </motion.div>
+            </div>
           ))
         ) : (
-          <motion.div
-            style={styles.emptyState}
-            initial={{ scale: 0.5 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div style={styles.emptyState}>
             <FaUsers size={50} style={{ marginBottom: '20px' }} />
             <p>You are not part of any communities yet.</p>
             <p>Join some communities to get started!</p>
-          </motion.div>
+          </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 const styles = {
+  fadeIn: {
+    opacity: 0,
+    animation: 'fadeIn 0.3s forwards',
+  },
   heading: {
     textAlign: 'center',
     marginTop: 20,
@@ -147,7 +140,7 @@ const styles = {
     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     backdropFilter: 'blur(10px)',
-    transition: 'all 0.3s ease',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
     maxWidth: '500px',
   },
   cardHeader: {
@@ -162,9 +155,6 @@ const styles = {
     color: '#1a73e8',
     margin: 0,
     fontSize: '1.4rem',
-    '&:hover': {
-      textDecoration: 'underline',
-    },
   },
   description: {
     color: '#555',
@@ -207,5 +197,22 @@ const styles = {
     color: '#666',
   },
 };
+const css = `
+  .community-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.type = 'text/css';
+styleSheet.innerText = css;
+document.head.appendChild(styleSheet);
 
 export default UserCommunities;

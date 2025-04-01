@@ -30,7 +30,8 @@ public class SecurityConfig {
 			"/tmf/server/api/v2.2.10/logout",
 			"/tmf/server/api/v2.2.10/health",
 			"/tmf/server/api/v2.2.10/hashtags/get",
-			"/tmf/server/api/v2.2.10/hashtags/save"
+			"/tmf/server/api/v2.2.10/hashtags/save",
+			"/tmf/server/api/v2.2.10/create/questions"
 	);
 
 	public SecurityConfig(@Lazy JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -48,6 +49,7 @@ public class SecurityConfig {
 						.anyRequest().permitAll()
 				)
 				.addFilterBefore(jwtAuthenticationFilter , UsernamePasswordAuthenticationFilter.class)
+				.logout(AbstractHttpConfigurer::disable)
 				.exceptionHandling(exception -> exception.authenticationEntryPoint((request , response , authException) -> {
 					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 					response.getWriter().write("Unauthorized Access");

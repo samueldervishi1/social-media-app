@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { openDB } from 'idb';
-import { MdOutlineEmojiEmotions, MdDelete } from 'react-icons/md';
-import Picker from 'emoji-picker-react';
+import { getUsernameFromServer } from '../auth/authUtils';
+import { MdDelete } from 'react-icons/md';
 import { LuSendHorizontal } from 'react-icons/lu';
 import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/post.module.css';
-
-import { getUsernameFromServer } from '../auth/authUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const PostForm = () => {
   const [postContent, setPostContent] = useState('');
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [username, setUsername] = useState('');
   const [loadingUsername, setLoadingUsername] = useState(true);
@@ -130,8 +127,6 @@ const PostForm = () => {
     return `What's on your mind today, ${username}?`;
   }, [loadingUsername, username]);
 
-  console.log(username);
-
   const handleClearInput = () => {
     setPostContent('');
   };
@@ -169,11 +164,6 @@ const PostForm = () => {
             onClick={handleClearInput}
             title='Clear input'
           />
-          <MdOutlineEmojiEmotions
-            className={styles.icon}
-            onClick={() => setShowEmojiPicker((prev) => !prev)}
-            title='Pick an emoji you like'
-          />
           <button
             type='submit'
             className={styles.post_the_post}
@@ -184,18 +174,6 @@ const PostForm = () => {
           </button>
         </div>
       </div>
-      {showEmojiPicker && (
-        <div className={styles.emoji_picker}>
-          <Picker
-            onEmojiClick={(emojiData) => {
-              if (emojiData?.emoji) {
-                setPostContent((prev) => prev + emojiData.emoji);
-                setShowEmojiPicker(false);
-              }
-            }}
-          />
-        </div>
-      )}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}

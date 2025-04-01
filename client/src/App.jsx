@@ -1,14 +1,14 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from 'react-router-dom';
-import './index.css'
-
+import './index.css';
 import { useAuth } from './auth/AuthContext';
-import PopularHashtags from './components/PopularHashtags';
+
+// Lazy-loaded components
 const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
 const Home = lazy(() => import('./components/Home'));
@@ -26,30 +26,11 @@ const FAQ = lazy(() => import('./components/FAQ'));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
-  let devToolsLogged = false;
 
-  const detectDevTools = () => {
-    if (devToolsLogged) return;
-    const devTools = /./;
-    devTools.toString = function() {
-      devToolsLogged = true;
-      console.log(
-        `%c
- oooooooo8 ooooo  oooo oooooooooo         ooooooo8  
-888         888    88   888    888      o888    88  
- 888oooooo  888    88   888oooo88       888    oooo 
-        888 888    88   888             888o    88  
-o88oooo888   888oo88   o888o             888ooo888  
-                                                     `,
-        'font-size: 10px; color: white; text-transform: uppercase;'
-      );
-    };
-    devTools.toString();
+  // Helper function to create protected routes
+  const ProtectedRoute = ({ element }) => {
+    return isAuthenticated ? element : <Login />;
   };
-
-  useEffect(() => {
-    detectDevTools();
-  }, []);
 
   return (
     <Router>
@@ -63,41 +44,22 @@ o88oooo888   888oo88   o888o             888ooo888
             {/* Public Routes */}
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
-
-            {/* Protected Routes */}
-            <Route
-              path='/home'
-              element={isAuthenticated ? <Home /> : <Login />}
-            />
-            <Route
-              path='/chat'
-              element={isAuthenticated ? <ChatAI /> : <Login />}
-            />
-            <Route
-              path='/c/communities'
-              element={isAuthenticated ? <CommunitiesList /> : <Login />}
-            />
-            <Route
-              path='/c/community/:name'
-              element={isAuthenticated ? <CommunityDetails /> : <Login />}
-            />
-            <Route
-              path='/c/user/communities'
-              element={isAuthenticated ? <UserCommunities /> : <Login />}
-            />
-
-            {/* Static Pages */}
             <Route path='/terms' element={<TermsAndServices />} />
             <Route path='/about' element={<About />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/health' element={<HealthCheck />} />
             <Route path='/faq' element={<FAQ />} />
 
-            {/* Not Found Route */}
-            <Route path='*' element={<NotFound />} />
+            {/* Protected Routes */}
+            <Route path='/home' element={<ProtectedRoute element={<Home />} />}/>
+            <Route path='/chat' element={<ProtectedRoute element={<ChatAI />} />}/>
+            <Route path='/c/communities' element={<ProtectedRoute element={<CommunitiesList />} />}/>
+            <Route path='/c/community/:name' element={<ProtectedRoute element={<CommunityDetails />} />}/>
+            <Route path='/c/user/communities' element={<ProtectedRoute element={<UserCommunities />} />} />
 
-            {/* Default Route */}
+            {/* Default and Not Found Routes */}
             <Route path='/' element={<Navigate to='/home' replace />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
       </div>

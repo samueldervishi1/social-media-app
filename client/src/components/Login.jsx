@@ -161,7 +161,7 @@ const LoginScript = () => {
       </Link>
       <form onSubmit={handleSubmit} className={styles.login_form}>
         <div className={styles.container_login}>
-          <p className={styles.fill}>AЯYHƆ</p>
+          <p className={styles.fill}>Chattr</p>
           <hr />
           {formState.error && (
             <p className={styles.error_message_login}>{formState.error}</p>

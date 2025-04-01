@@ -2,8 +2,6 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/home.module.css';
-import termsData from '../assets/terms.json';
-import suggestionsData from '../assets/suggestions.json';
 
 const Post = React.lazy(() => import('./Post'));
 const PostList = React.lazy(() => import('./PostList'));
@@ -20,14 +18,6 @@ const Home = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-
-  useEffect(() => {
-    const combinedSuggestions = [
-      ...suggestionsData.suggestions,
-      ...termsData.termsAndServices.map((term) => term.content),
-    ];
-    setSuggestions(combinedSuggestions);
-  }, []);
 
   useEffect(() => {
     const postIntervalId = setInterval(() => {
