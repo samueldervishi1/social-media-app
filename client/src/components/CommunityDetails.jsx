@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import { IoCreateOutline } from 'react-icons/io5';
 import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
@@ -20,6 +20,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const CommunityDetails = () => {
   const { name } = useParams();
+  const navigate = useNavigate();
   const [community, setCommunity] = useState(null);
   const [membersCount, setMembersCount] = useState(null);
   const [error, setError] = useState(null);
@@ -60,15 +61,6 @@ const CommunityDetails = () => {
     if (count >= 0) return `${count} members`;
     return 'Loading...';
   };
-
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const result = await getUserIdFromServer();
-      setUserId(result);
-    };
-
-    fetchUserId();
-  }, []);
 
   //fetch community details
   useEffect(() => {
@@ -276,6 +268,9 @@ const CommunityDetails = () => {
 
   return (
     <div className={styles.community_details_container}>
+      <button className={styles.back_button} onClick={() => navigate('/c/communities')}>
+        Back to Communities
+      </button>
       {loading ? (
         <div className={styles.loading_container}>
           <img src={loader} alt='Loading...' className={styles.spinner} />
@@ -345,14 +340,14 @@ const CommunityDetails = () => {
                           alt='User'
                           className={styles.user_community_icon}
                         />
-                        <div>
-                          <div className={styles.post_username}>
-                            {post.username}
-                          </div>
-                          <div className={styles.post_community_time}>
-                            {formatDate(post.postDate)} at{' '}
-                            {formatTime(post.postTime)}
-                          </div>
+                        <div className={styles.userMetadata}>
+                          <span className={styles.post_username}>
+                            {userId || 'Anonymous'}
+                          </span>
+                          <span className={styles.bullet}>•</span>
+                          <span className={styles.post_community_time}>
+                            {timeSincePost(post.createTime)}
+                          </span>
                         </div>
                       </div>
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import placeHolderImage from '../assets/placeholder.png';
+import placeHolderImage from '../assets/background.jpg';
+import logoPlaceHolder from '../assets/logo-placeholder-image.png';
 import loader from '../assets/377.gif';
 import { Snackbar, Alert } from '@mui/material';
 import { Modal, Button, Form } from 'react-bootstrap';
@@ -30,6 +31,7 @@ const CommunitiesList = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -243,6 +245,51 @@ const CommunitiesList = () => {
     setShowShareModal(!showShareModal);
   };
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (searchInput.trim() === '') {
+      const fetchAllCommunities = async () => {
+        try {
+          const response = await axios.get(`${API_URL}data-flux`, {
+            withCredentials: true,
+            headers: {
+              'X-App-Version': import.meta.env.VITE_APP_VERSION,
+            },
+          });
+          setCommunities(response.data);
+        } catch (err) {
+          console.error('Error fetching communities:', err.message);
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchAllCommunities();
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${API_URL}search?name=${searchInput}`, {
+        withCredentials: true,
+        headers: {
+          'X-App-Version': import.meta.env.VITE_APP_VERSION,
+        },
+      });
+
+      setTimeout(() => {
+        setCommunities(response.data);
+        setLoading(false);
+      }, 1000);
+    } catch (err) {
+      console.error('Error searching communities:', err.message);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.h1_container}>
@@ -251,28 +298,41 @@ const CommunitiesList = () => {
 
       <div className={styles.content_container}>
         <div className={styles.header_actions}>
-          <Button
+          <form onSubmit={handleSearch} className={styles.search_form}>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search communities..."
+              className={styles.search_input}
+            />
+            <button type="submit" className={styles.search_button}>
+              Search
+            </button>
+          </form>
+          <button
             className={styles.create_button}
             onClick={() => setShowCreateModal(true)}
           >
             Create New Community
-          </Button>
+          </button>
         </div>
-
-        {error && (
-          <div className={styles.error_container}>
-            <p className={styles.error}>
-              Something went wrong. Please try again later.
-            </p>
-          </div>
-        )}
 
         {loading ? (
           <div className={styles.loading_container}>
-            <img src={loader} alt='Loading...' className={styles.spinner} />
+            <img src={loader} alt="Loading..." className={styles.spinner} />
+            <p>Fetching results...</p>
           </div>
         ) : (
           <>
+            {error && (
+              <div className={styles.error_container}>
+                <p className={styles.error}>
+                  Something went wrong. Please try again later.
+                </p>
+              </div>
+            )}
+
             {communities.length > 0 ? (
               <div className={styles.card_container}>
                 {communities.map((community) => {
@@ -293,7 +353,7 @@ const CommunitiesList = () => {
                         />
                         <div className={styles.banner_overlay}></div>
                         <img
-                          src={placeHolderImage}
+                          src={logoPlaceHolder}
                           alt={`${community.name} profile`}
                           className={styles.profile_img}
                         />

@@ -23,9 +23,10 @@ public class UserService {
 				.orElseThrow(() -> new CustomException(404 , "User not found with username: " + username));
 	}
 
-	public User getUserInfoById(String id) {
-		return userRepository.findUserById(id)
-				.orElseThrow(() -> new CustomException(404 , "User not found with ID: " + id));
+	public String getUsernameById(String userId) {
+		return userRepository.findById(userId)
+				.map(User::getUsername)
+				.orElseThrow(() -> new RuntimeException("User not found"));
 	}
 
 	public List<User> getAllUsers() {

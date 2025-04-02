@@ -118,25 +118,47 @@
   height: 24px;
 }
 
-/* Responsive adjustments */
+.animatedDots {
+  font-weight: bold;
+  font-size: 1rem;
+  animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0%,
+  20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  100% {
+    content: '...';
+  }
+}
+
 @media (max-width: 768px) {
   .post_form {
     margin: 15px auto;
   }
-  
+
   .input_with_icons {
     padding: 6px 12px 6px 6px;
   }
-  
+
   .textarea {
     padding: 10px;
     font-size: 14px;
   }
-  
-  .icon, .post_the_post {
+
+  .icon,
+  .post_the_post {
     font-size: 20px;
   }
-  
+
   .icons_container {
     gap: 10px;
   }

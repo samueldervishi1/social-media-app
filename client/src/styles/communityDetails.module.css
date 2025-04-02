@@ -2,6 +2,9 @@
   padding: 40px 20px;
   max-width: 1200px;
   margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
 }
 
 .community_banner {
@@ -79,7 +82,7 @@
 .join_button.joined {
   background-color: #e0e0e0;
   color: #333;
-  cursor: default;
+  cursor: not-allowed;
 }
 
 .create_post_button {
@@ -178,11 +181,6 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.post_community_card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
 .post_header {
   display: flex;
   justify-content: space-between;
@@ -195,6 +193,12 @@
   align-items: center;
 }
 
+.userMetadata {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .user_community_icon {
   width: 40px;
   height: 40px;
@@ -203,14 +207,15 @@
   object-fit: cover;
 }
 
-.post_username {
-  font-weight: 600;
+.post_username,
+.post_community_time {
+  font-size: 14px;
   color: #333;
 }
 
-.post_community_time {
-  font-size: 13px;
-  color: #8899a6;
+.bullet {
+  color: #65676b;
+  font-size: 14px;
 }
 
 .community_content {
@@ -404,14 +409,9 @@
   transition: all 0.2s ease;
 }
 
-.community_menu_button:hover {
-  background-color: #e4e6e9;
-  transform: translateY(-2px);
-}
-
 .community_dropdown_menu {
   position: absolute;
-  top: 40px;
+  top: 60px;
   right: 0;
   background-color: white;
   border-radius: 8px;
@@ -431,7 +431,7 @@
 }
 
 .community_dropdown_menu a:hover {
-  background-color: #f0f2f5;
+  text-decoration: underline;
 }
 
 .share_links {
@@ -489,6 +489,21 @@
 .spinner_details {
   width: 30px;
   height: 30px;
+}
+
+.back_button {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  color: #333;
+  padding: 10px 15px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.back_button:hover {
+  background-color: #f0f0f0;
 }
 
 /* Media query for responsive design */

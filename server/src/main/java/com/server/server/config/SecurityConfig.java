@@ -31,7 +31,12 @@ public class SecurityConfig {
 			"/tmf/server/api/v2.2.10/health",
 			"/tmf/server/api/v2.2.10/hashtags/get",
 			"/tmf/server/api/v2.2.10/hashtags/save",
-			"/tmf/server/api/v2.2.10/create/questions"
+			"/tmf/server/api/v2.2.10/create/questions",
+			"/tmf/server/api/v2.2.10/swagger-ui.html",
+			"/tmf/server/api/v2.2.10/swagger-ui/index.html",
+			"/tmf/server/api/v2.2.10/swagger-ui/**",
+			"/tmf/server/api/v2.2.10/v3/api-docs",
+			"/tmf/server/api/v2.2.10/v3/api-docs/**"
 	);
 
 	public SecurityConfig(@Lazy JwtAuthenticationFilter jwtAuthenticationFilter) {

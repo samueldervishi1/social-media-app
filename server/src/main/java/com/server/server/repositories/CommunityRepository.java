@@ -11,9 +11,10 @@ public interface CommunityRepository extends MongoRepository<Community, String> 
 	Optional<Community> findByName(String name);
 
 	@Aggregation(pipeline = {
-        "{ $match: { 'name': { $regex: ?0, $options: 'i' } } }",
-        "{ $project: { userCount: { $size: '$userIds' } } }"
-    })
-    Optional<Integer> getUserCountForCommunity(String name);
+			"{ $match: { 'name': ?0 } }" ,
+			"{ $project: { userCount: { $size: '$userIds' } } }"
+	})
+	Optional<Integer> getUserCountForCommunity(String name);
+
 	List<Community> findByUserIdsContaining(String userId);
 }

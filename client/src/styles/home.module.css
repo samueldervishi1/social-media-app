@@ -15,11 +15,19 @@
   box-sizing: border-box;
 }
 
+.main_content::-webkit-scrollbar{
+  display: none;
+}
+
 .health_check {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
   box-sizing: border-box;
+  margin-top: 40px;
+}
+.health_check::-webkit-scrollbar{
+  display: none;
 }
 
 @media (max-width: 768px) {

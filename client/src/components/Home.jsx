@@ -3,21 +3,18 @@ import { useAuth } from '../auth/AuthContext';
 import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/home.module.css';
 
-const Post = React.lazy(() => import('./Post'));
+import Post from './Post';
 const PostList = React.lazy(() => import('./PostList'));
 const PopularHashtags = React.lazy(() => import('./PopularHashtags'));
 
 const POST_REFRESH_INTERVAL = 300000;
-const SUGGESTION_REFRESH_INTERVAL = 60000; 
 
 const Home = () => {
   const { logout } = useAuth();
 
   const [refreshPostList, setRefreshPostList] = useState(false);
-  const [refreshSuggestions, setRefreshSuggestions] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     const postIntervalId = setInterval(() => {
@@ -27,38 +24,21 @@ const Home = () => {
     return () => clearInterval(postIntervalId);
   }, [logout]);
 
-  useEffect(() => {
-    const showRandomSuggestion = () => {
-      if (suggestions.length === 0) return;
-
-      const randomSuggestion =
-        suggestions[Math.floor(Math.random() * suggestions.length)];
-      setSnackbarMessage(randomSuggestion);
-      setSnackbarOpen(true);
-      setRefreshSuggestions((prev) => !prev);
-    };
-
-    showRandomSuggestion();
-
-    const suggestionIntervalId = setInterval(
-      showRandomSuggestion,
-      SUGGESTION_REFRESH_INTERVAL
-    );
-
-    return () => clearInterval(suggestionIntervalId);
-  }, [suggestions, logout]);
-
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
+  };
+
+  const handlePostRefresh = () => {
+    setRefreshPostList((prev) => !prev);
   };
 
   return (
     <div className={styles.home_container}>
       <div className={styles.main_content}>
+        <Post onPostCreated={handlePostRefresh} />
         <Suspense
           fallback={<div style={{ textAlign: 'center' }}>Loading...</div>}
         >
-          <Post refreshSuggestions={refreshSuggestions} />
           <PostList key={refreshPostList} />
         </Suspense>
       </div>

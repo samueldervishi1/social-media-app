@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApiDocumentationConfig {
 
-	private static final String BASE_URL = "http://localhost:5050/api/v2.1.5/";
+	private static final String BASE_URL = "http://localhost:8080/api/v2.2.10/";
 	private static final String API_TITLE = "API Documentation";
-	private static final String API_VERSION = "2.1.5";
+	private static final String API_VERSION = "2.2.10";
 	private static final String CONTACT_NAME = "Samuel";
 	private static final String CONTACT_EMAIL = "samueldervishi02@gmail.com";
 

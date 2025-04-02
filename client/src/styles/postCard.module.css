@@ -1,0 +1,119 @@
+.card {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.486);
+  margin-bottom: 20px;
+  overflow: hidden
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: white;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userMetadata {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userId {
+  font-weight: 600;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.bullet {
+  color: #65676b;
+  font-size: 14px;
+}
+
+.timestamp {
+  font-size: 14px;
+  color: #65676b;
+}
+
+.postId {
+  font-size: 12px;
+  color: #65676b;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: #e4e6eb;
+}
+
+.content {
+  padding: 0 16px 16px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  word-break: break-word;
+}
+
+.imageContainer {
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.commentsSection {
+  padding: 16px;
+  background-color: white;
+}
+
+.commentsHeader {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.commentsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.commentItem {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.commentItem:last-child {
+  border-bottom: none;
+}
+
+.commentUser {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.noComments {
+  font-size: 14px;
+  color: #65676b;
+  font-style: italic;
+  margin: 0;
+}

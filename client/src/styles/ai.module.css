@@ -72,17 +72,50 @@
   cursor: pointer;
 }
 
-.terminal_block {
-  background-color: lightgrey;
-  color: white;
-  border-radius: 20px;
-  margin: 10px 0;
+.language_indicator {
+  font-size: 13px;
+  background-color: #e9ecef;
+  padding: 3px 10px;
+  border-radius: 4px;
+  color: #495057;
+  font-weight: 600;
 }
 
-.terminal_header {
-  color: black;
-  font-style: italic;
-  font-weight: bold;
+.terminal_block {
+  background-color: #f8f9fa;
+  padding: 0;
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.terminal_block pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.terminal_block code {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: white !important;
+}
+
+.terminal_block::-webkit-scrollbar {
+  height: 8px;
+  background-color: #f8f9fa;
+}
+
+.terminal_block::-webkit-scrollbar-thumb {
+  background-color: #dee2e6;
+  border-radius: 4px;
+}
+
+.terminal_block::-webkit-scrollbar-thumb:hover {
+  background-color: #adb5bd;
 }
 
 .thinking_placeholder {

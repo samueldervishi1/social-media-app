@@ -4,12 +4,12 @@ import { openDB } from 'idb';
 import { getUsernameFromServer } from '../auth/authUtils';
 import { MdDelete } from 'react-icons/md';
 import { LuSendHorizontal } from 'react-icons/lu';
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar, Alert, CircularProgress } from '@mui/material';
 import styles from '../styles/post.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const PostForm = () => {
+const PostForm = ({ onPostCreated }) => {
   const [postContent, setPostContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [username, setUsername] = useState('');
@@ -56,7 +56,13 @@ const PostForm = () => {
 
   const handlePostSubmit = useCallback(
     async (content, isOffline = false) => {
-      if (isSubmitting || (isOffline && !content)) return;
+      if (
+        isSubmitting ||
+        loadingUsername ||
+        !username ||
+        (isOffline && !content)
+      )
+        return;
       setIsSubmitting(true);
 
       try {
@@ -75,7 +81,7 @@ const PostForm = () => {
         if (response.status === 200) {
           showSnackbar('Post created successfully!');
           setPostContent('');
-          setTimeout(() => window.location.reload(), 1000);
+          onPostCreated?.();
         }
       } catch (error) {
         if (!navigator.onLine) {
@@ -91,7 +97,14 @@ const PostForm = () => {
         setIsSubmitting(false);
       }
     },
-    [isSubmitting, showSnackbar, savePostOffline]
+    [
+      isSubmitting,
+      loadingUsername,
+      username,
+      showSnackbar,
+      savePostOffline,
+      onPostCreated,
+    ]
   );
 
   const sendOfflinePosts = useCallback(async () => {
@@ -121,10 +134,9 @@ const PostForm = () => {
   }, []);
 
   const placeholderText = useMemo(() => {
-    if (loadingUsername) {
-      return "What's on your mind today,";
-    }
-    return `What's on your mind today, ${username}?`;
+    return loadingUsername
+      ? "What's on your mind today..."
+      : `What's on your mind today, ${username}?`;
   }, [loadingUsername, username]);
 
   const handleClearInput = () => {
@@ -167,10 +179,14 @@ const PostForm = () => {
           <button
             type='submit'
             className={styles.post_the_post}
-            disabled={isSubmitting}
+            disabled={isSubmitting || loadingUsername || !username}
             title='Share your post'
           >
-            <LuSendHorizontal />
+            {isSubmitting ? (
+              <CircularProgress size={18} color='inherit' />
+            ) : (
+              <LuSendHorizontal />
+            )}
           </button>
         </div>
       </div>

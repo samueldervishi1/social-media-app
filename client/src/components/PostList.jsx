@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-//import axios from 'axios';
+import axios from 'axios';
 import loaderImage from '../assets/377.gif';
-import '../styles/post-card.css';
 
-//const API_URL = import.meta.env.VITE_API_URL;
+const PostCard = React.lazy(() => import('./PostCard'));
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -15,44 +15,65 @@ const PostList = () => {
     const timer = setTimeout(() => {
       setDelayOver(true);
       setIsLoading(false);
-    }, 2000);
+    }, 1500);
 
-    // fetchPosts();
+    fetchPosts();
     return () => clearTimeout(timer);
   }, []);
 
-  // const fetchPosts = async () => {
-  //   try {
-  //     const userPostsResponse = await axios.get(
-  //       `${API_URL}posts`,
-  //       {
-  //         withCredentials: true,
-  //         headers: {
-  //           'X-App-Version': import.meta.env.VITE_APP_VERSION,
-  //         },
-  //       }
-  //     );
+  const fetchPosts = async () => {
+    try {
+      const userPostsResponse = await axios.get(`${API_URL}posts`, {
+        withCredentials: true,
+        headers: {
+          'X-App-Version': import.meta.env.VITE_APP_VERSION,
+        },
+      });
 
-  //     const allPosts = [...userPostsResponse.data];
+      const allPosts = [...userPostsResponse.data];
 
-  //     const filteredPosts = allPosts.filter(
-  //       (post) => !post.deleted && !post.reported
-  //     );
+      const filteredPosts = allPosts.filter(
+        (post) => !post.deleted && !post.reported
+      );
 
-  //     filteredPosts.sort((a, b) => {
-  //       const dateA = new Date(a.createTime || `${a.postDate}T${a.postTime}`);
-  //       const dateB = new Date(b.createTime || `${b.postDate}T${b.postTime}`);
-  //       return dateB - dateA;
-  //     });
+      const postsWithUsernames = await Promise.all(
+        filteredPosts.map(async (post) => {
+          if (!post.userId) {
+            return { ...post, username: 'Unknown' };
+          }
 
-  //     setPosts(filteredPosts);
-  //   } catch (error) {
-  //     console.error('Error fetching posts:', error.message);
-  //     setError('Something went wrong. Please try again later.');
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+          try {
+            const usernameResponse = await axios.get(
+              `${API_URL}retrieve/username?userId=${post.userId}`,
+              {
+                withCredentials: true,
+                headers: {
+                  'X-App-Version': import.meta.env.VITE_APP_VERSION,
+                },
+              }
+            );
+
+            const username = usernameResponse.data;
+            return { ...post, username };
+          } catch (err) {
+            return { ...post, username: 'Unknown' };
+          }
+        })
+      );
+
+      postsWithUsernames.sort((a, b) => {
+        const dateA = new Date(a.createTime || `${a.postDate}T${a.postTime}`);
+        const dateB = new Date(b.createTime || `${b.postDate}T${b.postTime}`);
+        return dateB - dateA;
+      });
+
+      setPosts(postsWithUsernames);
+    } catch (error) {
+      setError('Something went wrong. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (error) {
     return (
@@ -69,7 +90,7 @@ const PostList = () => {
           src={loaderImage}
           alt='Loading...'
           className='list-loader'
-          style={{ width: 30 }}
+          style={{ width: 30, position: 'relative', left: '45%' }}
         />
       </div>
     );
@@ -90,15 +111,19 @@ const PostList = () => {
     <div className='post-list' style={{ marginBottom: 15 }}>
       {posts.map((post) => (
         <div key={post.id} className='post-card-wrapper'>
-          {/* <PostCard
+          <PostCard
             id={post.id}
             content={post.content}
             commentsList={post.commentsList}
-            postDate={post.postDate}
-            postTime={post.postTime}
-            userId={post.ownerId || post.userId}
+            postDate={new Date(
+              post.createTime || `${post.postDate}T${post.postTime}`
+            ).toLocaleDateString()}
+            postTime={new Date(
+              post.createTime || `${post.postDate}T${post.postTime}`
+            ).toLocaleTimeString()}
+            userId={post.username}
             imageUrl={post.imageUrl}
-          /> */}
+          />
         </div>
       ))}
     </div>
