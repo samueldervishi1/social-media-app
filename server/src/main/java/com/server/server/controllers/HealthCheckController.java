@@ -1,5 +1,6 @@
 package com.server.server.controllers;
 
+import com.server.server.services.HealthLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,12 @@ import java.util.Map;
 @RequestMapping("/health")
 public class HealthCheckController {
 
+	private final HealthLogService  healthLogService;
+
+	public HealthCheckController(HealthLogService healthLogService) {
+		this.healthLogService = healthLogService;
+	}
+
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> checkHealth() {
 		Map<String, Object> response = new HashMap<>();
@@ -20,6 +27,7 @@ public class HealthCheckController {
 		response.put("status" , statusMessage);
 		response.put("timestamp" , LocalDateTime.now().toString());
 
+		healthLogService.saveHealthCheck(statusMessage);
 		return ResponseEntity.ok(response);
 	}
 }

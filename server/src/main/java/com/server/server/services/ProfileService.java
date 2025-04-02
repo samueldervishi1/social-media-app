@@ -3,14 +3,12 @@ package com.server.server.services;
 import com.server.server.exceptions.CustomException;
 import com.server.server.models.User;
 import com.server.server.repositories.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Slf4j
 @Service
 public class ProfileService {
 

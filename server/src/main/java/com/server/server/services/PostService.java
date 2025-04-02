@@ -5,7 +5,6 @@ import com.server.server.models.Post;
 import com.server.server.models.User;
 import com.server.server.repositories.PostRepository;
 import com.server.server.repositories.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Slf4j
 @Service
 public class PostService {
 

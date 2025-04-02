@@ -3,12 +3,10 @@ package com.server.server.services;
 import com.server.server.exceptions.CustomException;
 import com.server.server.models.User;
 import com.server.server.repositories.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
 public class UserService {
 
@@ -26,7 +24,7 @@ public class UserService {
 	public String getUsernameById(String userId) {
 		return userRepository.findById(userId)
 				.map(User::getUsername)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new CustomException(404, "User not found"));
 	}
 
 	public List<User> getAllUsers() {

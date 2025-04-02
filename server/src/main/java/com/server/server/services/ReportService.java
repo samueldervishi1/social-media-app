@@ -5,12 +5,10 @@ import com.server.server.models.Post;
 import com.server.server.models.Report;
 import com.server.server.repositories.PostRepository;
 import com.server.server.repositories.ReportPostRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-@Slf4j
 @Service
 public class ReportService {
 
