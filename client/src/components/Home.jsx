@@ -39,7 +39,7 @@ const Home = () => {
         <Suspense
           fallback={<div style={{ textAlign: 'center' }}>Loading...</div>}
         >
-          <PostList key={refreshPostList} />
+          <PostList key={refreshPostList} onPostRefresh={handlePostRefresh}/>
         </Suspense>
       </div>
       <div className={styles.health_check}>

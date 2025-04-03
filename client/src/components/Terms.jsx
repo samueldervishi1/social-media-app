@@ -1,5 +1,5 @@
 import React from 'react';
-import termsData from '../assets/terms.json';
+import { termsAndServices } from '../constants/terms';
 import styles from '../styles/terms.module.css';
 
 const TermsAndServices = () => {
@@ -25,7 +25,7 @@ const TermsAndServices = () => {
 
       <div className={styles.terms_card}>
         <div className={styles.terms_sections}>
-          {termsData.termsAndServices.map((term) => (
+          {termsAndServices.map((term) => (
             <div key={term.id} className={styles.term_section}>
               <h2 className={styles.term_title}>{term.title}</h2>
               <div className={styles.term_content}>

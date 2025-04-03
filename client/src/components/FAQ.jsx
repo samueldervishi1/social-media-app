@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import faqData from '../assets/faq.json';
+import { faqs } from '../constants/faq';
 import styles from '../styles/faq.module.css';
 
 const FAQ = () => {
@@ -56,7 +56,7 @@ const FAQ = () => {
       </div>
 
       <div className={styles.faq_card}>
-        {faqData.map((faq, index) => (
+        {faqs.map((faq, index) => (
           <div key={index} className={styles.faq_item}>
             <div
               onClick={() => toggleQuestion(index)}

@@ -5,7 +5,7 @@ import loaderImage from '../assets/377.gif';
 const PostCard = React.lazy(() => import('./PostCard'));
 const API_URL = import.meta.env.VITE_API_URL;
 
-const PostList = () => {
+const PostList = ({ onPostRefresh }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +39,7 @@ const PostList = () => {
       const postsWithUsernames = await Promise.all(
         filteredPosts.map(async (post) => {
           if (!post.userId) {
-            return { ...post, username: 'Unknown' };
+            return { ...post, username: 'User Deleted' };
           }
 
           try {
@@ -56,7 +56,7 @@ const PostList = () => {
             const username = usernameResponse.data;
             return { ...post, username };
           } catch (err) {
-            return { ...post, username: 'Unknown' };
+            return { ...post, username: 'User Deleted' };
           }
         })
       );
@@ -121,8 +121,10 @@ const PostList = () => {
             postTime={new Date(
               post.createTime || `${post.postDate}T${post.postTime}`
             ).toLocaleTimeString()}
-            userId={post.username}
+            userId={post.userId}
+            username={post.username}
             imageUrl={post.imageUrl}
+            onPostRefresh={onPostRefresh}
           />
         </div>
       ))}

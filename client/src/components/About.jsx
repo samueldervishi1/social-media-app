@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import aboutData from '../assets/about.json';
+import { aboutApp } from '../constants/about';
 import styles from '../styles/about.module.css';
 
 const About = () => {
@@ -19,7 +19,7 @@ const About = () => {
   );
 
   const formattedSections = useMemo(() => {
-    return aboutData.aboutApp.map((section) => (
+    return aboutApp.map((section) => (
       <div key={section.id} className={styles.about_section}>
         <h2 className={styles.about_title}>{section.title}</h2>
         <div className={styles.about_content}>

@@ -95,6 +95,15 @@ const Navbar = () => {
         },
       });
 
+      // Clear all cookies
+      document.cookie.split(';').forEach(cookie => {
+        const [name] = cookie.trim().split('=');
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      });
+
+      // Log the user out
+      await logout();
+      
       setShowDeleteModal(false);
       window.location.href = '/login';
     } catch (error) {
@@ -103,7 +112,7 @@ const Navbar = () => {
     } finally {
       setIsDeleting(false);
     }
-  }, [userId]);
+  }, [userId, logout]);
 
   const handleLogout = useCallback(async () => {
     setIsLoggingOut(true);

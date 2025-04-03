@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import loadingGif from '../assets/377.gif';
 import styles from '../styles/PopularHashtags.module.css';
@@ -19,20 +19,34 @@ const PopularHashtags = () => {
           },
         });
         setHashtags(response.data);
-
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
       } catch (error) {
         console.error('Error fetching hashtags:', error);
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
+      } finally {
+        setTimeout(() => setLoading(false), 900);
       }
     };
 
     fetchHashtags();
   }, []);
+
+  const renderedHashtags = useMemo(() => {
+    if (hashtags.length === 0) return null;
+
+    return hashtags.map((hashtag) => (
+      <div key={hashtag.name} className={styles.hashtagItem}>
+        <a
+          href={hashtag.link}
+          className={styles.hashtagLink}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          #{hashtag.name}
+        </a>
+        <span className={styles.separator}>—</span>
+        <span className={styles.viewCount}>{hashtag.views} views</span>
+      </div>
+    ));
+  }, [hashtags]);
 
   return (
     <div className={styles.container}>
@@ -44,24 +58,7 @@ const PopularHashtags = () => {
           </div>
         ) : (
           <div className={styles.hashtagsContainer}>
-            {hashtags.length > 0 ? (
-              hashtags.map((hashtag, index) => (
-                <div key={index} className={styles.hashtagItem}>
-                  <a
-                    href={hashtag.link}
-                    className={styles.hashtagLink}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    #{hashtag.name}
-                  </a>
-                  <span className={styles.separator}>—</span>
-                  <span className={styles.viewCount}>
-                    {hashtag.views} views
-                  </span>
-                </div>
-              ))
-            ) : (
+            {renderedHashtags || (
               <div className={styles.emptyState}>
                 <p>No trending hashtags available at the moment.</p>
               </div>
