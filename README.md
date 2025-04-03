@@ -1,61 +1,44 @@
-# Simple Social Media App | Chattr
 
-This is a simple social media application that is still under development. It combines a Java backend with a ReactJS frontend built using Vite.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Technologies](#technologies)
-- [Setup](#setup)
-  - [Backend Setup](#backend-setup)
-  - [Frontend Setup](#frontend-setup)
-  - [Database Setup](#database-setup)
-- [Usage](#usage)
-- [Future Improvements](#future-improvements)
-- [Contributing](#contributing)
-- [License](#license)
-## Overview
+# Social Media App | Chattr
 
 This project aims to create a basic social media platform where users can connect, follow each other, and share posts. It is a work in progress with ongoing development to add more features and enhance functionality.
 
-## Technologies
+## Tech Stack
 
-### Backend
+**Client:**
+- React:  JavaScript library for building user interfaces. 
+- Vite: Fast build tool that supports modern JavaScript and TypeScript features.
 
-- **Java:** Programming language used for backend development.
-- **Spring Boot:** Framework for creating Java applications.
-- **MongoDB:** NoSQL database for data storage.
+**Server:** 
+- Java: Programming language used for backend development.
+- Spring Boot: Framework for creating Java applications.
+- MongoDB: NoSQL database for data storage.
 
-### Frontend
-
-- **ReactJS:** JavaScript library for building user interfaces.
-- **Vite:** Fast build tool that supports modern JavaScript and TypeScript features.
 
 ## Setup
 
 To run this project locally, follow these steps:
 
-### Backend Setup
+### Back-end Setup
 
-1. Ensure you have Java and Gradle installed.
-2. Clone this repository:
+- Ensure you have Java 17 and Maven installed.
+- Clone this repository:
    ```bash
    git clone https://github.com/samueldervishi1/social-media-app.git
    cd social-media-app
    cd server
    ```
-
-## Build the project using Gradle:
+### Build the project using Maven:
   ```bash
-  ./gradlew build
+  mvn clean install
   ```
 
-## Run the backend server:
+### Run the backend server:
   ```bash
-  ./gradlew bootRun
+  mvn spring-boot:run
   ```
 
-## Frontend Setup
+### Frontend Setup
 - Ensure you have Node.js and npm installed.
 - Navigate to the frontend directory:
 ```bash
@@ -77,6 +60,10 @@ npm run dev
 
 ## Database Setup
 - Configure MongoDB or your preferred database connection in the backend application properties.
+ 
+    application.properties:
+    - spring.data.mongodb.uri=mongodb+srv://<username>:<password>@<cluster-address>/<dbname>?retryWrites=true&w=majority&appName=<appName>
+    - spring.data.mongodb.database=database name
 
 ## Usage
 - Register as a new user or log in with existing credentials.
@@ -91,11 +78,11 @@ npm run dev
 ## Contributing
 Contributions are welcome! If you'd like to contribute to the project, please follow these steps:
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/my-feature`).
-3. Make your changes and commit them (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature/my-feature`).
-5. Create a new Pull Request.
+- Fork the repository.
+- Create a new branch (`git checkout -b feature/my-feature`).
+- Make your changes and commit them (`git commit -am 'Add new feature'`).
+- Push to the branch (`git push origin feature/my-feature`).
+- Create a new Pull Request.
 
 ## License
 
