@@ -11,6 +11,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -105,12 +106,12 @@ public class AuthController {
 			ResponseCookie cookie = ResponseCookie.from("token" , token)
 					.httpOnly(true)
 					.secure(true)
+					.sameSite("None")
 					.path("/")
 					.maxAge(Duration.ofHours(1))
-					.sameSite("None")
 					.build();
 
-			response.addHeader("Set-Cookie" , cookie.toString());
+			response.setHeader(HttpHeaders.SET_COOKIE , cookie.toString());
 
 			return ResponseEntity.ok("Login successful");
 		} catch (CustomException e) {
@@ -121,9 +122,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> logout(HttpServletRequest request , HttpServletResponse response) {
 		SecurityContextHolder.clearContext();
-		ResponseCookie cookie = ResponseCookie.from("token", "")
+		ResponseCookie cookie = ResponseCookie.from("token" , "")
 				.httpOnly(true)
 				.secure(true)
 				.path("/")
@@ -131,7 +132,7 @@ public class AuthController {
 				.sameSite("None")
 				.build();
 
-		response.setHeader("Set-Cookie", cookie.toString());
+		response.setHeader("Set-Cookie" , cookie.toString());
 
 		return ResponseEntity.ok("Logged out");
 	}
@@ -161,7 +162,7 @@ public class AuthController {
 			response.setUserId((String) claims.get("userId"));
 			response.setStatus("SUCCESS");
 			response.setMessage("User info retrieved from token");
-			logger.info("User info retrieved from token: {}", response);
+			logger.info("User info retrieved from token: {}" , response);
 
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
