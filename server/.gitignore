@@ -32,7 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 .mvn
-server/out/production/resources/application.properties
-server/src/main/resources/application.properties
 mvnw
 mvnw.cmd
