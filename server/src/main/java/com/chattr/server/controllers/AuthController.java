@@ -107,7 +107,8 @@ public class AuthController {
 					+ "; Path=/"
 					+ "; HttpOnly"
 					+ "; Secure"
-					+ "; SameSite=None";
+					+ "; SameSite=None"
+					+ "; Partitioned";
 
 			response.setHeader("Set-Cookie" , cookieValue);
 
@@ -130,7 +131,9 @@ public class AuthController {
 				.sameSite("None")
 				.build();
 
-		response.setHeader("Set-Cookie" , cookie.toString());
+		String clearedCookie = cookie + "; Partitioned";
+
+		response.setHeader("Set-Cookie" , clearedCookie);
 
 		return ResponseEntity.ok("Logged out");
 	}
