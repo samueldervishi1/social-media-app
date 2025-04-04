@@ -2,6 +2,7 @@ package com.chattr.server.config;
 
 import com.chattr.server.utils.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Lazy;
@@ -22,20 +24,23 @@ import org.springframework.context.annotation.Lazy;
 @EnableWebSecurity
 public class SecurityConfig {
 
+	@Value("${cors.allowed-origins}")
+	private String allowedOrigins;
+
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-	private static final List<String> PUBLIC_URLS = List.of("/tmf/server/api/v2.2.10/login",
-			"/tmf/server/api/v2.2.10/register",
-			"/tmf/server/api/v2.2.10/internal/token",
-			"/tmf/server/api/v2.2.10/me",
-			"/tmf/server/api/v2.2.10/logout",
-			"/tmf/server/api/v2.2.10/health",
-			"/tmf/server/api/v2.2.10/hashtags/get",
-			"/tmf/server/api/v2.2.10/hashtags/save",
-			"/tmf/server/api/v2.2.10/create/questions",
-			"/tmf/server/api/v2.2.10/swagger-ui.html",
-			"/tmf/server/api/v2.2.10/swagger-ui/index.html",
-			"/tmf/server/api/v2.2.10/swagger-ui/**",
-			"/tmf/server/api/v2.2.10/v3/api-docs",
+	private static final List<String> PUBLIC_URLS = List.of("/tmf/server/api/v2.2.10/login" ,
+			"/tmf/server/api/v2.2.10/register" ,
+			"/tmf/server/api/v2.2.10/internal/token" ,
+			"/tmf/server/api/v2.2.10/me" ,
+			"/tmf/server/api/v2.2.10/logout" ,
+			"/tmf/server/api/v2.2.10/health" ,
+			"/tmf/server/api/v2.2.10/hashtags/get" ,
+			"/tmf/server/api/v2.2.10/hashtags/save" ,
+			"/tmf/server/api/v2.2.10/create/questions" ,
+			"/tmf/server/api/v2.2.10/swagger-ui.html" ,
+			"/tmf/server/api/v2.2.10/swagger-ui/index.html" ,
+			"/tmf/server/api/v2.2.10/swagger-ui/**" ,
+			"/tmf/server/api/v2.2.10/v3/api-docs" ,
 			"/tmf/server/api/v2.2.10/v3/api-docs/**"
 	);
 
@@ -69,7 +74,8 @@ public class SecurityConfig {
 			CorsConfiguration config = new CorsConfiguration();
 			config.setAllowedMethods(List.of("GET" , "POST" , "PUT" , "DELETE" , "OPTIONS"));
 			config.setAllowedHeaders(List.of("*"));
-			config.setAllowedOrigins(List.of("http://localhost:5173"));
+			List<String> origins = Arrays.asList(allowedOrigins.split(","));
+			config.setAllowedOrigins(origins);
 			config.setExposedHeaders(List.of("Authorization" , "Content-Type"));
 			config.setAllowCredentials(true);
 			return config;
