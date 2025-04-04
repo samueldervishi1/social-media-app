@@ -103,15 +103,13 @@ public class AuthController {
 
 		try {
 			String token = loginService.login(username , password);
-			ResponseCookie cookie = ResponseCookie.from("token" , token)
-					.httpOnly(true)
-					.secure(true)
-					.sameSite("None")
-					.path("/")
-					.maxAge(Duration.ofHours(1))
-					.build();
+			String cookieValue = "token=" + token
+					+ "; Path=/"
+					+ "; HttpOnly"
+					+ "; Secure"
+					+ "; SameSite=None";
 
-			response.setHeader(HttpHeaders.SET_COOKIE , cookie.toString());
+			response.setHeader("Set-Cookie" , cookieValue);
 
 			return ResponseEntity.ok("Login successful");
 		} catch (CustomException e) {
