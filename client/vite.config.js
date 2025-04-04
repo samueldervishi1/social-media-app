@@ -2,18 +2,11 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import { compression } from 'vite-plugin-compression2';
 import { VitePWA } from 'vite-plugin-pwa';
-import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    visualizer({
-      open: true,
-      filename: 'dist/bundle-analysis.html',
-      gzipSize: true,
-      brotliSize: true
-    }),
     compression({
       brotli: true,
       gzip: true,
@@ -55,6 +48,7 @@ export default defineConfig({
             },
           },
         ],
+        globIgnores: ['**/bundle-analysis.html'],
       },
     }),
   ],
@@ -78,10 +72,5 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-  },
-  server: {
-    proxy: {
-      '/tmf/server/api/v2.2.10': 'http://localhost:8080',
-    },
-  },
+  }
 });

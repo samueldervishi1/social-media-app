@@ -8,8 +8,6 @@ import user from '../assets/reshot-icon-user-G3RUDHZMQ6.svg';
 import loaderGif from '../assets/377.gif';
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { LuSendHorizontal } from 'react-icons/lu';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/github-dark.css';
 import styles from '../styles/ai.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -88,13 +86,10 @@ const ChatAI = () => {
     let formattedText = text.replace(codeBlockRegex, (match, lang, _, code) => {
       const language = lang?.trim() || 'plaintext';
       const cleanLanguage = language.split(':')[0];
-      const highlightedCode = hljs.highlight(code, {
-        language: cleanLanguage,
-      }).value;
 
       return `
         <div class="${styles.terminal_block}">
-          <pre><code class="hljs ${cleanLanguage}">${highlightedCode}</code></pre>
+          <pre><code class="${cleanLanguage}">${code}</code></pre>
         </div>
       `;
     });

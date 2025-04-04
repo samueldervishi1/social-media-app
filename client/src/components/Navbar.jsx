@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import axios from 'axios';
 import { getUserIdFromServer } from '../auth/authUtils';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
