@@ -1,0 +1,178 @@
+* {
+  box-sizing: border-box;
+}
+
+body.register_page {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  height: auto;
+  margin: 10px auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body.register_page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  filter: blur(6px);
+  z-index: -1;
+}
+
+.error_message_register {
+  color: red;
+  text-align: center;
+  font-size: 13px;
+}
+
+.container_sign {
+  background: white;
+  color: black;
+  box-shadow: 0 6px 12px rgba(17, 17, 17, 0.445);
+  width: 600px;
+  padding: 20px;
+  margin-right: 10px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.regTitle {
+  color: #1c1c1d;
+}
+
+.input_error {
+  color: red;
+  text-align: center;
+}
+
+.fill {
+  text-align: center;
+}
+
+.text_center {
+  text-align: center;
+}
+
+.my_3 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.name_register {
+  display: flex;
+  text-align: start;
+  justify-content: start;
+  margin-left: 10px;
+}
+
+label {
+  display: flex !important;
+}
+
+.password_toggle_icon {
+  position: absolute;
+  top: 71%;
+  color: black;
+  right: 35px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+a {
+  color: dodgerblue;
+}
+
+.signin {
+  text-align: center;
+}
+
+.screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex-direction: column;
+  height: auto;
+  gap: 10px;
+}
+
+.info_register {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 20px;
+  padding: 12px 20px;
+  background-color: white;
+  color: #ba9d46;
+  border: 2px solid #997404;
+  border-radius: 12px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.info_register_info {
+  font-size: 30px;
+  margin-right: 10px;
+}
+
+.info_text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #ba9d46;
+}
+
+@media (max-width: 768px) {
+  .container_sign {
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 468px) {
+  .container_sign {
+    width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container_sign {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .message {
+    display: none;
+  }
+  .messageOpen {
+    right: 20px;
+    visibility: visible;
+    opacity: 1;
+    display: block;
+    transition: right 0.3s ease-in-out;
+  }
+}
+
+@media (min-width: 769px) {
+  .message {
+    display: none;
+  }
+  .messageOpen {
+    right: 20px;
+    visibility: visible;
+    opacity: 1;
+    display: block;
+    transition: right 0.3s ease-in-out;
+  }
+}

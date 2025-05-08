@@ -1,0 +1,21 @@
+{
+  "short_name": "Chattr",
+  "name": "Chattr",
+  "description": "A social media app for the future",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#42259b",
+  "icons": [
+    {
+      "src": "/new_logo1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/new_logo1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

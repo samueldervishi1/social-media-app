@@ -1,0 +1,165 @@
+.post_form {
+  margin: 20px auto;
+  width: 100%;
+  max-width: 750px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input_with_icons {
+  display: flex;
+  position: relative;
+  border: 1px solid #e1e8ed;
+  border-radius: 16px;
+  background-color: white;
+  align-items: center;
+  padding: 8px 15px 8px 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.input_with_icons:focus-within {
+  border-color: #1da1f2;
+  box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+}
+
+.textarea {
+  padding: 12px;
+  border: none;
+  border-radius: 16px;
+  background-color: transparent;
+  color: #333;
+  font-size: 15px;
+  width: 100%;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+  min-height: 24px;
+  transition: height 0.2s ease;
+}
+
+.textarea::placeholder {
+  color: #8899a6;
+}
+
+.icons_container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.icon {
+  color: #657786;
+  cursor: pointer;
+  font-size: 22px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.icon:hover {
+  color: #1da1f2;
+  transform: scale(1.1);
+}
+
+.post_the_post {
+  background: transparent;
+  color: #1da1f2;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.post_the_post:hover {
+  transform: scale(1.1);
+  color: #0c85d0;
+}
+
+.post_the_post:disabled {
+  color: #8899a6;
+  cursor: not-allowed;
+}
+
+.emoji_picker {
+  position: absolute;
+  bottom: 50px;
+  right: 10px;
+  z-index: 10001;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.animatedDots {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: #8899a6;
+  animation: dotsBlink 1.2s steps(3, end) infinite;
+}
+
+@keyframes dotsBlink {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+}
+
+.animatedDots {
+  font-weight: bold;
+  font-size: 1rem;
+  animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0%,
+  20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  100% {
+    content: '...';
+  }
+}
+
+@media (max-width: 768px) {
+  .post_form {
+    margin: 15px auto;
+  }
+
+  .input_with_icons {
+    padding: 6px 12px 6px 6px;
+  }
+
+  .textarea {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .icon,
+  .post_the_post {
+    font-size: 20px;
+  }
+
+  .icons_container {
+    gap: 10px;
+  }
+}

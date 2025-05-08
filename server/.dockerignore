@@ -1,0 +1,23 @@
+# Ignore build output
+/target
+
+# Maven / Gradle folders
+/.mvn
+.gradle
+build/
+
+# IDE and OS files
+.idea
+*.iml
+*.log
+.DS_Store
+
+# Git and CI/CD
+.git
+.gitignore
+.github
+
+# Misc
+.env
+*.class
+*.jar

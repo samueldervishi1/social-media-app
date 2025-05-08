@@ -1,0 +1,183 @@
+* {
+  box-sizing: border-box;
+}
+
+body.login_page {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: auto;
+}
+
+body.login_page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.custom_login_loader {
+  width: 30px;
+}
+
+.form_container {
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container_login {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 20px;
+  color: black;
+  border-radius: 1px;
+  border: 0.1px solid grey;
+  box-shadow: 0 6px 12px rgba(226, 226, 226, 0.445);
+}
+
+.text_center {
+  text-align: center;
+}
+
+.my_3 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.error_message_login {
+  color: red;
+  text-align: center;
+  font-size: 13px;
+}
+
+.spinner_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.username_login {
+  display: flex;
+  text-align: start;
+  justify-content: start;
+  margin-left: 10px;
+}
+
+.password_login {
+  display: flex;
+  text-align: start;
+  justify-content: start;
+  margin-left: 10px;
+}
+
+.fill {
+  text-align: center;
+}
+
+.login {
+  color: black;
+  text-align: center;
+}
+
+input[type='text'],
+input[type='password'] {
+  width: calc(100% - 5px);
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: 0.1px solid grey;
+  background: transparent;
+  color: black;
+  border-radius: 1px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+input[type='text']:focus,
+input[type='password']:focus {
+  background-color: transparent !important;
+  outline: none;
+  box-shadow: none;
+}
+
+hr {
+  border: 1px solid black;
+  margin-bottom: 25px;
+}
+
+button:hover {
+  opacity: 1;
+}
+
+a {
+  color: dodgerblue;
+  text-decoration: none;
+}
+
+.signup {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 100vh;
+  gap: 50px;
+}
+
+.password_input_container {
+  position: relative;
+}
+
+.password_input_container input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.password_toggle_icon {
+  position: absolute;
+  top: 40%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .container_login {
+    width: 600px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 468px) {
+  .container_login {
+    width: 380px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container_login {
+    width: 800px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

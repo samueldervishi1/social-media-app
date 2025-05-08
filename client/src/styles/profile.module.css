@@ -1,0 +1,49 @@
+.profile_layout {
+  display: flex;
+  justify-content: space-evenly;
+  margin-left: 20px;
+  align-items: center;
+}
+
+.classname {
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+.profile_error {
+  color: red;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin-top: 35%;
+  justify-content: center;
+}
+
+.loader_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loader_image {
+  width: 30px;
+  transform: translate(-0%, -50%);
+}
+
+.loader_text {
+  font-size: 12px;
+  margin-top: 10px;
+  font-size: 12;
+  position: fixed;
+  top: 51%;
+  left: 49.5%;
+  transform: translate(-50%, -50%);
+}

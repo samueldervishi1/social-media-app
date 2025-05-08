@@ -1,0 +1,174 @@
+.container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.h1_container {
+  margin: 0 auto 40px auto;
+  background-image: url('../assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 80px 40px;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+}
+
+.h1_container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.title {
+  position: relative;
+  margin: 0;
+  color: #333;
+  font-size: 60px;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.statusMessage {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  max-width: 700px;
+  margin: 0 auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.statusMessage:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.statusBanner {
+  padding: 25px;
+  color: white;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.statusBanner p {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.statusBanner.green {
+  background-color: #28a745;
+}
+
+.statusBanner.yellow {
+  background-color: #ffc107;
+}
+
+.statusBanner.red {
+  background-color: #dc3545;
+}
+
+.statusDetails {
+  padding: 20px;
+  background-color: white;
+  color: #555;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.statusDetails p {
+  margin: 10px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.loader p {
+  margin-top: 20px;
+  color: #555;
+  font-size: 18px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(29, 161, 242, 0.1);
+  border-top-color: #1da1f2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.green {
+  background-color: #28a745;
+}
+
+.yellow {
+  background-color: #ffc107;
+  color: black;
+}
+
+.red {
+  background-color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .h1_container {
+    padding: 60px 20px;
+  }
+
+  .title {
+    font-size: 40px;
+  }
+
+  .statusBanner p {
+    font-size: 20px;
+  }
+
+  .statusMessage {
+    width: 90%;
+  }
+
+  .loader {
+    width: 90%;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusBanner p {
+    font-size: 18px;
+  }
+
+  .statusDetails p {
+    font-size: 14px;
+  }
+}

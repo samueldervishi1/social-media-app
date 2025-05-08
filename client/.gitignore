@@ -1,0 +1,7 @@
+/node_modules
+package-lock.json
+data.js
+.env
+/dist
+test.txt
+.env
