@@ -11,79 +11,85 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Service for tracking periodic application health checks,
+ * storing logs by date, and avoiding duplicate entries within 30 minutes.
+ */
 @Slf4j
 @Service
 public class HealthLogService {
-    private final HealthLogRepository healthLogRepository;
 
-    public HealthLogService(HealthLogRepository healthLogRepository) {
-        this.healthLogRepository = healthLogRepository;
-    }
+	private final HealthLogRepository healthLogRepository;
 
-    @Scheduled(cron = "0 */30 * * * *")
-    public void scheduledHealthCheck() {
-        log.info("Running scheduled health check...");
-        saveHealthCheck("Scheduled check: All systems operational");
-    }
+	public HealthLogService(HealthLogRepository healthLogRepository) {
+		this.healthLogRepository = healthLogRepository;
+	}
 
-    public void saveHealthCheck(String status) {
-        try {
-            LocalDate today = LocalDate.now();
-            LocalDateTime now = LocalDateTime.now();
+	/**
+	 * Scheduled health check that runs every 30 minutes.
+	 * Prevents saving if the last check was recent.
+	 */
+	@Scheduled(cron = "0 */30 * * * *")
+	public void scheduledHealthCheck() {
+		log.info("Running scheduled health check...");
+		saveHealthCheck("Scheduled check: All systems operational");
+	}
 
-            List<HealthLog> logs = healthLogRepository.findByDate(today);
-            HealthLog healthLog;
+	/**
+	 * Saves a health check log if 30 minutes have passed since the last one.
+	 *
+	 * @param status description of the system status
+	 */
+	public void saveHealthCheck(String status) {
+		try {
+			LocalDate today = LocalDate.now();
+			LocalDateTime now = LocalDateTime.now();
 
-            if (logs.isEmpty()) {
-                healthLog = new HealthLog();
-                healthLog.setDate(today);
-            } else {
-                if (logs.size() > 1) {
-                    log.warn("Multiple logs found for today: {}", logs.size());
-                }
-                healthLog = logs.get(0);
-            }
+			List<HealthLog> logs = healthLogRepository.findByDate(today);
+			HealthLog healthLog = logs.isEmpty() ? new HealthLog() : logs.get(0);
 
-            List<HealthLog.HealthEntry> entries = healthLog.getChecks();
-            if (!entries.isEmpty()) {
-                HealthLog.HealthEntry lastEntry = entries.get(entries.size() - 1);
-                LocalDateTime lastTimestamp = LocalDateTime.parse(lastEntry.getTimestamp());
-                Duration diff = Duration.between(lastTimestamp, now);
+			if (logs.size() > 1) {
+				log.warn("Multiple logs found for today: {}" , logs.size());
+			}
 
-                if (diff.toMinutes() < 30) {
-                    log.info("Last health check was {} minutes ago. Skipping save.", diff.toMinutes());
-                    return;
-                }
-            }
+			if (!logs.isEmpty()) {
+				List<HealthLog.HealthEntry> entries = healthLog.getChecks();
+				if (!entries.isEmpty()) {
+					LocalDateTime lastTimestamp = LocalDateTime.parse(entries.get(entries.size() - 1).getTimestamp());
+					long minutesDiff = Duration.between(lastTimestamp , now).toMinutes();
 
-            HealthLog.HealthEntry newEntry = new HealthLog.HealthEntry();
-            newEntry.setTimestamp(now.toString());
-            newEntry.setStatus(status);
+					if (minutesDiff < 30) {
+						log.info("Last health check was {} minutes ago. Skipping save." , minutesDiff);
+						return;
+					}
+				}
+			}
 
-            healthLog.getChecks().add(newEntry);
-            healthLogRepository.save(healthLog);
+			HealthLog.HealthEntry entry = new HealthLog.HealthEntry();
+			entry.setTimestamp(now.toString());
+			entry.setStatus(status);
 
-            log.info("Health check saved at {}", now);
+			healthLog.setDate(today);
+			healthLog.getChecks().add(entry);
+			healthLogRepository.save(healthLog);
 
-        } catch (Exception e) {
-            log.error("Error while saving health check: {}", e.getMessage(), e);
-            throw new CustomException(500, "Something went wrong while saving health check");
-        }
-    }
+			log.info("Health check saved at {}" , now);
 
-    public HealthLog.HealthEntry getLastHealthEntry() {
-        LocalDate today = LocalDate.now();
-        List<HealthLog> logs = healthLogRepository.findByDate(today);
+		} catch (Exception e) {
+			log.error("Error while saving health check: {}" , e.getMessage() , e);
+			throw new CustomException(500 , "Something went wrong while saving health check");
+		}
+	}
 
-        if (!logs.isEmpty()) {
-            List<HealthLog.HealthEntry> entries = logs.get(0).getChecks();
-            if (!entries.isEmpty()) {
-                return entries.get(entries.size() - 1);
-            }
-        }
-
-        return null;
-    }
+	/**
+	 * Retrieves the most recent health check for today, if available.
+	 */
+	public HealthLog.HealthEntry getLastHealthEntry() {
+		List<HealthLog> logs = healthLogRepository.findByDate(LocalDate.now());
+		if (!logs.isEmpty() && !logs.get(0).getChecks().isEmpty()) {
+			return logs.get(0).getChecks().get(logs.get(0).getChecks().size() - 1);
+		}
+		return null;
+	}
 }

@@ -20,7 +20,7 @@ public class CommunityPost {
     private String communityName;
     private String content;
     private LocalDateTime createTime;
-    private List<Comments> comments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
     private boolean deleted;
 
     public CommunityPost() {

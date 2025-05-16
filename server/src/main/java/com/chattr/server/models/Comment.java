@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @Document
-public class Comments {
+public class Comment {
 
     @Id
     private String id;
@@ -21,7 +21,7 @@ public class Comments {
     private String commentDate;
     private String commentTime;
 
-    public Comments(String userId, String content) {
+    public Comment(String userId, String content) {
         this.id = UUID.randomUUID().toString();
         this.userId = userId;
         this.content = content;

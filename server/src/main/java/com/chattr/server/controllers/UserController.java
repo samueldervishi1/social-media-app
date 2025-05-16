@@ -7,28 +7,52 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller for managing user-related data.
+ */
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+	private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+	/**
+	 * Constructor for injecting UserService.
+	 */
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
+	/**
+	 * Fetch all registered users.
+	 *
+	 * @return list of users
+	 */
+	@GetMapping
+	public ResponseEntity<List<User>> getAllUsers() {
+		return ResponseEntity.ok(userService.getAllUsers());
+	}
 
-    @GetMapping("/get/{username}")
-    public ResponseEntity<User> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUserInfo(username));
-    }
+	/**
+	 * Fetch user details by username.
+	 *
+	 * @param username the unique username
+	 * @return the user object
+	 */
+	@GetMapping("/{username}")
+	public ResponseEntity<User> getUserInfo(@PathVariable String username) {
+		return ResponseEntity.ok(userService.getUserInfo(username));
+	}
 
-    @GetMapping("/retrieve/username")
-    public ResponseEntity<String> getUsername(@RequestParam String userId) {
-        String username = userService.getUsernameById(userId);
-        return ResponseEntity.ok(username);
-    }
+	/**
+	 * Retrieve a username based on user ID.
+	 *
+	 * @param userId the unique user ID
+	 * @return the associated username
+	 */
+	@GetMapping("/lookup/username")
+	public ResponseEntity<String> getUsername(@RequestParam String userId) {
+		String username = userService.getUsernameById(userId);
+		return ResponseEntity.ok(username);
+	}
 }

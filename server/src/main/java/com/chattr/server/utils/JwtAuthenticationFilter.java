@@ -19,87 +19,118 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * JWT authentication filter for processing incoming requests and
+ * verifying authentication tokens stored in cookies.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${security.public-urls}")
-    private String[] publicUrls;
+	private static final String REQUIRED_HEADER = "X-App-Version";
+	private static final String EXPECTED_VERSION = "2.2.10";
+	private static final String TOKEN_COOKIE_NAME = "token";
 
-    private static final String REQUIRED_HEADER = "X-App-Version";
-    private final JwtTokenUtil jwtTokenUtil;
+	@Value("${security.public-urls}")
+	private String[] publicUrls;
 
-    @Autowired
-    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil) {
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
+	private final JwtTokenUtil jwtTokenUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+	@Autowired
+	public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil) {
+		this.jwtTokenUtil = jwtTokenUtil;
+	}
 
-        setSecurityHeaders(response);
-        String appVersion = request.getHeader(REQUIRED_HEADER);
-        if (appVersion == null || !appVersion.equals("2.2.10")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    "Missing or invalid required header: " + REQUIRED_HEADER + ". Expected: 2.2.10");
-            return;
-        }
+	@Override
+	protected void doFilterInternal(@NonNull  HttpServletRequest request , @NonNull HttpServletResponse response , @NonNull FilterChain filterChain)
+			throws ServletException, IOException {
 
-        if (isExcludedUri(request.getRequestURI())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+		setSecurityHeaders(response);
 
-        String token = getTokenFromCookie(request);
+		// 1. Enforce app version from custom header
+		if (!isValidAppVersion(request)) {
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED ,
+					"Missing or invalid required header: " + REQUIRED_HEADER + ". Expected: " + EXPECTED_VERSION);
+			return;
+		}
 
-        if (token != null) {
-            try {
-                Claims claims = parseToken(token);
+		// 2. Skip filtering for public URLs
+		if (isPublicEndpoint(request.getRequestURI())) {
+			filterChain.doFilter(request , response);
+			return;
+		}
 
-                String username = claims.getSubject();
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, null, null);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (Exception e) {
-                logger.error("Invalid token", e);
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid token");
-                return;
-            }
-        } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token cookie is missing");
-            return;
-        }
+		// 3. Extract and validate JWT token from cookie
+		String token = extractTokenFromCookies(request);
 
+		if (token == null) {
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "Token cookie is missing");
+			return;
+		}
 
-        filterChain.doFilter(request, response);
-    }
+		try {
+			Claims claims = parseToken(token);
+			String username = claims.getSubject();
 
-    private String getTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("token".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
+			// Set the authenticated user in the Spring Security context
+			UsernamePasswordAuthenticationToken auth =
+					new UsernamePasswordAuthenticationToken(username , null , null);
+			SecurityContextHolder.getContext().setAuthentication(auth);
+		} catch (Exception e) {
+			logger.error("Invalid token" , e);
+			response.sendError(HttpServletResponse.SC_FORBIDDEN , "Invalid token");
+			return;
+		}
 
-    private void setSecurityHeaders(HttpServletResponse response) {
-        response.setHeader("X-Frame-Options", "DENY");
-        response.setHeader("X-Content-Type-Options", "nosniff");
-    }
+		// 4. Continue with the filter chain
+		filterChain.doFilter(request , response);
+	}
 
-    private boolean isExcludedUri(String requestURI) {
-        return Arrays.asList(publicUrls).contains(requestURI);
-    }
+	/**
+	 * Extracts the token from the "token" cookie.
+	 */
+	private String extractTokenFromCookies(HttpServletRequest request) {
+		if (request.getCookies() == null) return null;
 
-    private Claims parseToken(String token) {
-        SecretKey key = jwtTokenUtil.getSecretKey();
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
+		for (Cookie cookie : request.getCookies()) {
+			if (TOKEN_COOKIE_NAME.equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Adds security-related HTTP headers to the response.
+	 */
+	private void setSecurityHeaders(HttpServletResponse response) {
+		response.setHeader("X-Frame-Options" , "DENY");
+		response.setHeader("X-Content-Type-Options" , "nosniff");
+	}
+
+	/**
+	 * Verifies that the app version header is present and matches the expected value.
+	 */
+	private boolean isValidAppVersion(HttpServletRequest request) {
+		String appVersion = request.getHeader(REQUIRED_HEADER);
+		return appVersion != null && appVersion.equals(EXPECTED_VERSION);
+	}
+
+	/**
+	 * Checks if the given URI is publicly accessible and should bypass authentication.
+	 */
+	private boolean isPublicEndpoint(String uri) {
+		return Arrays.asList(publicUrls).contains(uri);
+	}
+
+	/**
+	 * Parses and verifies the JWT token using the configured secret key.
+	 */
+	private Claims parseToken(String token) {
+		SecretKey key = jwtTokenUtil.getSecretKey();
+		return Jwts.parser()
+				.verifyWith(key)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
+	}
 }

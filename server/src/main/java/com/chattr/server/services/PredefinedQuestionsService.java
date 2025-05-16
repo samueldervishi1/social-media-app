@@ -6,16 +6,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service responsible for retrieving predefined questions used in the system.
+ */
 @Service
 public class PredefinedQuestionsService {
 
-    private final PredefinedQuestionsRepository predefinedQuestionsRepository;
+	private final PredefinedQuestionsRepository predefinedQuestionsRepository;
 
-    public PredefinedQuestionsService(PredefinedQuestionsRepository predefinedQuestionsRepository) {
-        this.predefinedQuestionsRepository = predefinedQuestionsRepository;
-    }
+	public PredefinedQuestionsService(PredefinedQuestionsRepository predefinedQuestionsRepository) {
+		this.predefinedQuestionsRepository = predefinedQuestionsRepository;
+	}
 
-    public List<PredefineQuestions> getAllQuestions() {
-        return predefinedQuestionsRepository.findAll();
-    }
+	/**
+	 * Returns all predefined questions from the database.
+	 */
+	public List<PredefineQuestions> getAllQuestions() {
+		return predefinedQuestionsRepository.findAll();
+	}
 }

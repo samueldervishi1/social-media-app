@@ -1,7 +1,7 @@
 package com.chattr.server.controllers;
 
 import com.chattr.server.exceptions.CustomException;
-import com.chattr.server.models.Codes;
+import com.chattr.server.models.Messages;
 import com.chattr.server.models.Error;
 import com.chattr.server.models.User;
 import com.chattr.server.models.UserInfo;
@@ -193,7 +193,7 @@ public class AuthController {
             }
 
             if (username == null || email == null || fullName == null || password == null) {
-                throw new CustomException(400, Codes.MISSING_FIELDS);
+                throw new CustomException(400, Messages.MISSING_FIELDS);
             }
 
 			String ipAddress = request.getHeader("X-Forwarded-For");
@@ -211,17 +211,17 @@ public class AuthController {
 
             registerService.createUser(user);
 
-            return ResponseEntity.ok(createResponse("200", Codes.REGISTER_SUCCESS,
-                    Codes.REGISTER_SUCCESS, "success"));
+            return ResponseEntity.ok(createResponse("200", Messages.REGISTER_SUCCESS,
+                    Messages.REGISTER_SUCCESS, "success"));
 
         } catch (CustomException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(createResponse("400", e.getMessage(), Codes.REGISTER_FAILED, "error"));
+                    .body(createResponse("400", e.getMessage(), Messages.REGISTER_FAILED, "error"));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(createResponse("500", e.getMessage(),
-                            Codes.ERROR_500, "error"));
+                            Messages.ERROR_500, "error"));
         }
     }
 

@@ -20,7 +20,7 @@ public class Post {
     private String id;
     private String userId;
     private String content;
-    private List<Comments> commentsList = new ArrayList<>();
+    private List<Comment> commentList = new ArrayList<>();
     private String postDate;
     private String postTime;
     private Boolean deleted = false;

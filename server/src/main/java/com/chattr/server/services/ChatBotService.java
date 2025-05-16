@@ -1,6 +1,6 @@
 package com.chattr.server.services;
 
-import com.chattr.server.models.Codes;
+import com.chattr.server.models.Messages;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,77 +13,109 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service responsible for communicating with an external AI model API to get chatbot responses.
+ */
 @Slf4j
 @Service
 public class ChatBotService {
 
-    @Value("${model.api.key}")
-    private String apiKey;
+	@Value("${model.api.key}")
+	private String apiKey;
 
-    @Value("${model.api.url}")
-    private String modelApiUrl;
+	@Value("${model.api.url}")
+	private String modelApiUrl;
 
-    @Value("${model.api.model}")
-    private String model;
+	@Value("${model.api.model}")
+	private String model;
 
-    private final RestTemplate restTemplate;
-    private final HttpHeaders headers;
+	private final RestTemplate restTemplate;
+	private final HttpHeaders headers;
 
-    public ChatBotService() {
-        this.restTemplate = new RestTemplate();
-        this.headers = new HttpHeaders();
-        this.headers.setContentType(MediaType.APPLICATION_JSON);
-    }
+	public ChatBotService() {
+		this.restTemplate = new RestTemplate();
+		this.headers = new HttpHeaders();
+		this.headers.setContentType(MediaType.APPLICATION_JSON);
+	}
 
-    @PostConstruct
-    private void validateConfigs() {
-        if (!StringUtils.hasText(modelApiUrl) || !StringUtils.hasText(model)) {
-            throw new IllegalArgumentException(!StringUtils.hasText(modelApiUrl) ? Codes.ERROR_MODEL_API_URL : Codes.ERROR_MODEL);
-        }
-        headers.set("Authorization", "Bearer " + apiKey);
-    }
+	/**
+	 * Validates the required configs on startup and prepares Authorization header.
+	 */
+	@PostConstruct
+	private void validateConfigs() {
+		if (!StringUtils.hasText(modelApiUrl)) {
+			throw new IllegalArgumentException(Messages.ERROR_MODEL_API_URL);
+		}
+		if (!StringUtils.hasText(model)) {
+			throw new IllegalArgumentException(Messages.ERROR_MODEL);
+		}
+		headers.setBearerAuth(apiKey);
+	}
 
-    public Map<String, Object> getResponses(String message) {
-        try {
-            Map<String, Object> requestBody = Map.of(
-                    "model", model,
-                    "messages", List.of(
-                            Map.of(
-                                    "role", "user",
-                                    "content", List.of(
-                                            Map.of("type", "text", "text", message)
-                                    )
-                            )
-                    )
-            );
+	/**
+	 * Sends the user message to the AI model and returns the response.
+	 *
+	 * @param message user input message
+	 * @return map containing the original message and the generated answer
+	 */
+	public Map<String, Object> getResponses(String message) {
+		try {
+			Map<String, Object> requestBody = buildRequestBody(message);
 
-            ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(
-                    modelApiUrl,
-                    HttpMethod.POST,
-                    new HttpEntity<>(requestBody, headers),
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
+			ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+					modelApiUrl ,
+					HttpMethod.POST ,
+					new HttpEntity<>(requestBody , headers) ,
+					new ParameterizedTypeReference<>() {
+					}
+			);
 
-            Map<String, Object> responseBody = responseEntity.getBody();
-            if (responseBody == null || !responseBody.containsKey("choices")) {
-                return Map.of("answer", Codes.ERROR_UNEXPECTED_FORMAT);
-            }
+			return parseModelResponse(response.getBody() , message);
 
-            List<?> choices = (List<?>) responseBody.get("choices");
-            if (choices.isEmpty()) {
-                return Map.of("answer", "No response received.");
-            }
+		} catch (Exception e) {
+			log.error("Error while calling model API" , e);
+			return Map.of("answer" , Messages.ERROR_UNEXPECTED);
+		}
+	}
 
-            Map<?, ?> firstChoice = (Map<?, ?>) choices.get(0);
-            Map<?, ?> messageMap = (Map<?, ?>) firstChoice.get("message");
+	/**
+	 * Builds the request payload for the model API.
+	 */
+	private Map<String, Object> buildRequestBody(String message) {
+		return Map.of(
+				"model" , model ,
+				"messages" , List.of(
+						Map.of(
+								"role" , "user" ,
+								"content" , List.of(
+										Map.of("type" , "text" , "text" , message)
+								)
+						)
+				)
+		);
+	}
 
-            String answer = (String) messageMap.get("content");
-            return Map.of("message", message, "answer", answer);
+	/**
+	 * Parses the model API response and extracts the answer.
+	 */
+	private Map<String, Object> parseModelResponse(Map<String, Object> responseBody , String userMessage) {
+		if (responseBody == null || !responseBody.containsKey("choices")) {
+			return Map.of("answer" , Messages.ERROR_UNEXPECTED_FORMAT);
+		}
 
-        } catch (Exception e) {
-            log.error("Error while calling model API", e);
-            return Map.of("answer", Codes.ERROR_UNEXPECTED);
-        }
-    }
+		List<?> choices = (List<?>) responseBody.get("choices");
+		if (choices.isEmpty()) {
+			return Map.of("answer" , "No response received.");
+		}
+
+		Map<?, ?> firstChoice = (Map<?, ?>) choices.get(0);
+		Map<?, ?> messageMap = (Map<?, ?>) firstChoice.get("message");
+
+		if (messageMap == null || !messageMap.containsKey("content")) {
+			return Map.of("answer" , Messages.ERROR_UNEXPECTED_FORMAT);
+		}
+
+		String answer = (String) messageMap.get("content");
+		return Map.of("message" , userMessage , "answer" , answer);
+	}
 }

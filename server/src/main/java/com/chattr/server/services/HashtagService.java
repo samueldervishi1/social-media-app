@@ -6,19 +6,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service layer for managing hashtag persistence and retrieval.
+ */
 @Service
 public class HashtagService {
-    private final HashtagRepository repository;
 
-    public HashtagService(HashtagRepository repository) {
-        this.repository = repository;
-    }
+	private final HashtagRepository repository;
 
-    public List<Hashtag> getAllHashtags() {
-        return repository.findAll();
-    }
+	public HashtagService(HashtagRepository repository) {
+		this.repository = repository;
+	}
 
-    public Hashtag saveHashtag(Hashtag hashtag) {
-        return repository.save(hashtag);
-    }
+	/**
+	 * Retrieves all hashtags in the database.
+	 */
+	public List<Hashtag> getAllHashtags() {
+		return repository.findAll();
+	}
+
+	/**
+	 * Persists a new hashtag or updates an existing one.
+	 */
+	public Hashtag saveHashtag(Hashtag hashtag) {
+		return repository.save(hashtag);
+	}
 }

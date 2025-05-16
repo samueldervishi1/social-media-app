@@ -2,42 +2,63 @@ package com.chattr.server.exceptions;
 
 import com.chattr.server.models.Error;
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
+/**
+ * Custom application exception class that supports:
+ * - Error code (HTTP-style or custom)
+ * - Optional structured error model (`Error` object)
+ */
 @Getter
 public class CustomException extends RuntimeException {
-    private int code;
-    private String message;
 
-    private Error faultObject;
+	private final int code;
+	private final Error faultObject;
 
-    public CustomException(String message) {
-        super(message);
-        this.message = message;
-    }
+	/**
+	 * Constructor with only a message.
+	 * Defaults to 400 Bad Request-style code.
+	 */
+	public CustomException(String message) {
+		super(message);
+		this.code = 400;
+		this.faultObject = null;
+	}
 
-    public CustomException(int code, String message) {
-        super(message);
-        this.code = code;
-        this.message = message;
-    }
+	/**
+	 * Constructor with code and message.
+	 */
+	public CustomException(int code , String message) {
+		super(message);
+		this.code = code;
+		this.faultObject = null;
+	}
 
-    public CustomException(int code, Error faultObject) {
-        super(faultObject.getMessage());
-        this.code = code;
-        this.faultObject = faultObject;
-    }
+	/**
+	 * Constructor with code and a detailed error object.
+	 */
+	public CustomException(int code , Error faultObject) {
+		super(faultObject != null ? faultObject.getMessage() : "Unknown error");
+		this.code = code;
+		this.faultObject = faultObject;
+	}
 
-    public CustomException(Error faultObject) {
-        super(faultObject.getMessage());
-        this.faultObject = faultObject;
-    }
+	/**
+	 * Constructor with only an error object.
+	 * Defaults to 400 error code.
+	 */
+	public CustomException(Error faultObject) {
+		super(faultObject != null ? faultObject.getMessage() : "Unknown error");
+		this.code = 400;
+		this.faultObject = faultObject;
+	}
 
-    public CustomException(int code, String message, Error faultObject) {
-        super(message);
-        this.code = code;
-        this.message = message;
-        this.faultObject = faultObject;
-    }
+	/**
+	 * Full constructor with message, code, and error object.
+	 */
+	public CustomException(int code , String message , Error faultObject) {
+		super(message);
+		this.code = code;
+		this.faultObject = faultObject;
+	}
+
 }

@@ -1,6 +1,6 @@
 package com.chattr.server.services;
 
-import com.chattr.server.models.Codes;
+import com.chattr.server.models.Messages;
 import com.chattr.server.models.History;
 import com.chattr.server.models.QuestionAnswerPair;
 import com.chattr.server.repositories.HistoryRepository;
@@ -11,60 +11,86 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service to manage conversation histories by session and user ID.
+ * Supports saving, fetching, deleting, and auto-cleanup of old history.
+ */
 @Service
 public class HistoryService {
 
-    private final HistoryRepository historyRepository;
+	private final HistoryRepository historyRepository;
 
-    public HistoryService(HistoryRepository historyRepository) {
-        this.historyRepository = historyRepository;
-    }
+	public HistoryService(HistoryRepository historyRepository) {
+		this.historyRepository = historyRepository;
+	}
 
-    public History saveHistory(String sessionId, String userId, List<QuestionAnswerPair> questionAnswerPairs) {
-        History history = historyRepository.findBySessionId(sessionId)
-                .map(existing -> {
-                    existing.getQuestionAnswerPairs().addAll(questionAnswerPairs);
-                    return existing;
-                })
-                .orElseGet(() -> new History(sessionId, userId, questionAnswerPairs));
+	/**
+	 * Appends new Q&A pairs to existing history or creates a new history entry.
+	 */
+	public History saveHistory(String sessionId , String userId , List<QuestionAnswerPair> questionAnswerPairs) {
+		History history = historyRepository.findBySessionId(sessionId)
+				.map(existing -> {
+					existing.getQuestionAnswerPairs().addAll(questionAnswerPairs);
+					return existing;
+				})
+				.orElseGet(() -> new History(sessionId , userId , questionAnswerPairs));
 
-        return historyRepository.save(history);
-    }
+		return historyRepository.save(history);
+	}
 
-    public List<History> getAllHistories() {
-        return historyRepository.findAll();
-    }
+	/**
+	 * Retrieves all history entries in the database.
+	 */
+	public List<History> getAllHistories() {
+		return historyRepository.findAll();
+	}
 
-    public List<History> getHistoryByUserId(String userId) {
-        return historyRepository.findByUserId(userId);
-    }
+	/**
+	 * Retrieves history entries by a specific user.
+	 */
+	public List<History> getHistoryByUserId(String userId) {
+		return historyRepository.findByUserId(userId);
+	}
 
-    public Optional<History> getHistoryBySessionId(String sessionId) {
-        return historyRepository.findBySessionId(sessionId);
-    }
+	/**
+	 * Retrieves a history entry by session ID.
+	 */
+	public Optional<History> getHistoryBySessionId(String sessionId) {
+		return historyRepository.findBySessionId(sessionId);
+	}
 
-    public void deleteHistoryBySessionId(String sessionId) {
-        History history = historyRepository.findBySessionId(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(Codes.NO_HISTORY_ERROR, sessionId)));
+	/**
+	 * Deletes a specific history record by session ID.
+	 */
+	public void deleteHistoryBySessionId(String sessionId) {
+		History history = historyRepository.findBySessionId(sessionId)
+				.orElseThrow(() -> new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR , sessionId)));
 
-        historyRepository.delete(history);
-    }
+		historyRepository.delete(history);
+	}
 
-    public void deleteAllHistory(String userId) {
-        List<History> histories = historyRepository.findByUserId(userId);
-        if (histories.isEmpty()) {
-            throw new IllegalArgumentException(String.format(Codes.NO_HISTORY_ERROR, userId));
-        }
-        historyRepository.deleteAll(histories);
-    }
+	/**
+	 * Deletes all history records for a given user.
+	 */
+	public void deleteAllHistory(String userId) {
+		List<History> histories = historyRepository.findByUserId(userId);
+		if (histories.isEmpty()) {
+			throw new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR , userId));
+		}
+		historyRepository.deleteAll(histories);
+	}
 
-    @Scheduled(fixedRate = 86400000) // 24 hours
-    public void deleteOldHistory() {
-        LocalDate oneDayAgo = LocalDate.now().minusDays(1);
-        List<History> historiesToDelete = historyRepository.findByHistoryDateBefore(oneDayAgo);
+	/**
+	 * Scheduled job that deletes histories older than 1 day.
+	 * Runs every 24 hours.
+	 */
+	@Scheduled(fixedRate = 86_400_000) // 24 hours in milliseconds
+	public void deleteOldHistory() {
+		LocalDate cutoffDate = LocalDate.now().minusDays(1);
+		List<History> outdated = historyRepository.findByHistoryDateBefore(cutoffDate);
 
-        if (!historiesToDelete.isEmpty()) {
-            historyRepository.deleteAll(historiesToDelete);
-        }
-    }
+		if (!outdated.isEmpty()) {
+			historyRepository.deleteAll(outdated);
+		}
+	}
 }

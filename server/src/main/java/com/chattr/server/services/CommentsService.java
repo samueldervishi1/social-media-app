@@ -1,8 +1,8 @@
 package com.chattr.server.services;
 
 import com.chattr.server.exceptions.CustomException;
-import com.chattr.server.models.Codes;
-import com.chattr.server.models.Comments;
+import com.chattr.server.models.Messages;
+import com.chattr.server.models.Comment;
 import com.chattr.server.models.Post;
 import com.chattr.server.models.User;
 import com.chattr.server.repositories.PostRepository;
@@ -10,83 +10,117 @@ import com.chattr.server.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service responsible for managing comments on posts, including creation, deletion, and retrieval.
+ */
 @Service
 public class CommentsService {
 
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
+	private final UserRepository userRepository;
+	private final PostRepository postRepository;
 
-    public CommentsService(UserRepository userRepository, PostRepository postRepository) {
-        this.userRepository = userRepository;
-        this.postRepository = postRepository;
-    }
+	public CommentsService(UserRepository userRepository , PostRepository postRepository) {
+		this.userRepository = userRepository;
+		this.postRepository = postRepository;
+	}
 
-    @Transactional
-    public Comments createComment(String userId, String postId, Comments comment) {
-        try {
-            User user = getUserById(userId);
-            Post post = getPostById(postId);
+	/**
+	 * Creates a new comment on a post by a specific user.
+	 *
+	 * @param userId  the ID of the user commenting
+	 * @param postId  the ID of the post being commented on
+	 * @param comment the comment content
+	 * @return the saved Comment
+	 */
+	@Transactional
+	public Comment createComment(String userId , String postId , Comment comment) {
+		return wrapSafe(() -> {
+			User user = getUserById(userId);
+			Post post = getPostById(postId);
 
-            comment.setUserId(user.getId());
-            List<Comments> comments = post.getCommentsList();
-            comments.add(comment);
-            post.setCommentsList(comments);
+			comment.setUserId(user.getId());
 
-            postRepository.save(post);
-            return comment;
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CustomException(500, Codes.ERROR_500);
-        }
-    }
+			post.getCommentList().add(comment);
+			postRepository.save(post);
 
-    @Transactional
-    public void deleteComment(String postId, String commentId) {
-        try {
-            Post post = getPostById(postId);
-            Comments comment = getCommentFromPost(post, commentId).orElseThrow(() ->
-                    new CustomException(404, "Comment not found: " + commentId));
+			return comment;
+		});
+	}
 
-            List<Comments> comments = post.getCommentsList();
-            comments.remove(comment);
-            post.setCommentsList(comments);
+	/**
+	 * Deletes a comment from a post by comment ID.
+	 *
+	 * @param postId    the post containing the comment
+	 * @param commentId the ID of the comment to remove
+	 */
+	@Transactional
+	public void deleteComment(String postId , String commentId) {
+		wrapSafe(() -> {
+			Post post = getPostById(postId);
+			Comment comment = getCommentFromPost(post , commentId);
+			post.getCommentList().remove(comment);
+			postRepository.save(post);
+			return null;
+		});
+	}
 
-            postRepository.save(post);
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CustomException(500, Codes.ERROR_500);
-        }
-    }
+	/**
+	 * Retrieves a comment by post and comment ID.
+	 *
+	 * @param postId    the ID of the post
+	 * @param commentId the ID of the comment
+	 * @return Optional containing the comment if found
+	 */
+	public Optional<Comment> getCommentById(String postId , String commentId) {
+		return wrapSafe(() -> {
+			Post post = getPostById(postId);
+			return Optional.of(getCommentFromPost(post , commentId));
+		});
+	}
 
-    public Optional<Comments> getCommentById(String postId, String commentId) {
-        try {
-            Post post = getPostById(postId);
-            return getCommentFromPost(post, commentId);
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CustomException(500, Codes.ERROR_500);
-        }
-    }
+	/**
+	 * Retrieves a user by ID or throws a 404 CustomException.
+	 */
+	private User getUserById(String userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new CustomException(404 , String.format(Messages.USER_NOT_FOUND_BY_ID , userId)));
+	}
 
-    private User getUserById(String userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new CustomException(404, String.format(Codes.USER_NOT_FOUND_BY_ID, userId)));
-    }
+	/**
+	 * Retrieves a post by ID or throws a 404 CustomException.
+	 */
+	private Post getPostById(String postId) {
+		return postRepository.findById(postId)
+				.orElseThrow(() -> new CustomException(404 , String.format(Messages.POST_NOT_FOUND , postId)));
+	}
 
-    private Post getPostById(String postId) {
-        return postRepository.findById(postId).orElseThrow(() -> new CustomException(404, String.format(Codes.POST_NOT_FOUND, postId)));
-    }
+	/**
+	 * Retrieves a comment from a post or throws a 404 CustomException.
+	 */
+	private Comment getCommentFromPost(Post post , String commentId) {
+		return post.getCommentList().stream()
+				.filter(comment -> comment.getId().equals(commentId))
+				.findFirst()
+				.orElseThrow(() -> new CustomException(404 , String.format(Messages.COMMENT_NOT_FOUND , commentId)));
+	}
 
-    private Optional<Comments> getCommentFromPost(Post post, String commentId) {
-        return post.getCommentsList().stream()
-                .filter(comment -> comment.getId().equals(commentId))
-                .findFirst()
-                .map(Optional::of)
-                .orElseThrow(() -> new CustomException(404, String.format(Codes.COMMENT_NOT_FOUND, commentId)));
-    }
+	/**
+	 * Wraps logic in a standard try-catch block for consistent exception handling.
+	 */
+	private <T> T wrapSafe(SafeAction<T> action) {
+		try {
+			return action.run();
+		} catch (CustomException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new CustomException(500 , Messages.ERROR_500);
+		}
+	}
+
+	@FunctionalInterface
+	private interface SafeAction<T> {
+		T run();
+	}
 }
