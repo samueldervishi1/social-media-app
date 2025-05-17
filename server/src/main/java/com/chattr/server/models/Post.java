@@ -16,27 +16,24 @@ import java.util.UUID;
 @Document
 public class Post {
 
-    @Id
-    private String id;
-    private String userId;
-    private String content;
-    private List<Comment> commentList = new ArrayList<>();
-    private String postDate;
-    private String postTime;
-    private Boolean deleted = false;
-    private Boolean reported = false;
+	@Id
+	private String id;
+	private String userId;
+	private String content;
+	private List<Comment> commentList = new ArrayList<>();
+	private String postDate;
+	private String postTime;
+	private Boolean deleted = false;
+	private Boolean reported = false;
 
-    public Post(String content) {
-        this.id = UUID.randomUUID().toString();
-        this.content = content;
-        this.postDate = LocalDate.now().toString();
-        this.postTime = LocalTime.now().toString();
-    }
+	public Post(String content) {
+		this.id = UUID.randomUUID().toString();
+		this.content = content;
+		this.postDate = LocalDate.now().toString();
+		this.postTime = LocalTime.now().toString();
+	}
 
-    public Post() {
-    }
-
-    public boolean isReported() {
-        return reported;
-    }
+	public boolean isReported() {
+		return reported;
+	}
 }

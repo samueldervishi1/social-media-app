@@ -14,24 +14,21 @@ import java.util.List;
 @Document("communityPost")
 public class CommunityPost {
 
-    @Id
-    private String id;
-    private String ownerId;
-    private String communityName;
-    private String content;
-    private LocalDateTime createTime;
-    private List<Comment> comments = new ArrayList<>();
-    private boolean deleted;
+	@Id
+	private String id;
+	private String ownerId;
+	private String communityName;
+	private String content;
+	private LocalDateTime createTime;
+	private List<Comment> comments;
+	private boolean deleted;
 
-    public CommunityPost() {
-    }
-
-    public CommunityPost(String ownerId, String communityName, String content, LocalDateTime createTime) {
-        this.ownerId = ownerId;
-        this.communityName = communityName;
-        this.content = content;
-        this.createTime = createTime;
-        this.comments = new ArrayList<>();
-        this.deleted = false;
-    }
+	public CommunityPost(String ownerId , String communityName , String content , LocalDateTime createTime) {
+		this.ownerId = ownerId;
+		this.communityName = communityName;
+		this.content = content;
+		this.createTime = createTime;
+		this.comments = new ArrayList<>();
+		this.deleted = false;
+	}
 }

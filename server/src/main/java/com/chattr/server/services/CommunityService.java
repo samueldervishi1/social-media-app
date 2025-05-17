@@ -125,7 +125,7 @@ public class CommunityService {
 	/**
 	 * Removes a user from a community. Throws if not a member.
 	 */
-	public void unjoinCommunity(String communityId , String userId) {
+	public void leaveCommunity(String communityId , String userId) {
 		Community community = getCommunityById(communityId);
 
 		if (community.getUserIds().remove(userId)) {

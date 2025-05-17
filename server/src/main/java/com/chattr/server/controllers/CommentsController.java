@@ -32,7 +32,7 @@ public class CommentsController {
 	 * @return the comment if found
 	 * @throws CustomException if the comment does not exist
 	 */
-	@GetMapping("/{postId}/{commentId}")
+	@GetMapping("/get/{postId}/{commentId}")
 	public Comment getCommentById(@PathVariable String postId , @PathVariable String commentId) {
 		return commentsService.getCommentById(postId , commentId)
 				.orElseThrow(() ->
@@ -48,10 +48,8 @@ public class CommentsController {
 	 * @param comment the comment body
 	 * @return the newly created comment
 	 */
-	@PostMapping("/{userId}/{postId}")
-	public Comment createComment(@PathVariable String userId ,
-	                             @PathVariable String postId ,
-	                             @RequestBody Comment comment) {
+	@PostMapping("/create/{userId}/{postId}")
+	public Comment createComment(@PathVariable String userId , @PathVariable String postId , @RequestBody Comment comment) {
 		return commentsService.createComment(userId , postId , comment);
 	}
 
@@ -62,7 +60,7 @@ public class CommentsController {
 	 * @param commentId ID of the comment
 	 * @return success or error message
 	 */
-	@DeleteMapping("/{postId}/{commentId}")
+	@DeleteMapping("/delete/{postId}/{commentId}")
 	public String deleteComment(@PathVariable String postId , @PathVariable String commentId) {
 		try {
 			commentsService.deleteComment(postId , commentId);

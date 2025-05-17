@@ -28,7 +28,7 @@ public class SearchController {
 	 * @param name the query string to search by
 	 * @return list of matching communities
 	 */
-	@GetMapping("/communities")
+	@GetMapping("/community")
 	public List<Community> findByNameContainingIgnoreCase(@RequestParam String name) {
 		return searchService.findByName(name);
 	}

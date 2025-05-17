@@ -12,268 +12,248 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/**
+ * REST controller handling authentication: login, logout, register, and token-based user info.
+ */
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    private final LoginService loginService;
-    private final RegisterService registerService;
-    private final JwtTokenUtil jwtTokenUtil;
+	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    public AuthController(LoginService loginService, RegisterService registerService, JwtTokenUtil jwtTokenUtil) {
-        this.loginService = loginService;
-        this.registerService = registerService;
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
+	private final LoginService loginService;
+	private final RegisterService registerService;
+	private final JwtTokenUtil jwtTokenUtil;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, Object> loginRequest, HttpServletResponse response, HttpServletRequest request) {
-        logger.debug("Received login request: {}", loginRequest);
-        String username = null;
-        String password = null;
+	public AuthController(LoginService loginService , RegisterService registerService , JwtTokenUtil jwtTokenUtil) {
+		this.loginService = loginService;
+		this.registerService = registerService;
+		this.jwtTokenUtil = jwtTokenUtil;
+	}
 
-        try {
-            if (loginRequest.containsKey("parts") && loginRequest.get("parts") instanceof Map) {
-                logger.debug("Processing 'parts' section");
-                @SuppressWarnings("unchecked")
-                Map<String, Object> parts = (Map<String, Object>) loginRequest.get("parts");
+	/**
+	 * Logs in the user by validating nested JSON payload and issuing a token.
+	 */
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody Map<String, Object> loginRequest , HttpServletResponse response , HttpServletRequest request) {
 
-                if (parts.containsKey("specification") && parts.get("specification") instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> specification = (Map<String, Object>) parts.get("specification");
+		logger.debug("Received login request: {}" , loginRequest);
+		String username = null;
+		String password = null;
 
-                    if (specification.containsKey("characteristics-value")) {
-                        Object charObj = specification.get("characteristics-value");
-                        if (charObj instanceof List) {
-                            @SuppressWarnings("unchecked")
-                            List<Map<String, Object>> characteristics = (List<Map<String, Object>>) charObj;
+		try {
+			Map<String, Object> parts = safeCastMap(loginRequest.get("parts"));
+			Map<String, Object> spec = safeCastMap(parts.get("specification"));
+			List<Map<String, Object>> characteristics = safeCastList(spec.get("characteristics-value"));
 
-                            for (Map<String, Object> charItem : characteristics) {
-                                if (charItem != null) {
-                                    String charName = (String) charItem.get("@characteristic-name");
-                                    if (charItem.containsKey("value") && charItem.get("value") instanceof Map) {
-                                        @SuppressWarnings("unchecked")
-                                        Map<String, Object> valueMap = (Map<String, Object>) charItem.get("value");
-                                        String value = valueMap != null ? (String) valueMap.get("$") : null;
+			for (Map<String, Object> item : characteristics) {
+				if (item == null) continue;
+				String name = (String) item.get("@characteristic-name");
+				Map<String, Object> valueMap = safeCastMap(item.get("value"));
+				String value = valueMap != null ? (String) valueMap.get("$") : null;
 
-                                        if ("username".equals(charName)) {
-                                            username = value;
-                                        } else if ("password".equals(charName)) {
-                                            password = value;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (ClassCastException e) {
-            logger.error("Invalid request format: {}", e.getMessage());
-            return createErrorResponse(new CustomException(400, "Invalid request format"));
-        }
-
-        logger.debug("Extracted username: {}", username);
-        logger.debug("Extracted password: {}", password != null ? "[PROTECTED]" : "null");
-
-        if ((username == null || username.isEmpty()) && (password == null || password.isEmpty())) {
-            return createErrorResponse(new CustomException(400, "Username or password is empty"));
-        }
-        if (username == null || username.isEmpty()) {
-            return createErrorResponse(new CustomException(400, "Username is empty"));
-        }
-        if (password == null || password.isEmpty()) {
-            return createErrorResponse(new CustomException(400, "Password is empty"));
-        }
-
-        String ipAddress = request.getHeader("X-Forwarded-For");
-        if (ipAddress == null || ipAddress.isBlank()) {
-            ipAddress = request.getRemoteAddr();
-        }
-
-        try {
-            String token = loginService.login(username, password, ipAddress);
-            String cookieValue = "token=" + token
-                    + "; Path=/"
-                    + "; HttpOnly"
-                    + "; Secure"
-                    + "; SameSite=None"
-                    + "; Partitioned";
-
-            response.setHeader("Set-Cookie", cookieValue);
-
-            return ResponseEntity.ok("Login successful");
-        } catch (CustomException e) {
-            return createErrorResponse(e);
-        } catch (Exception e) {
-            return createErrorResponse(new CustomException(500, "An internal server error occurred"));
-        }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        SecurityContextHolder.clearContext();
-        ResponseCookie cookie = ResponseCookie.from("token", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0)
-                .sameSite("None")
-                .build();
-
-        String clearedCookie = cookie + "; Partitioned";
-
-        response.setHeader("Set-Cookie", clearedCookie);
-
-        return ResponseEntity.ok("Logged out");
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        String token = null;
-
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
-
-        if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
-        }
-
-        try {
-            Claims claims = jwtTokenUtil.parseToken(token);
-
-            UserInfo response = new UserInfo();
-            response.setUsername(claims.getSubject());
-            response.setUserId((String) claims.get("userId"));
-            response.setStatus("SUCCESS");
-            response.setMessage("User info retrieved from token");
-            logger.info("User info retrieved from token: {}", response);
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<Error> register(@RequestBody Map<String, Object> requestBody, HttpServletRequest request) {
-        try {
-            Object queriesObj = requestBody.get("queries");
-            List<Map<String, Object>> queries = getMaps(queriesObj);
-
-            String username = null, email = null, fullName = null, password = null;
-
-            for (Map<String, Object> query : queries) {
-                username = getStringValue(query, "username", username);
-                email = getStringValue(query, "email", email);
-                fullName = getStringValue(query, "fullname", fullName);
-                password = getStringValue(query, "password", password);
-            }
-
-            if (username == null || email == null || fullName == null || password == null) {
-                throw new CustomException(400, Messages.MISSING_FIELDS);
-            }
-
-			String ipAddress = request.getHeader("X-Forwarded-For");
-
-			if (ipAddress == null || ipAddress.isBlank()) {
-				ipAddress = request.getRemoteAddr();
+				if ("username".equals(name)) username = value;
+				if ("password".equals(name)) password = value;
 			}
 
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setFullName(fullName);
-            user.setPassword(password);
-            user.setIpAddress(ipAddress);
+		} catch (Exception e) {
+			logger.error("Invalid login format: {}" , e.getMessage());
+			return createErrorResponse(new CustomException(400 , "Invalid request format"));
+		}
 
-            registerService.createUser(user);
+		logger.debug("Extracted username: {}" , username);
+		logger.debug("Extracted password: {}" , password != null ? "[PROTECTED]" : "null");
 
-            return ResponseEntity.ok(createResponse("200", Messages.REGISTER_SUCCESS,
-                    Messages.REGISTER_SUCCESS, "success"));
+		if (username == null || username.isBlank()) {
+			return createErrorResponse(new CustomException(400 , "Username is empty"));
+		}
+		if (password == null || password.isBlank()) {
+			return createErrorResponse(new CustomException(400 , "Password is empty"));
+		}
 
-        } catch (CustomException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(createResponse("400", e.getMessage(), Messages.REGISTER_FAILED, "error"));
+		String ipAddress = getIpAddress(request);
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(createResponse("500", e.getMessage(),
-                            Messages.ERROR_500, "error"));
-        }
-    }
+		try {
+			String token = loginService.login(username , password , ipAddress);
 
-    private static List<Map<String, Object>> getMaps(Object queriesObj) {
-        if (!(queriesObj instanceof List<?> queriesList)) {
-            throw new CustomException(400, "Invalid request format: queries must be a list");
-        }
+			ResponseCookie cookie = ResponseCookie.from("token" , token)
+					.httpOnly(true)
+					.secure(true)
+					.path("/")
+					.sameSite("None")
+					.maxAge(Duration.ofHours(4))
+					.build();
 
-        if (queriesList.isEmpty()) {
-            throw new CustomException(400, "Invalid request format: queries list is empty");
-        }
+			response.setHeader(HttpHeaders.SET_COOKIE , cookie.toString());
 
-        List<Map<String, Object>> queries = new ArrayList<>();
-        for (Object item : queriesList) {
-            if (item instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> queryMap = (Map<String, Object>) item;
-                queries.add(queryMap);
-            }
-        }
+			return ResponseEntity.ok("Login successful");
 
-        if (queries.isEmpty()) {
-            throw new CustomException(400, "Invalid request format: no valid query maps found");
-        }
-        return queries;
-    }
+		} catch (CustomException e) {
+			return createErrorResponse(e);
+		} catch (Exception e) {
+			logger.error("Unexpected login error" , e);
+			return createErrorResponse(new CustomException(500 , "Internal server error"));
+		}
+	}
 
-    private String getStringValue(Map<String, Object> map, String key, String defaultValue) {
-        if (map.containsKey(key) && map.get(key) instanceof String) {
-            return (String) map.get(key);
-        }
-        return defaultValue;
-    }
+	/**
+	 * Logs out the user by clearing the security context and token cookie.
+	 */
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(HttpServletResponse response) {
+		SecurityContextHolder.clearContext();
 
-    private ResponseEntity<Error> createErrorResponse(CustomException exception) {
-        Error errorResponse = new Error();
-        errorResponse.setCode(String.valueOf(exception.getCode()));
-        errorResponse.setMessage(exception.getMessage());
-        return ResponseEntity.status(exception.getCode()).body(errorResponse);
-    }
+		ResponseCookie cookie = ResponseCookie.from("token" , "")
+				.httpOnly(true)
+				.secure(true)
+				.path("/")
+				.maxAge(0)
+				.sameSite("None")
+				.build();
 
-    private Error createResponse(String code, String message, String reason, String status) {
-        Error response = new Error();
-        response.setCode(code);
-        response.setMessage(message);
-        response.setReason(reason);
-        response.setStatus(status);
-        response.setReferenceError("N/A");
-        response.setBaseType("APIResponse");
-        response.setSchemaLocation("/tmf/server/api/v2.2.10/register");
-        response.setType("registration_response");
-        return response;
-    }
+		response.setHeader(HttpHeaders.SET_COOKIE , cookie.toString());
 
+		return ResponseEntity.ok("Logged out");
+	}
+
+	/**
+	 * Extracts user info from the JWT token stored in cookies.
+	 */
+	@GetMapping("/me")
+	public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+		String token = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+				.filter(c -> "token".equals(c.getName()))
+				.map(Cookie::getValue)
+				.findFirst()
+				.orElse(null);
+
+		if (token == null) {
+			return createErrorResponse(new CustomException(401 , "Token not found"));
+		}
+
+		try {
+			Claims claims = jwtTokenUtil.parseToken(token);
+
+			UserInfo userInfo = new UserInfo();
+			userInfo.setUsername(claims.getSubject());
+			userInfo.setUserId((String) claims.get("userId"));
+			userInfo.setStatus("SUCCESS");
+			userInfo.setMessage("User info retrieved from token");
+
+			return ResponseEntity.ok(userInfo);
+		} catch (Exception e) {
+			return createErrorResponse(new CustomException(401 , "Invalid token"));
+		}
+	}
+
+	/**
+	 * Handles user registration using a TMF-style "queries" payload.
+	 */
+	@PostMapping("/register")
+	public ResponseEntity<Error> register(@RequestBody Map<String, Object> requestBody , HttpServletRequest request) {
+		try {
+			List<Map<String, Object>> queries = safeCastList(requestBody.get("queries"));
+
+			String username = null, email = null, fullName = null, password = null;
+			for (Map<String, Object> query : queries) {
+				username = getStringValue(query , "username" , username);
+				email = getStringValue(query , "email" , email);
+				fullName = getStringValue(query , "fullname" , fullName);
+				password = getStringValue(query , "password" , password);
+			}
+
+			if (username == null || email == null || fullName == null || password == null) {
+				throw new CustomException(400 , Messages.MISSING_FIELDS);
+			}
+
+			String ipAddress = getIpAddress(request);
+
+			User user = new User();
+			user.setUsername(username);
+			user.setEmail(email);
+			user.setFullName(fullName);
+			user.setPassword(password);
+			user.setIpAddress(ipAddress);
+
+			registerService.createUser(user);
+
+			return ResponseEntity.ok(createResponse("200" , Messages.REGISTER_SUCCESS , Messages.REGISTER_SUCCESS , "success"));
+
+		} catch (CustomException e) {
+			return ResponseEntity.badRequest().body(
+					createResponse("400" , e.getMessage() , Messages.REGISTER_FAILED , "error")
+			);
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body(
+					createResponse("500" , e.getMessage() , Messages.ERROR_500 , "error")
+			);
+		}
+	}
+
+	// === Helper Methods ===
+
+	private String getIpAddress(HttpServletRequest request) {
+		String ip = request.getHeader("X-Forwarded-For");
+		return (ip == null || ip.isBlank()) ? request.getRemoteAddr() : ip;
+	}
+
+	private Map<String, Object> safeCastMap(Object obj) {
+		if (obj instanceof Map<?, ?> map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> casted = (Map<String, Object>) map;
+			return casted;
+		}
+		throw new CustomException(400 , "Expected map but got: " + obj);
+	}
+
+	private List<Map<String, Object>> safeCastList(Object obj) {
+		if (obj instanceof List<?> rawList) {
+			List<Map<String, Object>> casted = new ArrayList<>();
+			for (Object item : rawList) {
+				if (item instanceof Map<?, ?> map) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> castedMap = (Map<String, Object>) map;
+					casted.add(castedMap);
+				}
+			}
+			if (!casted.isEmpty()) return casted;
+		}
+		throw new CustomException(400 , "Expected a list of maps");
+	}
+
+	private String getStringValue(Map<String, Object> map , String key , String fallback) {
+		Object val = map.get(key);
+		return (val instanceof String s && !s.isBlank()) ? s : fallback;
+	}
+
+	private ResponseEntity<Error> createErrorResponse(CustomException e) {
+		Error error = createResponse(
+				String.valueOf(e.getCode()) ,
+				e.getMessage() ,
+				e.getMessage() ,
+				"error"
+		);
+		return ResponseEntity.status(e.getCode()).body(error);
+	}
+
+	private Error createResponse(String code , String message , String reason , String status) {
+		return new Error()
+				.code(code)
+				.message(message)
+				.reason(reason)
+				.status(status)
+				.referenceError("N/A")
+				.baseType("APIResponse")
+				.schemaLocation("/tmf/server/api/v2.2.10/auth")
+				.type("auth_response");
+	}
 }

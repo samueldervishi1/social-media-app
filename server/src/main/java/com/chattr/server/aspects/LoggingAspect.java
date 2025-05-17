@@ -39,7 +39,7 @@ public class LoggingAspect {
 		String method = joinPoint.getSignature().toShortString();
 		Object[] args = joinPoint.getArgs();
 
-		log.info("➡️ Entering {} with arguments: {}" , method , Arrays.toString(args));
+		log.info("Entering {} with arguments: {}" , method , Arrays.toString(args));
 		long startTime = System.currentTimeMillis();
 
 		try {

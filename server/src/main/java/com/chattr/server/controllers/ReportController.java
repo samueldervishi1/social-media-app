@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * REST controller for reporting posts or users.
  */
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/report")
 public class ReportController {
 
 	private final ReportService reportService;

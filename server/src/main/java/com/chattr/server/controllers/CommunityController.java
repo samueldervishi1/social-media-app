@@ -9,148 +9,237 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST controller for managing communities, posts, and membership operations.
+ */
 @RestController
+@RequestMapping("/community")
 public class CommunityController {
 
-    private final CommunityService communityService;
+	private final CommunityService communityService;
 
-    public CommunityController(CommunityService communityService) {
-        this.communityService = communityService;
-    }
+	/**
+	 * Constructor-based dependency injection for CommunityService.
+	 *
+	 * @param communityService service handling community logic
+	 */
+	public CommunityController(CommunityService communityService) {
+		this.communityService = communityService;
+	}
 
-    @GetMapping("/data-flux")
-    public ResponseEntity<List<Community>> getAllCommunities() {
-        List<Community> communities = communityService.getAllCommunities();
-        return new ResponseEntity<>(communities, HttpStatus.OK);
-    }
+	/**
+	 * Get all available communities.
+	 *
+	 * @return list of communities
+	 */
+	@GetMapping("/get/all")
+	public ResponseEntity<List<Community>> getAllCommunities() {
+		return ResponseEntity.ok(communityService.getAllCommunities());
+	}
 
-    @GetMapping("/synth-stream")
-    public ResponseEntity<List<CommunityPost>> getAllPosts() {
-        try {
-            List<CommunityPost> posts = communityService.getAllDBPosts();
-            return ResponseEntity.ok(posts);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+	/**
+	 * Get all community posts from the database.
+	 *
+	 * @return list of community posts
+	 */
+	@GetMapping("/get/posts")
+	public ResponseEntity<List<CommunityPost>> getAllPosts() {
+		try {
+			return ResponseEntity.ok(communityService.getAllDBPosts());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-    @GetMapping("/sector/{communityId}")
-    public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
-        try {
-            Community community = communityService.getCommunityById(communityId);
-            return new ResponseEntity<>(community, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+	/**
+	 * Get a community by its ID.
+	 *
+	 * @param communityId the unique community ID
+	 * @return community object or 404 if not found
+	 */
+	@GetMapping("/get/{communityId}")
+	public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
+		try {
+			return ResponseEntity.ok(communityService.getCommunityById(communityId));
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+	}
 
-    @GetMapping("/access-node/{name}")
-    public ResponseEntity<Community> getCommunityByName(@PathVariable String name) {
-        try {
-            Community community = communityService.getCommunityByName(name);
-            return ResponseEntity.ok(community);
-        } catch (CustomException e) {
-            if (e.getCode() == 404) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+	/**
+	 * Get a community by its name.
+	 *
+	 * @param name the name of the community
+	 * @return community object or error if not found
+	 */
+	@GetMapping("/get/{name}")
+	public ResponseEntity<Community> getCommunityByName(@PathVariable String name) {
+		try {
+			return ResponseEntity.ok(communityService.getCommunityByName(name));
+		} catch (CustomException e) {
+			return ResponseEntity.status(e.getCode() == 404 ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-    @GetMapping("/sector-metrics/{name}")
-    public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
-        try {
-            int count = communityService.getUserCountForCommunity(name);
-            return ResponseEntity.ok(count);
-        } catch (CustomException e) {
-            if (e.getCode() == 404) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
-            } else if (e.getCode() == 500) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
-        }
-    }
+	/**
+	 * Get user count for a specific community.
+	 *
+	 * @param name community name
+	 * @return number of users or 0 if error
+	 */
+	@GetMapping("/count/{name}")
+	public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
+		try {
+			return ResponseEntity.ok(communityService.getUserCountForCommunity(name));
+		} catch (CustomException e) {
+			HttpStatus status = (e.getCode() == 404) ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR;
+			return ResponseEntity.status(status).body(0);
+		}
+	}
 
+	/**
+	 * Get all communities a user is part of.
+	 *
+	 * @param userId user ID
+	 * @return list of communities or 204 if empty
+	 */
+	@GetMapping("/get/user/{userId}")
+	public ResponseEntity<List<Community>> getCommunitiesByUserId(@PathVariable String userId) {
+		try {
+			List<Community> communities = communityService.getCommunitiesByUserId(userId);
+			return communities.isEmpty()
+					? ResponseEntity.noContent().build()
+					: ResponseEntity.ok(communities);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-    @GetMapping("/cyber-user/{userId}")
-    public ResponseEntity<List<Community>> getCommunitiesByUserId(@PathVariable String userId) {
-        try {
-            List<Community> communities = communityService.getCommunitiesByUserId(userId);
-            if (communities.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(communities, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+	/**
+	 * Get a specific community post by ID.
+	 *
+	 * @param postId post ID
+	 * @return the community post or error
+	 */
+	@GetMapping("/get/post/{postId}")
+	public ResponseEntity<CommunityPost> getCommunityPostById(@PathVariable String postId) {
+		try {
+			return ResponseEntity.ok(communityService.getCommunityPostById(postId));
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-    @GetMapping("/data-stream/{postId}")
-    public ResponseEntity<CommunityPost> getCommunityPostById(@PathVariable String postId) {
-        try {
-            CommunityPost post = communityService.getCommunityPostById(postId);
-            return new ResponseEntity<>(post, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+	/**
+	 * Create a new community.
+	 *
+	 * @param ownerId   the owner's user ID
+	 * @param community the community data
+	 * @return the created community
+	 */
+	@PostMapping("/create/{ownerId}")
+	public ResponseEntity<Community> createCommunity(@PathVariable String ownerId , @RequestBody Community community) {
+		Community created = communityService.createCommunity(
+				community.getName() ,
+				ownerId ,
+				community.getDescription() ,
+				community.getFaqs()
+		);
+		return ResponseEntity.status(HttpStatus.CREATED).body(created);
+	}
 
-    @PostMapping("/deploy/{ownerId}")
-    public ResponseEntity<Community> createCommunity(@PathVariable String ownerId, @RequestBody Community community) {
-        community = communityService.createCommunity(community.getName(), ownerId, community.getDescription(), community.getFaqs());
+	/**
+	 * Create a post within a specific community.
+	 *
+	 * @param communityName the community name
+	 * @param communityPost the post content
+	 * @return the created post
+	 */
+	@PostMapping("/{communityName}/create/post")
+	public ResponseEntity<CommunityPost> createPostForCommunity(@PathVariable String communityName , @RequestBody CommunityPost communityPost) {
+		CommunityPost post = communityService.createCommunityPost(
+				communityName ,
+				communityPost.getOwnerId() ,
+				communityPost.getContent()
+		);
+		return ResponseEntity.status(HttpStatus.CREATED).body(post);
+	}
 
-        return new ResponseEntity<>(community, HttpStatus.CREATED);
-    }
+	/**
+	 * Add a user to a community.
+	 *
+	 * @param communityId community ID
+	 * @param userId      user ID
+	 * @return success or error message
+	 */
+	@PostMapping("/join/{communityId}/{userId}")
+	public ResponseEntity<String> joinCommunity(@PathVariable String communityId , @PathVariable String userId) {
+		try {
+			communityService.joinCommunity(communityId , userId);
+			return ResponseEntity.ok("User has successfully joined the community.");
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
 
-    @PostMapping("/{communityName}/uplink-posts")
-    public CommunityPost createPostForCommunity(
-            @PathVariable String communityName,
-            @RequestBody CommunityPost communityPost) {
-        return communityService.createCommunityPost(communityName, communityPost.getOwnerId(), communityPost.getContent());
-    }
+	/**
+	 * Update the details of a community.
+	 *
+	 * @param communityId the ID of the community
+	 * @param request     the fields to update (name, description, faqs)
+	 * @return updated community
+	 */
+	@PutMapping("/update/{communityId}")
+	public ResponseEntity<Community> updateCommunity(@PathVariable String communityId , @RequestBody Map<String, Object> request) {
 
-    @PostMapping("/link-up/{communityId}/{userId}")
-    public ResponseEntity<String> joinCommunity(@PathVariable String communityId, @PathVariable String userId) {
-        try {
-            communityService.joinCommunity(communityId, userId);
-            return new ResponseEntity<>("User has successfully joined the community.", HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
+		String newName = (String) request.get("name");
+		String description = (String) request.get("description");
 
-    @PutMapping("/update/{communityId}")
-    public ResponseEntity<Community> updateCommunity(@PathVariable String communityId, @RequestBody Map<String, Object> request) {
-        String newName = (String) request.get("name");
-        String description = (String) request.get("description");
+		List<Faq> faqs = null;
+		if (request.containsKey("faqs")) {
+			Object faqsObj = request.get("faqs");
+			if (faqsObj instanceof List<?> faqsList) {
+				faqs = new ArrayList<>();
 
-        List<Faq> faqs = null;
-        if (request.containsKey("faqs")) {
-            List<Map<String, String>> faqMaps = (List<Map<String, String>>) request.get("faqs");
-            faqs = faqMaps.stream()
-                    .map(map -> new Faq(map.get("question"), map.get("answer")))
-                    .toList();
-        }
+				for (Object item : faqsList) {
+					if (item instanceof Map<?, ?> map) {
+						Object question = map.get("question");
+						Object answer = map.get("answer");
 
-        Community updatedCommunity = communityService.updateCommunity(communityId, newName, description, faqs);
-        return ResponseEntity.ok(updatedCommunity);
-    }
+						if (question instanceof String && answer instanceof String) {
+							faqs.add(new Faq((String) question , (String) answer));
+						}
+					}
+				}
+			}
+		}
 
-    @PostMapping("/unlink/{communityId}/{userId}")
-    public ResponseEntity<String> unjoinCommunity(@PathVariable String communityId, @PathVariable String userId) {
-        try {
-            communityService.unjoinCommunity(communityId, userId);
-            return new ResponseEntity<>("User has successfully left the community.", HttpStatus.OK);
-        } catch (CustomException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
+		Community updated = communityService.updateCommunity(communityId , newName , description , faqs);
+		return ResponseEntity.ok(updated);
+	}
+
+	/**
+	 * Remove a user from a community.
+	 *
+	 * @param communityId community ID
+	 * @param userId      user ID
+	 * @return success or error message
+	 */
+	@PostMapping("/leave/{communityId}/{userId}")
+	public ResponseEntity<String> leaveCommunity(@PathVariable String communityId , @PathVariable String userId) {
+		try {
+			communityService.leaveCommunity(communityId , userId);
+			return ResponseEntity.ok("User has successfully left the community.");
+		} catch (CustomException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
 }

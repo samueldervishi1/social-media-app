@@ -14,18 +14,18 @@ import java.util.UUID;
 @Document
 public class Comment {
 
-    @Id
-    private String id;
-    private String userId;
-    private String content;
-    private String commentDate;
-    private String commentTime;
+	@Id
+	private String id;
+	private String userId;
+	private String content;
+	private String commentDate;
+	private String commentTime;
 
-    public Comment(String userId, String content) {
-        this.id = UUID.randomUUID().toString();
-        this.userId = userId;
-        this.content = content;
-        this.commentDate = LocalDate.now().toString();
-        this.commentTime = LocalTime.now().toString();
-    }
+	public Comment(String userId , String content) {
+		this.id = UUID.randomUUID().toString();
+		this.userId = userId;
+		this.content = content;
+		this.commentDate = LocalDate.now().toString();
+		this.commentTime = LocalTime.now().toString();
+	}
 }

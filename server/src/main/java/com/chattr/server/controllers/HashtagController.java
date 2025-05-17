@@ -33,15 +33,4 @@ public class HashtagController {
 	public List<Hashtag> getAllHashtags() {
 		return hashtagService.getAllHashtags();
 	}
-
-	/**
-	 * Saves a new hashtag.
-	 *
-	 * @param hashtag the hashtag object to save
-	 * @return the saved hashtag
-	 */
-	@PostMapping
-	public Hashtag saveHashtag(@RequestBody Hashtag hashtag) {
-		return hashtagService.saveHashtag(hashtag);
-	}
 }
