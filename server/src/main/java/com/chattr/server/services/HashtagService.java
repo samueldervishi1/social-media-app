@@ -24,11 +24,4 @@ public class HashtagService {
 	public List<Hashtag> getAllHashtags() {
 		return repository.findAll();
 	}
-
-	/**
-	 * Persists a new hashtag or updates an existing one.
-	 */
-	public Hashtag saveHashtag(Hashtag hashtag) {
-		return repository.save(hashtag);
-	}
 }

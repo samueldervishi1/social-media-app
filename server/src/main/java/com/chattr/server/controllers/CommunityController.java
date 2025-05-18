@@ -76,7 +76,7 @@ public class CommunityController {
 	 * @param name the name of the community
 	 * @return community object or error if not found
 	 */
-	@GetMapping("/get/{name}")
+	@GetMapping("/get/1/{name}")
 	public ResponseEntity<Community> getCommunityByName(@PathVariable String name) {
 		try {
 			return ResponseEntity.ok(communityService.getCommunityByName(name));
@@ -91,7 +91,7 @@ public class CommunityController {
 	 * @param name community name
 	 * @return number of users or 0 if error
 	 */
-	@GetMapping("/count/{name}")
+	@GetMapping("/count/users/{name}")
 	public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
 		try {
 			return ResponseEntity.ok(communityService.getUserCountForCommunity(name));
@@ -125,7 +125,7 @@ public class CommunityController {
 	 * @param postId post ID
 	 * @return the community post or error
 	 */
-	@GetMapping("/get/post/{postId}")
+	@GetMapping("/get/post/1/{postId}")
 	public ResponseEntity<CommunityPost> getCommunityPostById(@PathVariable String postId) {
 		try {
 			return ResponseEntity.ok(communityService.getCommunityPostById(postId));

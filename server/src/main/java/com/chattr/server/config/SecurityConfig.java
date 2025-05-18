@@ -58,7 +58,7 @@ public class SecurityConfig {
 				.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(publicUrls).permitAll() // Publicly accessible endpoints
-						.requestMatchers("/tmf/server/api/v2.2.10/**").authenticated() // Protected API path
+						.requestMatchers("/tmf/server/api/223_v2/**").authenticated() // Protected API path
 						.requestMatchers(HttpMethod.OPTIONS , "/**").permitAll() // Allow pre-flight requests
 						.anyRequest().permitAll() // Allow all other requests (adjust as needed)
 				)

@@ -39,7 +39,7 @@ public class UserController {
 	 * @param username the unique username
 	 * @return the user object
 	 */
-	@GetMapping("/{username}")
+	@GetMapping("/lookup/{username}")
 	public ResponseEntity<User> getUserInfo(@PathVariable String username) {
 		return ResponseEntity.ok(userService.getUserInfo(username));
 	}
@@ -50,7 +50,7 @@ public class UserController {
 	 * @param userId the unique user ID
 	 * @return the associated username
 	 */
-	@GetMapping("/lookup/username")
+	@GetMapping("/lookup/find")
 	public ResponseEntity<String> getUsername(@RequestParam String userId) {
 		String username = userService.getUsernameById(userId);
 		return ResponseEntity.ok(username);

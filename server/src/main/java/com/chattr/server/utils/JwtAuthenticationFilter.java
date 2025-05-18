@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String REQUIRED_HEADER = "X-App-Version";
-	private static final String EXPECTED_VERSION = "2.2.10";
+	private static final String EXPECTED_VERSION = "223_v2";
 	private static final String TOKEN_COOKIE_NAME = "token";
 
 	@Value("${security.public-urls}")

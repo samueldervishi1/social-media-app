@@ -22,13 +22,4 @@ public class CommunityPost {
 	private LocalDateTime createTime;
 	private List<Comment> comments;
 	private boolean deleted;
-
-	public CommunityPost(String ownerId , String communityName , String content , LocalDateTime createTime) {
-		this.ownerId = ownerId;
-		this.communityName = communityName;
-		this.content = content;
-		this.createTime = createTime;
-		this.comments = new ArrayList<>();
-		this.deleted = false;
-	}
 }

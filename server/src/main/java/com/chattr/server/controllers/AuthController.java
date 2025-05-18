@@ -253,7 +253,7 @@ public class AuthController {
 				.status(status)
 				.referenceError("N/A")
 				.baseType("APIResponse")
-				.schemaLocation("/tmf/server/api/v2.2.10/auth")
+				.schemaLocation("/tmf/server/api/223_v2/auth")
 				.type("auth_response");
 	}
 }

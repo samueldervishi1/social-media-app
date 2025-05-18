@@ -17,6 +17,7 @@ public class Hashtag {
 	private long views;
 
 	public Hashtag(String id , String name , String link , long views) {
+		this.id = id;
 		this.name = name;
 		this.link = link;
 		this.views = views;

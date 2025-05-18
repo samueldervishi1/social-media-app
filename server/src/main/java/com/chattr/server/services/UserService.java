@@ -41,7 +41,7 @@ public class UserService {
 	public String getUsernameById(String userId) {
 		return userRepository.findById(userId)
 				.map(User::getUsername)
-				.orElseThrow(() -> new CustomException(404 , USER_NOT_FOUND_BY_ID));
+				.orElseThrow(() -> new CustomException(404 , String.format(USER_NOT_FOUND_BY_ID, userId)));
 	}
 
 	/**
