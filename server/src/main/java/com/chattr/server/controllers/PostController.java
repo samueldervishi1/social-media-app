@@ -1,6 +1,5 @@
 package com.chattr.server.controllers;
 
-import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.Post;
 import com.chattr.server.services.PostService;
 import org.springframework.http.ResponseEntity;
@@ -30,32 +29,24 @@ public class PostController {
 	 * Retrieve a specific post by its ID.
 	 *
 	 * @param postId the unique identifier of the post
-	 * @return the Post object or error status
+	 * @return the Post object
 	 */
 	@GetMapping("/get/1/{postId}")
 	public ResponseEntity<Post> getPost(@PathVariable String postId) {
-		try {
-			Post post = postService.getPostById(postId);
-			return ResponseEntity.ok(post);
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body(null);
-		}
+		Post post = postService.getPostById(postId);
+		return ResponseEntity.ok(post);
 	}
 
 	/**
 	 * Get all posts created by a specific user.
 	 *
 	 * @param userId the user's identifier
-	 * @return list of posts or error response
+	 * @return list of posts
 	 */
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<List<Post>> listUserPosts(@PathVariable String userId) {
-		try {
-			List<Post> posts = postService.getUserPosts(userId);
-			return ResponseEntity.ok(posts);
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body(null);
-		}
+		List<Post> posts = postService.getUserPosts(userId);
+		return ResponseEntity.ok(posts);
 	}
 
 	/**
@@ -66,12 +57,7 @@ public class PostController {
 	 */
 	@GetMapping("/1/metrics/{userId}")
 	public long getUserPostCount(@PathVariable String userId) {
-		try {
-			return postService.getPostCountPerUser(userId);
-		} catch (CustomException e) {
-			// Re-throw as-is to allow centralized handling (if configured)
-			throw new CustomException(e.getCode() , e.getMessage());
-		}
+		return postService.getPostCountPerUser(userId);
 	}
 
 	/**
@@ -81,12 +67,8 @@ public class PostController {
 	 */
 	@GetMapping("/all")
 	public ResponseEntity<List<Post>> getAllPosts() {
-		try {
-			List<Post> posts = postService.getAllPosts();
-			return ResponseEntity.ok(posts);
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body(null);
-		}
+		List<Post> posts = postService.getAllPosts();
+		return ResponseEntity.ok(posts);
 	}
 
 	/**
@@ -94,31 +76,23 @@ public class PostController {
 	 *
 	 * @param username the author's username
 	 * @param post     the post content
-	 * @return confirmation message or error
+	 * @return confirmation message
 	 */
 	@PostMapping("/create/{username}")
 	public ResponseEntity<String> createPost(@PathVariable String username , @RequestBody Post post) {
-		try {
-			postService.createPost(username , post);
-			return ResponseEntity.ok("Post created successfully");
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body("Error creating post");
-		}
+		postService.createPost(username , post);
+		return ResponseEntity.ok("Post created successfully");
 	}
 
 	/**
 	 * Soft-delete a post by its ID.
 	 *
 	 * @param postId the post's unique identifier
-	 * @return confirmation or error message
+	 * @return confirmation message
 	 */
 	@DeleteMapping("/delete/{postId}")
 	public ResponseEntity<String> deletePost(@PathVariable String postId) {
-		try {
-			postService.deletePost(postId);
-			return ResponseEntity.ok("Post soft deleted successfully!");
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body("Error deleting post");
-		}
+		postService.deletePost(postId);
+		return ResponseEntity.ok("Post soft deleted successfully!");
 	}
 }

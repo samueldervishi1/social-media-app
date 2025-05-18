@@ -4,6 +4,8 @@ import com.chattr.server.models.Messages;
 import com.chattr.server.models.History;
 import com.chattr.server.models.QuestionAnswerPair;
 import com.chattr.server.repositories.HistoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class HistoryService {
 
 	private final HistoryRepository historyRepository;
+	private static final Logger LOGGER = LoggerFactory.getLogger(HistoryService.class);
 
 	public HistoryService(HistoryRepository historyRepository) {
 		this.historyRepository = historyRepository;
@@ -31,32 +34,44 @@ public class HistoryService {
 		History history = historyRepository.findBySessionId(sessionId)
 				.map(existing -> {
 					existing.getQuestionAnswerPairs().addAll(questionAnswerPairs);
+					LOGGER.info("Appending new entries to existing session '{}'" , sessionId);
 					return existing;
 				})
-				.orElseGet(() -> new History(sessionId , userId , questionAnswerPairs));
+				.orElseGet(() -> {
+					LOGGER.info("Creating new history entry for session '{}'" , sessionId);
+					return new History(sessionId , userId , questionAnswerPairs);
+				});
 
-		return historyRepository.save(history);
+		History saved = historyRepository.save(history);
+		LOGGER.info("History saved for session '{}'" , sessionId);
+		return saved;
 	}
 
 	/**
 	 * Retrieves all history entries in the database.
 	 */
 	public List<History> getAllHistories() {
-		return historyRepository.findAll();
+		List<History> all = historyRepository.findAll();
+		LOGGER.info("Fetched {} total history records" , all.size());
+		return all;
 	}
 
 	/**
 	 * Retrieves history entries by a specific user.
 	 */
 	public List<History> getHistoryByUserId(String userId) {
-		return historyRepository.findByUserId(userId);
+		List<History> histories = historyRepository.findByUserId(userId);
+		LOGGER.info("Fetched {} history records for userId '{}'" , histories.size() , userId);
+		return histories;
 	}
 
 	/**
 	 * Retrieves a history entry by session ID.
 	 */
 	public Optional<History> getHistoryBySessionId(String sessionId) {
-		return historyRepository.findBySessionId(sessionId);
+		Optional<History> history = historyRepository.findBySessionId(sessionId);
+		LOGGER.info("History lookup by sessionId '{}': {}" , sessionId , history.isPresent() ? "FOUND" : "NOT FOUND");
+		return history;
 	}
 
 	/**
@@ -64,9 +79,13 @@ public class HistoryService {
 	 */
 	public void deleteHistoryBySessionId(String sessionId) {
 		History history = historyRepository.findBySessionId(sessionId)
-				.orElseThrow(() -> new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR , sessionId)));
+				.orElseThrow(() -> {
+					LOGGER.warn("Attempted to delete non-existing session '{}'" , sessionId);
+					return new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR , sessionId));
+				});
 
 		historyRepository.delete(history);
+		LOGGER.info("Deleted history for session '{}'" , sessionId);
 	}
 
 	/**
@@ -75,9 +94,11 @@ public class HistoryService {
 	public void deleteAllHistory(String userId) {
 		List<History> histories = historyRepository.findByUserId(userId);
 		if (histories.isEmpty()) {
+			LOGGER.warn("No history found for userId '{}', nothing to delete" , userId);
 			throw new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR , userId));
 		}
 		historyRepository.deleteAll(histories);
+		LOGGER.info("Deleted {} history records for userId '{}'" , histories.size() , userId);
 	}
 
 	/**
@@ -91,6 +112,9 @@ public class HistoryService {
 
 		if (!outdated.isEmpty()) {
 			historyRepository.deleteAll(outdated);
+			LOGGER.info("Scheduled cleanup: Deleted {} outdated history records (before {})" , outdated.size() , cutoffDate);
+		} else {
+			LOGGER.info("Scheduled cleanup: No outdated history records found (before {})" , cutoffDate);
 		}
 	}
 }

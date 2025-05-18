@@ -1,6 +1,5 @@
 package com.chattr.server.controllers;
 
-import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.Community;
 import com.chattr.server.models.CommunityPost;
 import com.chattr.server.models.Faq;
@@ -48,11 +47,7 @@ public class CommunityController {
 	 */
 	@GetMapping("/get/posts")
 	public ResponseEntity<List<CommunityPost>> getAllPosts() {
-		try {
-			return ResponseEntity.ok(communityService.getAllDBPosts());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		return ResponseEntity.ok(communityService.getAllDBPosts());
 	}
 
 	/**
@@ -63,11 +58,7 @@ public class CommunityController {
 	 */
 	@GetMapping("/get/{communityId}")
 	public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
-		try {
-			return ResponseEntity.ok(communityService.getCommunityById(communityId));
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+		return ResponseEntity.ok(communityService.getCommunityById(communityId));
 	}
 
 	/**
@@ -78,27 +69,18 @@ public class CommunityController {
 	 */
 	@GetMapping("/get/1/{name}")
 	public ResponseEntity<Community> getCommunityByName(@PathVariable String name) {
-		try {
-			return ResponseEntity.ok(communityService.getCommunityByName(name));
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode() == 404 ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		return ResponseEntity.ok(communityService.getCommunityByName(name));
 	}
 
 	/**
 	 * Get user count for a specific community.
 	 *
 	 * @param name community name
-	 * @return number of users or 0 if error
+	 * @return number of users
 	 */
 	@GetMapping("/count/users/{name}")
 	public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
-		try {
-			return ResponseEntity.ok(communityService.getUserCountForCommunity(name));
-		} catch (CustomException e) {
-			HttpStatus status = (e.getCode() == 404) ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR;
-			return ResponseEntity.status(status).body(0);
-		}
+		return ResponseEntity.ok(communityService.getUserCountForCommunity(name));
 	}
 
 	/**
@@ -109,31 +91,21 @@ public class CommunityController {
 	 */
 	@GetMapping("/get/user/{userId}")
 	public ResponseEntity<List<Community>> getCommunitiesByUserId(@PathVariable String userId) {
-		try {
-			List<Community> communities = communityService.getCommunitiesByUserId(userId);
-			return communities.isEmpty()
-					? ResponseEntity.noContent().build()
-					: ResponseEntity.ok(communities);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		List<Community> communities = communityService.getCommunitiesByUserId(userId);
+		return communities.isEmpty()
+				? ResponseEntity.noContent().build()
+				: ResponseEntity.ok(communities);
 	}
 
 	/**
 	 * Get a specific community post by ID.
 	 *
 	 * @param postId post ID
-	 * @return the community post or error
+	 * @return the community post
 	 */
 	@GetMapping("/get/post/1/{postId}")
 	public ResponseEntity<CommunityPost> getCommunityPostById(@PathVariable String postId) {
-		try {
-			return ResponseEntity.ok(communityService.getCommunityPostById(postId));
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		return ResponseEntity.ok(communityService.getCommunityPostById(postId));
 	}
 
 	/**
@@ -176,16 +148,12 @@ public class CommunityController {
 	 *
 	 * @param communityId community ID
 	 * @param userId      user ID
-	 * @return success or error message
+	 * @return success message
 	 */
 	@PostMapping("/join/{communityId}/{userId}")
 	public ResponseEntity<String> joinCommunity(@PathVariable String communityId , @PathVariable String userId) {
-		try {
-			communityService.joinCommunity(communityId , userId);
-			return ResponseEntity.ok("User has successfully joined the community.");
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+		communityService.joinCommunity(communityId , userId);
+		return ResponseEntity.ok("User has successfully joined the community.");
 	}
 
 	/**
@@ -229,17 +197,11 @@ public class CommunityController {
 	 *
 	 * @param communityId community ID
 	 * @param userId      user ID
-	 * @return success or error message
+	 * @return success message
 	 */
 	@PostMapping("/leave/{communityId}/{userId}")
 	public ResponseEntity<String> leaveCommunity(@PathVariable String communityId , @PathVariable String userId) {
-		try {
-			communityService.leaveCommunity(communityId , userId);
-			return ResponseEntity.ok("User has successfully left the community.");
-		} catch (CustomException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+		communityService.leaveCommunity(communityId , userId);
+		return ResponseEntity.ok("User has successfully left the community.");
 	}
 }

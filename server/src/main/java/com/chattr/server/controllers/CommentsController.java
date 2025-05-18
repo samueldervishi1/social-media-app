@@ -4,6 +4,7 @@ import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.Messages;
 import com.chattr.server.models.Comment;
 import com.chattr.server.services.CommentsService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,11 +34,13 @@ public class CommentsController {
 	 * @throws CustomException if the comment does not exist
 	 */
 	@GetMapping("/get/{postId}/{commentId}")
-	public Comment getCommentById(@PathVariable String postId , @PathVariable String commentId) {
-		return commentsService.getCommentById(postId , commentId)
+	public ResponseEntity<Comment> getCommentById(@PathVariable String postId , @PathVariable String commentId) {
+		Comment comment = commentsService.getCommentById(postId , commentId)
 				.orElseThrow(() ->
 						new CustomException(404 , String.format(Messages.COMMENT_NOT_FOUND , commentId))
 				);
+
+		return ResponseEntity.ok(comment);
 	}
 
 	/**
@@ -49,8 +52,11 @@ public class CommentsController {
 	 * @return the newly created comment
 	 */
 	@PostMapping("/create/{userId}/{postId}")
-	public Comment createComment(@PathVariable String userId , @PathVariable String postId , @RequestBody Comment comment) {
-		return commentsService.createComment(userId , postId , comment);
+	public ResponseEntity<Comment> createComment(@PathVariable String userId ,
+	                                             @PathVariable String postId ,
+	                                             @RequestBody Comment comment) {
+		Comment created = commentsService.createComment(userId , postId , comment);
+		return ResponseEntity.ok(created);
 	}
 
 	/**
@@ -58,15 +64,12 @@ public class CommentsController {
 	 *
 	 * @param postId    ID of the post
 	 * @param commentId ID of the comment
-	 * @return success or error message
+	 * @return success message
 	 */
 	@DeleteMapping("/delete/{postId}/{commentId}")
-	public String deleteComment(@PathVariable String postId , @PathVariable String commentId) {
-		try {
-			commentsService.deleteComment(postId , commentId);
-			return "Comment with ID: " + commentId + " has been deleted successfully.";
-		} catch (CustomException e) {
-			return "Error: " + e.getMessage();
-		}
+	public ResponseEntity<String> deleteComment(@PathVariable String postId ,
+	                                            @PathVariable String commentId) {
+		commentsService.deleteComment(postId , commentId);
+		return ResponseEntity.ok("Comment with ID: " + commentId + " has been deleted successfully.");
 	}
 }

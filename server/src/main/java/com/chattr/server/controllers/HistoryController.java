@@ -35,29 +35,21 @@ public class HistoryController {
 	 */
 	@GetMapping("/all")
 	public ResponseEntity<List<History>> getAllHistories() {
-		try {
-			return ResponseEntity.ok(historyService.getAllHistories());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		return ResponseEntity.ok(historyService.getAllHistories());
 	}
 
 	/**
 	 * Get all chat history for a specific user.
 	 *
 	 * @param userId user identifier
-	 * @return list of histories or 404 if none found
+	 * @return list of histories or 204 if none found
 	 */
 	@GetMapping("/get/user/{userId}")
-	public ResponseEntity<?> getHistoryByUserId(@PathVariable String userId) {
-		try {
-			List<History> histories = historyService.getHistoryByUserId(userId);
-			return histories.isEmpty()
-					? ResponseEntity.status(HttpStatus.NOT_FOUND).body("No history found for userId: " + userId)
-					: ResponseEntity.ok(histories);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch history");
-		}
+	public ResponseEntity<List<History>> getHistoryByUserId(@PathVariable String userId) {
+		List<History> histories = historyService.getHistoryByUserId(userId);
+		return histories.isEmpty()
+				? ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+				: ResponseEntity.ok(histories);
 	}
 
 	/**
@@ -67,16 +59,11 @@ public class HistoryController {
 	 * @return the history or 404 if not found
 	 */
 	@GetMapping("/get/session/{sessionId}")
-	public ResponseEntity<?> getHistoryBySessionId(@PathVariable String sessionId) {
-		try {
-			Optional<History> history = historyService.getHistoryBySessionId(sessionId);
-			return history
-					.<ResponseEntity<?>>map(ResponseEntity::ok)
-					.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-							.body("No history found for sessionId: " + sessionId));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch history");
-		}
+	public ResponseEntity<History> getHistoryBySessionId(@PathVariable String sessionId) {
+		Optional<History> history = historyService.getHistoryBySessionId(sessionId);
+		return history
+				.map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 
 	/**
@@ -93,49 +80,33 @@ public class HistoryController {
 			@PathVariable String sessionId ,
 			@RequestBody QuestionAnswerPair request
 	) {
-		try {
-			History saved = historyService.saveHistory(sessionId , userId ,
-					List.of(new QuestionAnswerPair(request.getContent() , request.getAnswer())));
+		History saved = historyService.saveHistory(sessionId , userId ,
+				List.of(new QuestionAnswerPair(request.getContent() , request.getAnswer())));
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 	}
 
 	/**
 	 * Delete a chat history by session ID.
 	 *
 	 * @param sessionId session identifier
-	 * @return success message or error
+	 * @return success message
 	 */
 	@DeleteMapping("/delete/{sessionId}")
 	public ResponseEntity<String> deleteChatHistory(@PathVariable String sessionId) {
-		try {
-			historyService.deleteHistoryBySessionId(sessionId);
-			return ResponseEntity.ok("Chat history deleted successfully");
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete chat history");
-		}
+		historyService.deleteHistoryBySessionId(sessionId);
+		return ResponseEntity.ok("Chat history deleted successfully");
 	}
 
 	/**
 	 * Delete all chat history records for a specific user.
 	 *
 	 * @param userId user identifier
-	 * @return success or error message
+	 * @return success message
 	 */
 	@DeleteMapping("/delete/user/{userId}")
 	public ResponseEntity<String> deleteChatHistoryForUserId(@PathVariable String userId) {
-		try {
-			historyService.deleteAllHistory(userId);
-			return ResponseEntity.ok("Chat history deleted successfully");
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete chat history");
-		}
+		historyService.deleteAllHistory(userId);
+		return ResponseEntity.ok("Chat history deleted successfully");
 	}
 }

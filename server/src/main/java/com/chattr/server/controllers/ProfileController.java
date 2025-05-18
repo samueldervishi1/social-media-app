@@ -1,6 +1,5 @@
 package com.chattr.server.controllers;
 
-import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.PasswordUpdateRequest;
 import com.chattr.server.models.User;
 import com.chattr.server.services.ProfileService;
@@ -34,12 +33,8 @@ public class ProfileController {
 	 */
 	@PutMapping("/{userId}/update")
 	public ResponseEntity<User> updateUser(@PathVariable String userId , @RequestBody User updatedUser) {
-		try {
-			User updated = profileService.updateProfile(userId , updatedUser);
-			return ResponseEntity.ok(updated);
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).build();
-		}
+		User updated = profileService.updateProfile(userId , updatedUser);
+		return ResponseEntity.ok(updated);
 	}
 
 	/**
@@ -54,12 +49,8 @@ public class ProfileController {
 			@PathVariable String userId ,
 			@RequestBody PasswordUpdateRequest request
 	) {
-		try {
-			profileService.updatePassword(userId , request.getOldPassword() , request.getNewPassword());
-			return ResponseEntity.ok("Password updated successfully");
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body(e.getMessage());
-		}
+		profileService.updatePassword(userId , request.getOldPassword() , request.getNewPassword());
+		return ResponseEntity.ok("Password updated successfully");
 	}
 
 	/**
@@ -70,12 +61,8 @@ public class ProfileController {
 	 */
 	@DeleteMapping("/{userId}/delete")
 	public ResponseEntity<String> deleteUser(@PathVariable String userId) {
-		try {
-			profileService.softDeleteUser(userId);
-			return ResponseEntity.ok("User deleted successfully");
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body(e.getMessage());
-		}
+		profileService.softDeleteUser(userId);
+		return ResponseEntity.ok("User deleted successfully");
 	}
 
 	/**
@@ -86,12 +73,8 @@ public class ProfileController {
 	 */
 	@PutMapping("/{userId}/deactivate")
 	public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
-		try {
-			profileService.deactivateUser(userId);
-			return ResponseEntity.ok("User deactivated successfully");
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body(e.getMessage());
-		}
+		profileService.deactivateUser(userId);
+		return ResponseEntity.ok("User deactivated successfully");
 	}
 
 	/**
@@ -102,11 +85,7 @@ public class ProfileController {
 	 */
 	@PutMapping("/{userId}/reactivate")
 	public ResponseEntity<String> reactivateUser(@PathVariable String userId) {
-		try {
-			profileService.activateUser(userId);
-			return ResponseEntity.ok("User reactivated successfully");
-		} catch (CustomException e) {
-			return ResponseEntity.status(e.getCode()).body(e.getMessage());
-		}
+		profileService.activateUser(userId);
+		return ResponseEntity.ok("User reactivated successfully");
 	}
 }

@@ -25,7 +25,7 @@ public final class Messages {
 	public static final String USER_ID_ERROR = "User ID must not be null or empty.";
 	public static final String USER_NOT_FOUND_BY_USERNAME = "No user found with username: %s";
 	public static final String USER_NOT_FOUND_BY_ID = "No user found with ID: %s";
-	public static final String USER_NOT_FOUND = "User not found.";
+	public static final String USER_NOT_FOUND = "User not found. %s";
 	public static final String USERNAME_INCORRECT = "The username provided is incorrect.";
 	public static final String USER_DELETED = "No active account found with this username.";
 	public static final String INVALID_CREDENTIALS = "The password you entered is incorrect.";

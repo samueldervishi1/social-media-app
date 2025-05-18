@@ -82,7 +82,7 @@ public class ReportService {
 	 */
 	private void updateUserReportedPosts(String userId , String postId) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new CustomException(404 , Messages.USER_NOT_FOUND));
+				.orElseThrow(() -> new CustomException(404 , String.format(Messages.USER_NOT_FOUND, userId)));
 
 		if (user.getReportedPostIds() == null) {
 			user.setReportedPostIds(new ArrayList<>());
