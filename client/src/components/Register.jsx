@@ -152,9 +152,6 @@ const Register = () => {
   return (
     <div id='main' style={{ minHeight: '100vh', paddingBottom: '40px' }}>
       <div className={styles.screen}>
-        <Link to='http://localhost:9090/index.html' style={healthLinkStyle}>
-          Server Health
-        </Link>
         <form id='registrationForm' onSubmit={handleSubmit}>
           <div className={styles.container_sign}>
             <p className={styles.fill}>Chattr</p>

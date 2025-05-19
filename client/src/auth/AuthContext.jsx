@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(async () => {
     try {
-      await axios.post(`${API_URL}logout`, null, {
+      await axios.post(`${API_URL}auth/logout`, null, {
         withCredentials: true,
         headers: {
           'X-App-Version': APP_VERSION,
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     const checkSession = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${API_URL}me`, {
+        const response = await axios.get(`${API_URL}auth/me`, {
           withCredentials: true,
           headers: {
             'X-App-Version': APP_VERSION,

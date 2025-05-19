@@ -197,7 +197,7 @@ const ChatAI = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}quantum-query`,
+        `${API_URL}chatbot/query`,
         {
           message: userInput,
         },
@@ -414,7 +414,7 @@ const ChatAI = () => {
   useEffect(() => {
     const fetchPredefinedQuestions = async () => {
       try {
-        const response = await axios.get(`${API_URL}get/predefined`, {
+        const response = await axios.get(`${API_URL}questions`, {
           withCredentials: true,
           headers: {
             'X-App-Version': import.meta.env.VITE_APP_VERSION,

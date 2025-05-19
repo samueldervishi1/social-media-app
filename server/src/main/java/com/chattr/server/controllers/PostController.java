@@ -75,7 +75,7 @@ public class PostController {
 	 * Create a new post by a user.
 	 *
 	 * @param username the author's username
-	 * @param post     the post content
+	 * @param post     the post-content
 	 * @return confirmation message
 	 */
 	@PostMapping("/create/{username}")

@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		setSecurityHeaders(response);
 
-		// 1. Enforce app version from custom header
+		// 1. Enforce an app version from a custom header
 		if (!isValidAppVersion(request)) {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED ,
 					"Missing or invalid required header: " + REQUIRED_HEADER + ". Expected: " + EXPECTED_VERSION);

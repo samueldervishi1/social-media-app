@@ -44,7 +44,7 @@ public class CustomException extends RuntimeException {
 
 	/**
 	 * Constructor with only an error object.
-	 * Defaults to 400 error code.
+	 * Defaults to 400 error codes.
 	 */
 	public CustomException(Error faultObject) {
 		super(faultObject != null ? faultObject.getMessage() : "Unknown error");

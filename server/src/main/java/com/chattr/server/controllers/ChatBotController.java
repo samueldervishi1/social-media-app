@@ -37,7 +37,7 @@ public class ChatBotController {
 		// Extract the question message from the request body
 		String question = requestBody.getOrDefault("message" , "").trim();
 
-		// Short-circuit if message is missing or empty
+		// Short-circuit if a message is missing or empty
 		if (question.isEmpty()) {
 			return Map.of("error" , "Message cannot be empty.");
 		}

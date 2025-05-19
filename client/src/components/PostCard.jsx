@@ -36,7 +36,7 @@ const PostCard = ({
   const handleDelete = async () => {
     try {
       setIsSubmitting(true);
-      const response = await axios.delete(`${API_URL}posts/erase/${id}`, {
+      const response = await axios.delete(`${API_URL}posts/delete/${id}`, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ const PostCard = ({
       setIsSubmitting(false);
     }
   };
-
+x
   const handleReport = () => {
     setIsReportModalOpen(true);
   };

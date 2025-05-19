@@ -42,10 +42,10 @@ const Navbar = () => {
       name: 'Home',
       icon: <GoHome className={styles.icon_p} />,
     },
-    {
-      name: 'Your communities',
-      icon: <RiUserCommunityLine className={styles.icon_p} />,
-    },
+    // {
+    //   name: 'Your communities',
+    //   icon: <RiUserCommunityLine className={styles.icon_p} />,
+    // },
     { name: 'Logout', icon: <CiLogout className={styles.icon_p} /> },
   ];
 
@@ -77,8 +77,8 @@ const Navbar = () => {
     (settingName) => {
       if (settingName === 'Home') {
         navigate('/home');
-      } else if (settingName === 'Your communities') {
-        navigate('/c/user/communities');
+      // } else if (settingName === 'Your communities') {
+      //   navigate('/c/user/communities');
       } else if (settingName === 'Logout') {
         handleLogout();
       }
@@ -189,12 +189,12 @@ const Navbar = () => {
                     Eido
                   </IconButton>
                 </a>
-                <a href='/c/communities' className={styles.menu_item}>
+                {/* <a href='/c/communities' className={styles.menu_item}>
                   <IconButton style={{ fontSize: '15px' }}>
                     <RiUserCommunityLine className={styles.icon_p} />
                     Communities
                   </IconButton>
-                </a>
+                </a> */}
                 <a href='/settings' className={styles.menu_item}>
                   <IconButton style={{ fontSize: '15px' }}>
                     <IoSettingsOutline className={styles.icon_p} />
@@ -217,12 +217,12 @@ const Navbar = () => {
                   <span className={styles.nav_text}>Eido</span>
                 </IconButton>
               </a>
-              <a href='/c/communities' className={styles.menu_item}>
+              {/* <a href='/c/communities' className={styles.menu_item}>
                 <IconButton className={styles.nav_button}>
                   <RiUserCommunityLine className={styles.icon_p} />
                   <span className={styles.nav_text}>Communities</span>
                 </IconButton>
-              </a>
+              </a> */}
               <a href='/settings' className={styles.menu_item}>
                 <IconButton style={{ fontSize: '15px' }}>
                   <IoSettingsOutline className={styles.icon_p} />

@@ -56,7 +56,7 @@ const LoginScript = () => {
           },
         };
 
-        const response = await fetch(`${API_URL}login`, {
+        const response = await fetch(`${API_URL}auth/login`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -176,9 +176,6 @@ const LoginScript = () => {
 
   return (
     <div className={styles.form_container}>
-      <Link to='http://localhost:9090/index.html' style={healthLinkStyle}>
-        Server Health
-      </Link>
       <form onSubmit={handleSubmit} className={styles.login_form}>
         <div className={styles.container_login}>
           <p className={styles.fill}>Chattr</p>

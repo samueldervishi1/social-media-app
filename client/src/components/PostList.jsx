@@ -23,7 +23,7 @@ const PostList = ({ onPostRefresh }) => {
 
   const fetchPosts = async () => {
     try {
-      const userPostsResponse = await axios.get(`${API_URL}posts`, {
+      const userPostsResponse = await axios.get(`${API_URL}posts/all`, {
         withCredentials: true,
         headers: {
           'X-App-Version': import.meta.env.VITE_APP_VERSION,
@@ -44,7 +44,7 @@ const PostList = ({ onPostRefresh }) => {
 
           try {
             const usernameResponse = await axios.get(
-              `${API_URL}retrieve/username?userId=${post.userId}`,
+              `${API_URL}users/lookup/find?userId=${post.userId}`,
               {
                 withCredentials: true,
                 headers: {

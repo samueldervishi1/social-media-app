@@ -14,10 +14,10 @@ import Navbar from './components/Navbar';
 const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
 const Home = lazy(() => import('./components/Home'));
-const UserCommunities = lazy(() => import('./components/UserCommunities'));
+// const UserCommunities = lazy(() => import('./components/UserCommunities'));
 const ChatAI = lazy(() => import('./components/ChatAI'));
-const CommunitiesList = lazy(() => import('./components/CommunitiesList'));
-const CommunityDetails = lazy(() => import('./components/CommunityDetails'));
+// const CommunitiesList = lazy(() => import('./components/CommunitiesList'));
+// const CommunityDetails = lazy(() => import('./components/CommunityDetails'));
 const TermsAndServices = lazy(() => import('./components/Terms'));
 const About = lazy(() => import('./components/About'));
 const Contact = lazy(() => import('./components/Contact'));
@@ -55,9 +55,9 @@ const App = () => {
             {/* Protected Routes */}
             <Route path='/home' element={<ProtectedRoute element={<Home />} />}/>
             <Route path='/chat' element={<ProtectedRoute element={<ChatAI />} />}/>
-            <Route path='/c/communities' element={<ProtectedRoute element={<CommunitiesList />} />}/>
+            {/* <Route path='/c/communities' element={<ProtectedRoute element={<CommunitiesList />} />}/>
             <Route path='/c/community/:name' element={<ProtectedRoute element={<CommunityDetails />} />}/>
-            <Route path='/c/user/communities' element={<ProtectedRoute element={<UserCommunities />} />} />
+            <Route path='/c/user/communities' element={<ProtectedRoute element={<UserCommunities />} />} /> */}
             <Route path='/settings' element={<ProtectedRoute element={<Settings />} />} />
 
             {/* Default and Not Found Routes */}

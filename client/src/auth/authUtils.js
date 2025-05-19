@@ -3,7 +3,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const getUserInfo = async () => {
   try {
-    const response = await axios.get(`${API_URL}me`, {
+    const response = await axios.get(`${API_URL}auth/me`, {
       withCredentials: true,
       headers: {
         'X-App-Version': import.meta.env.VITE_APP_VERSION,
@@ -33,7 +33,7 @@ export const getCompleteUserProfile = async (username) => {
   }
   
   try {
-    const response = await axios.get(`${API_URL}get/${username}`, {
+    const response = await axios.get(`${API_URL}users/lookup/${username}`, {
       withCredentials: true,
       headers: {
         'X-App-Version': import.meta.env.VITE_APP_VERSION,
