@@ -162,7 +162,7 @@ public class CommunityService {
 	}
 
 	/**
-	 * Retrieves a community by name, or throws 404.
+	 * Retrieves a community by name or throws 404.
 	 */
 	public Community getCommunityByName(String name) {
 		return communityRepository.findByName(name)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { getUserIdFromServer } from '../auth/authUtils';
@@ -12,7 +12,6 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
 import { GiArtificialHive } from 'react-icons/gi';
 import { MdClose } from 'react-icons/md';
-import { RiUserCommunityLine } from 'react-icons/ri';
 import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
 
@@ -24,9 +23,9 @@ const Navbar = () => {
   const location = useLocation();
 
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [anchorElSettings, setAnchorElSettings] = useState(null);
+  const [anchorElSettings, ] = useState(null);
 
-  const [userId, setUserId] = useState(null);
+  const [, setUserId] = useState(null);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -42,10 +41,6 @@ const Navbar = () => {
       name: 'Home',
       icon: <GoHome className={styles.icon_p} />,
     },
-    // {
-    //   name: 'Your communities',
-    //   icon: <RiUserCommunityLine className={styles.icon_p} />,
-    // },
     { name: 'Logout', icon: <CiLogout className={styles.icon_p} /> },
   ];
 
@@ -77,8 +72,6 @@ const Navbar = () => {
     (settingName) => {
       if (settingName === 'Home') {
         navigate('/home');
-      // } else if (settingName === 'Your communities') {
-      //   navigate('/c/user/communities');
       } else if (settingName === 'Logout') {
         handleLogout();
       }
@@ -114,13 +107,13 @@ const Navbar = () => {
 
               <div
                 className={`${styles.user_overlay} ${
-                  Boolean(anchorElUser) ? styles.open : ''
+                  anchorElUser ? styles.open : ''
                 }`}
                 onClick={handleCloseUserMenu}
               />
               <div
                 className={`${styles.user_sidebar} ${
-                  Boolean(anchorElUser) ? styles.open : ''
+                  anchorElUser ? styles.open : ''
                 }`}
               >
                 <div className={styles.user_header}>
@@ -189,12 +182,6 @@ const Navbar = () => {
                     Eido
                   </IconButton>
                 </a>
-                {/* <a href='/c/communities' className={styles.menu_item}>
-                  <IconButton style={{ fontSize: '15px' }}>
-                    <RiUserCommunityLine className={styles.icon_p} />
-                    Communities
-                  </IconButton>
-                </a> */}
                 <a href='/settings' className={styles.menu_item}>
                   <IconButton style={{ fontSize: '15px' }}>
                     <IoSettingsOutline className={styles.icon_p} />
@@ -217,12 +204,6 @@ const Navbar = () => {
                   <span className={styles.nav_text}>Eido</span>
                 </IconButton>
               </a>
-              {/* <a href='/c/communities' className={styles.menu_item}>
-                <IconButton className={styles.nav_button}>
-                  <RiUserCommunityLine className={styles.icon_p} />
-                  <span className={styles.nav_text}>Communities</span>
-                </IconButton>
-              </a> */}
               <a href='/settings' className={styles.menu_item}>
                 <IconButton style={{ fontSize: '15px' }}>
                   <IoSettingsOutline className={styles.icon_p} />

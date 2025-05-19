@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
@@ -21,15 +21,15 @@ const ChatAI = () => {
   const chatContainerRef = useRef(null);
   const [isThinking, setIsThinking] = useState(false);
   const [hideHeading, setHideHeading] = useState(false);
-  const [isMobileView, setIsMobileView] = useState();
-  const [showContinueMessage, setShowContinueMessage] = useState(false);
+  const [, setIsMobileView] = useState();
+  const [, setShowContinueMessage] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [isTypingFinished, setIsTypingFinished] = useState(true);
+  const [, setIsTypingFinished] = useState(true);
   const [isProcessingResponse, setIsProcessingResponse] = useState(false);
   const [isNearLimit, setIsNearLimit] = useState(false);
   const [username, setUsername] = useState('');
   const [predefinedQuestions, setPredefinedQuestions] = useState([]);
-  const [loadingUsername, setLoadingUsername] = useState(true);
+  const [, setLoadingUsername] = useState(true);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -336,7 +336,6 @@ const ChatAI = () => {
     textarea.style.height = 'auto';
 
     const lineHeight = 24;
-    const lines = text.split('\n').length;
     const maxInitialLines = 3;
     const newHeight = Math.min(
       Math.max(lineHeight, textarea.scrollHeight),
@@ -392,7 +391,6 @@ const ChatAI = () => {
         const textarea = e.target;
         textarea.style.height = 'auto';
         const lineHeight = 24;
-        const lines = truncatedText.split('\n').length;
         const maxInitialLines = 3;
         const newHeight = Math.min(
           Math.max(lineHeight, textarea.scrollHeight),

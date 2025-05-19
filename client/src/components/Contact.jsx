@@ -1,4 +1,9 @@
-import React from 'react';
+/**
+ * @fileoverview Contact component that displays company contact information and social media links
+ */
+
+import { memo } from 'react';
+import PropTypes from 'prop-types';
 import {
   FaInstagram,
   FaEnvelope,
@@ -7,7 +12,91 @@ import {
 } from 'react-icons/fa';
 import styles from '../styles/contact.module.css';
 
+// Contact information constants
+const CONTACT_INFO = {
+  email: 'support@chattr.com',
+  phone: '(123) 456-7890',
+  address: '123 Chat Street, Digital City',
+  instagram: 'https://www.instagram.com/samueldervishi_',
+};
+
+/**
+ * Contact Method component for displaying individual contact information
+ * @param {Object} props Component properties
+ */
+const ContactMethod = memo(({ Icon, title, content, href }) => (
+  <div className={styles.contact_method}>
+    <Icon className={styles.method_icon} />
+    <h3>{title}</h3>
+    {href ? (
+      <a
+        href={href}
+        target={href.startsWith('http') ? '_blank' : undefined}
+        rel='noopener noreferrer'
+      >
+        {content}
+      </a>
+    ) : (
+      <p>{content}</p>
+    )}
+  </div>
+));
+
+ContactMethod.displayName = 'ContactMethod';
+ContactMethod.propTypes = {
+  Icon: PropTypes.elementType.isRequired,
+  title: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired,
+  href: PropTypes.string,
+};
+
+/**
+ * Social Media Link component
+ */
+const SocialLink = memo(({ Icon, platform, href }) => (
+  <a
+    href={href}
+    target='_blank'
+    rel='noopener noreferrer'
+    className={styles.social_link}
+    aria-label={`Follow us on ${platform}`}
+  >
+    <Icon className={styles.social_icon} />
+    <span>{platform}</span>
+  </a>
+));
+
+SocialLink.displayName = 'SocialLink';
+SocialLink.propTypes = {
+  Icon: PropTypes.elementType.isRequired,
+  platform: PropTypes.string.isRequired,
+  href: PropTypes.string.isRequired,
+};
+
+/**
+ * Contact page component that displays various ways to contact the company
+ * Features include email, phone, location, and social media links
+ */
 const Contact = () => {
+  const contactMethods = [
+    {
+      Icon: FaEnvelope,
+      title: 'Email',
+      content: CONTACT_INFO.email,
+      href: `mailto:${CONTACT_INFO.email}`,
+    },
+    {
+      Icon: FaPhone,
+      title: 'Phone',
+      content: CONTACT_INFO.phone,
+    },
+    {
+      Icon: FaMapMarkerAlt,
+      title: 'Location',
+      content: CONTACT_INFO.address,
+    },
+  ];
+
   return (
     <div className={styles.contact_container}>
       <div className={styles.h1_container}>
@@ -18,37 +107,25 @@ const Contact = () => {
         <h2>We're here to help</h2>
 
         <div className={styles.contact_methods_container}>
-          <div className={styles.contact_method}>
-            <FaEnvelope className={styles.method_icon} />
-            <h3>Email</h3>
-            <a href='mailto:support@chattr.com'>support@chattr.com</a>
-          </div>
-
-          <div className={styles.contact_method}>
-            <FaPhone className={styles.method_icon} />
-            <h3>Phone</h3>
-            <p>(123) 456-7890</p>
-          </div>
-
-          <div className={styles.contact_method}>
-            <FaMapMarkerAlt className={styles.method_icon} />
-            <h3>Location</h3>
-            <p>123 Chat Street, Digital City</p>
-          </div>
+          {contactMethods.map((method) => (
+            <ContactMethod
+              key={method.title}
+              Icon={method.Icon}
+              title={method.title}
+              content={method.content}
+              href={method.href}
+            />
+          ))}
         </div>
 
         <div className={styles.social_section}>
           <h3>Connect with us</h3>
           <div className={styles.social_icons}>
-            <a
-              href='https://www.instagram.com/samueldervishi_'
-              target='_blank'
-              rel='noopener noreferrer'
-              className={styles.social_link}
-            >
-              <FaInstagram className={styles.social_icon} />
-              <span>Instagram</span>
-            </a>
+            <SocialLink
+              Icon={FaInstagram}
+              platform='Instagram'
+              href={CONTACT_INFO.instagram}
+            />
           </div>
         </div>
       </div>
@@ -56,4 +133,6 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+Contact.displayName = 'Contact';
+
+export default memo(Contact);

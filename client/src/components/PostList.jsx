@@ -56,6 +56,7 @@ const PostList = ({ onPostRefresh }) => {
             const username = usernameResponse.data;
             return { ...post, username };
           } catch (err) {
+            console.error('Error fetching username:', err);
             return { ...post, username: 'User Deleted' };
           }
         })
@@ -69,6 +70,7 @@ const PostList = ({ onPostRefresh }) => {
 
       setPosts(postsWithUsernames);
     } catch (error) {
+      console.error('Error fetching posts:', error);
       setError('Something went wrong. Please try again later.');
     } finally {
       setIsLoading(false);

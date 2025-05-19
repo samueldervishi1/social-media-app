@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Snackbar, Alert } from '@mui/material';
-import { CiCircleInfo } from 'react-icons/ci';
 import styles from '../styles/register.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -138,16 +137,6 @@ const Register = () => {
       document.body.classList.remove('register-page');
     };
   }, []);
-
-  const healthLinkStyle = {
-    position: 'fixed', // Changed from absolute to fixed
-    top: '20px',
-    right: '20px',
-    color: '#0072ff',
-    textDecoration: 'none',
-    fontSize: '14px',
-    zIndex: 1000, // Ensure it stays on top
-  };
 
   return (
     <div id='main' style={{ minHeight: '100vh', paddingBottom: '40px' }}>

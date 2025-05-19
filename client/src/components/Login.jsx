@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import customLoadingGif from '../assets/377.gif';
@@ -163,15 +163,6 @@ const LoginScript = () => {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-  };
-
-  const healthLinkStyle = {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    color: '#0072ff',
-    textDecoration: 'none',
-    fontSize: '14px',
   };
 
   return (

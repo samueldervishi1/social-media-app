@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import userIcon from '../assets/user.webp';
 import { getUsernameFromServer } from '../auth/authUtils';
@@ -55,7 +55,6 @@ const PostCard = ({
       setIsSubmitting(false);
     }
   };
-x
   const handleReport = () => {
     setIsReportModalOpen(true);
   };

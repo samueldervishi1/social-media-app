@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { openDB } from 'idb';
 import { getUsernameFromServer } from '../auth/authUtils';
@@ -91,6 +91,7 @@ const PostForm = ({ onPostCreated }) => {
             'warning'
           );
         } else {
+          console.error('Error creating post:', error);
           showSnackbar('Error creating post. Please try again.', 'error');
         }
       } finally {

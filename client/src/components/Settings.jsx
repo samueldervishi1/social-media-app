@@ -1,4 +1,16 @@
-import React, { useState, lazy, Suspense, useCallback } from 'react';
+/**
+ * @typedef {Object} SettingsProps
+ * No props required for this component
+ */
+
+import React, {
+  useState,
+  lazy,
+  Suspense,
+  useCallback,
+  useMemo,
+  memo,
+} from 'react';
 import axios from 'axios';
 import {
   FaInfoCircle,
@@ -13,6 +25,7 @@ import styles from '../styles/settings.module.css';
 import { useAuth } from '../auth/AuthContext';
 import { getUserIdFromServer } from '../auth/authUtils';
 
+// Lazy load components for better initial load performance
 const About = lazy(() => import('./About'));
 const TermsAndServices = lazy(() => import('./Terms'));
 const Contact = lazy(() => import('./Contact'));
@@ -20,59 +33,112 @@ const FAQ = lazy(() => import('./FAQ'));
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const Settings = () => {
-  const [activeSection, setActiveSection] = useState('about');
-  const [password, setPassword] = useState('');
-  const [reason, setReason] = useState('');
-  const [agreeToDelete, setAgreeToDelete] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState('');
+/**
+ * @type {React.FC<{ children: React.ReactNode }>}
+ * Loading fallback component for Suspense
+ */
+const LoadingFallback = memo(() => (
+  <div className={styles.loading_fallback}>
+    <p>Loading content...</p>
+  </div>
+));
 
-  const [deactivatePassword, setDeactivatePassword] = useState('');
-  const [deactivateReason, setDeactivateReason] = useState('');
-  const [agreeToDeactivate, setAgreeToDeactivate] = useState(false);
-  const [isDeactivating, setIsDeactivating] = useState(false);
-  const [deactivateError, setDeactivateError] = useState('');
+/**
+ * @type {React.FC<{ isError: boolean, message: string }>}
+ * Error message component
+ */
+const ErrorMessage = memo(({ message }) =>
+  message ? <div className={styles.error_message}>{message}</div> : null
+);
+
+/**
+ * Settings component that handles user account settings and preferences
+ * Includes account management, information pages, and server health monitoring
+ * @returns {JSX.Element} The Settings component
+ */
+const Settings = () => {
+  // State management
+  const [activeSection, setActiveSection] = useState('about');
+  const [deleteAccountState, setDeleteAccountState] = useState({
+    password: '',
+    reason: '',
+    agreeToDelete: false,
+    isDeleting: false,
+    error: '',
+  });
+
+  const [deactivateAccountState, setDeactivateAccountState] = useState({
+    password: '',
+    reason: '',
+    agreeToDeactivate: false,
+    isDeactivating: false,
+    error: '',
+  });
 
   const [userId, setUserId] = useState(null);
   const { logout } = useAuth();
 
+  // Fetch user ID on component mount
   React.useEffect(() => {
+    let isMounted = true;
+
     const fetchUserId = async () => {
-      const result = await getUserIdFromServer();
-      setUserId(result);
+      try {
+        const result = await getUserIdFromServer();
+        if (isMounted) {
+          setUserId(result);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user ID:', error);
+      }
     };
 
     fetchUserId();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const handleSectionChange = (section) => {
+  /**
+   * Handles navigation between different sections in settings
+   * @param {string} section - The section to navigate to
+   */
+  const handleSectionChange = useCallback((section) => {
     setActiveSection(section);
-  };
+  }, []);
 
+  /**
+   * Clears all cookies from the browser
+   */
+  const clearCookies = useCallback(() => {
+    document.cookie.split(';').forEach((cookie) => {
+      const [name] = cookie.trim().split('=');
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    });
+  }, []);
+
+  /**
+   * Handles account deletion process
+   * @param {React.FormEvent} e - Form submission event
+   */
   const handleDeleteAccount = useCallback(
     async (e) => {
       e.preventDefault();
+      const { password, reason, agreeToDelete } = deleteAccountState;
 
-      if (!password) {
-        setError('Please enter your password to confirm.');
+      if (!password || !reason || !agreeToDelete) {
+        setDeleteAccountState((prev) => ({
+          ...prev,
+          error: 'Please fill in all required fields and confirm deletion.',
+        }));
         return;
       }
 
-      if (!reason) {
-        setError('Please select a reason for leaving.');
-        return;
-      }
-
-      if (!agreeToDelete) {
-        setError(
-          'Please confirm that you understand this action is permanent.'
-        );
-        return;
-      }
-
-      setError('');
-      setIsDeleting(true);
+      setDeleteAccountState((prev) => ({
+        ...prev,
+        isDeleting: true,
+        error: '',
+      }));
 
       try {
         await axios.delete(`${API_URL}profiles/${userId}/delete`, {
@@ -82,51 +148,48 @@ const Settings = () => {
           },
         });
 
-        document.cookie.split(';').forEach((cookie) => {
-          const [name] = cookie.trim().split('=');
-          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        });
-
+        clearCookies();
         await logout();
         window.location.href = '/login';
       } catch (error) {
         console.error('Error deleting account:', error);
-        setError('Failed to delete account. Please try again later.');
-        setIsDeleting(false);
+        setDeleteAccountState((prev) => ({
+          ...prev,
+          error: 'Failed to delete account. Please try again later.',
+          isDeleting: false,
+        }));
       }
     },
-    [userId, logout, password, reason, agreeToDelete]
+    [userId, logout, deleteAccountState, clearCookies]
   );
 
+  /**
+   * Handles account deactivation process
+   * @param {React.FormEvent} e - Form submission event
+   */
   const handleDeactivateAccount = useCallback(
     async (e) => {
       e.preventDefault();
+      const { password, reason, agreeToDeactivate } = deactivateAccountState;
 
-      if (!deactivatePassword) {
-        setDeactivateError('Please enter your password to confirm.');
+      if (!password || !reason || !agreeToDeactivate) {
+        setDeactivateAccountState((prev) => ({
+          ...prev,
+          error: 'Please fill in all required fields and confirm deactivation.',
+        }));
         return;
       }
 
-      if (!deactivateReason) {
-        setDeactivateError('Please select a reason for deactivating.');
-        return;
-      }
-
-      if (!agreeToDeactivate) {
-        setDeactivateError('Please confirm that you understand this action.');
-        return;
-      }
-
-      setDeactivateError('');
-      setIsDeactivating(true);
+      setDeactivateAccountState((prev) => ({
+        ...prev,
+        isDeactivating: true,
+        error: '',
+      }));
 
       try {
         await axios.put(
           `${API_URL}profiles/${userId}/deactivate`,
-          {
-            password: deactivatePassword,
-            reason: deactivateReason,
-          },
+          { password, reason },
           {
             withCredentials: true,
             headers: {
@@ -136,32 +199,42 @@ const Settings = () => {
           }
         );
 
-        document.cookie.split(';').forEach((cookie) => {
-          const [name] = cookie.trim().split('=');
-          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        });
-
+        clearCookies();
         await logout();
         window.location.href = '/login';
       } catch (error) {
         console.error('Error deactivating account:', error);
-        setDeactivateError(
-          error.response?.data?.message ||
-            'Failed to deactivate account. Please try again later.'
-        );
-        setIsDeactivating(false);
+        setDeactivateAccountState((prev) => ({
+          ...prev,
+          error:
+            error.response?.data?.message ||
+            'Failed to deactivate account. Please try again later.',
+          isDeactivating: false,
+        }));
       }
     },
-    [userId, logout, deactivatePassword, deactivateReason, agreeToDeactivate]
+    [userId, logout, deactivateAccountState, clearCookies]
   );
 
-  const renderContent = () => {
-    const LoadingFallback = () => (
-      <div className={styles.loading_fallback}>
-        <p>Loading content...</p>
-      </div>
-    );
+  // Memoize the sidebar menu items to prevent unnecessary re-renders
+  const sidebarMenuItems = useMemo(
+    () => [
+      { id: 'about', icon: FaInfoCircle, label: 'About' },
+      { id: 'terms', icon: FaFileContract, label: 'Terms of Service' },
+      { id: 'contact', icon: FaEnvelope, label: 'Contact Us' },
+      { id: 'help', icon: FaQuestionCircle, label: 'Help & Support' },
+      { id: 'server', icon: FaServer, label: 'Server Health' },
+      { id: 'deactivate', icon: FaPauseCircle, label: 'Deactivate Account' },
+      { id: 'delete', icon: FaTrash, label: 'Delete Account' },
+    ],
+    []
+  );
 
+  /**
+   * Renders the content for the currently active section
+   * @returns {JSX.Element} The content component for the active section
+   */
+  const renderContent = useCallback(() => {
     switch (activeSection) {
       case 'about':
         return (
@@ -230,9 +303,7 @@ const Settings = () => {
                 You can reactivate your account at any time by logging in again.
               </p>
             </div>
-            {deactivateError && (
-              <div className={styles.error_message}>{deactivateError}</div>
-            )}
+            <ErrorMessage message={deactivateAccountState.error} />
             <form
               className={styles.delete_form}
               onSubmit={handleDeactivateAccount}
@@ -244,8 +315,13 @@ const Settings = () => {
                 <input
                   type='password'
                   id='deactivatePassword'
-                  value={deactivatePassword}
-                  onChange={(e) => setDeactivatePassword(e.target.value)}
+                  value={deactivateAccountState.password}
+                  onChange={(e) =>
+                    setDeactivateAccountState((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div className={styles.form_group}>
@@ -254,8 +330,13 @@ const Settings = () => {
                 </label>
                 <select
                   id='deactivateReason'
-                  value={deactivateReason}
-                  onChange={(e) => setDeactivateReason(e.target.value)}
+                  value={deactivateAccountState.reason}
+                  onChange={(e) =>
+                    setDeactivateAccountState((prev) => ({
+                      ...prev,
+                      reason: e.target.value,
+                    }))
+                  }
                 >
                   <option value=''>Select a reason</option>
                   <option value='break'>Taking a break</option>
@@ -271,8 +352,13 @@ const Settings = () => {
                 <label className={styles.checkbox_container}>
                   <input
                     type='checkbox'
-                    checked={agreeToDeactivate}
-                    onChange={(e) => setAgreeToDeactivate(e.target.checked)}
+                    checked={deactivateAccountState.agreeToDeactivate}
+                    onChange={(e) =>
+                      setDeactivateAccountState((prev) => ({
+                        ...prev,
+                        agreeToDeactivate: e.target.checked,
+                      }))
+                    }
                   />
                   <span className={styles.checkbox_label}>
                     I understand that my account will be deactivated until I log
@@ -283,9 +369,9 @@ const Settings = () => {
               <button
                 type='submit'
                 className={styles.deactivate_button}
-                disabled={isDeactivating}
+                disabled={deactivateAccountState.isDeactivating}
               >
-                {isDeactivating
+                {deactivateAccountState.isDeactivating
                   ? 'Deactivating Account...'
                   : 'Deactivate Account'}
               </button>
@@ -313,7 +399,7 @@ const Settings = () => {
                 deactivating your account instead.
               </p>
             </div>
-            {error && <div className={styles.error_message}>{error}</div>}
+            <ErrorMessage message={deleteAccountState.error} />
             <form className={styles.delete_form} onSubmit={handleDeleteAccount}>
               <div className={styles.form_group}>
                 <label htmlFor='password'>
@@ -322,8 +408,13 @@ const Settings = () => {
                 <input
                   type='password'
                   id='password'
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={deleteAccountState.password}
+                  onChange={(e) =>
+                    setDeleteAccountState((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div className={styles.form_group}>
@@ -332,8 +423,13 @@ const Settings = () => {
                 </label>
                 <select
                   id='reason'
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
+                  value={deleteAccountState.reason}
+                  onChange={(e) =>
+                    setDeleteAccountState((prev) => ({
+                      ...prev,
+                      reason: e.target.value,
+                    }))
+                  }
                 >
                   <option value=''>Select a reason</option>
                   <option value='privacy'>Privacy concerns</option>
@@ -351,8 +447,13 @@ const Settings = () => {
                 <label className={styles.checkbox_container}>
                   <input
                     type='checkbox'
-                    checked={agreeToDelete}
-                    onChange={(e) => setAgreeToDelete(e.target.checked)}
+                    checked={deleteAccountState.agreeToDelete}
+                    onChange={(e) =>
+                      setDeleteAccountState((prev) => ({
+                        ...prev,
+                        agreeToDelete: e.target.checked,
+                      }))
+                    }
                   />
                   <span className={styles.checkbox_label}>
                     I understand this action is permanent and cannot be undone
@@ -362,9 +463,9 @@ const Settings = () => {
               <button
                 type='submit'
                 className={styles.delete_button}
-                disabled={isDeleting}
+                disabled={deleteAccountState.isDeleting}
               >
-                {isDeleting
+                {deleteAccountState.isDeleting
                   ? 'Deleting Account...'
                   : 'Permanently Delete Account'}
               </button>
@@ -374,55 +475,28 @@ const Settings = () => {
       default:
         return <div>Select a section from the sidebar</div>;
     }
-  };
+  }, [
+    activeSection,
+    handleDeleteAccount,
+    handleDeactivateAccount,
+    deleteAccountState,
+    deactivateAccountState,
+  ]);
 
   return (
     <div className={styles.settings_container}>
       <div className={styles.settings_sidebar}>
         <h2 className={styles.sidebar_title}>Settings</h2>
         <ul className={styles.sidebar_menu}>
-          <li
-            className={activeSection === 'about' ? styles.active : ''}
-            onClick={() => handleSectionChange('about')}
-          >
-            <FaInfoCircle /> About
-          </li>
-          <li
-            className={activeSection === 'terms' ? styles.active : ''}
-            onClick={() => handleSectionChange('terms')}
-          >
-            <FaFileContract /> Terms of Service
-          </li>
-          <li
-            className={activeSection === 'contact' ? styles.active : ''}
-            onClick={() => handleSectionChange('contact')}
-          >
-            <FaEnvelope /> Contact Us
-          </li>
-          <li
-            className={activeSection === 'help' ? styles.active : ''}
-            onClick={() => handleSectionChange('help')}
-          >
-            <FaQuestionCircle /> Help & Support
-          </li>
-          <li
-            className={activeSection === 'server' ? styles.active : ''}
-            onClick={() => handleSectionChange('server')}
-          >
-            <FaServer /> Server Health
-          </li>
-          <li
-            className={activeSection === 'deactivate' ? styles.active : ''}
-            onClick={() => handleSectionChange('deactivate')}
-          >
-            <FaPauseCircle /> Deactivate Account
-          </li>
-          <li
-            className={activeSection === 'delete' ? styles.active : ''}
-            onClick={() => handleSectionChange('delete')}
-          >
-            <FaTrash /> Delete Account
-          </li>
+          {sidebarMenuItems.map(({ id, icon: Icon, label }) => (
+            <li
+              key={id}
+              className={activeSection === id ? styles.active : ''}
+              onClick={() => handleSectionChange(id)}
+            >
+              <Icon /> {label}
+            </li>
+          ))}
         </ul>
       </div>
       <div className={styles.settings_content}>
@@ -434,4 +508,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default memo(Settings);

@@ -1,8 +1,129 @@
-import React, { useState } from 'react';
+/**
+ * @fileoverview FAQ component that displays frequently asked questions and a contact form
+ */
+
+import { useState, memo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { faqs } from '../constants/faq';
 import styles from '../styles/faq.module.css';
 
+/**
+ * @typedef {Object} FormState
+ * @property {boolean} isSubmitted - Whether the form has been submitted
+ * @property {string} email - User's email address
+ * @property {string} message - User's message
+ * @property {string} error - Error message if validation fails
+ */
+
+/**
+ * FAQ Question component that displays a single question and answer
+ */
+const FAQItem = memo(({ question, answer, isActive, onToggle }) => (
+  <div className={styles.faq_item}>
+    <div
+      onClick={onToggle}
+      className={styles.question}
+      role='button'
+      tabIndex={0}
+      onKeyPress={(e) => e.key === 'Enter' && onToggle()}
+      aria-expanded={isActive}
+    >
+      {isActive ? (
+        <FaChevronUp className={`${styles.icon} ${styles.rotate}`} />
+      ) : (
+        <FaChevronDown className={styles.icon} />
+      )}
+      {question}
+    </div>
+    <div
+      className={`${styles.answer} ${!isActive ? styles.answer_hidden : ''}`}
+      aria-hidden={!isActive}
+    >
+      <p>{answer}</p>
+    </div>
+  </div>
+));
+
+FAQItem.displayName = 'FAQItem';
+FAQItem.propTypes = {
+  question: PropTypes.string.isRequired,
+  answer: PropTypes.string.isRequired,
+  isActive: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+};
+
+/**
+ * Contact Form component for submitting questions
+ */
+const ContactForm = memo(({ formState, onSubmit, onChange }) => (
+  <div className={styles.form_container}>
+    {formState.isSubmitted ? (
+      <div className={styles.success_message} role='alert'>
+        Thank you for your message! We will get back to you soon.
+      </div>
+    ) : (
+      <form onSubmit={onSubmit}>
+        <div className={styles.form_group}>
+          <label htmlFor='email' className={styles.form_label}>
+            Email address
+          </label>
+          <input
+            id='email'
+            name='email'
+            type='email'
+            required
+            value={formState.email}
+            onChange={onChange}
+            placeholder='Enter your email'
+            className={styles.form_input}
+            aria-invalid={!!formState.error}
+          />
+          {formState.error && (
+            <div className={styles.error_message} role='alert'>
+              {formState.error}
+            </div>
+          )}
+        </div>
+        <div className={styles.form_group}>
+          <label htmlFor='message' className={styles.form_label}>
+            Message
+          </label>
+          <textarea
+            id='message'
+            name='message'
+            rows='4'
+            required
+            value={formState.message}
+            onChange={onChange}
+            placeholder='Enter your message'
+            className={styles.form_input}
+          />
+        </div>
+        <button type='submit' className={styles.submit_button}>
+          Send Message
+        </button>
+      </form>
+    )}
+  </div>
+));
+
+ContactForm.displayName = 'ContactForm';
+ContactForm.propTypes = {
+  formState: PropTypes.shape({
+    isSubmitted: PropTypes.bool.isRequired,
+    email: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired,
+    error: PropTypes.string.isRequired,
+  }).isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+/**
+ * FAQ component that displays a list of frequently asked questions
+ * and a contact form for additional questions
+ */
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [formState, setFormState] = useState({
@@ -12,42 +133,70 @@ const FAQ = () => {
     error: '',
   });
 
-  const toggleQuestion = (index) =>
-    setActiveIndex(activeIndex === index ? null : index);
+  /**
+   * Toggles the visibility of a FAQ answer
+   * @param {number} index - Index of the FAQ item
+   */
+  const toggleQuestion = useCallback(
+    (index) => {
+      setActiveIndex(activeIndex === index ? null : index);
+    },
+    [activeIndex]
+  );
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  /**
+   * Validates an email address
+   * @param {string} email - Email address to validate
+   * @returns {boolean} Whether the email is valid
+   */
+  const validateEmail = useCallback(
+    (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+    []
+  );
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
+  /**
+   * Handles form submission
+   * @param {React.FormEvent} e - Form submission event
+   */
+  const handleFormSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
 
-    if (!validateEmail(formState.email)) {
-      setFormState((prev) => ({
-        ...prev,
-        error: 'Please enter a valid email address.',
-      }));
-      return;
-    }
+      if (!validateEmail(formState.email)) {
+        setFormState((prev) => ({
+          ...prev,
+          error: 'Please enter a valid email address.',
+        }));
+        return;
+      }
 
-    setFormState((prev) => ({ ...prev, isSubmitted: true, error: '' }));
+      setFormState((prev) => ({ ...prev, isSubmitted: true, error: '' }));
 
-    setTimeout(() => {
-      setFormState({
-        isSubmitted: false,
-        email: '',
-        message: '',
-        error: '',
-      });
-    }, 2000);
-  };
+      // Reset form after delay
+      setTimeout(() => {
+        setFormState({
+          isSubmitted: false,
+          email: '',
+          message: '',
+          error: '',
+        });
+      }, 2000);
+    },
+    [formState.email, validateEmail]
+  );
 
-  const handleInputChange = (e) => {
+  /**
+   * Handles form input changes
+   * @param {React.ChangeEvent} e - Input change event
+   */
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({
       ...prev,
       [name]: value,
       error: name === 'email' ? '' : prev.error,
     }));
-  };
+  }, []);
 
   return (
     <div className={styles.faq_container}>
@@ -57,80 +206,28 @@ const FAQ = () => {
 
       <div className={styles.faq_card}>
         {faqs.map((faq, index) => (
-          <div key={index} className={styles.faq_item}>
-            <div
-              onClick={() => toggleQuestion(index)}
-              className={styles.question}
-            >
-              {activeIndex === index ? (
-                <FaChevronUp className={`${styles.icon} ${styles.rotate}`} />
-              ) : (
-                <FaChevronDown className={styles.icon} />
-              )}
-              {faq.question}
-            </div>
-            <div
-              className={`${styles.answer} ${
-                activeIndex !== index ? styles.answer_hidden : ''
-              }`}
-            >
-              <p>{faq.answer}</p>
-            </div>
-          </div>
+          <FAQItem
+            key={index}
+            question={faq.question}
+            answer={faq.answer}
+            isActive={activeIndex === index}
+            onToggle={() => toggleQuestion(index)}
+          />
         ))}
       </div>
 
       <div className={styles.contact_section}>
         <h2 className={styles.contact_title}>Still have questions?</h2>
-        <div className={styles.form_container}>
-          {formState.isSubmitted ? (
-            <div className={styles.success_message}>
-              Thank you for your message! We will get back to you soon.
-            </div>
-          ) : (
-            <form onSubmit={handleFormSubmit}>
-              <div className={styles.form_group}>
-                <label htmlFor='email' className={styles.form_label}>
-                  Email address
-                </label>
-                <input
-                  id='email'
-                  name='email'
-                  type='email'
-                  required
-                  value={formState.email}
-                  onChange={handleInputChange}
-                  placeholder='Enter your email'
-                  className={styles.form_input}
-                />
-                {formState.error && (
-                  <div className={styles.error_message}>{formState.error}</div>
-                )}
-              </div>
-              <div className={styles.form_group}>
-                <label htmlFor='message' className={styles.form_label}>
-                  Message
-                </label>
-                <textarea
-                  id='message'
-                  name='message'
-                  rows='4'
-                  required
-                  value={formState.message}
-                  onChange={handleInputChange}
-                  placeholder='Enter your message'
-                  className={styles.form_input}
-                />
-              </div>
-              <button type='submit' className={styles.submit_button}>
-                Send Message
-              </button>
-            </form>
-          )}
-        </div>
+        <ContactForm
+          formState={formState}
+          onSubmit={handleFormSubmit}
+          onChange={handleInputChange}
+        />
       </div>
     </div>
   );
 };
 
-export default FAQ;
+FAQ.displayName = 'FAQ';
+
+export default memo(FAQ);
