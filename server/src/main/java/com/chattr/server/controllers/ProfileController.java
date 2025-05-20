@@ -2,9 +2,14 @@ package com.chattr.server.controllers;
 
 import com.chattr.server.models.PasswordUpdateRequest;
 import com.chattr.server.models.User;
+import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.ProfileService;
+import com.chattr.server.services.UserService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * REST controller for managing user profiles, including updates, password changes, deletion, and activation.
@@ -13,79 +18,122 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/profile")
 public class ProfileController {
 
-	private final ProfileService profileService;
+    private final ProfileService profileService;
+    private final ActivityLogService activityLogService;
 
-	/**
-	 * Constructor-based injection for ProfileService.
-	 *
-	 * @param profileService service layer handling user profile logic
-	 */
-	public ProfileController(ProfileService profileService) {
-		this.profileService = profileService;
-	}
+    /**
+     * Constructor-based injection for ProfileService.
+     *
+     * @param profileService service layer handling user profile logic
+     */
+    public ProfileController(ProfileService profileService, ActivityLogService activityLogService) {
+        this.profileService = profileService;
+        this.activityLogService = activityLogService;
+    }
 
-	/**
-	 * Update a user's profile.
-	 *
-	 * @param userId      the ID of the user to update
-	 * @param updatedUser updated user data
-	 * @return updated user object
-	 */
-	@PutMapping("/{userId}/update")
-	public ResponseEntity<User> updateUser(@PathVariable String userId , @RequestBody User updatedUser) {
-		User updated = profileService.updateProfile(userId , updatedUser);
-		return ResponseEntity.ok(updated);
-	}
+    @GetMapping("/is-blocked")
+    public ResponseEntity<?> isBlocked(@RequestParam String blockerId, @RequestParam String targetId) {
+        boolean isBlocked = profileService.isBlocked(blockerId, targetId);
+        return ResponseEntity.ok(Map.of("isBlocked", isBlocked));
+    }
 
-	/**
-	 * Update the password for a user.
-	 *
-	 * @param userId  the ID of the user
-	 * @param request object containing old and new passwords
-	 * @return success or error message
-	 */
-	@PutMapping("/{userId}/update/password")
-	public ResponseEntity<String> updatePassword(
-			@PathVariable String userId ,
-			@RequestBody PasswordUpdateRequest request
-	) {
-		profileService.updatePassword(userId , request.getOldPassword() , request.getNewPassword());
-		return ResponseEntity.ok("Password updated successfully");
-	}
+    @PostMapping("/change/account/public")
+    public ResponseEntity<?> changeAccountPublic(@RequestParam String userId) {
+        User user = profileService.makePublic(userId);
+        activityLogService.log(user.getUsername(), "USER_CHANGE_ACCOUNT", "User account changed to public for user ID: " + userId + ".");
+        return ResponseEntity.ok(user);
+    }
 
-	/**
-	 * Soft delete (deactivate) a user account.
-	 *
-	 * @param userId the ID of the user to delete
-	 * @return success or error message
-	 */
-	@DeleteMapping("/{userId}/delete")
-	public ResponseEntity<String> deleteUser(@PathVariable String userId) {
-		profileService.softDeleteUser(userId);
-		return ResponseEntity.ok("User deleted successfully");
-	}
+    @PostMapping("/change/account/private")
+    public ResponseEntity<?> changeAccountPrivate(@RequestParam String userId) {
+        User user = profileService.makePrivate(userId);
+        activityLogService.log(user.getUsername(), "USER_CHANGE_ACCOUNT", "User account changed to private for user ID: " + userId + ".");
+        return ResponseEntity.ok(user);
+    }
 
-	/**
-	 * Deactivate a user account.
-	 *
-	 * @param userId the ID of the user to deactivate
-	 * @return success or error message
-	 */
-	@PutMapping("/{userId}/deactivate")
-	public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
-		profileService.deactivateUser(userId);
-		return ResponseEntity.ok("User deactivated successfully");
-	}
+    @PostMapping("/block")
+    public ResponseEntity<?> blockUser(@RequestBody Map<String, String> body) {
+        String blockerId = body.get("blockerId");
+        String targetId = body.get("targetId");
+        profileService.blockUser(blockerId, targetId);
+        return ResponseEntity.ok("User blocked successfully");
+    }
 
-	/**
-	 * Reactivate a previously deactivated user account.
-	 *
-	 * @param userId the ID of the user to reactivate
-	 * @return success or error message
-	 */
-	@PutMapping("/{userId}/reactivate")
-	public ResponseEntity<String> reactivateUser(@PathVariable String userId) {
-		profileService.activateUser(userId);
-		return ResponseEntity.ok("User reactivated successfully");
-	}
+    @PostMapping("/unblock")
+    public ResponseEntity<?> unblockUser(@RequestBody Map<String, String> body) {
+        String blockerId = body.get("blockerId");
+        String targetId = body.get("targetId");
+        profileService.unblockUser(blockerId, targetId);
+        return ResponseEntity.ok("User unblocked successfully");
+    }
+
+    /**
+     * Update a user's profile.
+     *
+     * @param userId      the ID of the user to update
+     * @param updatedUser updated user data
+     * @return updated user object
+     */
+    @PutMapping("/{userId}/update")
+    public ResponseEntity<User> updateUser(@PathVariable String userId, @RequestBody User updatedUser) {
+        User updated = profileService.updateProfile(userId, updatedUser);
+        activityLogService.log(updated.getUsername(), "PROFILE_UPDATE", "Profile updated for user ID: " + userId + ".");
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * Update the password for a user.
+     *
+     * @param userId  the ID of the user
+     * @param request object containing old and new passwords
+     * @return success or error message
+     */
+    @PutMapping("/{userId}/update/password")
+    public ResponseEntity<String> updatePassword(
+            @PathVariable String userId,
+            @RequestBody PasswordUpdateRequest request
+    ) {
+        profileService.updatePassword(userId, request.getOldPassword(), request.getNewPassword());
+        activityLogService.log(userId, "PASSWORD_UPDATE", "Password updated for user ID: " + userId + ".");
+        return ResponseEntity.ok("Password updated successfully");
+    }
+
+    /**
+     * Soft delete (deactivate) a user account.
+     *
+     * @param userId the ID of the user to delete
+     * @return success or error message
+     */
+    @DeleteMapping("/{userId}/delete")
+    public ResponseEntity<String> deleteUser(@PathVariable String userId) {
+        profileService.softDeleteUser(userId);
+        activityLogService.log(userId, "PROFILE_DELETE", "Profile deleted for user ID: " + userId + ".");
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
+    /**
+     * Deactivate a user account.
+     *
+     * @param userId the ID of the user to deactivate
+     * @return success or error message
+     */
+    @PutMapping("/{userId}/deactivate")
+    public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
+        profileService.deactivateUser(userId);
+        activityLogService.log(userId, "PROFILE_DEACTIVATE", "Profile deactivated for user ID: " + userId + ".");
+        return ResponseEntity.ok("User deactivated successfully");
+    }
+
+    /**
+     * Reactivate a previously deactivated user account.
+     *
+     * @param userId the ID of the user to reactivate
+     * @return success or error message
+     */
+    @PutMapping("/{userId}/reactivate")
+    public ResponseEntity<String> reactivateUser(@PathVariable String userId) {
+        profileService.activateUser(userId);
+        activityLogService.log(userId, "PROFILE_REACTIVATE", "Profile reactivated for user ID: " + userId + ".");
+        return ResponseEntity.ok("User reactivated successfully");
+    }
 }

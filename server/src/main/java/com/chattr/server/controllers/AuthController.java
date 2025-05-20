@@ -5,6 +5,7 @@ import com.chattr.server.models.Messages;
 import com.chattr.server.models.Error;
 import com.chattr.server.models.User;
 import com.chattr.server.models.UserInfo;
+import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.LoginService;
 import com.chattr.server.services.RegisterService;
 import com.chattr.server.utils.JwtTokenUtil;
@@ -28,232 +29,257 @@ import java.util.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-	private final LoginService loginService;
-	private final RegisterService registerService;
-	private final JwtTokenUtil jwtTokenUtil;
+    private final LoginService loginService;
+    private final RegisterService registerService;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final ActivityLogService activityLogService;
 
-	public AuthController(LoginService loginService , RegisterService registerService , JwtTokenUtil jwtTokenUtil) {
-		this.loginService = loginService;
-		this.registerService = registerService;
-		this.jwtTokenUtil = jwtTokenUtil;
-	}
+    public AuthController(LoginService loginService, RegisterService registerService, JwtTokenUtil jwtTokenUtil, ActivityLogService activityLogService) {
+        this.loginService = loginService;
+        this.registerService = registerService;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.activityLogService = activityLogService;
+    }
 
-	/**
-	 * Logs in the user by validating nested JSON payload and issuing a token.
-	 */
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody Map<String, Object> loginRequest , HttpServletResponse response , HttpServletRequest request) {
+    /**
+     * Logs in the user by validating nested JSON payload and issuing a token.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, Object> loginRequest, HttpServletResponse response, HttpServletRequest request) {
 
-		logger.debug("Received login request: {}" , loginRequest);
-		String username = null;
-		String password = null;
+        logger.debug("Received login request: {}", loginRequest);
+        String username = null;
+        String password = null;
 
-		try {
-			Map<String, Object> parts = safeCastMap(loginRequest.get("parts"));
-			Map<String, Object> spec = safeCastMap(parts.get("specification"));
-			List<Map<String, Object>> characteristics = safeCastList(spec.get("characteristics-value"));
+        try {
+            Map<String, Object> parts = safeCastMap(loginRequest.get("parts"));
+            Map<String, Object> spec = safeCastMap(parts.get("specification"));
+            List<Map<String, Object>> characteristics = safeCastList(spec.get("characteristics-value"));
 
-			for (Map<String, Object> item : characteristics) {
-				if (item == null) continue;
-				String name = (String) item.get("@characteristic-name");
-				Map<String, Object> valueMap = safeCastMap(item.get("value"));
-				String value = valueMap != null ? (String) valueMap.get("$") : null;
+            for (Map<String, Object> item : characteristics) {
+                if (item == null) continue;
+                String name = (String) item.get("@characteristic-name");
+                Map<String, Object> valueMap = safeCastMap(item.get("value"));
+                String value = valueMap != null ? (String) valueMap.get("$") : null;
 
-				if ("username".equals(name)) username = value;
-				if ("password".equals(name)) password = value;
-			}
+                if ("username".equals(name)) username = value;
+                if ("password".equals(name)) password = value;
+            }
 
-		} catch (Exception e) {
-			logger.error("Invalid login format: {}" , e.getMessage());
-			return createErrorResponse(new CustomException(400 , "Invalid request format"));
-		}
+        } catch (Exception e) {
+            logger.error("Invalid login format: {}", e.getMessage());
+            return createErrorResponse(new CustomException(400, "Invalid request format"));
+        }
 
-		logger.debug("Extracted username: {}" , username);
-		logger.debug("Extracted password: {}" , password != null ? "[PROTECTED]" : "null");
+        logger.debug("Extracted username: {}", username);
+        logger.debug("Extracted password: {}", password != null ? "[PROTECTED]" : "null");
 
-		if (username == null || username.isBlank()) {
-			return createErrorResponse(new CustomException(400 , "Username is empty"));
-		}
-		if (password == null || password.isBlank()) {
-			return createErrorResponse(new CustomException(400 , "Password is empty"));
-		}
+        if (username == null || username.isBlank()) {
+            return createErrorResponse(new CustomException(400, "Username is empty"));
+        }
+        if (password == null || password.isBlank()) {
+            return createErrorResponse(new CustomException(400, "Password is empty"));
+        }
 
-		String ipAddress = getIpAddress(request);
+        String ipAddress = getIpAddress(request);
 
-		try {
-			String token = loginService.login(username , password , ipAddress);
+        try {
+            String token = loginService.login(username, password, ipAddress);
 
-			ResponseCookie cookie = ResponseCookie.from("token" , token)
-					.httpOnly(true)
-					.secure(true)
-					.path("/")
-					.sameSite("None")
-					.maxAge(Duration.ofHours(4))
-					.build();
+            activityLogService.log(username, "LOGIN", "Logged in from IP: " + ipAddress);
 
-			response.setHeader(HttpHeaders.SET_COOKIE , cookie.toString());
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .sameSite("None")
+                    .maxAge(Duration.ofHours(4))
+                    .build();
 
-			return ResponseEntity.ok("Login successful");
+            response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-		} catch (CustomException e) {
-			return createErrorResponse(e);
-		} catch (Exception e) {
-			logger.error("Unexpected login error" , e);
-			return createErrorResponse(new CustomException(500 , "Internal server error"));
-		}
-	}
+            return ResponseEntity.ok("Login successful");
 
-	/**
-	 * Logs out the user by clearing the security context and token cookie.
-	 */
-	@PostMapping("/logout")
-	public ResponseEntity<String> logout(HttpServletResponse response) {
-		SecurityContextHolder.clearContext();
+        } catch (CustomException e) {
+            activityLogService.log(username, "FAILED_LOGIN", "Attempted from IP: " + ipAddress);
+            return createErrorResponse(e);
+        } catch (Exception e) {
+            logger.error("Unexpected login error", e);
+            return createErrorResponse(new CustomException(500, "Internal server error"));
+        }
+    }
 
-		ResponseCookie cookie = ResponseCookie.from("token" , "")
-				.httpOnly(true)
-				.secure(true)
-				.path("/")
-				.maxAge(0)
-				.sameSite("None")
-				.build();
+    /**
+     * Logs out the user by clearing the security context and token cookie.
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response) {
+        SecurityContextHolder.clearContext();
 
-		response.setHeader(HttpHeaders.SET_COOKIE , cookie.toString());
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("None")
+                .build();
 
-		return ResponseEntity.ok("Logged out");
-	}
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        activityLogService.log("anonymous", "LOGOUT", "User logged out");
 
-	/**
-	 * Extracts user info from the JWT token stored in cookies.
-	 */
-	@GetMapping("/me")
-	public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-		String token = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
-				.filter(c -> "token".equals(c.getName()))
-				.map(Cookie::getValue)
-				.findFirst()
-				.orElse(null);
+        return ResponseEntity.ok("Logged out");
+    }
 
-		if (token == null) {
-			return createErrorResponse(new CustomException(401 , "Token not found"));
-		}
+    /**
+     * Extracts user info from the JWT token stored in cookies.
+     */
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        String token = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+                .filter(c -> "token".equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
 
-		try {
-			Claims claims = jwtTokenUtil.parseToken(token);
+        if (token == null) {
+            return createErrorResponse(new CustomException(401, "Token not found"));
+        }
 
-			UserInfo userInfo = new UserInfo();
-			userInfo.setUsername(claims.getSubject());
-			userInfo.setUserId((String) claims.get("userId"));
-			userInfo.setStatus("SUCCESS");
-			userInfo.setMessage("User info retrieved from token");
+        try {
+            Claims claims = jwtTokenUtil.parseToken(token);
+            String username = claims.getSubject();
+            activityLogService.log(username, "GET_USER_INFO", "Accessed /me endpoint");
 
-			return ResponseEntity.ok(userInfo);
-		} catch (Exception e) {
-			return createErrorResponse(new CustomException(401 , "Invalid token"));
-		}
-	}
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUsername(claims.getSubject());
+            userInfo.setUserId((String) claims.get("userId"));
+            userInfo.setStatus("SUCCESS");
+            userInfo.setMessage("User info retrieved from token");
 
-	/**
-	 * Handles user registration using a TMF-style "queries" payload.
-	 */
-	@PostMapping("/register")
-	public ResponseEntity<Error> register(@RequestBody Map<String, Object> requestBody , HttpServletRequest request) {
-		try {
-			List<Map<String, Object>> queries = safeCastList(requestBody.get("queries"));
+            return ResponseEntity.ok(userInfo);
+        } catch (Exception e) {
+            return createErrorResponse(new CustomException(401, "Invalid token"));
+        }
+    }
 
-			String username = null, email = null, fullName = null, password = null;
-			for (Map<String, Object> query : queries) {
-				username = getStringValue(query , "username" , username);
-				email = getStringValue(query , "email" , email);
-				fullName = getStringValue(query , "fullname" , fullName);
-				password = getStringValue(query , "password" , password);
-			}
+    /**
+     * Handles user registration using a TMF-style "queries" payload.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Error> register(@RequestBody Map<String, Object> requestBody, HttpServletRequest request) {
+        try {
+            List<Map<String, Object>> queries = safeCastList(requestBody.get("queries"));
 
-			if (username == null || email == null || fullName == null || password == null) {
-				throw new CustomException(400 , Messages.MISSING_FIELDS);
-			}
+            String username = null, email = null, fullName = null, password = null;
+            for (Map<String, Object> query : queries) {
+                username = getStringValue(query, "username", username);
+                email = getStringValue(query, "email", email);
+                fullName = getStringValue(query, "fullname", fullName);
+                password = getStringValue(query, "password", password);
+            }
 
-			String ipAddress = getIpAddress(request);
+            if (username == null || email == null || fullName == null || password == null) {
+                throw new CustomException(400, Messages.MISSING_FIELDS);
+            }
 
-			User user = new User();
-			user.setUsername(username);
-			user.setEmail(email);
-			user.setFullName(fullName);
-			user.setPassword(password);
-			user.setIpAddress(ipAddress);
+            String ipAddress = getIpAddress(request);
 
-			registerService.createUser(user);
+            User user = new User();
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setFullName(fullName);
+            user.setPassword(password);
+            user.setIpAddress(ipAddress);
+            activityLogService.log(username, "REGISTER", "Registered from IP: " + ipAddress);
 
-			return ResponseEntity.ok(createResponse("200" , Messages.REGISTER_SUCCESS , Messages.REGISTER_SUCCESS , "success"));
+            registerService.createUser(user);
 
-		} catch (CustomException e) {
-			return ResponseEntity.badRequest().body(
-					createResponse("400" , e.getMessage() , Messages.REGISTER_FAILED , "error")
-			);
-		} catch (Exception e) {
-			return ResponseEntity.internalServerError().body(
-					createResponse("500" , e.getMessage() , Messages.ERROR_500 , "error")
-			);
-		}
-	}
+            return ResponseEntity.ok(createResponse("200", Messages.REGISTER_SUCCESS, Messages.REGISTER_SUCCESS, "success"));
 
-	// === Helper Methods ===
+        } catch (CustomException e) {
+            String username = getFallbackUsername(requestBody);
+            activityLogService.log(username, "FAILED_REGISTER", "Registration failed: " + e.getMessage());
 
-	private String getIpAddress(HttpServletRequest request) {
-		String ip = request.getHeader("X-Forwarded-For");
-		return (ip == null || ip.isBlank()) ? request.getRemoteAddr() : ip;
-	}
+            return ResponseEntity.badRequest().body(
+                    createResponse("400", e.getMessage(), Messages.REGISTER_FAILED, "error")
+            );
+        } catch (Exception e) {
+            activityLogService.log("unknown", "REGISTER_ERROR", "Unexpected registration error: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(
+                    createResponse("500", e.getMessage(), Messages.ERROR_500, "error")
+            );
+        }
+    }
 
-	private Map<String, Object> safeCastMap(Object obj) {
-		if (obj instanceof Map<?, ?> map) {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> casted = (Map<String, Object>) map;
-			return casted;
-		}
-		throw new CustomException(400 , "Expected map but got: " + obj);
-	}
+    // === Helper Methods ===
 
-	private List<Map<String, Object>> safeCastList(Object obj) {
-		if (obj instanceof List<?> rawList) {
-			List<Map<String, Object>> casted = new ArrayList<>();
-			for (Object item : rawList) {
-				if (item instanceof Map<?, ?> map) {
-					@SuppressWarnings("unchecked")
-					Map<String, Object> castedMap = (Map<String, Object>) map;
-					casted.add(castedMap);
-				}
-			}
-			if (!casted.isEmpty()) return casted;
-		}
-		throw new CustomException(400 , "Expected a list of maps");
-	}
+    private String getIpAddress(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        return (ip == null || ip.isBlank()) ? request.getRemoteAddr() : ip;
+    }
 
-	private String getStringValue(Map<String, Object> map , String key , String fallback) {
-		Object val = map.get(key);
-		return (val instanceof String s && !s.isBlank()) ? s : fallback;
-	}
+    private Map<String, Object> safeCastMap(Object obj) {
+        if (obj instanceof Map<?, ?> map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> casted = (Map<String, Object>) map;
+            return casted;
+        }
+        throw new CustomException(400, "Expected map but got: " + obj);
+    }
 
-	private ResponseEntity<Error> createErrorResponse(CustomException e) {
-		Error error = createResponse(
-				String.valueOf(e.getCode()) ,
-				e.getMessage() ,
-				e.getMessage() ,
-				"error"
-		);
-		return ResponseEntity.status(e.getCode()).body(error);
-	}
+    private List<Map<String, Object>> safeCastList(Object obj) {
+        if (obj instanceof List<?> rawList) {
+            List<Map<String, Object>> casted = new ArrayList<>();
+            for (Object item : rawList) {
+                if (item instanceof Map<?, ?> map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> castedMap = (Map<String, Object>) map;
+                    casted.add(castedMap);
+                }
+            }
+            if (!casted.isEmpty()) return casted;
+        }
+        throw new CustomException(400, "Expected a list of maps");
+    }
 
-	private Error createResponse(String code , String message , String reason , String status) {
-		return new Error()
-				.code(code)
-				.message(message)
-				.reason(reason)
-				.status(status)
-				.referenceError("N/A")
-				.baseType("APIResponse")
-				.schemaLocation("/tmf/server/api/223_v2/auth")
-				.type("auth_response");
-	}
+    private String getStringValue(Map<String, Object> map, String key, String fallback) {
+        Object val = map.get(key);
+        return (val instanceof String s && !s.isBlank()) ? s : fallback;
+    }
+
+    private ResponseEntity<Error> createErrorResponse(CustomException e) {
+        Error error = createResponse(
+                String.valueOf(e.getCode()),
+                e.getMessage(),
+                e.getMessage(),
+                "error"
+        );
+        return ResponseEntity.status(e.getCode()).body(error);
+    }
+
+    private String getFallbackUsername(Map<String, Object> requestBody) {
+        try {
+            List<Map<String, Object>> queries = safeCastList(requestBody.get("queries"));
+            for (Map<String, Object> query : queries) {
+                String val = getStringValue(query, "username", null);
+                if (val != null) return val;
+            }
+        } catch (Exception ignored) {
+        }
+        return "unknown";
+    }
+
+    private Error createResponse(String code, String message, String reason, String status) {
+        return new Error()
+                .code(code)
+                .message(message)
+                .reason(reason)
+                .status(status)
+                .referenceError("N/A")
+                .baseType("APIResponse")
+                .schemaLocation("/tmf/server/api/223_v2/auth")
+                .type("auth_response");
+    }
 }

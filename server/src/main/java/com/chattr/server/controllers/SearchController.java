@@ -1,6 +1,7 @@
 package com.chattr.server.controllers;
 
 import com.chattr.server.models.Community;
+import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.SearchService;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,23 +14,26 @@ import java.util.List;
 @RequestMapping("/search")
 public class SearchController {
 
-	private final SearchService searchService;
+    private final SearchService searchService;
+    private final ActivityLogService activityLogService;
 
-	/**
-	 * Constructor for injecting SearchService.
-	 */
-	public SearchController(SearchService searchService) {
-		this.searchService = searchService;
-	}
+    /**
+     * Constructor for injecting SearchService.
+     */
+    public SearchController(SearchService searchService, ActivityLogService activityLogService) {
+        this.searchService = searchService;
+        this.activityLogService = activityLogService;
+    }
 
-	/**
-	 * Search communities by partial name match (case-insensitive).
-	 *
-	 * @param name the query string to search by
-	 * @return list of matching communities
-	 */
-	@GetMapping("/community")
-	public List<Community> findByNameContainingIgnoreCase(@RequestParam String name) {
-		return searchService.findByName(name);
-	}
+    /**
+     * Search communities by partial name match (case-insensitive).
+     *
+     * @param name the query string to search by
+     * @return list of matching communities
+     */
+    @GetMapping("/community")
+    public List<Community> findByNameContainingIgnoreCase(@RequestParam String name) {
+        activityLogService.log(name, "SEARCH_COMMUNITY", "Searching for communities with name containing: " + name + ".");
+        return searchService.findByName(name);
+    }
 }
