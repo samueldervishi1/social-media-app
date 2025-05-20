@@ -1,8 +1,3 @@
-/**
- * @fileoverview Error Boundary component for handling React component errors gracefully
- * Provides fallback UI and error recovery mechanisms
- */
-
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/errorBoundary.css';
@@ -12,40 +7,13 @@ const MAX_RELOAD_ATTEMPTS = 3;
 const SUPPORT_EMAIL = 'support@ch.com';
 const STORAGE_KEY = 'reloadAttempts';
 
-/**
- * @typedef {Object} ErrorBoundaryProps
- * @property {React.ReactNode} children - Child components to be rendered
- * @property {Function} [onError] - Optional callback for error handling
- */
-
-/**
- * @typedef {Object} ErrorBoundaryState
- * @property {boolean} hasError - Indicates if an error has occurred
- * @property {number} reloadAttempts - Number of times page reload has been attempted
- * @property {string} [errorMessage] - Optional error message to display
- */
-
-/**
- * ErrorBoundary Component
- * Catches JavaScript errors anywhere in their child component tree,
- * logs those errors, and displays a fallback UI
- * @extends {Component<ErrorBoundaryProps, ErrorBoundaryState>}
- */
 class ErrorBoundary extends Component {
-  /**
-   * @type {ErrorBoundaryState}
-   */
   state = {
     hasError: false,
     reloadAttempts: this.getStoredAttempts(),
     errorMessage: null,
   };
 
-  /**
-   * Retrieves stored reload attempts from localStorage
-   * @returns {number} Number of stored reload attempts
-   * @private
-   */
   getStoredAttempts() {
     try {
       return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
@@ -55,12 +23,6 @@ class ErrorBoundary extends Component {
     }
   }
 
-  /**
-   * Updates error state when an error occurs
-   * @param {Error} error - The error that was caught
-   * @returns {ErrorBoundaryState} New state object
-   * @static
-   */
   static getDerivedStateFromError(error) {
     return {
       hasError: true,
@@ -68,11 +30,6 @@ class ErrorBoundary extends Component {
     };
   }
 
-  /**
-   * Handles error logging and optional error callback
-   * @param {Error} error - The error that was caught
-   * @param {React.ErrorInfo} errorInfo - React error information
-   */
   componentDidCatch(error, errorInfo) {
     console.error('Error captured in ErrorBoundary:', {
       error,
@@ -109,10 +66,6 @@ class ErrorBoundary extends Component {
     }
   };
 
-  /**
-   * Renders the error UI or children components
-   * @returns {JSX.Element} The rendered component
-   */
   render() {
     const { hasError, reloadAttempts, errorMessage } = this.state;
     const { children } = this.props;

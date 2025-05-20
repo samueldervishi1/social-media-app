@@ -14,10 +14,7 @@ import Navbar from './components/Navbar';
 const Login = lazy(() => import('./components/Login'));
 const Register = lazy(() => import('./components/Register'));
 const Home = lazy(() => import('./components/Home'));
-// const UserCommunities = lazy(() => import('./components/UserCommunities'));
 const ChatAI = lazy(() => import('./components/ChatAI'));
-// const CommunitiesList = lazy(() => import('./components/CommunitiesList'));
-// const CommunityDetails = lazy(() => import('./components/CommunityDetails'));
 const TermsAndServices = lazy(() => import('./components/Terms'));
 const About = lazy(() => import('./components/About'));
 const Contact = lazy(() => import('./components/Contact'));
@@ -25,6 +22,7 @@ const NotFound = lazy(() => import('./components/NotFound'));
 const FAQ = lazy(() => import('./components/FAQ'));
 const Settings = lazy(() => import('./components/Settings'));
 const DeactivatedAccount = lazy(() => import('./components/DeactivatedAccount'));
+const Profile = lazy(() => import('./components/Profile'));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -55,10 +53,8 @@ const App = () => {
             {/* Protected Routes */}
             <Route path='/home' element={<ProtectedRoute element={<Home />} />}/>
             <Route path='/chat' element={<ProtectedRoute element={<ChatAI />} />}/>
-            {/* <Route path='/c/communities' element={<ProtectedRoute element={<CommunitiesList />} />}/>
-            <Route path='/c/community/:name' element={<ProtectedRoute element={<CommunityDetails />} />}/>
-            <Route path='/c/user/communities' element={<ProtectedRoute element={<UserCommunities />} />} /> */}
             <Route path='/settings' element={<ProtectedRoute element={<Settings />} />} />
+            <Route path='/profile' element={<ProtectedRoute element={<Profile />} />} />
 
             {/* Default and Not Found Routes */}
             <Route path='/' element={<Navigate to='/home' replace />} />

@@ -12,6 +12,7 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
 import { GiArtificialHive } from 'react-icons/gi';
 import { MdClose } from 'react-icons/md';
+import { CgProfile } from "react-icons/cg";
 import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
 
@@ -41,7 +42,13 @@ const Navbar = () => {
       name: 'Home',
       icon: <GoHome className={styles.icon_p} />,
     },
-    { name: 'Logout', icon: <CiLogout className={styles.icon_p} /> },
+    {
+      name: 'Profile',
+      icon: <CgProfile className={styles.icon_p} />,
+    },
+    { name: 'Logout', 
+      icon: <CiLogout className={styles.icon_p} /> 
+    },
   ];
 
   useEffect(() => {
@@ -72,6 +79,10 @@ const Navbar = () => {
     (settingName) => {
       if (settingName === 'Home') {
         navigate('/home');
+      } else if (
+        settingName === 'Profile'
+      ) {
+        navigate('/profile');
       } else if (settingName === 'Logout') {
         handleLogout();
       }

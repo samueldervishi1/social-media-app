@@ -1,8 +1,3 @@
-/**
- * @typedef {Object} SettingsProps
- * No props required for this component
- */
-
 import React, {
   useState,
   lazy,
@@ -33,29 +28,18 @@ const FAQ = lazy(() => import('./FAQ'));
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-/**
- * @type {React.FC<{ children: React.ReactNode }>}
- * Loading fallback component for Suspense
- */
 const LoadingFallback = memo(() => (
   <div className={styles.loading_fallback}>
     <p>Loading content...</p>
   </div>
 ));
+LoadingFallback.displayName = 'LoadingFallback';
 
-/**
- * @type {React.FC<{ isError: boolean, message: string }>}
- * Error message component
- */
 const ErrorMessage = memo(({ message }) =>
   message ? <div className={styles.error_message}>{message}</div> : null
 );
+ErrorMessage.displayName = 'ErrorMessage';
 
-/**
- * Settings component that handles user account settings and preferences
- * Includes account management, information pages, and server health monitoring
- * @returns {JSX.Element} The Settings component
- */
 const Settings = () => {
   // State management
   const [activeSection, setActiveSection] = useState('about');
@@ -99,17 +83,10 @@ const Settings = () => {
     };
   }, []);
 
-  /**
-   * Handles navigation between different sections in settings
-   * @param {string} section - The section to navigate to
-   */
   const handleSectionChange = useCallback((section) => {
     setActiveSection(section);
   }, []);
 
-  /**
-   * Clears all cookies from the browser
-   */
   const clearCookies = useCallback(() => {
     document.cookie.split(';').forEach((cookie) => {
       const [name] = cookie.trim().split('=');
@@ -117,10 +94,6 @@ const Settings = () => {
     });
   }, []);
 
-  /**
-   * Handles account deletion process
-   * @param {React.FormEvent} e - Form submission event
-   */
   const handleDeleteAccount = useCallback(
     async (e) => {
       e.preventDefault();
@@ -163,10 +136,6 @@ const Settings = () => {
     [userId, logout, deleteAccountState, clearCookies]
   );
 
-  /**
-   * Handles account deactivation process
-   * @param {React.FormEvent} e - Form submission event
-   */
   const handleDeactivateAccount = useCallback(
     async (e) => {
       e.preventDefault();
@@ -230,10 +199,6 @@ const Settings = () => {
     []
   );
 
-  /**
-   * Renders the content for the currently active section
-   * @returns {JSX.Element} The content component for the active section
-   */
   const renderContent = useCallback(() => {
     switch (activeSection) {
       case 'about':

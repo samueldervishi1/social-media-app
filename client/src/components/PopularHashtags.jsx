@@ -1,8 +1,3 @@
-/**
- * @fileoverview PopularHashtags component that displays trending hashtags
- * Fetches and displays a list of popular hashtags with their view counts
- */
-
 import { useState, useEffect, useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -12,16 +7,6 @@ import styles from '../styles/PopularHashtags.module.css';
 const API_URL = import.meta.env.VITE_API_URL;
 const LOADING_DELAY = 900; // Delay in milliseconds before showing content
 
-/**
- * @typedef {Object} Hashtag
- * @property {string} name - The hashtag text without the # symbol
- * @property {string} link - URL to view posts with this hashtag
- * @property {number} views - Number of views/uses of the hashtag
- */
-
-/**
- * Loading spinner component
- */
 const LoadingSpinner = memo(() => (
   <div className={styles.loadingContainer}>
     <img
@@ -36,9 +21,7 @@ const LoadingSpinner = memo(() => (
 
 LoadingSpinner.displayName = 'LoadingSpinner';
 
-/**
- * Individual hashtag item component
- */
+
 const HashtagItem = memo(({ name, link, views }) => (
   <div className={styles.hashtagItem}>
     <a
@@ -64,9 +47,6 @@ HashtagItem.propTypes = {
   views: PropTypes.number.isRequired,
 };
 
-/**
- * Empty state component when no hashtags are available
- */
 const EmptyState = memo(() => (
   <div className={styles.emptyState}>
     <p>No trending hashtags available at the moment.</p>
@@ -75,10 +55,6 @@ const EmptyState = memo(() => (
 
 EmptyState.displayName = 'EmptyState';
 
-/**
- * PopularHashtags component that fetches and displays trending hashtags
- * @returns {JSX.Element} Component for displaying popular hashtags
- */
 const PopularHashtags = () => {
   const [loading, setLoading] = useState(true);
   const [hashtags, setHashtags] = useState([]);

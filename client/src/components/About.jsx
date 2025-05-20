@@ -1,25 +1,8 @@
-/**
- * @fileoverview About component that displays information about the application
- * Renders formatted content sections with support for bold text using * markers
- */
-
 import { useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
 import { aboutApp } from '../constants/about';
 import styles from '../styles/about.module.css';
 
-/**
- * @typedef {Object} AboutSection
- * @property {string} id - Unique identifier for the section
- * @property {string} title - Title of the section
- * @property {string} content - Content of the section, can contain * for bold text
- */
-
-/**
- * Formats content by converting *text* patterns to bold spans
- * @param {string} content - The content string containing * markers for bold text
- * @returns {JSX.Element} Formatted paragraph with bold text spans
- */
 const formatContent = (content) => (
   <p>
     {content.split('*').map((part, index) =>
@@ -36,12 +19,6 @@ const formatContent = (content) => (
 
 formatContent.displayName = 'FormatContent';
 
-/**
- * About section component that renders a single section
- * @param {Object} props - Component props
- * @param {AboutSection} props.section - Section data to render
- * @returns {JSX.Element} Rendered section
- */
 const AboutSection = memo(({ section }) => (
   <div className={styles.about_section}>
     <h2 className={styles.about_title}>{section.title}</h2>
@@ -58,11 +35,6 @@ AboutSection.propTypes = {
   }).isRequired,
 };
 
-/**
- * About component that displays information about the application
- * Renders multiple sections with formatted content
- * @returns {JSX.Element} The About page component
- */
 const About = () => {
   // Memoize the formatted sections to prevent unnecessary re-renders
   const formattedSections = useMemo(

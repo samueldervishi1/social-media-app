@@ -1,24 +1,9 @@
-/**
- * @fileoverview FAQ component that displays frequently asked questions and a contact form
- */
-
 import { useState, memo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { faqs } from '../constants/faq';
 import styles from '../styles/faq.module.css';
 
-/**
- * @typedef {Object} FormState
- * @property {boolean} isSubmitted - Whether the form has been submitted
- * @property {string} email - User's email address
- * @property {string} message - User's message
- * @property {string} error - Error message if validation fails
- */
-
-/**
- * FAQ Question component that displays a single question and answer
- */
 const FAQItem = memo(({ question, answer, isActive, onToggle }) => (
   <div className={styles.faq_item}>
     <div
@@ -53,9 +38,6 @@ FAQItem.propTypes = {
   onToggle: PropTypes.func.isRequired,
 };
 
-/**
- * Contact Form component for submitting questions
- */
 const ContactForm = memo(({ formState, onSubmit, onChange }) => (
   <div className={styles.form_container}>
     {formState.isSubmitted ? (
@@ -120,10 +102,6 @@ ContactForm.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-/**
- * FAQ component that displays a list of frequently asked questions
- * and a contact form for additional questions
- */
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [formState, setFormState] = useState({
@@ -133,10 +111,6 @@ const FAQ = () => {
     error: '',
   });
 
-  /**
-   * Toggles the visibility of a FAQ answer
-   * @param {number} index - Index of the FAQ item
-   */
   const toggleQuestion = useCallback(
     (index) => {
       setActiveIndex(activeIndex === index ? null : index);
@@ -144,20 +118,11 @@ const FAQ = () => {
     [activeIndex]
   );
 
-  /**
-   * Validates an email address
-   * @param {string} email - Email address to validate
-   * @returns {boolean} Whether the email is valid
-   */
   const validateEmail = useCallback(
     (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
     []
   );
 
-  /**
-   * Handles form submission
-   * @param {React.FormEvent} e - Form submission event
-   */
   const handleFormSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -185,10 +150,6 @@ const FAQ = () => {
     [formState.email, validateEmail]
   );
 
-  /**
-   * Handles form input changes
-   * @param {React.ChangeEvent} e - Input change event
-   */
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({

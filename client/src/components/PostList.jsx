@@ -18,19 +18,20 @@ const PostList = ({ onPostRefresh }) => {
     }, 1500);
 
     fetchPosts();
+
     return () => clearTimeout(timer);
   }, []);
 
   const fetchPosts = async () => {
     try {
-      const userPostsResponse = await axios.get(`${API_URL}posts/all`, {
+      const response = await axios.get(`${API_URL}posts/all?page=0&size=5`, {
         withCredentials: true,
         headers: {
           'X-App-Version': import.meta.env.VITE_APP_VERSION,
         },
       });
 
-      const allPosts = [...userPostsResponse.data];
+      const allPosts = response.data.content || [];
 
       const filteredPosts = allPosts.filter(
         (post) => !post.deleted && !post.reported
@@ -53,8 +54,7 @@ const PostList = ({ onPostRefresh }) => {
               }
             );
 
-            const username = usernameResponse.data;
-            return { ...post, username };
+            return { ...post, username: usernameResponse.data };
           } catch (err) {
             console.error('Error fetching username:', err);
             return { ...post, username: 'User Deleted' };
@@ -69,8 +69,8 @@ const PostList = ({ onPostRefresh }) => {
       });
 
       setPosts(postsWithUsernames);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
       setError('Something went wrong. Please try again later.');
     } finally {
       setIsLoading(false);

@@ -1,7 +1,3 @@
-/**
- * @fileoverview Contact component that displays company contact information and social media links
- */
-
 import { memo } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -20,10 +16,6 @@ const CONTACT_INFO = {
   instagram: 'https://www.instagram.com/samueldervishi_',
 };
 
-/**
- * Contact Method component for displaying individual contact information
- * @param {Object} props Component properties
- */
 const ContactMethod = memo(({ Icon, title, content, href }) => (
   <div className={styles.contact_method}>
     <Icon className={styles.method_icon} />
@@ -50,9 +42,6 @@ ContactMethod.propTypes = {
   href: PropTypes.string,
 };
 
-/**
- * Social Media Link component
- */
 const SocialLink = memo(({ Icon, platform, href }) => (
   <a
     href={href}
@@ -73,10 +62,6 @@ SocialLink.propTypes = {
   href: PropTypes.string.isRequired,
 };
 
-/**
- * Contact page component that displays various ways to contact the company
- * Features include email, phone, location, and social media links
- */
 const Contact = () => {
   const contactMethods = [
     {
