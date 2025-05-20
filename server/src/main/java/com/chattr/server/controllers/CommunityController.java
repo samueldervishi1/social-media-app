@@ -133,7 +133,7 @@ public class CommunityController {
                 community.getDescription(),
                 community.getFaqs()
         );
-		activityLogService.log(ownerId, "CREATE_COMMUNITY", "Created community with name: " + community.getName() + ".");
+        activityLogService.log(ownerId, "CREATE_COMMUNITY", "Created community with name: " + community.getName() + ".");
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 

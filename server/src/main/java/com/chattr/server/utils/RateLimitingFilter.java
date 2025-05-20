@@ -20,74 +20,74 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class RateLimitingFilter implements Filter {
 
-	private final int defaultLimit;
-	private final long defaultDurationMinutes;
-	private final Map<String, Bucket> userBuckets = new ConcurrentHashMap<>();
+    private final int defaultLimit;
+    private final long defaultDurationMinutes;
+    private final Map<String, Bucket> userBuckets = new ConcurrentHashMap<>();
 
-	public RateLimitingFilter(int defaultLimit , long defaultDurationMinutes) {
-		this.defaultLimit = defaultLimit;
-		this.defaultDurationMinutes = defaultDurationMinutes;
-	}
+    public RateLimitingFilter(int defaultLimit, long defaultDurationMinutes) {
+        this.defaultLimit = defaultLimit;
+        this.defaultDurationMinutes = defaultDurationMinutes;
+    }
 
-	@Override
-	public void init(FilterConfig filterConfig) {
-		log.info("RateLimitingFilter initialized: {} requests / {} minute(s)" , defaultLimit , defaultDurationMinutes);
-	}
+    @Override
+    public void init(FilterConfig filterConfig) {
+        log.info("RateLimitingFilter initialized: {} requests / {} minute(s)", defaultLimit, defaultDurationMinutes);
+    }
 
-	@Override
-	public void doFilter(ServletRequest request , ServletResponse response , FilterChain chain)
-			throws IOException, ServletException {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-		String clientKey = getClientIdentifier(httpRequest);
-		Bucket bucket = userBuckets.computeIfAbsent(clientKey , key -> createRateLimitBucket());
+        String clientKey = getClientIdentifier(httpRequest);
+        Bucket bucket = userBuckets.computeIfAbsent(clientKey, key -> createRateLimitBucket());
 
-		if (bucket.tryConsume(1)) {
-			// Request is allowed, continue processing
-			chain.doFilter(request , response);
-		} else {
-			// Request exceeds rate limit
-			log.warn("Rate limit exceeded for client: {}" , clientKey);
-			sendRateLimitResponse(httpResponse);
-		}
-	}
+        if (bucket.tryConsume(1)) {
+            // Request is allowed, continue processing
+            chain.doFilter(request, response);
+        } else {
+            // Request exceeds rate limit
+            log.warn("Rate limit exceeded for client: {}", clientKey);
+            sendRateLimitResponse(httpResponse);
+        }
+    }
 
-	@Override
-	public void destroy() {
-		log.info("RateLimitingFilter destroyed. Clearing tracked buckets.");
-		userBuckets.clear();
-	}
+    @Override
+    public void destroy() {
+        log.info("RateLimitingFilter destroyed. Clearing tracked buckets.");
+        userBuckets.clear();
+    }
 
-	/**
-	 * Returns a unique identifier for the client.
-	 * Default is the remote IP address.
-	 * This can be extended to use authentication tokens or API keys instead.
-	 */
-	private String getClientIdentifier(HttpServletRequest request) {
-		return request.getRemoteAddr(); // TODO: Replace with user ID or token if authentication is available
-	}
+    /**
+     * Returns a unique identifier for the client.
+     * Default is the remote IP address.
+     * This can be extended to use authentication tokens or API keys instead.
+     */
+    private String getClientIdentifier(HttpServletRequest request) {
+        return request.getRemoteAddr(); // TODO: Replace with user ID or token if authentication is available
+    }
 
-	/**
-	 * Creates a new rate-limiting bucket with configured capacity and refill time.
-	 */
-	private Bucket createRateLimitBucket() {
-		return Bucket.builder()
-				.addLimit(Bandwidth.builder()
-						.capacity(defaultLimit)
-						.refillIntervally(defaultLimit , Duration.ofMinutes(defaultDurationMinutes))
-						.build())
-				.build();
-	}
+    /**
+     * Creates a new rate-limiting bucket with configured capacity and refill time.
+     */
+    private Bucket createRateLimitBucket() {
+        return Bucket.builder()
+                .addLimit(Bandwidth.builder()
+                        .capacity(defaultLimit)
+                        .refillIntervally(defaultLimit, Duration.ofMinutes(defaultDurationMinutes))
+                        .build())
+                .build();
+    }
 
-	/**
-	 * Sends an HTTP 429 "Too Many Requests" response to the client.
-	 */
-	private void sendRateLimitResponse(HttpServletResponse response) throws IOException {
-		response.setStatus(429);
-		response.setContentType("application/json");
-		response.getWriter().write("{ \"status\": 429, \"message\": \"Too many requests. Please slow down.\" }");
-		response.getWriter().flush();
-	}
+    /**
+     * Sends an HTTP 429 "Too Many Requests" response to the client.
+     */
+    private void sendRateLimitResponse(HttpServletResponse response) throws IOException {
+        response.setStatus(429);
+        response.setContentType("application/json");
+        response.getWriter().write("{ \"status\": 429, \"message\": \"Too many requests. Please slow down.\" }");
+        response.getWriter().flush();
+    }
 }

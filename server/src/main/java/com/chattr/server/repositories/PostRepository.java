@@ -10,19 +10,19 @@ import java.util.List;
  */
 public interface PostRepository extends MongoRepository<Post, String> {
 
-	/**
-	 * Retrieves all posts authored by a specific user.
-	 *
-	 * @param userId the user ID
-	 * @return list of posts by user
-	 */
-	List<Post> findByUserId(String userId);
+    /**
+     * Retrieves all posts authored by a specific user.
+     *
+     * @param userId the user ID
+     * @return list of posts by user
+     */
+    List<Post> findByUserId(String userId);
 
-	/**
-	 * Counts the number of non-deleted posts created by a user.
-	 *
-	 * @param userId the user ID
-	 * @return number of active posts
-	 */
-	long countByUserIdAndDeletedFalse(String userId);
+    /**
+     * Counts the number of non-deleted posts created by a user.
+     *
+     * @param userId the user ID
+     * @return number of active posts
+     */
+    long countByUserIdAndDeletedFalse(String userId);
 }

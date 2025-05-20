@@ -12,16 +12,16 @@ import java.util.List;
 @Service
 public class PredefinedQuestionsService {
 
-	private final PredefinedQuestionsRepository predefinedQuestionsRepository;
+    private final PredefinedQuestionsRepository predefinedQuestionsRepository;
 
-	public PredefinedQuestionsService(PredefinedQuestionsRepository predefinedQuestionsRepository) {
-		this.predefinedQuestionsRepository = predefinedQuestionsRepository;
-	}
+    public PredefinedQuestionsService(PredefinedQuestionsRepository predefinedQuestionsRepository) {
+        this.predefinedQuestionsRepository = predefinedQuestionsRepository;
+    }
 
-	/**
-	 * Returns all predefined questions from the database.
-	 */
-	public List<PredefineQuestions> getAllQuestions() {
-		return predefinedQuestionsRepository.findAll();
-	}
+    /**
+     * Returns all predefined questions from the database.
+     */
+    public List<PredefineQuestions> getAllQuestions() {
+        return predefinedQuestionsRepository.findAll();
+    }
 }

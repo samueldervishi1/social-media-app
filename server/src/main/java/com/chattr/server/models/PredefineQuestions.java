@@ -12,14 +12,14 @@ import java.util.UUID;
 @Document
 public class PredefineQuestions {
 
-	@Id
-	private String id;
-	private String question;
-	private String iconUrl;
+    @Id
+    private String id;
+    private String question;
+    private String iconUrl;
 
-	public PredefineQuestions(String question , String id , String iconUrl) {
-		this.id = UUID.randomUUID().toString();
-		this.question = question;
-		this.iconUrl = iconUrl;
-	}
+    public PredefineQuestions(String question, String id, String iconUrl) {
+        this.id = UUID.randomUUID().toString();
+        this.question = question;
+        this.iconUrl = iconUrl;
+    }
 }

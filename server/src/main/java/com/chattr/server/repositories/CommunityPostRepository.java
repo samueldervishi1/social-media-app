@@ -10,11 +10,11 @@ import java.util.List;
  */
 public interface CommunityPostRepository extends MongoRepository<CommunityPost, String> {
 
-	/**
-	 * Finds all posts for a specific community by name.
-	 *
-	 * @param communityName the name of the community
-	 * @return List of matching posts
-	 */
-	List<CommunityPost> findByCommunityName(String communityName);
+    /**
+     * Finds all posts for a specific community by name.
+     *
+     * @param communityName the name of the community
+     * @return List of matching posts
+     */
+    List<CommunityPost> findByCommunityName(String communityName);
 }

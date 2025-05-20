@@ -14,19 +14,19 @@ import java.util.UUID;
 @Document
 public class History {
 
-	@Id
-	private String id;
-	private String sessionId;
-	private String userId;
-	private LocalDate historyDate;
-	private List<QuestionAnswerPair> questionAnswerPairs;
+    @Id
+    private String id;
+    private String sessionId;
+    private String userId;
+    private LocalDate historyDate;
+    private List<QuestionAnswerPair> questionAnswerPairs;
 
-	public History(String sessionId , String userId , List<QuestionAnswerPair> questionAnswerPairs) {
-		this.id = UUID.randomUUID().toString();
-		this.sessionId = sessionId;
-		this.userId = userId;
-		this.questionAnswerPairs = questionAnswerPairs;
-		this.historyDate = LocalDate.now();
-	}
+    public History(String sessionId, String userId, List<QuestionAnswerPair> questionAnswerPairs) {
+        this.id = UUID.randomUUID().toString();
+        this.sessionId = sessionId;
+        this.userId = userId;
+        this.questionAnswerPairs = questionAnswerPairs;
+        this.historyDate = LocalDate.now();
+    }
 
 }

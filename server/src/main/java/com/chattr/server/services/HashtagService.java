@@ -12,16 +12,16 @@ import java.util.List;
 @Service
 public class HashtagService {
 
-	private final HashtagRepository repository;
+    private final HashtagRepository repository;
 
-	public HashtagService(HashtagRepository repository) {
-		this.repository = repository;
-	}
+    public HashtagService(HashtagRepository repository) {
+        this.repository = repository;
+    }
 
-	/**
-	 * Retrieves all hashtags in the database.
-	 */
-	public List<Hashtag> getAllHashtags() {
-		return repository.findAll();
-	}
+    /**
+     * Retrieves all hashtags in the database.
+     */
+    public List<Hashtag> getAllHashtags() {
+        return repository.findAll();
+    }
 }

@@ -40,7 +40,7 @@ public class PostService {
      * Creates a new post associated with the given username.
      *
      * @param username the username of the poster
-     * @param post     the post object to persist
+     * @param post     the post-object to persist
      */
     @Transactional
     public void createPost(String username, Post post) {
@@ -62,10 +62,10 @@ public class PostService {
     /**
      * Returns all posts in the system.
      */
-	public Page<Post> getAllPostsPaged(int page, int size) {
-		Pageable pageable = PageRequest.of(page, size, Sort.by("postDate").descending());
-		return postRepository.findAll(pageable);
-	}
+    public Page<Post> getAllPostsPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postDate").descending());
+        return postRepository.findAll(pageable);
+    }
 
     /**
      * Retrieves a post by its ID or throws a 404-style exception.
@@ -107,18 +107,18 @@ public class PostService {
         LOGGER.info("Soft-deleted post with ID '{}'", postId);
     }
 
-	public List<Post> getTopPosts(int limit) {
-		List<Post> allPosts = postRepository.findAll();
-		return allPosts.stream()
-				.filter(p -> p.getLikedUserIds() != null)
-				.sorted((p1, p2) -> Integer.compare(
-						p2.getLikedUserIds().size(),
-						p1.getLikedUserIds().size()))
-				.limit(limit)
-				.toList();
-	}
+    public List<Post> getTopPosts(int limit) {
+        List<Post> allPosts = postRepository.findAll();
+        return allPosts.stream()
+                .filter(p -> p.getLikedUserIds() != null)
+                .sorted((p1, p2) -> Integer.compare(
+                        p2.getLikedUserIds().size(),
+                        p1.getLikedUserIds().size()))
+                .limit(limit)
+                .toList();
+    }
 
-	public void savePost(String userId, String postId) {
+    public void savePost(String userId, String postId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(404, "User not found"));
 

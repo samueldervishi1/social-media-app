@@ -15,22 +15,22 @@ import java.util.UUID;
 @Document(collection = "communities")
 public class Community {
 
-	@Id
-	private String id;
-	private String name;
-	private String description;
-	private String ownerId;
-	private LocalDateTime createTime;
+    @Id
+    private String id;
+    private String name;
+    private String description;
+    private String ownerId;
+    private LocalDateTime createTime;
 
-	private List<String> postIds = new ArrayList<>();
-	private List<String> userIds = new ArrayList<>();
-	private List<Faq> faqs = new ArrayList<>();
+    private List<String> postIds = new ArrayList<>();
+    private List<String> userIds = new ArrayList<>();
+    private List<Faq> faqs = new ArrayList<>();
 
-	public Community(String name , String ownerId , String description) {
-		this.id = UUID.randomUUID().toString();
-		this.ownerId = ownerId;
-		this.name = name;
-		this.description = description;
-		this.createTime = LocalDateTime.now();
-	}
+    public Community(String name, String ownerId, String description) {
+        this.id = UUID.randomUUID().toString();
+        this.ownerId = ownerId;
+        this.name = name;
+        this.description = description;
+        this.createTime = LocalDateTime.now();
+    }
 }

@@ -9,47 +9,47 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * Central application configuration class.
- * Registers beans like rate limiting filter and RestTemplate.
+ * Registers beans like rate-limiting filter and RestTemplate.
  */
 @Configuration
 public class AppConfig {
 
-	/**
-	 * Maximum number of requests allowed per client within the configured duration window.
-	 * Defaults to 100 if not set via properties.
-	 */
-	@Value("${rate.limit.requests:100}")
-	private int rateLimit;
+    /**
+     * Maximum number of requests allowed per client within the configured duration window.
+     * Defaults to 100 if not set via properties.
+     */
+    @Value("${rate.limit.requests:100}")
+    private int rateLimit;
 
-	/**
-	 * Duration of the rate limit window in minutes.
-	 * Defaults to 1 minute if not set via properties.
-	 */
-	@Value("${rate.limit.duration:1}")
-	private long rateDuration;
+    /**
+     * Duration of the rate limit window in minutes.
+     * Defaults to 1 minute if not set via properties.
+     */
+    @Value("${rate.limit.duration:1}")
+    private long rateDuration;
 
-	/**
-	 * Registers the RateLimitingFilter as a servlet filter for all URL patterns.
-	 * This limits client requests based on IP using Bucket4j.
-	 *
-	 * @return the filter registration bean
-	 */
-	@Bean
-	public FilterRegistrationBean<RateLimitingFilter> rateLimitingFilter() {
-		FilterRegistrationBean<RateLimitingFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(new RateLimitingFilter(rateLimit , rateDuration));
-		registrationBean.addUrlPatterns("/*"); // Apply to all endpoints
-		registrationBean.setOrder(1);          // Set filter execution order (low value = higher priority)
-		return registrationBean;
-	}
+    /**
+     * Registers the RateLimitingFilter as a servlet filter for all URL patterns.
+     * This limits client requests based on IP using Bucket4j.
+     *
+     * @return the filter registration bean
+     */
+    @Bean
+    public FilterRegistrationBean<RateLimitingFilter> rateLimitingFilter() {
+        FilterRegistrationBean<RateLimitingFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new RateLimitingFilter(rateLimit, rateDuration));
+        registrationBean.addUrlPatterns("/*"); // Apply to all endpoints
+        registrationBean.setOrder(1);          // Set filter execution order (low value = higher priority)
+        return registrationBean;
+    }
 
-	/**
-	 * Provides a singleton RestTemplate bean for making HTTP requests.
-	 *
-	 * @return the configured RestTemplate
-	 */
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
+    /**
+     * Provides a singleton RestTemplate bean for making HTTP requests.
+     *
+     * @return the configured RestTemplate
+     */
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

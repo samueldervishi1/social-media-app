@@ -17,23 +17,23 @@ import java.util.UUID;
 @Document(collection = "health_logs")
 public class HealthLog {
 
-	@Id
-	private String sessionId;
-	private LocalDateTime timestamp;
-	private List<HealthEntry> checks = new ArrayList<>();
-	@Indexed(unique = true)
-	private LocalDate date;
+    @Id
+    private String sessionId;
+    private LocalDateTime timestamp;
+    private List<HealthEntry> checks = new ArrayList<>();
+    @Indexed(unique = true)
+    private LocalDate date;
 
-	public HealthLog() {
-		this.sessionId = UUID.randomUUID().toString();
-		this.timestamp = LocalDateTime.now();
-		this.date = LocalDate.now();
-	}
+    public HealthLog() {
+        this.sessionId = UUID.randomUUID().toString();
+        this.timestamp = LocalDateTime.now();
+        this.date = LocalDate.now();
+    }
 
-	@Getter
-	@Setter
-	public static class HealthEntry {
-		private String timestamp;
-		private String status;
-	}
+    @Getter
+    @Setter
+    public static class HealthEntry {
+        private String timestamp;
+        private String status;
+    }
 }

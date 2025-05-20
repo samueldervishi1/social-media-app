@@ -11,11 +11,11 @@ import java.util.List;
  */
 public interface HealthLogRepository extends MongoRepository<HealthLog, String> {
 
-	/**
-	 * Retrieves all health logs for a specific date.
-	 *
-	 * @param date the date to search
-	 * @return list of matching health logs
-	 */
-	List<HealthLog> findByDate(LocalDate date);
+    /**
+     * Retrieves all health logs for a specific date.
+     *
+     * @param date the date to search
+     * @return list of matching health logs
+     */
+    List<HealthLog> findByDate(LocalDate date);
 }

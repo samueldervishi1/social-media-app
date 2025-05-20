@@ -6,18 +6,18 @@ import lombok.Setter;
 
 @Setter
 public class UserInfo {
-	@Getter
-	@JsonProperty("username")
-	private String username = null;
+    @Getter
+    @JsonProperty("username")
+    private String username = null;
 
-	@Getter
-	@JsonProperty("userId")
-	private String userId = null;
+    @Getter
+    @JsonProperty("userId")
+    private String userId = null;
 
-	@JsonProperty("status")
-	private String status = null;
+    @JsonProperty("status")
+    private String status = null;
 
-	@Getter
-	@JsonProperty("message")
-	private String message = null;
+    @Getter
+    @JsonProperty("message")
+    private String message = null;
 }

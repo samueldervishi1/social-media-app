@@ -26,111 +26,115 @@ import java.util.Arrays;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private static final String REQUIRED_HEADER = "X-App-Version";
-	private static final String EXPECTED_VERSION = "223_v2";
-	private static final String TOKEN_COOKIE_NAME = "token";
+    private static final String REQUIRED_HEADER_VERSION = "x_app_version";
+    private static final String REQUIRED_HEADER_LANGUAGE = "x_app_language";
+    private static final String EXPECTED_VERSION = "223_v2";
+    private static final String EXPECTED_LANGUAGE = "al";
+    private static final String TOKEN_COOKIE_NAME = "token";
 
-	@Value("${security.public-urls}")
-	private String[] publicUrls;
+    @Value("${security.public-urls}")
+    private String[] publicUrls;
 
-	private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
-	@Autowired
-	public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil) {
-		this.jwtTokenUtil = jwtTokenUtil;
-	}
+    @Autowired
+    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil) {
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
-	@Override
-	protected void doFilterInternal(@NonNull  HttpServletRequest request , @NonNull HttpServletResponse response , @NonNull FilterChain filterChain)
-			throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
 
-		setSecurityHeaders(response);
+        setSecurityHeaders(response);
 
-		// 1. Enforce an app version from a custom header
-		if (!isValidAppVersion(request)) {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED ,
-					"Missing or invalid required header: " + REQUIRED_HEADER + ". Expected: " + EXPECTED_VERSION);
-			return;
-		}
+        // 1. Enforce an app version from a custom header
+        if (!areRequiredHeadersValid(request)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                    "Missing or invalid required header: " + REQUIRED_HEADER_VERSION + ". Expected: " + EXPECTED_VERSION);
+            return;
+        }
 
-		// 2. Skip filtering for public URLs
-		if (isPublicEndpoint(request.getRequestURI())) {
-			filterChain.doFilter(request , response);
-			return;
-		}
+        // 2. Skip filtering for public URLs
+        if (isPublicEndpoint(request.getRequestURI())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-		// 3. Extract and validate JWT token from cookie
-		String token = extractTokenFromCookies(request);
+        // 3. Extract and validate JWT token from cookie
+        String token = extractTokenFromCookies(request);
 
-		if (token == null) {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "Token cookie is missing");
-			return;
-		}
+        if (token == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token cookie is missing");
+            return;
+        }
 
-		try {
-			Claims claims = parseToken(token);
-			String username = claims.getSubject();
+        try {
+            Claims claims = parseToken(token);
+            String username = claims.getSubject();
 
-			// Set the authenticated user in the Spring Security context
-			UsernamePasswordAuthenticationToken auth =
-					new UsernamePasswordAuthenticationToken(username , null , null);
-			SecurityContextHolder.getContext().setAuthentication(auth);
-		} catch (Exception e) {
-			logger.error("Invalid token" , e);
-			response.sendError(HttpServletResponse.SC_FORBIDDEN , "Invalid token");
-			return;
-		}
+            // Set the authenticated user in the Spring Security context
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(username, null, null);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        } catch (Exception e) {
+            logger.error("Invalid token", e);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid token");
+            return;
+        }
 
-		// 4. Continue with the filter chain
-		filterChain.doFilter(request , response);
-	}
+        // 4. Continue with the filter chain
+        filterChain.doFilter(request, response);
+    }
 
-	/**
-	 * Extracts the token from the "token" cookie.
-	 */
-	private String extractTokenFromCookies(HttpServletRequest request) {
-		if (request.getCookies() == null) return null;
+    /**
+     * Extracts the token from the "token" cookie.
+     */
+    private String extractTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
 
-		for (Cookie cookie : request.getCookies()) {
-			if (TOKEN_COOKIE_NAME.equals(cookie.getName())) {
-				return cookie.getValue();
-			}
-		}
-		return null;
-	}
+        for (Cookie cookie : request.getCookies()) {
+            if (TOKEN_COOKIE_NAME.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Adds security-related HTTP headers to the response.
-	 */
-	private void setSecurityHeaders(HttpServletResponse response) {
-		response.setHeader("X-Frame-Options" , "DENY");
-		response.setHeader("X-Content-Type-Options" , "nosniff");
-	}
+    /**
+     * Adds security-related HTTP headers to the response.
+     */
+    private void setSecurityHeaders(HttpServletResponse response) {
+        response.setHeader("X-Frame-Options", "DENY");
+        response.setHeader("X-Content-Type-Options", "nosniff");
+    }
 
-	/**
-	 * Verifies that the app version header is present and matches the expected value.
-	 */
-	private boolean isValidAppVersion(HttpServletRequest request) {
-		String appVersion = request.getHeader(REQUIRED_HEADER);
-		return appVersion != null && appVersion.equals(EXPECTED_VERSION);
-	}
+    /**
+     * Verifies that the app version header is present and matches the expected value.
+     */
+    private boolean areRequiredHeadersValid(HttpServletRequest request) {
+        String version = request.getHeader(REQUIRED_HEADER_VERSION);
+        String language = request.getHeader(REQUIRED_HEADER_LANGUAGE);
+        return version != null && version.equals(EXPECTED_VERSION)
+                && language != null && language.equalsIgnoreCase(EXPECTED_LANGUAGE);
+    }
 
-	/**
-	 * Checks if the given URI is publicly accessible and should bypass authentication.
-	 */
-	private boolean isPublicEndpoint(String uri) {
-		return Arrays.asList(publicUrls).contains(uri);
-	}
+    /**
+     * Checks if the given URI is publicly accessible and should bypass authentication.
+     */
+    private boolean isPublicEndpoint(String uri) {
+        return Arrays.asList(publicUrls).contains(uri);
+    }
 
-	/**
-	 * Parses and verifies the JWT token using the configured secret key.
-	 */
-	private Claims parseToken(String token) {
-		SecretKey key = jwtTokenUtil.getSecretKey();
-		return Jwts.parser()
-				.verifyWith(key)
-				.build()
-				.parseSignedClaims(token)
-				.getPayload();
-	}
+    /**
+     * Parses and verifies the JWT token using the configured secret key.
+     */
+    private Claims parseToken(String token) {
+        SecretKey key = jwtTokenUtil.getSecretKey();
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
 }

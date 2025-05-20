@@ -13,14 +13,14 @@ import java.util.UUID;
 @Document(value = "reports")
 public class Report {
 
-	@Id
-	private String id;
-	private String userId;
-	private String postId;
-	private String reason;
-	private LocalDateTime reportTime;
+    @Id
+    private String id;
+    private String userId;
+    private String postId;
+    private String reason;
+    private LocalDateTime reportTime;
 
-	public Report(String id) {
+    public Report(String id) {
         this.id = UUID.randomUUID().toString();
-	}
+    }
 }
