@@ -23,6 +23,7 @@ const FAQ = lazy(() => import('./components/FAQ'));
 const Settings = lazy(() => import('./components/Settings'));
 const DeactivatedAccount = lazy(() => import('./components/DeactivatedAccount'));
 const Profile = lazy(() => import('./components/Profile'));
+const UserAchievements = lazy(() => import('./components/UserAchievements'));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -55,6 +56,10 @@ const App = () => {
             <Route path='/chat' element={<ProtectedRoute element={<ChatAI />} />}/>
             <Route path='/settings' element={<ProtectedRoute element={<Settings />} />} />
             <Route path='/profile' element={<ProtectedRoute element={<Profile />} />} />
+            <Route 
+              path='/user/:username/achievements' 
+              element={<ProtectedRoute element={<UserAchievements />} />}
+            />
 
             {/* Default and Not Found Routes */}
             <Route path='/' element={<Navigate to='/home' replace />} />

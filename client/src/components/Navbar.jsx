@@ -1,18 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { getUserIdFromServer } from '../auth/authUtils';
+import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import { GoHome } from 'react-icons/go';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
 import { GiArtificialHive } from 'react-icons/gi';
-import { MdClose } from 'react-icons/md';
-import { CgProfile } from "react-icons/cg";
+import { CgProfile } from 'react-icons/cg';
 import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
 
@@ -23,9 +20,7 @@ const Navbar = () => {
   const { logout } = useAuth();
   const location = useLocation();
 
-  const [anchorElUser, setAnchorElUser] = useState(null);
-  const [anchorElSettings, ] = useState(null);
-
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [, setUserId] = useState(null);
 
   useEffect(() => {
@@ -46,13 +41,16 @@ const Navbar = () => {
       name: 'Profile',
       icon: <CgProfile className={styles.icon_p} />,
     },
-    { name: 'Logout', 
-      icon: <CiLogout className={styles.icon_p} /> 
+    {
+      name: 'Achvievements',
+      icon: <GiArtificialHive className={styles.icon_p} />,
     },
+    { name: 'Logout', icon: <CiLogout className={styles.icon_p} /> },
   ];
 
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsDropdownOpen(false); // Close dropdown when route changes
   }, [location]);
 
   const handleLogout = useCallback(async () => {
@@ -72,89 +70,71 @@ const Navbar = () => {
     }
   }, [logout, navigate]);
 
-  const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
-  const handleCloseUserMenu = () => setAnchorElUser(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleSettingAction = useCallback(
-    (settingName) => {
+    async (settingName) => {
       if (settingName === 'Home') {
         navigate('/home');
-      } else if (
-        settingName === 'Profile'
-      ) {
+      } else if (settingName === 'Achvievements') {
+        const username = await getUsernameFromServer();
+        navigate(`/user/${username}/achievements`);
+      } else if (settingName === 'Profile') {
         navigate('/profile');
       } else if (settingName === 'Logout') {
         handleLogout();
       }
-      handleCloseUserMenu();
+      setIsDropdownOpen(false);
     },
     [navigate, handleLogout]
   );
-
-  useEffect(() => {
-    const isAnyPanelOpen = Boolean(anchorElSettings) || Boolean(anchorElUser);
-    if (isAnyPanelOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [anchorElSettings, anchorElUser]);
 
   return (
     <>
       <div className={styles.chat_history1}>
         <div className={styles.history_div_2}>
           <div className={styles.navbar_left}>
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title='Open profile settings'>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar className={styles.avatar} />
-                </IconButton>
-              </Tooltip>
+            <div className={styles.profile_menu} ref={menuRef}>
+              <button
+                onClick={toggleDropdown}
+                className={styles.profile_button}
+              >
+                <Avatar className={styles.avatar} />
+              </button>
 
               <div
-                className={`${styles.user_overlay} ${
-                  anchorElUser ? styles.open : ''
-                }`}
-                onClick={handleCloseUserMenu}
-              />
-              <div
-                className={`${styles.user_sidebar} ${
-                  anchorElUser ? styles.open : ''
+                className={`${styles.dropdown_menu} ${
+                  isDropdownOpen ? styles.show : ''
                 }`}
               >
-                <div className={styles.user_header}>
-                  <Typography variant='h6'>Profile settings</Typography>
-                  <IconButton onClick={handleCloseUserMenu}>
-                    <MdClose style={{ color: 'black' }} />
-                  </IconButton>
-                </div>
-                <div className={styles.user_content}>
-                  {userSettings.map((setting, index) => (
-                    <div
-                      key={index}
-                      className={styles.user_item}
-                      onClick={() => handleSettingAction(setting.name)}
-                    >
-                      <Typography
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                        }}
-                      >
-                        {setting.icon}
-                        {setting.name}
-                      </Typography>
-                    </div>
-                  ))}
-                </div>
+                {userSettings.map((setting, index) => (
+                  <button
+                    key={index}
+                    className={styles.dropdown_item}
+                    onClick={() => {
+                      handleSettingAction(setting.name);
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    {setting.icon}
+                    {setting.name}
+                  </button>
+                ))}
               </div>
-            </Box>
+            </div>
 
             <Box sx={{ marginLeft: 2 }}>
               <a

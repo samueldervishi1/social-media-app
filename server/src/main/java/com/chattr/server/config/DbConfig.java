@@ -3,9 +3,18 @@ package com.chattr.server.config;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.lang.NonNull;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.core.convert.*;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+
+import java.util.Collections;
 
 /**
  * MongoDB configuration class.
@@ -14,37 +23,35 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 @Configuration
 public class DbConfig extends AbstractMongoClientConfiguration {
 
-    /**
-     * Name of the MongoDB database to connect to.
-     * Configured via application properties (spring.data.mongodb.database).
-     */
     @Value("${spring.data.mongodb.database}")
     private String dbName;
 
-    /**
-     * Full MongoDB connection URI (including credentials and host).
-     * Configured via application properties (spring.data.mongodb.uri).
-     */
     @Value("${spring.data.mongodb.uri}")
     private String mongoUri;
 
-    /**
-     * Returns the name of the MongoDB database.
-     * This is used by Spring Data MongoDB as the default database for repositories.
-     */
     @Override
     @NonNull
     protected String getDatabaseName() {
         return dbName;
     }
 
-    /**
-     * Configures the MongoDB client settings, including the connection URI.
-     *
-     * @param builder a builder for MongoClientSettings
-     */
     @Override
     protected void configureClientSettings(MongoClientSettings.Builder builder) {
         builder.applyConnectionString(new ConnectionString(mongoUri));
+    }
+
+    @Bean
+    @NonNull
+    public MongoCustomConversions customConversions() {
+        return new MongoCustomConversions(Collections.emptyList());
+    }
+
+    @Bean
+    public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory databaseFactory,
+                                                       MongoMappingContext mappingContext) {
+        DbRefResolver dbRefResolver = new DefaultDbRefResolver(databaseFactory);
+        MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, mappingContext);
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+        return converter;
     }
 }

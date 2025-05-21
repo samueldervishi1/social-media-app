@@ -6,9 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Setter
 @Getter
@@ -34,11 +32,17 @@ public class User {
     private String ipAddress;
     private String lastLoginIp;
     private LocalDateTime lastLoginTime;
+    private LocalDateTime firstTimeLoggedIn;
     private List<String> followers = new ArrayList<>();
     private List<String> following = new ArrayList<>();
     private List<String> blockedUsers = new ArrayList<>();
     private List<String> savedPostIds = new ArrayList<>();
+    private Set<AchievementType> achievements = new HashSet<>();
+    private int loginStreak = 0;
     private boolean isPrivate = true;
+    private int postCount;
+    private int likeCount;
+    private int commentCount;
 
     @Override
     public boolean equals(Object o) {

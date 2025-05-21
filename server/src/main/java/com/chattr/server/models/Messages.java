@@ -49,7 +49,7 @@ public final class Messages {
     public static final String INVALID_CHANNEL_ID = "Missing or invalid channelId for registration.";
 
     // === Registration ===
-    public static final String REGISTER_SUCCESS = "You have registered successfully.";
+    public static final String REGISTER_SUCCESS = "User have successfully registered.";
     public static final String REGISTER_FAILED = "Registration failed. Please try again.";
     public static final String MISSING_FIELDS = "Please fill in all required fields.";
 

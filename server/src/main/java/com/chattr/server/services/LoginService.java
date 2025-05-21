@@ -8,6 +8,7 @@ import com.chattr.server.utils.JwtTokenUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -20,13 +21,15 @@ public class LoginService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final EmailService emailService;
+    private final AchievementService achievementService;
 
     public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                        JwtTokenUtil jwtTokenUtil, EmailService emailService) {
+                        JwtTokenUtil jwtTokenUtil, EmailService emailService, AchievementService achievementService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenUtil = jwtTokenUtil;
         this.emailService = emailService;
+        this.achievementService = achievementService;
     }
 
     /**
@@ -46,8 +49,14 @@ public class LoginService {
             emailService.sendSecurityAlert(user.getEmail(), ipAddress);
         }
 
+        updateLoginStreak(user);
+
+        // First, update login audit info (including lastLoginTime)
         updateLoginAudit(user, ipAddress);
 
+        achievementService.evaluateAchievements(user);
+
+        userRepository.save(user);
         return jwtTokenUtil.generateToken(user.getUsername(), user.getId(), user.isTwoFa());
     }
 
@@ -87,7 +96,17 @@ public class LoginService {
      */
     private void updateLoginAudit(User user, String ipAddress) {
         user.setLastLoginIp(ipAddress);
+        // Always set the lastLoginTime to the current time
         user.setLastLoginTime(LocalDateTime.now());
-        userRepository.save(user); // Only save if audit fields have changed
+    }
+
+    /**
+     * Updates the user's login streak based on the time gap since their last login.
+     */
+    private void updateLoginStreak(User user) {
+        if (user.getFirstTimeLoggedIn() == null) {
+            user.setFirstTimeLoggedIn(LocalDateTime.now());
+            user.setLoginStreak(1);
+        }
     }
 }

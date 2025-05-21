@@ -3,6 +3,7 @@ package com.chattr.server.services;
 import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.Like;
 import com.chattr.server.models.Post;
+import com.chattr.server.models.User;
 import com.chattr.server.repositories.LikeRepository;
 import com.chattr.server.repositories.PostRepository;
 import com.chattr.server.repositories.UserRepository;
@@ -19,19 +20,20 @@ public class LikeService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ActivityLogService activityLogService;
+    private final AchievementService achievementService;
 
 
-    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository, ActivityLogService activityLogService) {
+    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository, ActivityLogService activityLogService, AchievementService achievementService) {
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.activityLogService = activityLogService;
+        this.achievementService = achievementService;
     }
 
     public void likePost(String userId, String postId) {
-        if (!userRepository.existsById(userId)) {
-            throw new CustomException(404, "User not found");
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(404, "User not found"));
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(404, "Post not found"));
@@ -49,6 +51,8 @@ public class LikeService {
         }
 
         likeRepository.save(userLikes);
+        user.setLikeCount(user.getLikeCount() + 1);
+        achievementService.evaluateAchievements(user);
         activityLogService.log(userId, "LIKE_POST", userId + "liked this post.");
 
         if (post.getLikedUserIds() == null) post.setLikedUserIds(new ArrayList<>());

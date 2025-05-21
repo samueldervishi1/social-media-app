@@ -30,11 +30,13 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final AchievementService achievementService;
     private static final Logger LOGGER = LoggerFactory.getLogger(PostService.class);
 
-    public PostService(UserRepository userRepository, PostRepository postRepository) {
+    public PostService(UserRepository userRepository, PostRepository postRepository, AchievementService achievementService) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.achievementService = achievementService;
     }
 
     /**
@@ -47,6 +49,10 @@ public class PostService {
     public void createPost(String username, Post post) {
         User user = getUserByUsername(username);
         enrichPostWithMetadata(post, user);
+        user.setPostCount(user.getPostCount() + 1);
+        userRepository.save(user);
+
+        achievementService.evaluateAchievements(user);
         postRepository.save(post);
         LOGGER.info("Post created by user '{}' with postId '{}'", username, post.getId());
     }
