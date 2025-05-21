@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import { GoHome } from 'react-icons/go';
 import { IoSettingsOutline } from 'react-icons/io5';
