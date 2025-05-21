@@ -26,10 +26,7 @@ public final class Messages {
     public static final String USER_NOT_FOUND_BY_USERNAME = "No user found with username: %s";
     public static final String USER_NOT_FOUND_BY_ID = "No user found with ID: %s";
     public static final String USER_NOT_FOUND = "User not found. %s";
-    public static final String USERNAME_INCORRECT = "The username provided is incorrect.";
-    public static final String USER_DELETED = "No active account found with this username.";
-    public static final String INVALID_CREDENTIALS = "The password you entered is incorrect.";
-    public static final String ACCOUNT_DEACTIVATED = "This account is temporarily deactivated. Please contact support.";
+    public static final String INVALID_CREDENTIALS = "Invalid username or password.";
 
     // === Report / History / Post ===
     public static final String USER_ALREADY_REPORTED = "User %s has already reported post %s.";
@@ -48,6 +45,8 @@ public final class Messages {
     public static final String ERROR_UNEXPECTED = "Something went wrong while processing your request.";
     public static final String ERROR_UNEXPECTED_FORMAT = "The response format was not expected.";
     public static final String ERROR_500 = "Internal server error. Please try again later.";
+    public static final String REQUIRED_CHANNEL_ID = "onboard-ux";
+    public static final String INVALID_CHANNEL_ID = "Missing or invalid channelId for registration.";
 
     // === Registration ===
     public static final String REGISTER_SUCCESS = "You have registered successfully.";

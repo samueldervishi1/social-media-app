@@ -26,10 +26,6 @@ import java.util.Arrays;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String REQUIRED_HEADER_VERSION = "x_app_version";
-    private static final String REQUIRED_HEADER_LANGUAGE = "x_app_language";
-    private static final String EXPECTED_VERSION = "223_v2";
-    private static final String EXPECTED_LANGUAGE = "al";
     private static final String TOKEN_COOKIE_NAME = "token";
 
     @Value("${security.public-urls}")
@@ -47,13 +43,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         setSecurityHeaders(response);
-
-        // 1. Enforce an app version from a custom header
-        if (!areRequiredHeadersValid(request)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    "Missing or invalid required header: " + REQUIRED_HEADER_VERSION + ". Expected: " + EXPECTED_VERSION);
-            return;
-        }
 
         // 2. Skip filtering for public URLs
         if (isPublicEndpoint(request.getRequestURI())) {
@@ -107,16 +96,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void setSecurityHeaders(HttpServletResponse response) {
         response.setHeader("X-Frame-Options", "DENY");
         response.setHeader("X-Content-Type-Options", "nosniff");
-    }
-
-    /**
-     * Verifies that the app version header is present and matches the expected value.
-     */
-    private boolean areRequiredHeadersValid(HttpServletRequest request) {
-        String version = request.getHeader(REQUIRED_HEADER_VERSION);
-        String language = request.getHeader(REQUIRED_HEADER_LANGUAGE);
-        return version != null && version.equals(EXPECTED_VERSION)
-                && language != null && language.equalsIgnoreCase(EXPECTED_LANGUAGE);
     }
 
     /**

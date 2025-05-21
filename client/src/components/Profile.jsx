@@ -5,7 +5,7 @@ import {
   FaMapMarkerAlt,
   FaGlobe,
   FaCalendarAlt,
-  FaEllipsisV,
+  FaEllipsisH,
 } from 'react-icons/fa';
 import styles from '../styles/profile.module.css';
 import profileAvatar from '../assets/user.webp';
@@ -31,11 +31,9 @@ const Profile = () => {
         const [profileResponse, postsResponse] = await Promise.all([
           axios.get(`${API_URL}users/lookup/${username}`, {
             withCredentials: true,
-            headers: { 'X-App-Version': import.meta.env.VITE_APP_VERSION },
           }),
           axios.get(`${API_URL}posts/user/${userId}`, {
             withCredentials: true,
-            headers: { 'X-App-Version': import.meta.env.VITE_APP_VERSION },
           }),
         ]);
 
@@ -97,29 +95,39 @@ const Profile = () => {
               <img src={profileAvatar} alt='' className={styles.avatar} />
             </div>
           </div>
-
-          <div className={styles.profileActions}>
-            <div className={styles.dropdownContainer} ref={dropdownRef}>
-              <button
-                className={styles.menuButton}
-                onClick={() => setShowDropdown(!showDropdown)}
-              >
-                <FaEllipsisV />
-              </button>
-              {showDropdown && (
-                <div className={styles.dropdownMenu}>
-                  <button onClick={() => {}}>
-                    <FaEdit /> Edit Profile
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         <div className={styles.userInfo}>
-          <h1 className={styles.userName}>{profile.displayName}</h1>
-          <h2 className={styles.userHandle}>@{profile.username}</h2>
+          <div style={{ position: 'relative' }}>
+            <h1 className={styles.userName}>{profile.displayName}</h1>
+            <h2 className={styles.userHandle}>@{profile.username}</h2>
+
+            <button
+              className={styles.menuButton}
+              onClick={() => setShowDropdown(!showDropdown)}
+              aria-label='Profile menu'
+            >
+              <FaEllipsisH />
+            </button>
+
+            <div
+              ref={dropdownRef}
+              className={`${styles.dropdownMenu} ${
+                showDropdown ? styles.show : ''
+              }`}
+            >
+              <div
+                className={styles.dropdownItem}
+                onClick={() => {
+                  setShowDropdown(false);
+                  // Add navigation to edit profile page here
+                }}
+              >
+                <FaEdit />
+                Edit Profile
+              </div>
+            </div>
+          </div>
 
           {profile.bio && <p className={styles.userBio}>{profile.bio}</p>}
 

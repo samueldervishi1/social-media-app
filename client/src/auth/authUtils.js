@@ -5,9 +5,7 @@ export const getUserInfo = async () => {
   try {
     const response = await axios.get(`${API_URL}auth/me`, {
       withCredentials: true,
-      headers: {
-        'X-App-Version': import.meta.env.VITE_APP_VERSION,
-      },
+      
     });
     return response.data;
   } catch (error) {
@@ -35,9 +33,7 @@ export const getCompleteUserProfile = async (username) => {
   try {
     const response = await axios.get(`${API_URL}users/lookup/${username}`, {
       withCredentials: true,
-      headers: {
-        'X-App-Version': import.meta.env.VITE_APP_VERSION,
-      },
+      
     });
     return response.data;
   } catch (error) {
@@ -64,8 +60,7 @@ export const reactivateAccount = async (userId, password, confirmReactivation) =
       {
         withCredentials: true,
         headers: {
-          'Content-Type': 'application/json',
-          'X-App-Version': import.meta.env.VITE_APP_VERSION,
+          'Content-Type': 'application/json'
         }
       }
     );

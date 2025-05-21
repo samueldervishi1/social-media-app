@@ -35,7 +35,7 @@ public class LoginService {
      *
      * @param username  user's username
      * @param password  user's raw password
-     * @param ipAddress IP address of login attempt
+     * @param ipAddress IP address of a login attempt
      * @return JWT token if login is successful
      */
     public String login(String username, String password, String ipAddress) {
@@ -57,19 +57,19 @@ public class LoginService {
     private void verifyPassword(String rawPassword, User user) {
         String salted = rawPassword + user.getSalt();
         if (!passwordEncoder.matches(salted, user.getPassword())) {
-            throw new CustomException(400, Messages.INVALID_CREDENTIALS);
+            throw new CustomException(401, Messages.INVALID_CREDENTIALS);
         }
     }
 
     /**
-     * Retrieves user by username and checks if account is active.
+     * Retrieves a user by username and checks if an account is active.
      */
     private User findAndValidateUser(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(404, Messages.USERNAME_INCORRECT));
+                .orElseThrow(() -> new CustomException(401, Messages.INVALID_CREDENTIALS));
 
         if (user.isDeleted()) {
-            throw new CustomException(404, Messages.USER_DELETED);
+            throw new CustomException(401, Messages.INVALID_CREDENTIALS);
         }
 
         return user;

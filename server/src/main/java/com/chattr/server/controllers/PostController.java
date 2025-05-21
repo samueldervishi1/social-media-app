@@ -3,6 +3,7 @@ package com.chattr.server.controllers;
 import com.chattr.server.models.Post;
 import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.PostService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -92,6 +93,12 @@ public class PostController {
     public ResponseEntity<?> getSavedPosts(@PathVariable String userId) {
         List<Post> posts = postService.getSavedPosts(userId);
         return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/{postId}/liked/{userId}")
+    public ResponseEntity<Integer> isPostLikedByUser(@PathVariable String postId, @PathVariable String userId) {
+        boolean liked = postService.isPostLikedByUser(postId, userId);
+        return ResponseEntity.ok(liked ? 1 : 0);
     }
 
     /**

@@ -26,9 +26,6 @@ const PostList = ({ onPostRefresh }) => {
     try {
       const response = await axios.get(`${API_URL}posts/all?page=0&size=5`, {
         withCredentials: true,
-        headers: {
-          'X-App-Version': import.meta.env.VITE_APP_VERSION,
-        },
       });
 
       const allPosts = response.data.content || [];
@@ -48,9 +45,6 @@ const PostList = ({ onPostRefresh }) => {
               `${API_URL}users/lookup/find?userId=${post.userId}`,
               {
                 withCredentials: true,
-                headers: {
-                  'X-App-Version': import.meta.env.VITE_APP_VERSION,
-                },
               }
             );
 

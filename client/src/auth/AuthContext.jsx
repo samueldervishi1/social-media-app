@@ -13,7 +13,6 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const API_URL = import.meta.env.VITE_API_URL;
-const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,9 +26,6 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.post(`${API_URL}auth/logout`, null, {
         withCredentials: true,
-        headers: {
-          'X-App-Version': APP_VERSION,
-        },
       });
     } catch (e) {
       console.error('Logout failed', e);
@@ -72,9 +68,6 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await axios.get(`${API_URL}auth/me`, {
           withCredentials: true,
-          headers: {
-            'X-App-Version': APP_VERSION,
-          },
         });
 
         if (response.status === 200) {

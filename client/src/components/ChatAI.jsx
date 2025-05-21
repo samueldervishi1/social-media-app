@@ -204,8 +204,7 @@ const ChatAI = () => {
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
-            'X-App-Version': import.meta.env.VITE_APP_VERSION,
+            'Content-Type': 'application/json'
           },
         }
       );
@@ -231,8 +230,7 @@ const ChatAI = () => {
           {
             withCredentials: true,
             headers: {
-              'Content-Type': 'application/json',
-              'X-App-Version': import.meta.env.VITE_APP_VERSION,
+              'Content-Type': 'application/json'
             },
           }
         );
@@ -414,9 +412,6 @@ const ChatAI = () => {
       try {
         const response = await axios.get(`${API_URL}questions`, {
           withCredentials: true,
-          headers: {
-            'X-App-Version': import.meta.env.VITE_APP_VERSION,
-          },
         });
 
         if (response.data && Array.isArray(response.data)) {

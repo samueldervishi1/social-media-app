@@ -59,15 +59,6 @@ public class JwtTokenUtil {
     }
 
     /**
-     * Generates a refresh token with a fixed 1-hour expiration
-     * Can be decoupled later via a separate config value
-     */
-    public String generateRefreshToken(String username, String userId, boolean twoFa) {
-        Instant expiry = Instant.now().plus(1, ChronoUnit.HOURS);
-        return generateTokenInternal(username, userId, twoFa, expiry);
-    }
-
-    /**
      * Centralized logic for token generation
      */
     public String generateTokenInternal(String username, String userId, boolean twoFa, Instant expiryDate) {

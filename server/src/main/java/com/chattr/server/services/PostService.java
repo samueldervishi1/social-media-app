@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -94,6 +95,11 @@ public class PostService {
         long count = postRepository.countByUserIdAndDeletedFalse(userId);
         LOGGER.info("Post count for userId '{}': {}", userId, count);
         return count;
+    }
+
+    public boolean isPostLikedByUser(String postId, String userId) {
+        Post post = getPostById(postId);
+        return post.getLikedUserIds() != null && post.getLikedUserIds().contains(userId);
     }
 
     /**

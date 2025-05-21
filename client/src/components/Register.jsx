@@ -87,8 +87,7 @@ const Register = () => {
     try {
       const response = await axios.post(`${API_URL}register`, fullRequestBody, {
         headers: {
-          'Content-Type': 'application/json',
-          'X-App-Version': import.meta.env.VITE_APP_VERSION,
+          'Content-Type': 'application/json'
         },
       });
 

@@ -69,9 +69,6 @@ const PopularHashtags = () => {
       try {
         const response = await axios.get(`${API_URL}hashtags`, {
           withCredentials: true,
-          headers: {
-            'X-App-Version': import.meta.env.VITE_APP_VERSION,
-          },
           signal: controller.signal,
         });
 

@@ -60,8 +60,7 @@ const LoginScript = () => {
           method: 'POST',
           credentials: 'include',
           headers: {
-            'Content-Type': 'application/json',
-            'X-App-Version': import.meta.env.VITE_APP_VERSION,
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(requestBody),
         });

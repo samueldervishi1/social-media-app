@@ -116,9 +116,6 @@ const Settings = () => {
       try {
         await axios.delete(`${API_URL}profiles/${userId}/delete`, {
           withCredentials: true,
-          headers: {
-            'X-App-Version': import.meta.env.VITE_APP_VERSION,
-          },
         });
 
         clearCookies();
@@ -162,8 +159,7 @@ const Settings = () => {
           {
             withCredentials: true,
             headers: {
-              'Content-Type': 'application/json',
-              'X-App-Version': import.meta.env.VITE_APP_VERSION,
+              'Content-Type': 'application/json'
             },
           }
         );

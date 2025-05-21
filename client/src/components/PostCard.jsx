@@ -1,8 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import userIcon from '../assets/user.webp';
-import { getUsernameFromServer } from '../auth/authUtils';
-import { FaTrashAlt, FaFlag } from 'react-icons/fa';
+import { getUsernameFromServer, getUserIdFromServer } from '../auth/authUtils';
+import {
+  FaTrashAlt,
+  FaFlag,
+  FaHeart,
+  FaRegHeart,
+  FaComment,
+  FaShare,
+  FaTwitter,
+  FaFacebook,
+  FaWhatsapp,
+  FaLink,
+} from 'react-icons/fa';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { reportReasons } from '../constants/reportReasons';
 import styles from '../styles/postCard.module.css';
@@ -20,12 +31,21 @@ const PostCard = ({
   imageUrl,
   onPostDeleted,
   onPostRefresh,
+  isLiked: initialIsLiked = false,
+  likesCount: initialLikesCount = 0,
 }) => {
   const [loggedInUsername, setLoggedInUsername] = useState(null);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [customReason, setCustomReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [likesCount, setLikesCount] = useState(initialLikesCount);
+  const [isLikeAnimating, setIsLikeAnimating] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const shareMenuRef = useRef(null);
 
   const formatDateTime = () => {
     const date = postDate || 'Unknown date';
@@ -40,7 +60,6 @@ const PostCard = ({
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
-          'X-App-Version': import.meta.env.VITE_APP_VERSION,
         },
       });
 
@@ -55,6 +74,7 @@ const PostCard = ({
       setIsSubmitting(false);
     }
   };
+
   const handleReport = () => {
     setIsReportModalOpen(true);
   };
@@ -84,7 +104,6 @@ const PostCard = ({
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
-          'X-App-Version': import.meta.env.VITE_APP_VERSION,
         },
       });
 
@@ -115,13 +134,164 @@ const PostCard = ({
   };
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      const result = await getUsernameFromServer();
-      setLoggedInUsername(result);
+    const fetchUserData = async () => {
+      try {
+        // Fetch user data and post like status in parallel
+        const [username, userId] = await Promise.all([
+          getUsernameFromServer(),
+          getUserIdFromServer(),
+        ]);
+        setLoggedInUsername(username);
+        setLoggedInUserId(userId);
+
+        // Once we have the userId, fetch like status and count
+        if (userId) {
+          const [likeStatus, likesCountResponse] = await Promise.all([
+            axios.get(`${API_URL}posts/${id}/liked/${userId}`, {
+              withCredentials: true,
+            }),
+            axios.get(`${API_URL}like/count/${id}`, {
+              withCredentials: true,
+            }),
+          ]);
+
+          setIsLiked(likeStatus.data === 1);
+          setLikesCount(likesCountResponse.data);
+        }
+      } catch (error) {
+        console.error('Error fetching post data:', error);
+      }
     };
 
-    fetchUsername();
+    fetchUserData();
+  }, [id]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(event.target)
+      ) {
+        setShowShareMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleLike = async () => {
+    try {
+      if (!loggedInUserId) return;
+
+      // Start animation and update UI optimistically
+      setIsLikeAnimating(true);
+      setIsLiked((prev) => !prev);
+
+      // Make the like request
+      const response = await axios.post(
+        `${API_URL}like/add`,
+        {
+          userId: loggedInUserId,
+          postId: id,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Fetch the updated like count
+        const countResponse = await axios.get(`${API_URL}like/count/${id}`, {
+          withCredentials: true,
+        });
+        setLikesCount(countResponse.data);
+      } else {
+        // Revert like status if request failed
+        setIsLiked((prev) => !prev);
+      }
+    } catch (error) {
+      console.error('Error liking post:', error);
+      // Revert like status on error
+      setIsLiked((prev) => !prev);
+    } finally {
+      // Remove animation class after animation duration
+      setTimeout(() => {
+        setIsLikeAnimating(false);
+      }, 450);
+    }
+  };
+
+  const handleShare = (e) => {
+    e.stopPropagation();
+    if (!showShareMenu) {
+      // Get the button position
+      const buttonRect = e.currentTarget.getBoundingClientRect();
+      // Position the dropdown below the button
+      const dropdown = shareMenuRef.current;
+      if (dropdown) {
+        // Calculate position to align with the button
+        const left = buttonRect.left + (buttonRect.width - 220) / 2; // Center align (220 is dropdown width)
+        dropdown.style.left = `${Math.max(
+          16,
+          Math.min(left, window.innerWidth - 236)
+        )}px`; // Keep within viewport with 16px margin
+        dropdown.style.top = `${buttonRect.bottom}px`;
+      }
+    }
+    setShowShareMenu(!showShareMenu);
+  };
+
+  const getShareUrl = () => {
+    return `${window.location.origin}/post/${id}`;
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getShareUrl());
+      setCopySuccess(true);
+      setTimeout(() => {
+        setCopySuccess(false);
+        setShowShareMenu(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
+  };
+
+  const handleSocialShare = (platform) => {
+    const url = getShareUrl();
+    const text = `Check out this post: ${content.substring(0, 100)}${
+      content.length > 100 ? '...' : ''
+    }`;
+    let shareUrl;
+
+    switch (platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+          url
+        )}&text=${encodeURIComponent(text)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          url
+        )}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(
+          text + ' ' + url
+        )}`;
+        break;
+      default:
+        return;
+    }
+
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    setShowShareMenu(false);
+  };
 
   return (
     <div className={styles.card}>
@@ -172,82 +342,128 @@ const PostCard = ({
         </div>
       )}
 
-      <div className={styles.commentsSection}>
-        <h4 className={styles.commentsHeader}>
-          Comments ({commentsList ? commentsList.length : 0})
-        </h4>
-        {commentsList && commentsList.length > 0 ? (
-          <ul className={styles.commentsList}>
-            {commentsList.map((comment, index) => (
-              <li key={index} className={styles.commentItem}>
-                <span className={styles.commentUser}>
-                  @{comment.userId || 'user'}:{' '}
-                </span>
-                {comment.content}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className={styles.noComments}>No comments yet</p>
-        )}
-      </div>
+      <div className={styles.socialActions}>
+        <button
+          className={`${styles.actionIconButton} ${styles.likeButton} ${
+            isLiked ? styles.liked : ''
+          } ${isLikeAnimating ? styles.likeAnimation : ''}`}
+          onClick={handleLike}
+          aria-label={isLiked ? 'Unlike post' : 'Like post'}
+        >
+          {isLiked ? <FaHeart /> : <FaRegHeart />}
+          <span>{likesCount > 0 ? likesCount : ''}</span>
+        </button>
 
-      <Modal show={isReportModalOpen} onHide={closeReportModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Report Post</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Please select a reason for reporting this post:</p>
-          <Form>
-            {reportReasons.map((reason) => (
-              <Form.Check
-                key={reason}
-                type='radio'
-                id={`report-reason-${reason}`}
-                label={reason}
-                name='reportReason'
-                value={reason}
-                checked={reportReason === reason}
-                onChange={() => setReportReason(reason)}
-                className='mb-2'
-              />
-            ))}
+        <button
+          className={styles.actionIconButton}
+          onClick={() => {}}
+          aria-label='Comment on post'
+        >
+          <FaComment />
+          <span>{commentsList ? commentsList.length : ''}</span>
+        </button>
 
-            {reportReason === 'Other' && (
-              <Form.Group className='mt-3'>
-                <Form.Label>Please specify your reason:</Form.Label>
-                <Form.Control
-                  as='textarea'
-                  rows={3}
-                  value={customReason}
-                  onChange={(e) => setCustomReason(e.target.value)}
-                  placeholder='Please provide details about your report...'
+        <div className={styles.shareDropdownContainer}>
+          <button
+            className={styles.actionIconButton}
+            onClick={handleShare}
+            aria-label='Share post'
+          >
+            <FaShare />
+          </button>
+          {showShareMenu && (
+            <div ref={shareMenuRef} className={styles.shareDropdown}>
+              <button
+                className={styles.shareOption}
+                onClick={() => handleSocialShare('twitter')}
+              >
+                <FaTwitter />
+                Share on Twitter
+              </button>
+              <button
+                className={styles.shareOption}
+                onClick={() => handleSocialShare('facebook')}
+              >
+                <FaFacebook />
+                Share on Facebook
+              </button>
+              <button
+                className={styles.shareOption}
+                onClick={() => handleSocialShare('whatsapp')}
+              >
+                <FaWhatsapp />
+                Share on WhatsApp
+              </button>
+              <button className={styles.shareOption} onClick={handleCopyLink}>
+                <FaLink />
+                Copy Link
+              </button>
+              {copySuccess && (
+                <div className={styles.copySuccess}>
+                  Link copied to clipboard!
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <Modal show={isReportModalOpen} onHide={closeReportModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Report Post</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Please select a reason for reporting this post:</p>
+            <Form>
+              {reportReasons.map((reason) => (
+                <Form.Check
+                  key={reason}
+                  type='radio'
+                  id={`report-reason-${reason}`}
+                  label={reason}
+                  name='reportReason'
+                  value={reason}
+                  checked={reportReason === reason}
+                  onChange={() => setReportReason(reason)}
+                  className='mb-2'
                 />
-              </Form.Group>
-            )}
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant='secondary'
-            onClick={closeReportModal}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant='primary'
-            onClick={submitReport}
-            disabled={
-              !reportReason ||
-              (reportReason === 'Other' && !customReason) ||
-              isSubmitting
-            }
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit Report'}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              ))}
+
+              {reportReason === 'Other' && (
+                <Form.Group className='mt-3'>
+                  <Form.Label>Please specify your reason:</Form.Label>
+                  <Form.Control
+                    as='textarea'
+                    rows={3}
+                    value={customReason}
+                    onChange={(e) => setCustomReason(e.target.value)}
+                    placeholder='Please provide details about your report...'
+                  />
+                </Form.Group>
+              )}
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant='secondary'
+              onClick={closeReportModal}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant='primary'
+              onClick={submitReport}
+              disabled={
+                !reportReason ||
+                (reportReason === 'Other' && !customReason) ||
+                isSubmitting
+              }
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit Report'}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </div>
   );
 };

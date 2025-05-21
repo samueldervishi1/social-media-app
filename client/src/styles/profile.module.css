@@ -195,47 +195,60 @@
 }
 
 .menuButton {
-  background: #f0f2f5;
+  background: transparent;
   border: none;
   width: 40px;
   height: 40px;
   border-radius: 50%;
   display: flex;
-  margin-top: 30px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #1a1a1a;
-  font-size: 16px;
+  position: absolute;
+  right: 0;
+  top: 20px;
 }
 
 .menuButton:hover {
-  background: #e4e6e9;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .dropdownMenu {
   position: absolute;
-  top: 100%;
+  top: 60px;
   right: 0;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  padding: 8px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 200px;
-  z-index: 100;
-  animation: slideIn 0.2s ease;
+  z-index: 1000;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.dropdownMenu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdownItem {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #f5f8fa;
 }
 
 .dropdownMenu button {

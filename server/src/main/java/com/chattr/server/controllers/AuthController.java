@@ -173,11 +173,21 @@ public class AuthController {
             List<Map<String, Object>> queries = safeCastList(requestBody.get("queries"));
 
             String username = null, email = null, fullName = null, password = null;
+            boolean channelValid = false;
             for (Map<String, Object> query : queries) {
                 username = getStringValue(query, "username", username);
                 email = getStringValue(query, "email", email);
                 fullName = getStringValue(query, "fullname", fullName);
                 password = getStringValue(query, "password", password);
+
+                Object rawQuery = query.get("query");
+                if (rawQuery instanceof String str && str.contains("$.channelId=" + Messages.REQUIRED_CHANNEL_ID)) {
+                    channelValid = true;
+                }
+            }
+
+            if (!channelValid) {
+                throw new CustomException(400, Messages.INVALID_CHANNEL_ID);
             }
 
             if (username == null || email == null || fullName == null || password == null) {
