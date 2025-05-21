@@ -85,16 +85,21 @@
   color: #3498db;
 }
 
-.nav_button {
+.nav_item {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1.2rem;
   border-radius: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
   transition: all 0.3s ease;
+  position: relative;
 }
 
-.nav_button:hover {
+.nav_item:hover {
   background-color: #f0f7ff;
   color: #3498db;
 }
@@ -102,10 +107,11 @@
 .icon_p {
   font-size: 1.4rem;
   margin-right: 0.2rem;
-  color: #555;
+  color: inherit;
+  transition: color 0.3s ease;
 }
 
-.nav_button:hover .icon_p {
+.nav_item:hover .icon_p {
   color: #3498db;
 }
 
@@ -129,52 +135,110 @@
   height: 3px;
   background-color: #555;
   border-radius: 2px;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease-in-out, opacity 0.2s ease-in-out;
+  transform-origin: center;
 }
 
-.bar.open:nth-child(1) {
+.hamburger .bar:nth-child(1) {
+  transform: translateY(0);
+}
+
+.hamburger .bar:nth-child(2) {
+  opacity: 1;
+}
+
+.hamburger .bar:nth-child(3) {
+  transform: translateY(0);
+}
+
+.hamburger .bar.open:nth-child(1) {
   transform: translateY(8px) rotate(45deg);
 }
 
-.bar.open:nth-child(2) {
+.hamburger .bar.open:nth-child(2) {
   opacity: 0;
 }
 
-.bar.open:nth-child(3) {
+.hamburger .bar.open:nth-child(3) {
   transform: translateY(-8px) rotate(-45deg);
 }
 
 .mobile_menu {
   display: none;
   position: absolute;
-  top: 60px;
-  right: 0;
+  top: 30px;
+  right: -20px;
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 8px;
   flex-direction: column;
-  gap: 0.75rem;
-  min-width: 200px;
-  z-index: 100;
-  animation: slideIn 0.3s ease-out;
+  width: 250px;
+  z-index: 1000;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  margin: 0 16px;
+}
+
+.mobile_item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  border: none;
+  background: none;
+  font-size: 15px;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.mobile_item:hover {
+  background-color: #f0f7ff;
+  color: #3498db;
+  transform: translateX(4px);
+}
+
+.mobile_item:active {
+  transform: translateX(4px) scale(0.98);
+}
+
+.mobile_item .icon_p {
+  font-size: 20px;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.mobile_item:hover .icon_p {
+  color: #3498db;
+  transform: scale(1.1);
+}
+
+.mobile_item span {
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 .dropdown_menu {
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-width: 180px;
-  padding: 4px;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  min-width: 220px;
+  padding: 8px;
   margin-top: 8px;
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
 }
 
 .dropdown_menu.show {
@@ -192,28 +256,43 @@
   border: none;
   background: none;
   font-size: 14px;
-  color: #333;
+  color: #2c2c2c;
   cursor: pointer;
   transition: all 0.2s ease;
+  border-radius: 12px;
+  margin: 2px 0;
+  font-weight: 500;
 }
 
 .dropdown_item:hover {
-  background-color: #f5f8fa;
-  color: #1da1f2;
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  transform: translateX(4px);
+}
+
+.dropdown_item:active {
+  transform: translateX(2px);
+}
+
+.dropdown_item svg {
+  width: 18px;
+  height: 18px;
+  transition: all 0.2s ease;
 }
 
 .dropdown_item:hover svg {
-  color: #1da1f2;
+  transform: scale(1.1);
+  color: #3498db;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.95) translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -394,10 +473,7 @@
   }
 
   .mobile_menu {
-    right: 0;
-    width: 100%;
-    top: 70px;
-    border-radius: 0;
+    border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   }
 }

@@ -8,7 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import { GoHome } from 'react-icons/go';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
-import { GiArtificialHive } from 'react-icons/gi';
+import { GiArtificialHive, GiAchievement } from 'react-icons/gi';
 import { CgProfile } from 'react-icons/cg';
 import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
@@ -43,7 +43,7 @@ const Navbar = () => {
     },
     {
       name: 'Achvievements',
-      icon: <GiArtificialHive className={styles.icon_p} />,
+      icon: <GiAchievement className={styles.icon_p} />,
     },
     { name: 'Logout', icon: <CiLogout className={styles.icon_p} /> },
   ];
@@ -151,56 +151,78 @@ const Navbar = () => {
               className={styles.hamburger}
               onClick={() => {
                 setIsMenuOpen(!isMenuOpen);
-                console.log('isMenuOpen:', !isMenuOpen);
               }}
             >
-              <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
-              <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
-              <div className={`${styles.bar} ${isMenuOpen ? 'open' : ''}`} />
+              <div
+                className={`${styles.bar} ${isMenuOpen ? styles.open : ''}`}
+              />
+              <div
+                className={`${styles.bar} ${isMenuOpen ? styles.open : ''}`}
+              />
+              <div
+                className={`${styles.bar} ${isMenuOpen ? styles.open : ''}`}
+              />
             </div>
 
             {isMenuOpen && (
               <div className={styles.mobile_menu}>
-                <a href='/home' className={styles.menu_item}>
-                  <IconButton style={{ fontSize: '15px' }}>
-                    <GoHome className={styles.icon_p} />
-                    Home
-                  </IconButton>
-                </a>
-                <a href='/chat' className={styles.menu_item}>
-                  <IconButton style={{ fontSize: '15px' }}>
-                    <GiArtificialHive className={styles.icon_p} />
-                    Eido
-                  </IconButton>
-                </a>
-                <a href='/settings' className={styles.menu_item}>
-                  <IconButton style={{ fontSize: '15px' }}>
-                    <IoSettingsOutline className={styles.icon_p} />
-                    Settings
-                  </IconButton>
-                </a>
+                <button 
+                  className={styles.mobile_item}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate('/home');
+                  }}
+                >
+                  <GoHome className={styles.icon_p} />
+                  <span>Home</span>
+                </button>
+                <button 
+                  className={styles.mobile_item}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate('/chat');
+                  }}
+                >
+                  <GiArtificialHive className={styles.icon_p} />
+                  <span>Eido</span>
+                </button>
+                <button 
+                  className={styles.mobile_item}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate('/settings');
+                  }}
+                >
+                  <IoSettingsOutline className={styles.icon_p} />
+                  <span>Settings</span>
+                </button>
               </div>
             )}
 
             <div className={styles.history_links}>
-              <a href='/home' className={styles.menu_item}>
-                <IconButton className={styles.nav_button}>
-                  <GoHome className={styles.icon_p} />
-                  <span className={styles.nav_text}>Home</span>
-                </IconButton>
-              </a>
-              <a href='/chat' className={styles.menu_item}>
-                <IconButton className={styles.nav_button}>
-                  <GiArtificialHive className={styles.icon_p} />
-                  <span className={styles.nav_text}>Eido</span>
-                </IconButton>
-              </a>
-              <a href='/settings' className={styles.menu_item}>
-                <IconButton style={{ fontSize: '15px' }}>
-                  <IoSettingsOutline className={styles.icon_p} />
-                  Settings
-                </IconButton>
-              </a>
+              <button 
+                className={styles.nav_item}
+                onClick={() => navigate('/home')}
+              >
+                <GoHome className={styles.icon_p} />
+                <span className={styles.nav_text}>Home</span>
+              </button>
+
+              <button 
+                className={styles.nav_item}
+                onClick={() => navigate('/chat')}
+              >
+                <GiArtificialHive className={styles.icon_p} />
+                <span className={styles.nav_text}>Eido</span>
+              </button>
+
+              <button 
+                className={styles.nav_item}
+                onClick={() => navigate('/settings')}
+              >
+                <IoSettingsOutline className={styles.icon_p} />
+                <span className={styles.nav_text}>Settings</span>
+              </button>
             </div>
           </div>
         </div>

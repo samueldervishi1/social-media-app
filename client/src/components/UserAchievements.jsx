@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { FaTrophy } from 'react-icons/fa';
+import { GrAchievement } from "react-icons/gr";
 import styles from '../styles/achievements.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -81,7 +81,7 @@ const UserAchievements = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <FaTrophy className={styles.loadingIcon} />
+        <GrAchievement className={styles.loadingIcon} />
         <p>Loading achievements...</p>
       </div>
     );
@@ -98,7 +98,7 @@ const UserAchievements = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <FaTrophy className={styles.trophyIcon} />
+        <GrAchievement className={styles.trophyIcon} />
         <h1>{username}'s Achievements</h1>
       </div>
 
