@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import axios from 'axios';
 import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -9,18 +10,29 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
 import { GiArtificialHive, GiAchievement } from 'react-icons/gi';
 import { CgProfile } from 'react-icons/cg';
+import { IoSearchOutline } from 'react-icons/io5';
 import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
+import { FaBell } from 'react-icons/fa';
+import NotificationsPopup from './NotificationsPopup';
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentUsername, setCurrentUsername] = useState(null);
+  const [notifications, ] = useState([]);
+  const [, setUserId] = useState(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const searchRef = useRef(null);
+  const menuRef = useRef(null);
   const navigate = useNavigate();
   const { logout } = useAuth();
   const location = useLocation();
-
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [, setUserId] = useState(null);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -29,6 +41,19 @@ const Navbar = () => {
     };
 
     fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const username = await getUsernameFromServer();
+        setCurrentUsername(username);
+      } catch (err) {
+        console.error('Failed to get current username', err);
+      }
+    };
+
+    fetchUsername();
   }, []);
 
   const userSettings = [
@@ -69,19 +94,6 @@ const Navbar = () => {
     }
   }, [logout, navigate]);
 
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleSettingAction = useCallback(
@@ -100,6 +112,62 @@ const Navbar = () => {
     },
     [navigate, handleLogout]
   );
+
+  const handleSearch = useCallback(async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const encodedQuery = encodeURIComponent(query);
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}search/all?query=${encodedQuery}`,
+        { withCredentials: true }
+      );
+      setSearchResults(data);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      handleSearch(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchQuery, handleSearch]);
+
+  const handleUserClick = (username) => {
+    if (username === currentUsername) {
+      navigate('/profile');
+    } else {
+      navigate(`/user/${username}`);
+    }
+    setShowSearchResults(false);
+    setSearchQuery('');
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false);
+      }
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -140,9 +208,51 @@ const Navbar = () => {
                 style={{ textDecoration: 'none', color: 'black' }}
                 href='/home'
               >
-                <p style={{ marginTop: 10, fontSize: 25 }}>𝓒𝓱𝓪𝓽𝓽𝓻</p>
+                <p
+                  style={{
+                    fontSize: 25,
+                    position: 'relative',
+                    right: 0,
+                    top: 4,
+                  }}
+                >
+                   𝓒𝓱𝓪𝓽𝓽𝓻
+                </p>
               </a>
             </Box>
+          </div>
+
+          <div className={styles.search_container} ref={searchRef}>
+            <div className={styles.search_wrapper}>
+              <IoSearchOutline className={styles.search_icon} />
+              <input
+                type='text'
+                className={styles.search_input}
+                placeholder='Search users...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            {showSearchResults && (
+              <div className={styles.search_results}>
+                {isSearching ? (
+                  <div className={styles.search_loading}>Searching...</div>
+                ) : searchResults.length > 0 ? (
+                  searchResults.map((user, index) => (
+                    <div
+                      key={index}
+                      className={styles.search_result_item}
+                      onClick={() => handleUserClick(user.username)}
+                    >
+                      <div className={styles.username}>{user.username}</div>
+                      <div className={styles.fullname}>{user.fullName}</div>
+                    </div>
+                  ))
+                ) : (
+                  <div className={styles.no_results}>No users found</div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className={styles.navbar_right}>
@@ -165,7 +275,7 @@ const Navbar = () => {
 
             {isMenuOpen && (
               <div className={styles.mobile_menu}>
-                <button 
+                <button
                   className={styles.mobile_item}
                   onClick={() => {
                     setIsMenuOpen(false);
@@ -175,7 +285,7 @@ const Navbar = () => {
                   <GoHome className={styles.icon_p} />
                   <span>Home</span>
                 </button>
-                <button 
+                <button
                   className={styles.mobile_item}
                   onClick={() => {
                     setIsMenuOpen(false);
@@ -185,7 +295,7 @@ const Navbar = () => {
                   <GiArtificialHive className={styles.icon_p} />
                   <span>Eido</span>
                 </button>
-                <button 
+                <button
                   className={styles.mobile_item}
                   onClick={() => {
                     setIsMenuOpen(false);
@@ -195,11 +305,28 @@ const Navbar = () => {
                   <IoSettingsOutline className={styles.icon_p} />
                   <span>Settings</span>
                 </button>
+                <button
+                  className={styles.mobile_item}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setShowNotifications(!showNotifications);
+                  }}
+                >
+                  <div className={styles.notification_icon}>
+                    <FaBell className={styles.icon_p} />
+                    {notifications.length > 0 && (
+                      <span className={styles.notification_badge}>
+                        {notifications.length}
+                      </span>
+                    )}
+                  </div>
+                  <span>Notifications</span>
+                </button>
               </div>
             )}
 
             <div className={styles.history_links}>
-              <button 
+              <button
                 className={styles.nav_item}
                 onClick={() => navigate('/home')}
               >
@@ -207,7 +334,7 @@ const Navbar = () => {
                 <span className={styles.nav_text}>Home</span>
               </button>
 
-              <button 
+              <button
                 className={styles.nav_item}
                 onClick={() => navigate('/chat')}
               >
@@ -215,13 +342,33 @@ const Navbar = () => {
                 <span className={styles.nav_text}>Eido</span>
               </button>
 
-              <button 
+              <button
                 className={styles.nav_item}
                 onClick={() => navigate('/settings')}
               >
                 <IoSettingsOutline className={styles.icon_p} />
                 <span className={styles.nav_text}>Settings</span>
               </button>
+
+              <button
+                className={styles.nav_item}
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <div className={styles.notification_icon}>
+                  <FaBell className={styles.icon_p} />
+                  {notifications.length > 0 && (
+                    <span className={styles.notification_badge}>
+                      {notifications.length}
+                    </span>
+                  )}
+                </div>
+                <span className={styles.nav_text}>Notifications</span>
+              </button>
+
+              <NotificationsPopup
+                isOpen={showNotifications}
+                onClose={() => setShowNotifications(false)}
+              />
             </div>
           </div>
         </div>

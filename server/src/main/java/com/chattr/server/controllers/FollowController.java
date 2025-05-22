@@ -1,6 +1,7 @@
 package com.chattr.server.controllers;
 
 import com.chattr.server.models.FollowRequest;
+import com.chattr.server.models.FollowStatus;
 import com.chattr.server.services.FollowService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,12 @@ public class FollowController {
     public ResponseEntity<?> getPendingFollowRequests(@RequestParam String userId) {
         List<FollowRequest> pendingRequests = followService.getPendingFollowRequests(userId);
         return ResponseEntity.ok(pendingRequests);
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<?> getFollowStatus(@RequestParam String senderId, @RequestParam String receiverId) {
+        FollowStatus status = followService.getFollowStatus(senderId, receiverId);
+        return ResponseEntity.ok(Map.of("status", status.name()));
     }
 
     @PostMapping("/send")

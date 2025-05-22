@@ -4,5 +4,6 @@ public enum FollowStatus {
     PENDING,
     FOLLOW_BACK,
     ACCEPTED,
-    REJECTED
+    REJECTED,
+    NONE
 }

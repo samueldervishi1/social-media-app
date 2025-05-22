@@ -503,6 +503,36 @@
   color: #878a8c;
 }
 
+.followButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 16px;
+  border: none;
+  background-color: #3498db;
+  color: white;
+}
+
+.followButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.followButton.following {
+  background-color: #e0e0e0;
+  color: #666;
+}
+
+.followButton svg {
+  font-size: 1rem;
+}
+
 @media (max-width: 768px) {
   .mainContent {
     grid-template-columns: 1fr;

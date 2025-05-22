@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Notifications {
 
     @Id
-    private String Id;
+    private String id;
     private String userId;
     private String message;
     private String type;

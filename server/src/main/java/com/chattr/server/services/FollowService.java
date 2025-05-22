@@ -29,23 +29,22 @@ public class FollowService {
     }
 
     public void sendFollowRequest(String senderId, String receiverId) {
-        if (senderId.equals(receiverId)) {
-            throw new IllegalArgumentException("Cannot follow yourself");
-        }
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
+
+        User receiver = userRepository.findById(receiverId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Optional<FollowRequest> existing = followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
         if (existing.isPresent()) {
             throw new IllegalArgumentException("Follow request already exists");
         }
 
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
         if (!receiver.isPrivate()) {
             addToFollowers(senderId, receiverId);
         } else {
             FollowRequest followRequest = new FollowRequest(senderId, receiverId, FollowStatus.PENDING);
-            notificationService.sendFollowNotification(senderId, receiverId);
+            notificationService.sendFollowNotification(receiverId, sender.getUsername());
             activityLogService.log(senderId, "FOLLOW_REQUEST_SENT", receiverId + " has requested to follow you.");
             followRepository.save(followRequest);
         }
@@ -69,9 +68,8 @@ public class FollowService {
     }
 
     public void followBack(String senderId, String receiverId) {
-        if (senderId.equals(receiverId)) {
-            throw new IllegalArgumentException("Cannot follow yourself");
-        }
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
 
         Optional<FollowRequest> existing = followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
         if (existing.isPresent()) {
@@ -79,7 +77,7 @@ public class FollowService {
         }
 
         FollowRequest followBackRequest = new FollowRequest(senderId, receiverId, FollowStatus.FOLLOW_BACK);
-        notificationService.sendFollowNotification(senderId, receiverId);
+        notificationService.sendFollowNotification(receiverId, sender.getUsername());
         activityLogService.log(senderId, "FOLLOW_BACK_REQUESTED", "You have requested to follow back " + receiverId + ".");
         followRepository.save(followBackRequest);
     }
@@ -137,6 +135,12 @@ public class FollowService {
         request.setTimestamp(LocalDateTime.now()); // Optional: update the timestamp to reflect the action time
 
         followRepository.save(request);
+    }
+
+    public FollowStatus getFollowStatus(String senderId, String receiverId) {
+        return followRepository.findBySenderIdAndReceiverId(senderId, receiverId)
+                .map(FollowRequest::getStatus)
+                .orElse(FollowStatus.NONE);
     }
 
     private void addToFollowers(String senderId, String receiverId) {

@@ -43,6 +43,7 @@ public class User {
     private int postCount;
     private int likeCount;
     private int commentCount;
+    private int karma;
 
     @Override
     public boolean equals(Object o) {

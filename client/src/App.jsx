@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,8 +7,6 @@ import {
 } from 'react-router-dom';
 import './index.css';
 import { useAuth } from './auth/AuthContext';
-
-// Lazy-loaded components
 import Navbar from './components/Navbar';
 
 const Login = lazy(() => import('./components/Login'));
@@ -21,14 +19,20 @@ const Contact = lazy(() => import('./components/Contact'));
 const NotFound = lazy(() => import('./components/NotFound'));
 const FAQ = lazy(() => import('./components/FAQ'));
 const Settings = lazy(() => import('./components/Settings'));
-const DeactivatedAccount = lazy(() => import('./components/DeactivatedAccount'));
+const DeactivatedAccount = lazy(() =>
+  import('./components/DeactivatedAccount')
+);
 const Profile = lazy(() => import('./components/Profile'));
 const UserAchievements = lazy(() => import('./components/UserAchievements'));
+const UserProfile = lazy(() => import('./components/UserProfile'));
+const NotificationListener = lazy(() =>
+  import('./components/NotificationBell')
+);
 
 const App = () => {
   const { isAuthenticated } = useAuth();
+  const [notifications, setNotifications] = useState([]);
 
-  // Helper function to create protected routes
   const ProtectedRoute = ({ element }) => {
     return isAuthenticated ? element : <Login />;
   };
@@ -36,7 +40,17 @@ const App = () => {
   return (
     <Router>
       <div className='App'>
-        {isAuthenticated && <Navbar />}
+        {/* ✅ Always render Navbar if authenticated */}
+        {isAuthenticated && <Navbar notifications={notifications} />}
+
+        {/* ✅ Mount once globally */}
+        {isAuthenticated && (
+          <NotificationListener
+            onNewNotification={(notif) =>
+              setNotifications((prev) => [notif, ...prev])
+            }
+          />
+        )}
 
         <Suspense
           fallback={<div style={{ textAlign: 'center' }}>Loading...</div>}
@@ -49,19 +63,23 @@ const App = () => {
             <Route path='/about' element={<About />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/faq' element={<FAQ />} />
-            <Route path='/account-deactivated' element={<DeactivatedAccount />} />
-
-            {/* Protected Routes */}
-            <Route path='/home' element={<ProtectedRoute element={<Home />} />}/>
-            <Route path='/chat' element={<ProtectedRoute element={<ChatAI />} />}/>
-            <Route path='/settings' element={<ProtectedRoute element={<Settings />} />} />
-            <Route path='/profile' element={<ProtectedRoute element={<Profile />} />} />
-            <Route 
-              path='/user/:username/achievements' 
-              element={<ProtectedRoute element={<UserAchievements />} />}
+            <Route
+              path='/account-deactivated'
+              element={<DeactivatedAccount />}
             />
 
-            {/* Default and Not Found Routes */}
+            {/* Protected Routes */}
+            <Route path='/home' element={<ProtectedRoute element={<Home />} />} />
+            <Route path='/chat' element={<ProtectedRoute element={<ChatAI />} />} />
+            <Route path='/settings' element={<ProtectedRoute element={<Settings />} />} />
+            <Route path='/profile' element={<ProtectedRoute element={<Profile />} />} />
+            <Route
+              path='/user/:username/achievements'
+              element={<ProtectedRoute element={<UserAchievements />} />}
+            />
+            <Route path='/user/:username' element={<UserProfile />} />
+
+            {/* Fallback Routes */}
             <Route path='/' element={<Navigate to='/home' replace />} />
             <Route path='*' element={<NotFound />} />
           </Routes>

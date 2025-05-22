@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class NotificationService {
@@ -23,6 +24,10 @@ public class NotificationService {
 
     public void sendFollowNotification(String toUserId, String followerUsername) {
         String message = followerUsername + " started following you.";
+
+        System.out.println("[NotificationService] Sending TO userId: " + toUserId);
+        System.out.println("[NotificationService] From username: " + followerUsername);
+        System.out.println("[NotificationService] Message: " + message);
 
         // Store in Mongo
         Notifications dbNotification = new Notifications();
@@ -42,5 +47,19 @@ public class NotificationService {
         activityLogService.log(toUserId, "FOLLOW_NOTIFICATION", message);
 
         messagingTemplate.convertAndSend("/topic/notifications/" + toUserId, notification);
+    }
+
+    public List<Notifications> getNotifications(String userId) {
+        return notificationsRepository.findAll()
+                .stream()
+                .filter(n -> n.getUserId().equals(userId))
+                .toList();
+    }
+
+    public void markAsSeen(String id) {
+        Notifications notif = notificationsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        notif.setSeen(true);
+        notificationsRepository.save(notif);
     }
 }

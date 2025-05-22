@@ -427,6 +427,118 @@
   }
 }
 
+.search_container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 20px;
+  height: 36px;
+  min-height: 36px;
+}
+
+.search_wrapper {
+  position: relative;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  padding: 4px 12px;
+  transition: all 0.3s ease;
+  height: 36px;
+  left: 20px;
+}
+
+.search_wrapper:focus-within {
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search_icon {
+  color: #666;
+  font-size: 1.1rem;
+  margin-left: 8px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.search_input {
+  width: 100%;
+  border: none !important;
+  background: none;
+  outline: none;
+  padding: 0 32px 0 12px;
+  font-size: 0.9rem;
+  color: #333;
+  height: 28px;
+  min-height: 28px;
+}
+
+.search_input::placeholder {
+  color: #999;
+}
+
+/* Override any potential third-party input styles */
+.search_input:not([type="submit"]):not([type="button"]):not([type="reset"]) {
+  border: none !important;
+  padding: 0 32px 0 12px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  background: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  line-height: 28px !important;
+}
+
+.search_results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.search_result_item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search_result_item:hover {
+  background-color: #f5f5f5;
+}
+
+.search_result_item .username {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.search_result_item .fullname {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.search_loading {
+  padding: 16px;
+  text-align: center;
+  color: #666;
+}
+
+.no_results {
+  padding: 16px;
+  text-align: center;
+  color: #666;
+}
+
 @media (max-width: 900px) {
   .history_div_2 {
     padding: 0.5rem 0.5rem;
@@ -460,6 +572,19 @@
 
   .history_div_2 {
     padding: 0.5rem 1rem;
+  }
+
+  .search_container {
+    max-width: none;
+    margin: 10px 0;
+  }
+  
+  .search_results {
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    right: 10px;
+    margin: 0;
   }
 }
 

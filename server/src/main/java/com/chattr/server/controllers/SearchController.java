@@ -1,8 +1,10 @@
 package com.chattr.server.controllers;
 
 import com.chattr.server.models.Community;
+import com.chattr.server.models.User;
 import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.SearchService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,15 +27,15 @@ public class SearchController {
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Search communities by partial name match (case-insensitive).
-     *
-     * @param name the query string to search by
-     * @return list of matching communities
-     */
     @GetMapping("/community")
     public List<Community> findByNameContainingIgnoreCase(@RequestParam String name) {
         activityLogService.log(name, "SEARCH_COMMUNITY", "Searching for communities with name containing: " + name + ".");
-        return searchService.findByName(name);
+        return searchService.searchCommunitiesByName(name);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> searchAll(@RequestParam String query) {
+        List<User> users = searchService.searchUsers(query);
+        return ResponseEntity.ok(users);
     }
 }
