@@ -82,6 +82,23 @@ const Profile = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const getLinkIcon = (link) => {
+    try {
+      const url = new URL(link);
+      const hostname = url.hostname.replace(/^www\./, '');
+
+      if (hostname === 'github.com') {
+        return <FaGithub className={styles.socialIcon} />;
+      } else if (hostname === 'instagram.com') {
+        return <FaInstagram className={styles.socialIcon} />;
+      } else {
+        return <FaLink className={styles.socialIcon} />;
+      }
+    } catch (error) {
+      return <FaLink className={styles.socialIcon} />;
+    }
+  };
+
   const getFollowersCount = () => {
     return profile?.followers?.length || 0;
   };
@@ -262,13 +279,7 @@ const Profile = () => {
                           rel='noopener noreferrer'
                           className={styles.socialLink}
                         >
-                          {link.includes('github.com') ? (
-                            <FaGithub className={styles.socialIcon} />
-                          ) : link.includes('instagram.com') ? (
-                            <FaInstagram className={styles.socialIcon} />
-                          ) : (
-                            <FaLink className={styles.socialIcon} />
-                          )}
+                          {getLinkIcon(link)}
                           {link.split('/').pop()}
                         </a>
                       ))}
