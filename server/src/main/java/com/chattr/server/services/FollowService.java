@@ -63,8 +63,18 @@ public class FollowService {
         followRequest.setStatus(FollowStatus.ACCEPTED);
         followRepository.save(followRequest);
 
-        activityLogService.log(followRequest.getSenderId(), "FOLLOW_REQUEST_ACCEPTED", "You have accepted " + followRequest.getReceiverId() + "'s follow request.");
+        activityLogService.log(followRequest.getSenderId(), "FOLLOW_REQUEST_ACCEPTED",
+                "You have accepted " + followRequest.getReceiverId() + "'s follow request.");
+
         addToFollowers(followRequest.getSenderId(), followRequest.getReceiverId());
+
+        User receiver = userRepository.findById(followRequest.getReceiverId())
+                .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
+
+        notificationService.sendFollowAcceptedNotification(
+                followRequest.getSenderId(),
+                receiver.getUsername()
+        );
     }
 
     public void followBack(String senderId, String receiverId) {

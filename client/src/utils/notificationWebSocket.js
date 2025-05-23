@@ -8,7 +8,6 @@ export const startNotificationWebSocket = async (onNotification) => {
   const userId = await getUserIdFromServer();
   if (!userId) return;
 
-  // Prevent double connections
   if (stompClient && stompClient.active) {
     console.warn('STOMP client already active');
     return;

@@ -10,8 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 import static com.chattr.server.models.Messages.USER_NOT_FOUND_BY_ID;
 
@@ -188,6 +187,14 @@ public class ProfileService {
         Optional.ofNullable(updatedUser.getRole()).ifPresent(user::setRole);
         Optional.ofNullable(updatedUser.getTitle()).ifPresent(user::setTitle);
         Optional.ofNullable(updatedUser.getEmail()).ifPresent(user::setEmail);
+        if (updatedUser.getLinks() != null) {
+            List<String> newLinks = updatedUser.getLinks();
+            List<String> mergedLinks = new ArrayList<>(newLinks);
+
+            Set<String> uniqueLinks = new LinkedHashSet<>(mergedLinks);
+
+            user.setLinks(new ArrayList<>(uniqueLinks));
+        }
         user.setTwoFa(updatedUser.isTwoFa());
     }
 

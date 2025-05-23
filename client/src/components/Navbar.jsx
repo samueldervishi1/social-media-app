@@ -15,6 +15,7 @@ import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
 import { FaBell } from 'react-icons/fa';
 import NotificationsPopup from './NotificationsPopup';
+import { useNotifications } from './NotificationContext';
 
 const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -25,7 +26,6 @@ const Navbar = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentUsername, setCurrentUsername] = useState(null);
-  const [notifications, ] = useState([]);
   const [, setUserId] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const searchRef = useRef(null);
@@ -33,6 +33,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const location = useLocation();
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -57,10 +58,6 @@ const Navbar = () => {
   }, []);
 
   const userSettings = [
-    {
-      name: 'Home',
-      icon: <GoHome className={styles.icon_p} />,
-    },
     {
       name: 'Profile',
       icon: <CgProfile className={styles.icon_p} />,
@@ -216,7 +213,7 @@ const Navbar = () => {
                     top: 4,
                   }}
                 >
-                   𝓒𝓱𝓪𝓽𝓽𝓻
+                  𝓒𝓱𝓪𝓽𝓽𝓻
                 </p>
               </a>
             </Box>
@@ -314,9 +311,9 @@ const Navbar = () => {
                 >
                   <div className={styles.notification_icon}>
                     <FaBell className={styles.icon_p} />
-                    {notifications.length > 0 && (
+                    {unreadCount > 0 && (
                       <span className={styles.notification_badge}>
-                        {notifications.length}
+                        {unreadCount}
                       </span>
                     )}
                   </div>
@@ -356,9 +353,9 @@ const Navbar = () => {
               >
                 <div className={styles.notification_icon}>
                   <FaBell className={styles.icon_p} />
-                  {notifications.length > 0 && (
+                  {unreadCount > 0 && (
                     <span className={styles.notification_badge}>
-                      {notifications.length}
+                      {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
                 </div>

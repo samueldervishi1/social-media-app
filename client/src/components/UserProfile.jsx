@@ -133,6 +133,7 @@ const UserProfile = () => {
         }
       );
       setProfile(profileResponse.data);
+      setFollowStatus('PENDING');
     } catch (error) {
       console.error('Error following user:', error);
     }

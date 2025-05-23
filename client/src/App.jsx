@@ -19,15 +19,13 @@ const Contact = lazy(() => import('./components/Contact'));
 const NotFound = lazy(() => import('./components/NotFound'));
 const FAQ = lazy(() => import('./components/FAQ'));
 const Settings = lazy(() => import('./components/Settings'));
-const DeactivatedAccount = lazy(() =>
-  import('./components/DeactivatedAccount')
-);
+const DeactivatedAccount = lazy(() => import('./components/DeactivatedAccount'));
 const Profile = lazy(() => import('./components/Profile'));
 const UserAchievements = lazy(() => import('./components/UserAchievements'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
-const NotificationListener = lazy(() =>
-  import('./components/NotificationBell')
-);
+const NotificationListener = lazy(() => import('./components/NotificationBell'));
+const Notifications = lazy(() => import('./components/Notifications'));
+const UserSettings = lazy(() => import('./components/SettingsProfile'));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -40,10 +38,8 @@ const App = () => {
   return (
     <Router>
       <div className='App'>
-        {/* ✅ Always render Navbar if authenticated */}
         {isAuthenticated && <Navbar notifications={notifications} />}
 
-        {/* ✅ Mount once globally */}
         {isAuthenticated && (
           <NotificationListener
             onNewNotification={(notif) =>
@@ -74,10 +70,18 @@ const App = () => {
             <Route path='/settings' element={<ProtectedRoute element={<Settings />} />} />
             <Route path='/profile' element={<ProtectedRoute element={<Profile />} />} />
             <Route
+              path='/notifications'
+              element={<ProtectedRoute element={<Notifications />} />}
+            />
+            <Route
               path='/user/:username/achievements'
               element={<ProtectedRoute element={<UserAchievements />} />}
             />
             <Route path='/user/:username' element={<UserProfile />} />
+            <Route
+              path='/settings/profile'
+              element={<ProtectedRoute element={<UserSettings />} />}
+            />
 
             {/* Fallback Routes */}
             <Route path='/' element={<Navigate to='/home' replace />} />

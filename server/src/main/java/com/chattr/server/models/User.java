@@ -37,6 +37,7 @@ public class User {
     private List<String> following = new ArrayList<>();
     private List<String> blockedUsers = new ArrayList<>();
     private List<String> savedPostIds = new ArrayList<>();
+    private List<String> links = new ArrayList<>();
     private Set<AchievementType> achievements = new HashSet<>();
     private int loginStreak = 0;
     private boolean isPrivate = true;

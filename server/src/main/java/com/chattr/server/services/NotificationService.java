@@ -49,6 +49,26 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/notifications/" + toUserId, notification);
     }
 
+    public void sendFollowAcceptedNotification(String toUserId, String accepterUsername) {
+        String message = accepterUsername + " accepted your follow request.";
+
+        Notifications dbNotification = new Notifications();
+        dbNotification.setUserId(toUserId);
+        dbNotification.setMessage(message);
+        dbNotification.setType("FOLLOW_ACCEPTED");
+        dbNotification.setSeen(false);
+        dbNotification.setTimestamp(LocalDateTime.now());
+        notificationsRepository.save(dbNotification);
+        activityLogService.log(toUserId, "FOLLOW_ACCEPTED_NOTIFICATION", message);
+
+        NotificationMessage notification = new NotificationMessage();
+        notification.setToUserId(toUserId);
+        notification.setMessage(message);
+        notification.setType("FOLLOW_ACCEPTED");
+
+        messagingTemplate.convertAndSend("/topic/notifications/" + toUserId, notification);
+    }
+
     public List<Notifications> getNotifications(String userId) {
         return notificationsRepository.findAll()
                 .stream()

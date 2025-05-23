@@ -7,6 +7,9 @@ import {
   FaRegBookmark,
   FaRegEyeSlash,
   FaRegThumbsUp,
+  FaGithub,
+  FaInstagram,
+  FaLink,
 } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styles from '../styles/profile.module.css';
@@ -226,22 +229,51 @@ const Profile = () => {
                 <div className={styles.followStats}>
                   <div className={styles.followItem}>
                     <span className={styles.followCount}>
-                      {getFollowersCount()}
+                      <a href="/list">{getFollowersCount()}</a>
                     </span>
                     <span className={styles.followLabel}>
-                      {getFollowersCount() === 1 ? 'follower' : 'followers'}
+                      <a href="/list">{getFollowersCount() === 1 ? 'follower' : 'followers'}</a>
                     </span>
                   </div>
                   <div className={styles.followItem}>
                     <span className={styles.followCount}>
-                      {getFollowingCount()}
+                      <a href="/list">{getFollowingCount()}</a>
                     </span>
-                    <span className={styles.followLabel}>following</span>
+                    <span className={styles.followLabel}><a href="/list/following">following</a></span>
                   </div>
                 </div>
               </div>
 
               <hr className={styles.divider} />
+
+              {profile.links && profile.links.length > 0 && (
+                <>
+                  <div className={styles.socialLinks}>
+                    <div className={styles.linksScroll}>
+                      {profile.links.map((link, index) => (
+                        <a
+                          key={index}
+                          href={link}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className={styles.socialLink}
+                        >
+                          {link.includes('github.com') ? (
+                            <FaGithub className={styles.socialIcon} />
+                          ) : link.includes('instagram.com') ? (
+                            <FaInstagram className={styles.socialIcon} />
+                          ) : (
+                            <FaLink className={styles.socialIcon} />
+                          )}
+                          {link.split('/').pop()}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                  <hr className={styles.divider} />
+                </>
+              )}
+
               <div className={styles.userStats}>
                 <div className={styles.stat}>
                   <span className={styles.statLabel}>Karma</span>
