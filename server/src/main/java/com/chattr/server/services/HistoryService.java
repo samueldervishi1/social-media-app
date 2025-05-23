@@ -27,9 +27,6 @@ public class HistoryService {
         this.historyRepository = historyRepository;
     }
 
-    /**
-     * Appends new Q&A pairs to existing history or creates a new history entry.
-     */
     public History saveHistory(String sessionId, String userId, List<QuestionAnswerPair> questionAnswerPairs) {
         History history = historyRepository.findBySessionId(sessionId)
                 .map(existing -> {
@@ -47,36 +44,24 @@ public class HistoryService {
         return saved;
     }
 
-    /**
-     * Retrieves all history entries in the database.
-     */
     public List<History> getAllHistories() {
         List<History> all = historyRepository.findAll();
         LOGGER.info("Fetched {} total history records", all.size());
         return all;
     }
 
-    /**
-     * Retrieves history entries by a specific user.
-     */
     public List<History> getHistoryByUserId(String userId) {
         List<History> histories = historyRepository.findByUserId(userId);
         LOGGER.info("Fetched {} history records for userId '{}'", histories.size(), userId);
         return histories;
     }
 
-    /**
-     * Retrieves a history entry by session ID.
-     */
     public Optional<History> getHistoryBySessionId(String sessionId) {
         Optional<History> history = historyRepository.findBySessionId(sessionId);
         LOGGER.info("History lookup by sessionId '{}': {}", sessionId, history.isPresent() ? "FOUND" : "NOT FOUND");
         return history;
     }
 
-    /**
-     * Deletes a specific history record by session ID.
-     */
     public void deleteHistoryBySessionId(String sessionId) {
         History history = historyRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> {
@@ -88,9 +73,6 @@ public class HistoryService {
         LOGGER.info("Deleted history for session '{}'", sessionId);
     }
 
-    /**
-     * Deletes all history records for a given user.
-     */
     public void deleteAllHistory(String userId) {
         List<History> histories = historyRepository.findByUserId(userId);
         if (histories.isEmpty()) {
@@ -101,10 +83,6 @@ public class HistoryService {
         LOGGER.info("Deleted {} history records for userId '{}'", histories.size(), userId);
     }
 
-    /**
-     * Scheduled job that deletes histories older than 1 day.
-     * Runs every 24 hours.
-     */
     @Scheduled(fixedRate = 86_400_000) // 24 hours in milliseconds
     public void deleteOldHistory() {
         LocalDate cutoffDate = LocalDate.now().minusDays(1);

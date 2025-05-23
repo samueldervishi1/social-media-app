@@ -32,15 +32,6 @@ public class LoginService {
         this.achievementService = achievementService;
     }
 
-    /**
-     * Handles user login by validating credentials, checking IP,
-     * sending alerts if needed, and generating a JWT token.
-     *
-     * @param username  user's username
-     * @param password  user's raw password
-     * @param ipAddress IP address of a login attempt
-     * @return JWT token if login is successful
-     */
     public String login(String username, String password, String ipAddress) {
         User user = findAndValidateUser(username);
         verifyPassword(password, user);
@@ -60,9 +51,6 @@ public class LoginService {
         return jwtTokenUtil.generateToken(user.getUsername(), user.getId(), user.isTwoFa());
     }
 
-    /**
-     * Verifies that the provided password matches the stored one.
-     */
     private void verifyPassword(String rawPassword, User user) {
         String salted = rawPassword + user.getSalt();
         if (!passwordEncoder.matches(salted, user.getPassword())) {
@@ -70,9 +58,6 @@ public class LoginService {
         }
     }
 
-    /**
-     * Retrieves a user by username and checks if an account is active.
-     */
     private User findAndValidateUser(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(401, Messages.INVALID_CREDENTIALS));
@@ -84,25 +69,16 @@ public class LoginService {
         return user;
     }
 
-    /**
-     * Checks if the IP address has changed since the last login.
-     */
     private boolean ipChanged(String lastIp, String currentIp) {
         return lastIp == null || !lastIp.equals(currentIp);
     }
 
-    /**
-     * Updates user login timestamp and IP in the database.
-     */
     private void updateLoginAudit(User user, String ipAddress) {
         user.setLastLoginIp(ipAddress);
         // Always set the lastLoginTime to the current time
         user.setLastLoginTime(LocalDateTime.now());
     }
 
-    /**
-     * Updates the user's login streak based on the time gap since their last login.
-     */
     private void updateLoginStreak(User user) {
         if (user.getFirstTimeLoggedIn() == null) {
             user.setFirstTimeLoggedIn(LocalDateTime.now());

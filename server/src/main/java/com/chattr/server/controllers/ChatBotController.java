@@ -19,22 +19,11 @@ public class ChatBotController {
     private final ChatBotService chatBotService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor injection of the ChatBotService.
-     *
-     * @param chatBotService the service responsible for chatbot responses
-     */
     public ChatBotController(ChatBotService chatBotService, ActivityLogService activityLogService) {
         this.chatBotService = chatBotService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Handles POST requests to /chatbot/query and returns the chatbot's response.
-     *
-     * @param requestBody JSON body containing a "message" key
-     * @return a map with the chatbot's response
-     */
     @PostMapping("/query")
     public Map<String, Object> askQuestion(@RequestBody Map<String, String> requestBody) {
         // Extract the question message from the request body

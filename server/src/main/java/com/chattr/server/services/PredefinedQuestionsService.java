@@ -18,9 +18,6 @@ public class PredefinedQuestionsService {
         this.predefinedQuestionsRepository = predefinedQuestionsRepository;
     }
 
-    /**
-     * Returns all predefined questions from the database.
-     */
     public List<PredefineQuestions> getAllQuestions() {
         return predefinedQuestionsRepository.findAll();
     }

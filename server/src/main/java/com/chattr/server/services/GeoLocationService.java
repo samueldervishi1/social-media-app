@@ -13,28 +13,9 @@ import java.net.URL;
 @Service
 public class GeoLocationService {
 
-    /**
-     * Resolves the city and country of an IP address using an external public API.
-     *
-     * @param ip the IP address to resolve
-     * @return a formatted location string or "Unknown location"
-     */
     public String geolocationFromIp(String ip) {
         try {
-            URL url = new URL("http://ip-api.com/json/" + ip);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = in.readLine()) != null) {
-                response.append(line);
-            }
-
-            in.close();
-            String json = response.toString();
+            String json = fetchGeoJson(ip);
 
             String city = extract(json, "\"city\":\"");
             String country = extract(json, "\"country\":\"");
@@ -47,13 +28,21 @@ public class GeoLocationService {
         }
     }
 
-    /**
-     * Extracts a field value from a JSON-like string.
-     *
-     * @param json the response body
-     * @param key  the key prefix (e.g., "\"city\":\"")
-     * @return the value if found, otherwise null
-     */
+    private String fetchGeoJson(String ip) throws Exception {
+        URL url = new URL("http://ip-api.com/json/" + ip);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+            }
+            return response.toString();
+        }
+    }
+
     private String extract(String json, String key) {
         int start = json.indexOf(key);
         if (start == -1) return null;

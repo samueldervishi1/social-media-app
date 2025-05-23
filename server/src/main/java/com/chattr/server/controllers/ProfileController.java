@@ -21,11 +21,6 @@ public class ProfileController {
     private final ProfileService profileService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor-based injection for ProfileService.
-     *
-     * @param profileService service layer handling user profile logic
-     */
     public ProfileController(ProfileService profileService, ActivityLogService activityLogService) {
         this.profileService = profileService;
         this.activityLogService = activityLogService;
@@ -67,13 +62,6 @@ public class ProfileController {
         return ResponseEntity.ok("User unblocked successfully");
     }
 
-    /**
-     * Update a user's profile.
-     *
-     * @param userId      the ID of the user to update
-     * @param updatedUser updated user data
-     * @return updated user object
-     */
     @PutMapping("/{userId}/update")
     public ResponseEntity<User> updateUser(@PathVariable String userId, @RequestBody User updatedUser) {
         User updated = profileService.updateProfile(userId, updatedUser);
@@ -81,13 +69,6 @@ public class ProfileController {
         return ResponseEntity.ok(updated);
     }
 
-    /**
-     * Update the password for a user.
-     *
-     * @param userId  the ID of the user
-     * @param request object containing old and new passwords
-     * @return success or error message
-     */
     @PutMapping("/{userId}/update/password")
     public ResponseEntity<String> updatePassword(
             @PathVariable String userId,
@@ -98,12 +79,6 @@ public class ProfileController {
         return ResponseEntity.ok("Password updated successfully");
     }
 
-    /**
-     * Soft delete (deactivate) a user account.
-     *
-     * @param userId the ID of the user to delete
-     * @return success or error message
-     */
     @DeleteMapping("/{userId}/delete")
     public ResponseEntity<String> deleteUser(@PathVariable String userId) {
         profileService.softDeleteUser(userId);
@@ -111,12 +86,6 @@ public class ProfileController {
         return ResponseEntity.ok("User deleted successfully");
     }
 
-    /**
-     * Deactivate a user account.
-     *
-     * @param userId the ID of the user to deactivate
-     * @return success or error message
-     */
     @PutMapping("/{userId}/deactivate")
     public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
         profileService.deactivateUser(userId);
@@ -124,12 +93,6 @@ public class ProfileController {
         return ResponseEntity.ok("User deactivated successfully");
     }
 
-    /**
-     * Reactivate a previously deactivated user account.
-     *
-     * @param userId the ID of the user to reactivate
-     * @return success or error message
-     */
     @PutMapping("/{userId}/reactivate")
     public ResponseEntity<String> reactivateUser(@PathVariable String userId) {
         profileService.activateUser(userId);

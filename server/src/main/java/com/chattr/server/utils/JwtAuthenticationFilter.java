@@ -76,9 +76,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    /**
-     * Extracts the token from the "token" cookie.
-     */
     private String extractTokenFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) return null;
 
@@ -90,24 +87,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    /**
-     * Adds security-related HTTP headers to the response.
-     */
     private void setSecurityHeaders(HttpServletResponse response) {
         response.setHeader("X-Frame-Options", "DENY");
         response.setHeader("X-Content-Type-Options", "nosniff");
     }
 
-    /**
-     * Checks if the given URI is publicly accessible and should bypass authentication.
-     */
     private boolean isPublicEndpoint(String uri) {
         return Arrays.asList(publicUrls).contains(uri);
     }
 
-    /**
-     * Parses and verifies the JWT token using the configured secret key.
-     */
     private Claims parseToken(String token) {
         SecretKey key = jwtTokenUtil.getSecretKey();
         return Jwts.parser()

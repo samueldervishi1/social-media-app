@@ -23,80 +23,41 @@ public class CommunityController {
     private final CommunityService communityService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor-based dependency injection for CommunityService.
-     *
-     * @param communityService service handling community logic
-     */
     public CommunityController(CommunityService communityService, ActivityLogService activityLogService) {
         this.communityService = communityService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Get all available communities.
-     *
-     * @return list of communities
-     */
     @GetMapping("/get/all")
     public ResponseEntity<List<Community>> getAllCommunities() {
         activityLogService.log("anonymous", "COMMUNITY_LIST", "Retrieving all communities");
         return ResponseEntity.ok(communityService.getAllCommunities());
     }
 
-    /**
-     * Get all community posts from the database.
-     *
-     * @return list of community posts
-     */
     @GetMapping("/get/posts")
     public ResponseEntity<List<CommunityPost>> getAllPosts() {
         activityLogService.log("anonymous", "COMMUNITY_POST_LIST", "Retrieving all community posts");
         return ResponseEntity.ok(communityService.getAllDBPosts());
     }
 
-    /**
-     * Get a community by its ID.
-     *
-     * @param communityId the unique community ID
-     * @return community object or 404 if not found
-     */
     @GetMapping("/get/{communityId}")
     public ResponseEntity<Community> getCommunityById(@PathVariable String communityId) {
         activityLogService.log("anonymous", "COMMUNITY_BY_ID", "Retrieving community with ID: " + communityId);
         return ResponseEntity.ok(communityService.getCommunityById(communityId));
     }
 
-    /**
-     * Get a community by its name.
-     *
-     * @param name the name of the community
-     * @return community object or error if not found
-     */
     @GetMapping("/get/1/{name}")
     public ResponseEntity<Community> getCommunityByName(@PathVariable String name) {
         activityLogService.log("anonymous", "COMMUNITY_BY_NAME", "Retrieving community with name: " + name);
         return ResponseEntity.ok(communityService.getCommunityByName(name));
     }
 
-    /**
-     * Get user count for a specific community.
-     *
-     * @param name community name
-     * @return number of users
-     */
     @GetMapping("/count/users/{name}")
     public ResponseEntity<Integer> getUserCountForCommunity(@PathVariable String name) {
         activityLogService.log("anonymous", "COMMUNITY_COUNT", "Retrieving user count for community: " + name);
         return ResponseEntity.ok(communityService.getUserCountForCommunity(name));
     }
 
-    /**
-     * Get all communities a user is part of.
-     *
-     * @param userId user ID
-     * @return list of communities or 204 if empty
-     */
     @GetMapping("/get/user/{userId}")
     public ResponseEntity<List<Community>> getCommunitiesByUserId(@PathVariable String userId) {
         List<Community> communities = communityService.getCommunitiesByUserId(userId);
@@ -106,25 +67,12 @@ public class CommunityController {
                 : ResponseEntity.ok(communities);
     }
 
-    /**
-     * Get a specific community post by ID.
-     *
-     * @param postId post ID
-     * @return the community post
-     */
     @GetMapping("/get/post/1/{postId}")
     public ResponseEntity<CommunityPost> getCommunityPostById(@PathVariable String postId) {
         activityLogService.log("anonymous", "COMMUNITY_POSTS", "Retrieving community post with ID: " + postId);
         return ResponseEntity.ok(communityService.getCommunityPostById(postId));
     }
 
-    /**
-     * Create a new community.
-     *
-     * @param ownerId   the owner's user ID
-     * @param community the community data
-     * @return the created community
-     */
     @PostMapping("/create/{ownerId}")
     public ResponseEntity<Community> createCommunity(@PathVariable String ownerId, @RequestBody Community community) {
         Community created = communityService.createCommunity(
@@ -137,13 +85,6 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    /**
-     * Create a post within a specific community.
-     *
-     * @param communityName the community name
-     * @param communityPost the post-content
-     * @return the created post
-     */
     @PostMapping("/{communityName}/create/post")
     public ResponseEntity<CommunityPost> createPostForCommunity(@PathVariable String communityName, @RequestBody CommunityPost communityPost) {
         CommunityPost post = communityService.createCommunityPost(
@@ -155,13 +96,6 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
 
-    /**
-     * Add a user to a community.
-     *
-     * @param communityId community ID
-     * @param userId      user ID
-     * @return success message
-     */
     @PostMapping("/join/{communityId}/{userId}")
     public ResponseEntity<String> joinCommunity(@PathVariable String communityId, @PathVariable String userId) {
         communityService.joinCommunity(communityId, userId);
@@ -169,13 +103,6 @@ public class CommunityController {
         return ResponseEntity.ok("User has successfully joined the community.");
     }
 
-    /**
-     * Update the details of a community.
-     *
-     * @param communityId the ID of the community
-     * @param request     the fields to update (name, description, faqs)
-     * @return updated community
-     */
     @PutMapping("/update/{communityId}")
     public ResponseEntity<Community> updateCommunity(@PathVariable String communityId, @RequestBody Map<String, Object> request) {
 
@@ -206,13 +133,6 @@ public class CommunityController {
         return ResponseEntity.ok(updated);
     }
 
-    /**
-     * Remove a user from a community.
-     *
-     * @param communityId community ID
-     * @param userId      user ID
-     * @return success message
-     */
     @PostMapping("/leave/{communityId}/{userId}")
     public ResponseEntity<String> leaveCommunity(@PathVariable String communityId, @PathVariable String userId) {
         communityService.leaveCommunity(communityId, userId);

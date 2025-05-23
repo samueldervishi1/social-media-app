@@ -36,21 +36,10 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /**
-     * Constructor injection for JwtAuthenticationFilter.
-     * Uses @Lazy to prevent circular dependency issues if any.
-     */
     public SecurityConfig(@Lazy JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-    /**
-     * Main security filter chain bean.
-     * - Applies JWT authentication
-     * - Defines public vs protected URLs
-     * - Handles CORS, disables CSRF & logout
-     * - Sets up a custom unauthorized response handler
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -73,12 +62,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * CORS configuration bean.
-     * - Allows specific origins
-     * - Allows common HTTP methods
-     * - Exposes headers such as Authorization
-     */
     @Bean
     public CorsConfigurationSource corsConfig() {
         return request -> {
@@ -92,10 +75,6 @@ public class SecurityConfig {
         };
     }
 
-    /**
-     * Password encoder bean using BCrypt.
-     * Recommended for secure password hashing.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

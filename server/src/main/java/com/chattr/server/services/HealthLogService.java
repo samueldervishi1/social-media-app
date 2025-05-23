@@ -26,21 +26,12 @@ public class HealthLogService {
         this.healthLogRepository = healthLogRepository;
     }
 
-    /**
-     * Scheduled health check that runs every 30 minutes.
-     * Prevents saving if the last check was recent.
-     */
     @Scheduled(cron = "0 */30 * * * *")
     public void scheduledHealthCheck() {
         log.info("Running scheduled health check...");
         saveHealthCheck("Scheduled check: All systems operational");
     }
 
-    /**
-     * Saves a health check log if 30 minutes have passed since the last one.
-     *
-     * @param status description of the system status
-     */
     public void saveHealthCheck(String status) {
         try {
             LocalDate today = LocalDate.now();
@@ -82,9 +73,6 @@ public class HealthLogService {
         }
     }
 
-    /**
-     * Retrieves the most recent health check for today, if available.
-     */
     public HealthLog.HealthEntry getLastHealthEntry() {
         List<HealthLog> logs = healthLogRepository.findByDate(LocalDate.now());
         if (!logs.isEmpty() && !logs.get(0).getChecks().isEmpty()) {

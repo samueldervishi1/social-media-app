@@ -39,12 +39,6 @@ public class PostService {
         this.achievementService = achievementService;
     }
 
-    /**
-     * Creates a new post associated with the given username.
-     *
-     * @param username the username of the poster
-     * @param post     the post-object to persist
-     */
     @Transactional
     public void createPost(String username, Post post) {
         User user = getUserByUsername(username);
@@ -57,26 +51,17 @@ public class PostService {
         LOGGER.info("Post created by user '{}' with postId '{}'", username, post.getId());
     }
 
-    /**
-     * Enriches a post with user ID, date, and time.
-     */
     private void enrichPostWithMetadata(Post post, User user) {
         post.setUserId(user.getId());
         post.setPostDate(LocalDate.now().toString());
         post.setPostTime(LocalTime.now().toString());
     }
 
-    /**
-     * Returns all posts in the system.
-     */
     public Page<Post> getAllPostsPaged(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postDate").descending());
         return postRepository.findAll(pageable);
     }
 
-    /**
-     * Retrieves a post by its ID or throws a 404-style exception.
-     */
     public Post getPostById(String postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> {
@@ -85,18 +70,12 @@ public class PostService {
                 });
     }
 
-    /**
-     * Retrieves all posts authored by a specific user.
-     */
     public List<Post> getUserPosts(String userId) {
         List<Post> posts = postRepository.findByUserId(userId);
         LOGGER.info("Fetched {} posts for userId '{}'", posts.size(), userId);
         return posts;
     }
 
-    /**
-     * Returns the number of active (non-deleted) posts for a user.
-     */
     public long getPostCountPerUser(String userId) {
         long count = postRepository.countByUserIdAndDeletedFalse(userId);
         LOGGER.info("Post count for userId '{}': {}", userId, count);
@@ -108,9 +87,6 @@ public class PostService {
         return post.getLikedUserIds() != null && post.getLikedUserIds().contains(userId);
     }
 
-    /**
-     * Soft deletes a post by marking it as deleted.
-     */
     @Transactional
     public void deletePost(String postId) {
         Post post = getPostById(postId);
@@ -161,9 +137,6 @@ public class PostService {
         return postRepository.findAllById(user.getSavedPostIds());
     }
 
-    /**
-     * Fetches a user by username or throws if not found.
-     */
     private User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> {

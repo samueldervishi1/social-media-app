@@ -20,22 +20,11 @@ public class HealthCheckController {
     private final HealthLogService healthLogService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor for injecting the health log service.
-     *
-     * @param healthLogService the service handling health check persistence and retrieval
-     */
     public HealthCheckController(HealthLogService healthLogService, ActivityLogService activityLogService) {
         this.healthLogService = healthLogService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Endpoint to get the latest system health status.
-     * If no prior entry exists, a default health status is assumed and logged.
-     *
-     * @return response entity with health status and timestamp
-     */
     @GetMapping
     public ResponseEntity<Map<String, Object>> checkHealth() {
         Map<String, Object> response = new HashMap<>();

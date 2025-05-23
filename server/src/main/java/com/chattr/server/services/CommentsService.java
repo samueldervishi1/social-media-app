@@ -29,14 +29,6 @@ public class CommentsService {
         this.postRepository = postRepository;
     }
 
-    /**
-     * Creates a new comment on a post by a specific user.
-     *
-     * @param userId  the ID of the user commenting
-     * @param postId  the ID of the post being commented on
-     * @param comment the comment content
-     * @return the saved Comment
-     */
     @Transactional
     public Comment createComment(String userId, String postId, Comment comment) {
         return wrapSafe(() -> {
@@ -52,12 +44,6 @@ public class CommentsService {
         });
     }
 
-    /**
-     * Deletes a comment from a post by comment ID.
-     *
-     * @param postId    the post containing the comment
-     * @param commentId the ID of the comment to remove
-     */
     @Transactional
     public void deleteComment(String postId, String commentId) {
         wrapSafe(() -> {
@@ -72,13 +58,6 @@ public class CommentsService {
         });
     }
 
-    /**
-     * Retrieves a comment by post and comment ID.
-     *
-     * @param postId    the ID of the post
-     * @param commentId the ID of the comment
-     * @return Optional containing the comment if found
-     */
     public Optional<Comment> getCommentById(String postId, String commentId) {
         return wrapSafe(() -> {
             Post post = getPostById(postId);
@@ -89,9 +68,6 @@ public class CommentsService {
         });
     }
 
-    /**
-     * Retrieves a user by ID or throws a 404 CustomException.
-     */
     private User getUserById(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> {
@@ -100,9 +76,6 @@ public class CommentsService {
                 });
     }
 
-    /**
-     * Retrieves a post by ID or throws a 404 CustomException.
-     */
     private Post getPostById(String postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> {
@@ -111,9 +84,6 @@ public class CommentsService {
                 });
     }
 
-    /**
-     * Retrieves a comment from a post or throws a 404 CustomException.
-     */
     private Comment getCommentFromPost(Post post, String commentId) {
         return post.getCommentList().stream()
                 .filter(comment -> comment.getId().equals(commentId))
@@ -124,9 +94,6 @@ public class CommentsService {
                 });
     }
 
-    /**
-     * Wraps logic in a standard try-catch block for consistent exception handling.
-     */
     private <T> T wrapSafe(SafeAction<T> action) {
         try {
             return action.run();

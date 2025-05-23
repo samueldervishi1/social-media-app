@@ -20,22 +20,11 @@ public class PostController {
     private final PostService postService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor-based injection for the PostService.
-     *
-     * @param postService service layer for post-related operations
-     */
     public PostController(PostService postService, ActivityLogService activityLogService) {
         this.postService = postService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Retrieve a specific post by its ID.
-     *
-     * @param postId the unique identifier of the post
-     * @return the Post object
-     */
     @GetMapping("/get/1/{postId}")
     public ResponseEntity<Post> getPost(@PathVariable String postId) {
         Post post = postService.getPostById(postId);
@@ -43,12 +32,6 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
-    /**
-     * Get all posts created by a specific user.
-     *
-     * @param userId the user's identifier
-     * @return list of posts
-     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Post>> listUserPosts(@PathVariable String userId) {
         List<Post> posts = postService.getUserPosts(userId);
@@ -56,23 +39,12 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    /**
-     * Get the number of posts made by a specific user.
-     *
-     * @param userId the user's identifier
-     * @return count of posts
-     */
     @GetMapping("/1/metrics/{userId}")
     public long getUserPostCount(@PathVariable String userId) {
         activityLogService.log(userId, "POST_COUNT_BY_USER", "Retrieving post count for user: " + userId);
         return postService.getPostCountPerUser(userId);
     }
 
-    /**
-     * Get all posts in the system.
-     *
-     * @return list of all posts
-     */
     @GetMapping("/all")
     public ResponseEntity<?> getAllPostsPaged(
             @RequestParam(defaultValue = "0") int page,
@@ -101,13 +73,6 @@ public class PostController {
         return ResponseEntity.ok(liked ? 1 : 0);
     }
 
-    /**
-     * Create a new post by a user.
-     *
-     * @param username the author's username
-     * @param post     the post-content
-     * @return confirmation message
-     */
     @PostMapping("/create/{username}")
     public ResponseEntity<String> createPost(@PathVariable String username, @RequestBody Post post) {
         postService.createPost(username, post);
@@ -129,12 +94,6 @@ public class PostController {
         return ResponseEntity.ok("Post unsaved");
     }
 
-    /**
-     * Soft-delete a post by its ID.
-     *
-     * @param postId the post's unique identifier
-     * @return confirmation message
-     */
     @DeleteMapping("/delete/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable String postId) {
         postService.deletePost(postId);

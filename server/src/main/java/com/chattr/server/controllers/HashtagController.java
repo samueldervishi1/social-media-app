@@ -17,21 +17,11 @@ public class HashtagController {
     private final HashtagService hashtagService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor-based injection of HashtagService.
-     *
-     * @param hashtagService the service handling hashtag logic
-     */
     public HashtagController(HashtagService hashtagService, ActivityLogService activityLogService) {
         this.hashtagService = hashtagService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Retrieves all available hashtags.
-     *
-     * @return list of hashtags
-     */
     @GetMapping
     public List<Hashtag> getAllHashtags() {
         activityLogService.log("anonymous", "HASHTAG_GET", "Retrieving all hashtags");

@@ -38,9 +38,6 @@ public class ChatBotService {
 		this.headers.setContentType(MediaType.APPLICATION_JSON);
 	}
 
-	/**
-	 * Validates the required configs on startup and prepares Authorization header.
-	 */
 	@PostConstruct
 	private void validateConfigs() {
 		if (!StringUtils.hasText(modelApiUrl)) {
@@ -52,12 +49,6 @@ public class ChatBotService {
 		headers.setBearerAuth(apiKey);
 	}
 
-	/**
-	 * Sends the user message to the AI model and returns the response.
-	 *
-	 * @param message user input message
-	 * @return map containing the original message and the generated answer
-	 */
 	public Map<String, Object> getResponses(String message) {
 		try {
 			Map<String, Object> requestBody = buildRequestBody(message);
@@ -78,9 +69,6 @@ public class ChatBotService {
 		}
 	}
 
-	/**
-	 * Builds the request payload for the model API.
-	 */
 	private Map<String, Object> buildRequestBody(String message) {
 		return Map.of(
 				"model" , model ,

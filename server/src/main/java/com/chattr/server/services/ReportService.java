@@ -30,12 +30,6 @@ public class ReportService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Submits a report for a post by a user.
-     *
-     * @param report the report object containing userId and postId
-     * @return saved a Report object
-     */
     public Report report(Report report) {
         try {
             String userId = report.getUserId();
@@ -55,18 +49,12 @@ public class ReportService {
         }
     }
 
-    /**
-     * Checks for existing report by this user on this post.
-     */
     private void rejectIfAlreadyReported(String userId, String postId) {
         if (reportPostRepository.existsByUserIdAndPostId(userId, postId)) {
             throw new CustomException(400, String.format(Messages.USER_ALREADY_REPORTED, userId, postId));
         }
     }
 
-    /**
-     * Flags a post as reported (soft-flag).
-     */
     private void markPostAsReported(String postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(400, String.format(Messages.POST_NOT_FOUND, postId)));
@@ -77,9 +65,6 @@ public class ReportService {
         }
     }
 
-    /**
-     * Updates the user entity with the post ID that was reported.
-     */
     private void updateUserReportedPosts(String userId, String postId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));

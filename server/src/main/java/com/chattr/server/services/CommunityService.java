@@ -31,9 +31,6 @@ public class CommunityService {
         this.communityPostRepository = communityPostRepository;
     }
 
-    /**
-     * Creates a new community with optional FAQs.
-     */
     public Community createCommunity(String name, String ownerId, String description, List<Faq> faqs) {
         communityRepository.findByName(name).ifPresent(existing -> {
             LOGGER.warn("Community creation failed: name '{}' already exists", name);
@@ -49,9 +46,6 @@ public class CommunityService {
         return created;
     }
 
-    /**
-     * Creates a new post inside a specific community.
-     */
     public CommunityPost createCommunityPost(String name, String ownerId, String description) {
         Community community = getCommunityByName(name);
 
@@ -71,9 +65,6 @@ public class CommunityService {
         return savedPost;
     }
 
-    /**
-     * Updates community metadata, including name, description, and FAQs.
-     */
     public Community updateCommunity(String communityId, String newName, String description, List<Faq> faqs) {
         Community community = getCommunityById(communityId);
 
@@ -108,9 +99,6 @@ public class CommunityService {
         return updated;
     }
 
-    /**
-     * Returns the number of users in a given community.
-     */
     public int getUserCountForCommunity(String name) {
         try {
             return communityRepository.getUserCountForCommunity(name).orElse(0);
@@ -120,9 +108,6 @@ public class CommunityService {
         }
     }
 
-    /**
-     * Adds a user to the community member list if not already present.
-     */
     public void joinCommunity(String communityId, String userId) {
         Community community = getCommunityById(communityId);
 
@@ -135,9 +120,6 @@ public class CommunityService {
         }
     }
 
-    /**
-     * Removes a user from a community. Throws if not a member.
-     */
     public void leaveCommunity(String communityId, String userId) {
         Community community = getCommunityById(communityId);
 
@@ -150,9 +132,6 @@ public class CommunityService {
         }
     }
 
-    /**
-     * Retrieves a community by ID, or throws 404.
-     */
     public Community getCommunityById(String communityId) {
         return communityRepository.findById(communityId)
                 .orElseThrow(() -> {
@@ -161,9 +140,6 @@ public class CommunityService {
                 });
     }
 
-    /**
-     * Retrieves a community by name or throws 404.
-     */
     public Community getCommunityByName(String name) {
         return communityRepository.findByName(name)
                 .orElseThrow(() -> {
@@ -172,9 +148,6 @@ public class CommunityService {
                 });
     }
 
-    /**
-     * Fetches all communities where the user is a member.
-     */
     public List<Community> getCommunitiesByUserId(String userId) {
         try {
             return communityRepository.findByUserIdsContaining(userId);
@@ -184,9 +157,6 @@ public class CommunityService {
         }
     }
 
-    /**
-     * Fetches a post by its ID or throws 404.
-     */
     public CommunityPost getCommunityPostById(String postId) {
         return communityPostRepository.findById(postId)
                 .orElseThrow(() -> {
@@ -195,16 +165,10 @@ public class CommunityService {
                 });
     }
 
-    /**
-     * Returns all communities in the system.
-     */
     public List<Community> getAllCommunities() {
         return communityRepository.findAll();
     }
 
-    /**
-     * Returns all posts from all communities.
-     */
     public List<CommunityPost> getAllDBPosts() {
         return communityPostRepository.findAll();
     }

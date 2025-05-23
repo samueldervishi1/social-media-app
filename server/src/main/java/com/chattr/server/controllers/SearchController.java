@@ -19,9 +19,6 @@ public class SearchController {
     private final SearchService searchService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor for injecting SearchService.
-     */
     public SearchController(SearchService searchService, ActivityLogService activityLogService) {
         this.searchService = searchService;
         this.activityLogService = activityLogService;

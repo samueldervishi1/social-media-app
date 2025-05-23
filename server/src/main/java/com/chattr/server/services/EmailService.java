@@ -26,12 +26,6 @@ public class EmailService {
         this.geoLocationService = geoLocationService;
     }
 
-    /**
-     * Sends a security alert email with IP and location information.
-     *
-     * @param to        recipient email
-     * @param ipAddress IP address to resolve and embed
-     */
     public void sendSecurityAlert(String to, String ipAddress) {
         String location = geoLocationService.geolocationFromIp(ipAddress);
 
@@ -53,9 +47,6 @@ public class EmailService {
         }
     }
 
-    /**
-     * Builds the HTML email content using the given IP and location.
-     */
     private String formatHtmlContent(String ipAddress, String location) {
         return """
                 <!DOCTYPE html>

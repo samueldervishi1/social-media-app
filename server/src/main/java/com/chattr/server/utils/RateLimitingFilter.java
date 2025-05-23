@@ -60,18 +60,10 @@ public class RateLimitingFilter implements Filter {
         userBuckets.clear();
     }
 
-    /**
-     * Returns a unique identifier for the client.
-     * Default is the remote IP address.
-     * This can be extended to use authentication tokens or API keys instead.
-     */
     private String getClientIdentifier(HttpServletRequest request) {
         return request.getRemoteAddr(); // TODO: Replace with user ID or token if authentication is available
     }
 
-    /**
-     * Creates a new rate-limiting bucket with configured capacity and refill time.
-     */
     private Bucket createRateLimitBucket() {
         return Bucket.builder()
                 .addLimit(Bandwidth.builder()
@@ -81,9 +73,6 @@ public class RateLimitingFilter implements Filter {
                 .build();
     }
 
-    /**
-     * Sends an HTTP 429 "Too Many Requests" response to the client.
-     */
     private void sendRateLimitResponse(HttpServletResponse response) throws IOException {
         response.setStatus(429);
         response.setContentType("application/json");

@@ -14,26 +14,12 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class AppConfig {
 
-    /**
-     * Maximum number of requests allowed per client within the configured duration window.
-     * Defaults to 100 if not set via properties.
-     */
     @Value("${rate.limit.requests:100}")
     private int rateLimit;
 
-    /**
-     * Duration of the rate limit window in minutes.
-     * Defaults to 1 minute if not set via properties.
-     */
     @Value("${rate.limit.duration:1}")
     private long rateDuration;
 
-    /**
-     * Registers the RateLimitingFilter as a servlet filter for all URL patterns.
-     * This limits client requests based on IP using Bucket4j.
-     *
-     * @return the filter registration bean
-     */
     @Bean
     public FilterRegistrationBean<RateLimitingFilter> rateLimitingFilter() {
         FilterRegistrationBean<RateLimitingFilter> registrationBean = new FilterRegistrationBean<>();
@@ -43,11 +29,6 @@ public class AppConfig {
         return registrationBean;
     }
 
-    /**
-     * Provides a singleton RestTemplate bean for making HTTP requests.
-     *
-     * @return the configured RestTemplate
-     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

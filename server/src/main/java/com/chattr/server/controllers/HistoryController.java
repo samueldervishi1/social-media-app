@@ -21,33 +21,17 @@ public class HistoryController {
     private final HistoryService historyService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor-based dependency injection for HistoryService.
-     *
-     * @param historyService service layer for chat history operations
-     */
     public HistoryController(HistoryService historyService, ActivityLogService activityLogService) {
         this.historyService = historyService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Get all chat history records in the system.
-     *
-     * @return list of all histories
-     */
     @GetMapping("/all")
     public ResponseEntity<List<History>> getAllHistories() {
         activityLogService.log("anonymous", "HISTORY_GET_ALL", "Retrieving all chat history");
         return ResponseEntity.ok(historyService.getAllHistories());
     }
 
-    /**
-     * Get all chat history for a specific user.
-     *
-     * @param userId user identifier
-     * @return list of histories or 204 if none found
-     */
     @GetMapping("/get/user/{userId}")
     public ResponseEntity<List<History>> getHistoryByUserId(@PathVariable String userId) {
         List<History> histories = historyService.getHistoryByUserId(userId);
@@ -57,12 +41,6 @@ public class HistoryController {
                 : ResponseEntity.ok(histories);
     }
 
-    /**
-     * Get a single chat history record by session ID.
-     *
-     * @param sessionId session identifier
-     * @return the history or 404 if not found
-     */
     @GetMapping("/get/session/{sessionId}")
     public ResponseEntity<History> getHistoryBySessionId(@PathVariable String sessionId) {
         Optional<History> history = historyService.getHistoryBySessionId(sessionId);
@@ -72,14 +50,6 @@ public class HistoryController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    /**
-     * Save a new chat history record for a given user and session.
-     *
-     * @param userId    user identifier
-     * @param sessionId session identifier
-     * @param request   contains the question and answer pair
-     * @return the saved history object
-     */
     @PostMapping("/save/{userId}/session/{sessionId}")
     public ResponseEntity<History> saveChatHistory(
             @PathVariable String userId,
@@ -93,12 +63,6 @@ public class HistoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    /**
-     * Delete a chat history by session ID.
-     *
-     * @param sessionId session identifier
-     * @return success message
-     */
     @DeleteMapping("/delete/{sessionId}")
     public ResponseEntity<String> deleteChatHistory(@PathVariable String sessionId) {
         historyService.deleteHistoryBySessionId(sessionId);
@@ -106,12 +70,6 @@ public class HistoryController {
         return ResponseEntity.ok("Chat history deleted successfully");
     }
 
-    /**
-     * Delete all chat history records for a specific user.
-     *
-     * @param userId user identifier
-     * @return success message
-     */
     @DeleteMapping("/delete/user/{userId}")
     public ResponseEntity<String> deleteChatHistoryForUserId(@PathVariable String userId) {
         historyService.deleteAllHistory(userId);

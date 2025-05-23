@@ -18,9 +18,6 @@ public class HashtagService {
         this.repository = repository;
     }
 
-    /**
-     * Retrieves all hashtags in the database.
-     */
     public List<Hashtag> getAllHashtags() {
         return repository.findAll();
     }

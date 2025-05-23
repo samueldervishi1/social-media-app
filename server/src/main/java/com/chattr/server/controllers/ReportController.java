@@ -17,21 +17,11 @@ public class ReportController {
     private final ReportService reportService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor for injecting ReportService.
-     */
     public ReportController(ReportService reportService, ActivityLogService activityLogService) {
         this.reportService = reportService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Submit a new report for a post or user.
-     *
-     * @param report the report payload
-     * @return the saved report object
-     * @throws CustomException if saving fails
-     */
     @PostMapping
     public ResponseEntity<Report> reportPost(@RequestBody Report report) {
         try {

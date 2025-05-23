@@ -29,9 +29,6 @@ public class RegisterService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Registers a new user after performing validation and password encoding.
-     */
     public void createUser(User user) {
         validateUser(user);
 
@@ -46,9 +43,6 @@ public class RegisterService {
         userRepository.save(user);
     }
 
-    /**
-     * Validates the user fields and checks for duplicates.
-     */
     private void validateUser(User user) {
         if (user == null) throw new CustomException(400, "User cannot be null");
         validateEmail(user.getEmail());
@@ -84,9 +78,6 @@ public class RegisterService {
         }
     }
 
-    /**
-     * Generates a secure random salt in Base64 format.
-     */
     private String generateSalt() {
         byte[] saltBytes = new byte[SALT_LENGTH];
         SECURE_RANDOM.nextBytes(saltBytes);

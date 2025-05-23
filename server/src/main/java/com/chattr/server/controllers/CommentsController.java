@@ -18,24 +18,11 @@ public class CommentsController {
     private final CommentsService commentsService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor-based dependency injection for the CommentsService.
-     *
-     * @param commentsService service for comment-related operations
-     */
     public CommentsController(CommentsService commentsService, ActivityLogService activityLogService) {
         this.commentsService = commentsService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Retrieve a specific comment by postId and commentId.
-     *
-     * @param postId    ID of the post
-     * @param commentId ID of the comment
-     * @return the comment if found
-     * @throws CustomException if the comment does not exist
-     */
     @GetMapping("/get/{postId}/{commentId}")
     public ResponseEntity<Comment> getCommentById(@PathVariable String postId, @PathVariable String commentId) {
         Comment comment = commentsService.getCommentById(postId, commentId)
@@ -46,14 +33,6 @@ public class CommentsController {
         return ResponseEntity.ok(comment);
     }
 
-    /**
-     * Create a new comment under a specific post by a user.
-     *
-     * @param userId  ID of the user posting the comment
-     * @param postId  ID of the post the comment is for
-     * @param comment the comment body
-     * @return the newly created comment
-     */
     @PostMapping("/create/{userId}/{postId}")
     public ResponseEntity<Comment> createComment(@PathVariable String userId,
                                                  @PathVariable String postId,
@@ -63,13 +42,6 @@ public class CommentsController {
         return ResponseEntity.ok(created);
     }
 
-    /**
-     * Delete a specific comment under a post.
-     *
-     * @param postId    ID of the post
-     * @param commentId ID of the comment
-     * @return success message
-     */
     @DeleteMapping("/delete/{postId}/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable String postId,
                                                 @PathVariable String commentId) {

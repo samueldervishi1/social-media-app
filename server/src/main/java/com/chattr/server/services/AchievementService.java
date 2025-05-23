@@ -5,8 +5,6 @@ import com.chattr.server.models.User;
 import com.chattr.server.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 

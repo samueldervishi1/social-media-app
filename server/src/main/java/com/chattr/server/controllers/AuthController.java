@@ -43,9 +43,6 @@ public class AuthController {
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Logs in the user by validating nested JSON payload and issuing a token.
-     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, Object> loginRequest, HttpServletResponse response, HttpServletRequest request) {
 
@@ -111,9 +108,6 @@ public class AuthController {
         }
     }
 
-    /**
-     * Logs out the user by clearing the security context and token cookie.
-     */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) {
         SecurityContextHolder.clearContext();
@@ -132,9 +126,6 @@ public class AuthController {
         return ResponseEntity.ok("Logged out");
     }
 
-    /**
-     * Extracts user info from the JWT token stored in cookies.
-     */
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
         String token = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
@@ -164,9 +155,6 @@ public class AuthController {
         }
     }
 
-    /**
-     * Handles user registration using a TMF-style "queries" payload.
-     */
     @PostMapping("/register")
     public ResponseEntity<Error> register(@RequestBody Map<String, Object> requestBody, HttpServletRequest request) {
         try {
