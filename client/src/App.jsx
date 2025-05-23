@@ -59,29 +59,17 @@ const App = () => {
             <Route path='/about' element={<About />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/faq' element={<FAQ />} />
-            <Route
-              path='/account-deactivated'
-              element={<DeactivatedAccount />}
-            />
+            <Route path='/account-deactivated' element={<DeactivatedAccount />} />
 
             {/* Protected Routes */}
             <Route path='/home' element={<ProtectedRoute element={<Home />} />} />
             <Route path='/chat' element={<ProtectedRoute element={<ChatAI />} />} />
             <Route path='/settings' element={<ProtectedRoute element={<Settings />} />} />
             <Route path='/profile' element={<ProtectedRoute element={<Profile />} />} />
-            <Route
-              path='/notifications'
-              element={<ProtectedRoute element={<Notifications />} />}
-            />
-            <Route
-              path='/user/:username/achievements'
-              element={<ProtectedRoute element={<UserAchievements />} />}
-            />
+            <Route path='/notifications' element={<ProtectedRoute element={<Notifications />} />} />
+            <Route path='/user/:username/achievements' element={<ProtectedRoute element={<UserAchievements />} />}/>
             <Route path='/user/:username' element={<UserProfile />} />
-            <Route
-              path='/settings/profile'
-              element={<ProtectedRoute element={<UserSettings />} />}
-            />
+            <Route path='/settings/profile/:username' element={<ProtectedRoute element={<UserSettings />} />} />
 
             {/* Fallback Routes */}
             <Route path='/' element={<Navigate to='/home' replace />} />

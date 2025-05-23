@@ -110,13 +110,20 @@ public class PostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(404, "User not found"));
 
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(404, "Post not found"));
+
         if (user.getSavedPostIds() == null) {
             user.setSavedPostIds(new ArrayList<>());
         }
 
         if (!user.getSavedPostIds().contains(postId)) {
             user.getSavedPostIds().add(postId);
+            post.getSavedUserIds().add(userId);
             userRepository.save(user);
+            postRepository.save(post);
+        } else {
+            throw new CustomException(409, "Post already saved by user");
         }
     }
 

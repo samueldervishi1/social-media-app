@@ -13,6 +13,8 @@ import {
   FaFacebook,
   FaWhatsapp,
   FaLink,
+  FaBookmark,
+  FaRegBookmark,
 } from 'react-icons/fa';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { reportReasons } from '../constants/reportReasons';
@@ -33,6 +35,7 @@ const PostCard = ({
   onPostRefresh,
   isLiked: initialIsLiked = false,
   likesCount: initialLikesCount = 0,
+  savedUserIds = [],
 }) => {
   const [loggedInUsername, setLoggedInUsername] = useState(null);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
@@ -45,6 +48,7 @@ const PostCard = ({
   const [isLikeAnimating, setIsLikeAnimating] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isSaved, setIsSaved] = useState(false); // We'll update this once we have loggedInUserId
   const shareMenuRef = useRef(null);
 
   const formatDateTime = () => {
@@ -143,6 +147,7 @@ const PostCard = ({
         ]);
         setLoggedInUsername(username);
         setLoggedInUserId(userId);
+        setIsSaved(savedUserIds.includes(userId));
 
         // Once we have the userId, fetch like status and count
         if (userId) {
@@ -164,7 +169,7 @@ const PostCard = ({
     };
 
     fetchUserData();
-  }, [id]);
+  }, [id, savedUserIds]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -293,6 +298,38 @@ const PostCard = ({
     setShowShareMenu(false);
   };
 
+  const handleSavePost = async () => {
+    if (!loggedInUserId) return;
+
+    try {
+      setIsSubmitting(true);
+      // Update UI optimistically
+      setIsSaved((prev) => !prev);
+
+      const response = await axios.post(
+        `${API_URL}posts/save/${loggedInUserId}/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        // Revert save status if request failed
+        setIsSaved((prev) => !prev);
+      }
+    } catch (error) {
+      console.error('Error saving post:', error);
+      // Revert save status on error
+      setIsSaved((prev) => !prev);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -361,6 +398,16 @@ const PostCard = ({
         >
           <FaComment />
           <span>{commentsList ? commentsList.length : ''}</span>
+        </button>
+
+        <button
+          className={`${styles.actionIconButton} ${isSaved ? styles.saved : ''}`}
+          onClick={handleSavePost}
+          disabled={isSubmitting}
+          aria-label={isSaved ? 'Unsave post' : 'Save post'}
+        >
+          {isSaved ? <FaBookmark /> : <FaRegBookmark />}
+          <span>{isSaved ? 'Saved' : ''}</span>
         </button>
 
         <div className={styles.shareDropdownContainer}>

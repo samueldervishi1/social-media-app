@@ -404,6 +404,19 @@
   color: #00ba7c;
 }
 
+.actionIconButton.saved {
+  color: #1e3a8a;
+}
+
+.actionIconButton.saved:hover {
+  background-color: rgba(30, 58, 138, 0.1);
+  color: #1e3a8a;
+}
+
+.actionIconButton.saved:hover span {
+  color: #1e3a8a;
+}
+
 @keyframes likeAnimation {
   0% {
     transform: scale(1);
@@ -530,14 +543,6 @@
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  .card {
-    width: auto;
-    max-width: 750px;
-    border-radius: 20px;
-  }
-}
-
-@media screen and (min-width: 1025px) {
   .card {
     width: auto;
     max-width: 750px;

@@ -22,6 +22,7 @@ public class Post {
     private String content;
     private List<Comment> commentList = new ArrayList<>();
     private List<String> likedUserIds = new ArrayList<>();
+    private List<String> savedUserIds = new ArrayList<>();
     private String postDate;
     private String postTime;
     private Boolean deleted = false;

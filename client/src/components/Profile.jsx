@@ -229,17 +229,21 @@ const Profile = () => {
                 <div className={styles.followStats}>
                   <div className={styles.followItem}>
                     <span className={styles.followCount}>
-                      <a href="/list">{getFollowersCount()}</a>
+                      <a href='/list'>{getFollowersCount()}</a>
                     </span>
                     <span className={styles.followLabel}>
-                      <a href="/list">{getFollowersCount() === 1 ? 'follower' : 'followers'}</a>
+                      <a href='/list'>
+                        {getFollowersCount() === 1 ? 'follower' : 'followers'}
+                      </a>
                     </span>
                   </div>
                   <div className={styles.followItem}>
                     <span className={styles.followCount}>
-                      <a href="/list">{getFollowingCount()}</a>
+                      <a href='/list'>{getFollowingCount()}</a>
                     </span>
-                    <span className={styles.followLabel}><a href="/list/following">following</a></span>
+                    <span className={styles.followLabel}>
+                      <a href='/list/following'>following</a>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -323,7 +327,7 @@ const Profile = () => {
                     u/{profile.username}
                   </span>
                   <Link
-                    to='/settings/profile'
+                    to={`/settings/profile/${profile.username}`}
                     className={styles.settingsButton}
                   >
                     <FaCog /> Settings

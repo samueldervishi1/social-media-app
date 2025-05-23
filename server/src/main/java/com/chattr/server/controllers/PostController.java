@@ -80,8 +80,8 @@ public class PostController {
         return ResponseEntity.ok("Post created successfully");
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<?> savePost(@RequestParam String userId, @RequestParam String postId) {
+    @PostMapping("/save/{userId}/{postId}")
+    public ResponseEntity<?> savePost(@PathVariable String userId, @PathVariable String postId) {
         postService.savePost(userId, postId);
         activityLogService.log(userId, "POST_SAVE", "Post saved for user ID: " + userId + ".");
         return ResponseEntity.ok("Post saved");
