@@ -6,6 +6,7 @@ import CreatePost from './CreatePost';
 // Lazy loaded components for better initial page load
 const PostList = React.lazy(() => import('./PostList'));
 const PopularHashtags = React.lazy(() => import('./PopularHashtags'));
+const AnimatedCard = React.lazy(() => import('./AnimatedCard'));
 
 // Constants
 const POST_REFRESH_INTERVAL = 300000; // 5 minutes in milliseconds
@@ -84,6 +85,7 @@ const Home = () => {
 
       <div className={styles.health_check}>
         <Suspense fallback={<LoadingFallback />}>
+          <AnimatedCard />
           <PopularHashtags />
         </Suspense>
       </div>

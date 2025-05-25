@@ -341,7 +341,7 @@ const Profile = () => {
                     to={`/settings/profile/${profile.username}`}
                     className={styles.settingsButton}
                   >
-                    <FaCog /> Settings
+                    <FaCog />  Settings
                   </Link>
                 </div>
               </div>

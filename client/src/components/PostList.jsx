@@ -121,6 +121,7 @@ const PostList = ({ onPostRefresh }) => {
             username={post.username}
             imageUrl={post.imageUrl}
             onPostRefresh={onPostRefresh}
+            savedUserIds={post.savedUserIds || []}
             onPostDeleted={(deletedId) => {
               setPosts((prevPosts) =>
                 prevPosts.filter((p) => p.id !== deletedId)

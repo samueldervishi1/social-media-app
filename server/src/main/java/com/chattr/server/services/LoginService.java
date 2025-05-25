@@ -16,73 +16,60 @@ import java.time.LocalDateTime;
  */
 @Service
 public class LoginService {
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtTokenUtil jwtTokenUtil;
+	private final EmailService emailService;
+	private final AchievementService achievementService;
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final EmailService emailService;
-    private final AchievementService achievementService;
+	public LoginService(UserRepository userRepository , PasswordEncoder passwordEncoder ,
+	                    JwtTokenUtil jwtTokenUtil , EmailService emailService , AchievementService achievementService) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtTokenUtil = jwtTokenUtil;
+		this.emailService = emailService;
+		this.achievementService = achievementService;
+	}
 
-    public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                        JwtTokenUtil jwtTokenUtil, EmailService emailService, AchievementService achievementService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.emailService = emailService;
-        this.achievementService = achievementService;
-    }
+	public String login(String username , String password , String ipAddress) {
+		User user = findAndValidateUser(username);
 
-    public String login(String username, String password, String ipAddress) {
-        User user = findAndValidateUser(username);
-        verifyPassword(password, user);
+		verifyPassword(password , user);
 
-        if (ipChanged(user.getLastLoginIp(), ipAddress)) {
-            emailService.sendSecurityAlert(user.getEmail(), ipAddress);
-        }
+		if (ipChanged(user.getLastLoginIp() , ipAddress)) {
+			emailService.sendSecurityAlert(user.getEmail() , ipAddress);
+		}
 
-        updateLoginStreak(user);
+		updateLoginMetadata(user , ipAddress);
+		achievementService.evaluateAchievements(user);
+		userRepository.save(user);
 
-        // First, update login audit info (including lastLoginTime)
-        updateLoginAudit(user, ipAddress);
+		return jwtTokenUtil.generateToken(user.getUsername() , user.getId() , user.isTwoFa());
+	}
 
-        achievementService.evaluateAchievements(user);
+	private User findAndValidateUser(String username) {
+		return userRepository.findByUsername(username)
+				.filter(user -> !user.isDeleted())
+				.orElseThrow(() -> new CustomException(401 , Messages.INVALID_CREDENTIALS));
+	}
 
-        userRepository.save(user);
-        return jwtTokenUtil.generateToken(user.getUsername(), user.getId(), user.isTwoFa());
-    }
+	private void verifyPassword(String rawPassword , User user) {
+		String salted = rawPassword + user.getSalt();
+		if (!passwordEncoder.matches(salted , user.getPassword())) {
+			throw new CustomException(401 , Messages.INVALID_CREDENTIALS);
+		}
+	}
 
-    private void verifyPassword(String rawPassword, User user) {
-        String salted = rawPassword + user.getSalt();
-        if (!passwordEncoder.matches(salted, user.getPassword())) {
-            throw new CustomException(401, Messages.INVALID_CREDENTIALS);
-        }
-    }
+	private boolean ipChanged(String lastIp , String currentIp) {
+		return lastIp == null || !lastIp.equals(currentIp);
+	}
 
-    private User findAndValidateUser(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(401, Messages.INVALID_CREDENTIALS));
-
-        if (user.isDeleted()) {
-            throw new CustomException(401, Messages.INVALID_CREDENTIALS);
-        }
-
-        return user;
-    }
-
-    private boolean ipChanged(String lastIp, String currentIp) {
-        return lastIp == null || !lastIp.equals(currentIp);
-    }
-
-    private void updateLoginAudit(User user, String ipAddress) {
-        user.setLastLoginIp(ipAddress);
-        // Always set the lastLoginTime to the current time
-        user.setLastLoginTime(LocalDateTime.now());
-    }
-
-    private void updateLoginStreak(User user) {
-        if (user.getFirstTimeLoggedIn() == null) {
-            user.setFirstTimeLoggedIn(LocalDateTime.now());
-            user.setLoginStreak(1);
-        }
-    }
+	private void updateLoginMetadata(User user , String ipAddress) {
+		if (user.getFirstTimeLoggedIn() == null) {
+			user.setFirstTimeLoggedIn(LocalDateTime.now());
+			user.setLoginStreak(1);
+		}
+		user.setLastLoginIp(ipAddress);
+		user.setLastLoginTime(LocalDateTime.now());
+	}
 }

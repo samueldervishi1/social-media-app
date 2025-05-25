@@ -147,10 +147,10 @@ const PostCard = ({
         ]);
         setLoggedInUsername(username);
         setLoggedInUserId(userId);
-        setIsSaved(savedUserIds.includes(userId));
 
         // Once we have the userId, fetch like status and count
         if (userId) {
+          setIsSaved(savedUserIds.includes(userId));
           const [likeStatus, likesCountResponse] = await Promise.all([
             axios.get(`${API_URL}posts/${id}/liked/${userId}`, {
               withCredentials: true,
@@ -169,7 +169,7 @@ const PostCard = ({
     };
 
     fetchUserData();
-  }, [id, savedUserIds]);
+  }, [id]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -401,13 +401,14 @@ const PostCard = ({
         </button>
 
         <button
-          className={`${styles.actionIconButton} ${isSaved ? styles.saved : ''}`}
+          className={`${styles.actionIconButton} ${
+            isSaved ? styles.saved : ''
+          }`}
           onClick={handleSavePost}
           disabled={isSubmitting}
           aria-label={isSaved ? 'Unsave post' : 'Save post'}
         >
           {isSaved ? <FaBookmark /> : <FaRegBookmark />}
-          <span>{isSaved ? 'Saved' : ''}</span>
         </button>
 
         <div className={styles.shareDropdownContainer}>
