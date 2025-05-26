@@ -54,6 +54,12 @@ public class PostController {
         return ResponseEntity.ok(pagedPosts);
     }
 
+    @GetMapping("/{postId}/comments/count")
+    public ResponseEntity<Integer> getCommentCount(@PathVariable String postId) {
+        int count = postService.getCommentCountForPost(postId);
+        return ResponseEntity.ok(count);
+    }
+
     @GetMapping("/explore")
     public ResponseEntity<?> getExplorePosts(@RequestParam(defaultValue = "10") int limit) {
         List<Post> topPosts = postService.getTopPosts(limit);

@@ -20,10 +20,14 @@ public class AppConfig {
     @Value("${rate.limit.duration:1}")
     private long rateDuration;
 
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
+
     @Bean
     public FilterRegistrationBean<RateLimitingFilter> rateLimitingFilter() {
         FilterRegistrationBean<RateLimitingFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new RateLimitingFilter(rateLimit, rateDuration));
+        registrationBean.setFilter(new RateLimitingFilter(rateLimit, rateDuration, activeProfile));
         registrationBean.addUrlPatterns("/*"); // Apply to all endpoints
         registrationBean.setOrder(1);          // Set filter execution order (low value = higher priority)
         return registrationBean;

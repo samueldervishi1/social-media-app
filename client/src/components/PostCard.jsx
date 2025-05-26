@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import userIcon from '../assets/user.webp';
 import { getUsernameFromServer, getUserIdFromServer } from '../auth/authUtils';
@@ -48,8 +49,10 @@ const PostCard = ({
   const [isLikeAnimating, setIsLikeAnimating] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [isSaved, setIsSaved] = useState(false); // We'll update this once we have loggedInUserId
+  const [isSaved, setIsSaved] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
   const shareMenuRef = useRef(null);
+  const navigate = useNavigate();
 
   const formatDateTime = () => {
     const date = postDate || 'Unknown date';
@@ -151,17 +154,21 @@ const PostCard = ({
         // Once we have the userId, fetch like status and count
         if (userId) {
           setIsSaved(savedUserIds.includes(userId));
-          const [likeStatus, likesCountResponse] = await Promise.all([
+          const [likeStatus, likesCountResponse, commentsCountResponse] = await Promise.all([
             axios.get(`${API_URL}posts/${id}/liked/${userId}`, {
               withCredentials: true,
             }),
             axios.get(`${API_URL}like/count/${id}`, {
               withCredentials: true,
             }),
+            axios.get(`${API_URL}posts/${id}/comments/count`, {
+              withCredentials: true,
+            })
           ]);
 
           setIsLiked(likeStatus.data === 1);
           setLikesCount(likesCountResponse.data);
+          setCommentCount(commentsCountResponse.data);
         }
       } catch (error) {
         console.error('Error fetching post data:', error);
@@ -169,7 +176,7 @@ const PostCard = ({
     };
 
     fetchUserData();
-  }, [id]);
+  }, [id, savedUserIds]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -330,6 +337,24 @@ const PostCard = ({
     }
   };
 
+  const handlePostClick = () => {
+    navigate(`/post/${id}`, {
+      state: {
+        initialLikes: likesCount,
+        isInitiallyLiked: isLiked,
+        userId: loggedInUserId,
+        username: loggedInUsername,
+        content: content,
+        username: username,
+        postDate: postDate,
+        postTime: postTime,
+        commentsList: commentsList,
+        savedUserIds: savedUserIds,
+        commentCount: commentCount
+      }
+    });
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -371,13 +396,20 @@ const PostCard = ({
         </div>
       </div>
 
-      <div className={styles.content}>{content}</div>
-
-      {imageUrl && (
-        <div className={styles.imageContainer}>
-          <img src={imageUrl} alt='Post image' className={styles.image} />
-        </div>
-      )}
+      <div 
+        className={styles.content} 
+        onClick={handlePostClick}
+        style={{ cursor: 'pointer' }}
+      >
+        <p>{content}</p>
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt="Post content"
+            className={styles.postImage}
+          />
+        )}
+      </div>
 
       <div className={styles.socialActions}>
         <button
@@ -391,15 +423,15 @@ const PostCard = ({
           <span>{likesCount > 0 ? likesCount : ''}</span>
         </button>
 
-        <button
+        <a
+          onClick={handlePostClick}
           className={styles.actionIconButton}
-          onClick={() => {}}
           aria-label='Comment on post'
         >
           <FaComment />
-          <span>{commentsList ? commentsList.length : ''}</span>
-        </button>
-
+          <span>{commentCount > 0 ? commentCount : ''}</span>
+        </a>
+        
         <button
           className={`${styles.actionIconButton} ${
             isSaved ? styles.saved : ''

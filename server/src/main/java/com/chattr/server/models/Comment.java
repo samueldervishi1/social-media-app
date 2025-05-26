@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
-@Document
+@Document(collection = "comments")
 public class Comment {
 
     @Id

@@ -26,6 +26,7 @@ const UserProfile = lazy(() => import('./components/UserProfile'));
 const NotificationListener = lazy(() => import('./components/NotificationBell'));
 const Notifications = lazy(() => import('./components/Notifications'));
 const UserSettings = lazy(() => import('./components/SettingsProfile'));
+const PostDetails = lazy(() => import('./components/PostDetails'));
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -70,6 +71,7 @@ const App = () => {
             <Route path='/user/:username/achievements' element={<ProtectedRoute element={<UserAchievements />} />}/>
             <Route path='/user/:username' element={<UserProfile />} />
             <Route path='/settings/profile/:username' element={<ProtectedRoute element={<UserSettings />} />} />
+            <Route path='/post/:postId' element={<ProtectedRoute element={<PostDetails />} />} />
 
             {/* Fallback Routes */}
             <Route path='/' element={<Navigate to='/home' replace />} />

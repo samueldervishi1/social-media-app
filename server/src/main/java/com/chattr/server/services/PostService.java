@@ -151,4 +151,9 @@ public class PostService {
                     return new CustomException(String.format(Messages.USER_NOT_FOUND, username));
                 });
     }
+
+    public int getCommentCountForPost(String postId) {
+        Post post = getPostById(postId);
+        return post.getCommentList() != null ? post.getCommentList().size() : 0;
+    }
 }

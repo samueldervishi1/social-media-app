@@ -23,10 +23,12 @@ public class RateLimitingFilter implements Filter {
     private final int defaultLimit;
     private final long defaultDurationMinutes;
     private final Map<String, Bucket> userBuckets = new ConcurrentHashMap<>();
+    private final String activeProfile;
 
-    public RateLimitingFilter(int defaultLimit, long defaultDurationMinutes) {
+    public RateLimitingFilter(int defaultLimit, long defaultDurationMinutes, String activeProfile) {
         this.defaultLimit = defaultLimit;
         this.defaultDurationMinutes = defaultDurationMinutes;
+        this.activeProfile = activeProfile;
     }
 
     @Override
@@ -37,6 +39,11 @@ public class RateLimitingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+
+        if ("dev".equalsIgnoreCase(activeProfile)) {
+            chain.doFilter(request, response); // No rate limiting in dev
+            return;
+        }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
