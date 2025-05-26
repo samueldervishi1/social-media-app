@@ -52,7 +52,7 @@ export const isUserDeactivated = async (username) => {
 export const reactivateAccount = async (userId, password, confirmReactivation) => {
   try {
     const response = await axios.put(
-      `${API_URL}profiles/${userId}/reactivate`,
+      `${API_URL}profile/${userId}/reactivate`,
       {
         password,
         confirmReactivation

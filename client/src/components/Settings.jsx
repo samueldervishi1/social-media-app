@@ -154,7 +154,7 @@ const Settings = () => {
 
       try {
         await axios.put(
-          `${API_URL}profiles/${userId}/deactivate`,
+          `${API_URL}profile/${userId}/deactivate`,
           { password, reason },
           {
             withCredentials: true,

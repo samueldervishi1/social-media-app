@@ -143,6 +143,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('lastAuthCheck', Date.now());
   }, []);
 
+  const markReactivated = useCallback(() => {
+    setIsDeactivated(false);
+  }, []);
+
   const contextValue = useMemo(
     () => ({
       isAuthenticated,
@@ -152,8 +156,9 @@ export const AuthProvider = ({ children }) => {
       username,
       login,
       logout,
+      markReactivated
     }),
-    [isAuthenticated, isLoading, isDeactivated, userId, username, login, logout]
+    [isAuthenticated, isLoading, isDeactivated, userId, username, login, logout, markReactivated]
   );
 
   return (

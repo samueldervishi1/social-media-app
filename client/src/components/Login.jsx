@@ -60,7 +60,7 @@ const LoginScript = () => {
           method: 'POST',
           credentials: 'include',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(requestBody),
         });
@@ -87,29 +87,21 @@ const LoginScript = () => {
           }));
           return;
         }
-        login();
+
         console.log('Login successful - checking account status');
 
-        setTimeout(async () => {
-          try {
-            const deactivated = await isUserDeactivated(formState.username);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            if (deactivated) {
-              console.log(
-                'Account is deactivated, redirecting to deactivation page'
-              );
-              navigate('/account-deactivated');
-            } else {
-              console.log('Account is active, redirecting to home page');
-              navigate('/home');
-            }
-          } catch (error) {
-            console.error('Error checking deactivation status:', error);
-            navigate('/home');
-          } finally {
-            setFormState((prev) => ({ ...prev, loading: false }));
-          }
-        }, 100);
+        const deactivated = await isUserDeactivated(formState.username);
+
+        if (deactivated) {
+          console.log('Account is deactivated, redirecting...');
+          navigate('/account-deactivated');
+        } else {
+          login();
+          console.log('Account is active, navigating to home');
+          navigate('/home');
+        }
       } catch (error) {
         console.error('Error during login:', error);
 
@@ -125,6 +117,8 @@ const LoginScript = () => {
           error: generalErrorMessage,
           loading: false,
         }));
+      } finally {
+        setFormState((prev) => ({ ...prev, loading: false }));
       }
     },
     [formState.loading, formState.username, formState.password, login, navigate]

@@ -222,7 +222,7 @@ const ChatAI = () => {
 
         const sessionId = getSessionId();
         await axios.post(
-          `${API_URL}data-cast/${userId}/session/${sessionId}`,
+          `${API_URL}history/save/${userId}/session/${sessionId}`,
           {
             content: [{ message: userInput }],
             answer: responseData,

@@ -16,7 +16,7 @@ const DeactivatedAccount = () => {
   });
 
   const navigate = useNavigate();
-  const { login, userId } = useAuth();
+  const { login, userId, markReactivated } = useAuth();
 
   const handleReactivateSubmit = async (e) => {
     e.preventDefault();
@@ -39,6 +39,7 @@ const DeactivatedAccount = () => {
       );
 
       if (success) {
+        markReactivated();
         login();
         navigate('/home');
       } else {
