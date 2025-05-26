@@ -26,7 +26,4 @@ public class Like {
         this.postIds.add(postId);
         this.timestamp = LocalDateTime.now();
     }
-
-    public Like() {
-    }
 }

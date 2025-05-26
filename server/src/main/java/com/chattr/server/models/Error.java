@@ -47,11 +47,6 @@ public class Error {
     @Schema(description = "Application relevant detail, defined in the API or a common list.")
     @NotNull
 
-
-    public String getCode() {
-        return code;
-    }
-
     public Error reason(String reason) {
         this.reason = reason;
         return this;
@@ -59,11 +54,6 @@ public class Error {
 
     @Schema(description = "Explanation of the reason for the error which can be shown to a client user.")
     @NotNull
-
-
-    public String getReason() {
-        return reason;
-    }
 
     public Error message(String message) {
         this.message = message;
@@ -96,22 +86,12 @@ public class Error {
 
     @Schema(description = "URI of documentation describing the error.")
 
-
-    public String getReferenceError() {
-        return referenceError;
-    }
-
     public Error baseType(String baseType) {
         this.baseType = baseType;
         return this;
     }
 
     @Schema(description = "When sub-classing, this defines the super-class.")
-
-
-    public String getBaseType() {
-        return baseType;
-    }
 
     public Error schemaLocation(String schemaLocation) {
         this.schemaLocation = schemaLocation;
@@ -120,23 +100,12 @@ public class Error {
 
     @Schema(description = "A URI to a JSON-Schema file that defines additional attributes and relationships")
 
-
-    public String getSchemaLocation() {
-        return schemaLocation;
-    }
-
     public Error type(String type) {
         this.type = type;
         return this;
     }
 
     @Schema(description = "When sub-classing, this defines the sub-class entity name.")
-
-
-    public String getType() {
-        return type;
-    }
-
 
     @Override
     public boolean equals(java.lang.Object o) {

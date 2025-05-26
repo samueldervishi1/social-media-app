@@ -29,7 +29,7 @@ public class GeoLocationService {
     }
 
     private String fetchGeoJson(String ip) throws Exception {
-        URL url = new URL("http://ip-api.com/json/" + ip);
+        URL url = new URL("https://ip-api.com/json/" + ip);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 

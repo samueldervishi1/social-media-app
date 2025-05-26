@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class LoggingAspect {
 
     /**
-     * Pointcut that matches all classes within com.chattr.server package,
+     * Pointcut that matches all classes within the com.chattr.server package,
      * excluding JwtAuthenticationFilter to avoid noisy logs.
      */
     @Pointcut("within(com.chattr.server..*) && !within(com.chattr.server.utils.JwtAuthenticationFilter)")
@@ -28,7 +28,7 @@ public class LoggingAspect {
     }
 
     /**
-     * Logs entry, exit, and exceptions of all matched methods.
+     * Logs entry, exit, and exceptions to all matched methods.
      *
      * @param joinPoint the join point representing the method
      * @return the result of the method execution

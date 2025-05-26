@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
- * Service responsible for handling user-generated post reports,
+ * Service responsible for handling user-generated post-reports,
  * duplicate detection, and flagging posts as reported.
  */
 @Service

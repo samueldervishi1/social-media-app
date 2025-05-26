@@ -21,6 +21,7 @@ public class Report {
     private LocalDateTime reportTime;
 
     public Report(String id) {
+        this.id = id;
         this.id = UUID.randomUUID().toString();
     }
 }

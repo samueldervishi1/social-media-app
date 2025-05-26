@@ -3,7 +3,6 @@ package com.chattr.server.controllers;
 import com.chattr.server.models.Post;
 import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.PostService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

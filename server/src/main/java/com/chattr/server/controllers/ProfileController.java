@@ -4,8 +4,6 @@ import com.chattr.server.models.PasswordUpdateRequest;
 import com.chattr.server.models.User;
 import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.ProfileService;
-import com.chattr.server.services.UserService;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
