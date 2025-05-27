@@ -53,8 +53,7 @@ public class LoginService {
 	}
 
 	private void verifyPassword(String rawPassword , User user) {
-		String salted = rawPassword + user.getSalt();
-		if (!passwordEncoder.matches(salted , user.getPassword())) {
+		if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
 			throw new CustomException(401 , Messages.INVALID_CREDENTIALS);
 		}
 	}

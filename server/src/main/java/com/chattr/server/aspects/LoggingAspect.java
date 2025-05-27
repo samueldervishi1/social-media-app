@@ -18,22 +18,11 @@ import java.util.Arrays;
 @Slf4j
 public class LoggingAspect {
 
-    /**
-     * Pointcut that matches all classes within the com.chattr.server package,
-     * excluding JwtAuthenticationFilter to avoid noisy logs.
-     */
     @Pointcut("within(com.chattr.server..*) && !within(com.chattr.server.utils.JwtAuthenticationFilter)")
     public void applicationPackagePointcut() {
         // This method defines the pointcut, it remains empty.
     }
 
-    /**
-     * Logs entry, exit, and exceptions to all matched methods.
-     *
-     * @param joinPoint the join point representing the method
-     * @return the result of the method execution
-     * @throws Throwable if the underlying method throws any exception
-     */
     @Around("applicationPackagePointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         String method = joinPoint.getSignature().toShortString();

@@ -10,6 +10,7 @@ const SettingsProfile = () => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isTogglingPrivacy, setIsTogglingPrivacy] = useState(false);
   const [formData, setFormData] = useState({
     bio: '',
     title: '',
@@ -51,12 +52,52 @@ const SettingsProfile = () => {
     fetchProfile();
   }, [username, navigate]);
 
+  const handlePrivacyToggle = async (makePublic) => {
+    if (isTogglingPrivacy) return;
+
+    setIsTogglingPrivacy(true);
+    try {
+      const userId = await getUserIdFromServer();
+      const endpoint = makePublic ? 'public' : 'private';
+      
+      const response = await axios.post(
+        `${API_URL}profile/change/account/${endpoint}?userId=${userId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        setFormData(prev => ({
+          ...prev,
+          isPrivate: !makePublic
+        }));
+      }
+    } catch (error) {
+      console.error('Error updating privacy settings:', error);
+      setError('Failed to update privacy settings. Please try again.');
+      // Revert the checkbox state
+      setFormData(prev => ({
+        ...prev,
+        isPrivate: !prev.isPrivate
+      }));
+    } finally {
+      setIsTogglingPrivacy(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? !checked : value,
-    }));
+    if (type === 'checkbox') {
+      // For privacy toggle, call the API
+      handlePrivacyToggle(checked);
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleLinkChange = (index, value) => {
@@ -90,7 +131,11 @@ const SettingsProfile = () => {
       const userId = await getUserIdFromServer();
       const response = await axios.put(
         `${API_URL}profile/${userId}/update`,
-        formData,
+        {
+          bio: formData.bio,
+          title: formData.title,
+          links: formData.links
+        },
         {
           withCredentials: true,
         }
@@ -181,15 +226,19 @@ const SettingsProfile = () => {
         </div>
 
         <div className={styles.formGroup}>
-          <label>
+          <label className={styles.privacyLabel}>
             <input
               type='checkbox'
               name='isPrivate'
               checked={!formData.isPrivate}
               onChange={handleInputChange}
               className={styles.checkbox}
+              disabled={isTogglingPrivacy}
             />
-            Make profile public
+            <span>Make profile public</span>
+            {isTogglingPrivacy && (
+              <span className={styles.privacySpinner}>Updating...</span>
+            )}
           </label>
         </div>
 

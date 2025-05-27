@@ -8,18 +8,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
 /**
  * Service responsible for validating and registering new users.
  */
 @Service
 public class RegisterService {
-
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-    private static final int SALT_LENGTH = 16;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -32,11 +27,10 @@ public class RegisterService {
     public void createUser(User user) {
         validateUser(user);
 
-        String salt = generateSalt();
-        String encodedPassword = passwordEncoder.encode(user.getPassword() + salt);
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
-        user.setSalt(salt);
+        user.setSalt(null);
         user.setRole(user.getRole() != null ? user.getRole() : Messages.DEFAULT_ROLE);
         user.setAccountCreationDate(LocalDateTime.now());
 
@@ -76,11 +70,5 @@ public class RegisterService {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new CustomException(400, Messages.USERNAME_ALREADY_EXISTS);
         }
-    }
-
-    private String generateSalt() {
-        byte[] saltBytes = new byte[SALT_LENGTH];
-        SECURE_RANDOM.nextBytes(saltBytes);
-        return Base64.getEncoder().encodeToString(saltBytes);
     }
 }

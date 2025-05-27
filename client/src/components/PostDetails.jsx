@@ -1,7 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaHeart, FaRegHeart, FaComment, FaShare, FaArrowLeft } from 'react-icons/fa';
+import {
+  FaHeart,
+  FaRegHeart,
+  FaComment,
+  FaShare,
+  FaArrowLeft,
+  FaTwitter,
+  FaFacebook,
+  FaWhatsapp,
+  FaLink,
+} from 'react-icons/fa';
 import userIcon from '../assets/user.webp';
 import styles from '../styles/postDetails.module.css';
 
@@ -22,6 +32,9 @@ const PostDetails = () => {
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [sortedComments, setSortedComments] = useState([]);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const shareMenuRef = useRef(null);
 
   // Function to sort comments by date and time
   const sortComments = (comments) => {
@@ -68,6 +81,17 @@ const PostDetails = () => {
       setSortedComments(sortComments(post.commentList));
     }
   }, [post?.commentList]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target)) {
+        setShowShareMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLike = async () => {
     if (!post || !initialState.userId) return;
@@ -149,6 +173,59 @@ const PostDetails = () => {
     navigate(-1); // This will go back to the previous page
   };
 
+  const handleShare = (e) => {
+    e.stopPropagation();
+    setShowShareMenu(!showShareMenu);
+  };
+
+  const getShareUrl = () => {
+    return `${window.location.origin}/post/${postId}`;
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getShareUrl());
+      setCopySuccess(true);
+      setTimeout(() => {
+        setCopySuccess(false);
+        setShowShareMenu(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
+  };
+
+  const handleSocialShare = (platform) => {
+    const url = getShareUrl();
+    const text = `Check out this post: ${post?.content?.substring(0, 100)}${
+      post?.content?.length > 100 ? '...' : ''
+    }`;
+    let shareUrl;
+
+    switch (platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+          url
+        )}&text=${encodeURIComponent(text)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          url
+        )}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(
+          text + ' ' + url
+        )}`;
+        break;
+      default:
+        return;
+    }
+
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    setShowShareMenu(false);
+  };
+
   if (loading) {
     return <div className="text-center p-5">Loading...</div>;
   }
@@ -208,10 +285,53 @@ const PostDetails = () => {
             <FaComment />
             <span>{sortedComments.length} Comments</span>
           </button>
-          <button className={styles.interactionButton}>
-            <FaShare />
-            <span>Share</span>
-          </button>
+          <div className={styles.shareContainer}>
+            <button
+              className={styles.interactionButton}
+              onClick={handleShare}
+              aria-label="Share post"
+            >
+              <FaShare />
+              <span>Share</span>
+            </button>
+            {showShareMenu && (
+              <div ref={shareMenuRef} className={styles.shareMenu}>
+                <button
+                  className={styles.shareOption}
+                  onClick={() => handleSocialShare('twitter')}
+                >
+                  <FaTwitter />
+                  Share on Twitter
+                </button>
+                <button
+                  className={styles.shareOption}
+                  onClick={() => handleSocialShare('facebook')}
+                >
+                  <FaFacebook />
+                  Share on Facebook
+                </button>
+                <button
+                  className={styles.shareOption}
+                  onClick={() => handleSocialShare('whatsapp')}
+                >
+                  <FaWhatsapp />
+                  Share on WhatsApp
+                </button>
+                <button 
+                  className={styles.shareOption} 
+                  onClick={handleCopyLink}
+                >
+                  <FaLink />
+                  Copy Link
+                </button>
+                {copySuccess && (
+                  <div className={styles.copySuccess}>
+                    Link copied to clipboard!
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.commentsSection}>

@@ -49,7 +49,7 @@ const Profile = () => {
           ]);
 
         setProfile(profileResponse.data);
-        setUserPosts(postsResponse.data);
+        setUserPosts(postsResponse.data.filter(post => !post.deleted));
         setLikedPosts(likedResponse.data);
 
         if (likedResponse.data && likedResponse.data.postIds) {
@@ -60,7 +60,9 @@ const Profile = () => {
           );
           const likedPostsResults = await Promise.all(likedPostsPromises);
           setLikedPostsContent(
-            likedPostsResults.map((response) => response.data)
+            likedPostsResults
+              .map((response) => response.data)
+              .filter(post => !post.deleted)
           );
         }
       } catch (error) {
@@ -246,20 +248,20 @@ const Profile = () => {
                 <div className={styles.followStats}>
                   <div className={styles.followItem}>
                     <span className={styles.followCount}>
-                      <a href='/list'>{getFollowersCount()}</a>
+                      <a href={`/list/followers/${profile.username}`} style={{textDecoration: 'none'}}>{getFollowersCount()}</a>
                     </span>
                     <span className={styles.followLabel}>
-                      <a href='/list'>
+                      <a href={`/list/followers/${profile.username}`} style={{textDecoration: 'none'}}>
                         {getFollowersCount() === 1 ? 'follower' : 'followers'}
                       </a>
                     </span>
                   </div>
                   <div className={styles.followItem}>
                     <span className={styles.followCount}>
-                      <a href='/list'>{getFollowingCount()}</a>
+                      <a href={`/list/following/${profile.username}`} style={{textDecoration: 'none'}}>{getFollowingCount()}</a>
                     </span>
                     <span className={styles.followLabel}>
-                      <a href='/list/following'>following</a>
+                      <a href={`/list/following/${profile.username}`} style={{textDecoration: 'none'}}>following</a>
                     </span>
                   </div>
                 </div>
@@ -293,7 +295,7 @@ const Profile = () => {
                 <div className={styles.stat}>
                   <span className={styles.statLabel}>Karma</span>
                   <span className={styles.statValue}>
-                    {userPosts.length * 10}
+                    {profile.karma}
                   </span>
                 </div>
                 <div className={styles.stat}>

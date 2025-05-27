@@ -12,9 +12,11 @@ import java.util.Set;
 public class AchievementService {
 
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public AchievementService(UserRepository userRepository) {
+    public AchievementService(UserRepository userRepository, NotificationService notificationService) {
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     public void evaluateAchievements(User user) {
@@ -52,8 +54,7 @@ public class AchievementService {
 
     private void notifyUser(User user, Set<AchievementType> newAchievements) {
         for (AchievementType achievement : newAchievements) {
-            System.out.println("🎉 User " + user.getUsername() +
-                    " earned achievement: " + achievement.name());
+            notificationService.sendAchievementNotification(user.getId(), user.getUsername(), achievement);
         }
     }
 }

@@ -69,45 +69,130 @@
 .interactionBar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 16px 24px;
   border-top: 1px solid #f0f2f5;
   background-color: #ffffff;
+  gap: 8px;
 }
 
 .interactionButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
   border: none;
   background: none;
-  border-radius: 20px;
-  color: #65676b;
+  border-radius: 16px;
+  color: #536471;
   font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
+  max-width: 120px;
 }
 
-.interactionButton:hover {
-  background-color: #f0f2f5;
-  color: #1a1a1a;
+.interactionButton span {
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .interactionButton svg {
-  font-size: 1.25rem;
+  font-size: 18px;
 }
 
 .likeButton {
-  color: #1a1a1a;
+  color: #536471;
+}
+
+.likeButton:hover {
+  background-color: rgba(249, 24, 128, 0.08);
+  color: #f91880;
+}
+
+.likeButton:hover span {
+  color: #f91880;
 }
 
 .likeButton.liked {
-  color: #e41e3f;
+  color: #f91880;
+}
+
+.likeButton.liked span {
+  color: #f91880;
 }
 
 .likeButton.liked:hover {
-  background-color: rgba(228, 30, 63, 0.1);
+  background-color: rgba(249, 24, 128, 0.08);
+}
+
+.interactionButton:nth-child(2) {
+  color: #536471;
+}
+
+.interactionButton:nth-child(2):hover {
+  background-color: rgba(29, 155, 240, 0.08);
+  color: #1d9bf0;
+}
+
+.interactionButton:nth-child(2):hover span {
+  color: #1d9bf0;
+}
+
+@keyframes likeAnimation {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.likeAnimation svg {
+  animation: likeAnimation 0.45s ease-in-out;
+}
+
+.shareContainer {
+  position: relative;
+  flex: 1;
+  max-width: 120px;
+}
+
+.shareContainer .interactionButton {
+  width: 100%;
+  color: #536471;
+}
+
+.shareContainer .interactionButton:hover {
+  background-color: rgba(0, 186, 124, 0.08);
+  color: #00ba7c;
+}
+
+.shareContainer .interactionButton:hover span {
+  color: #00ba7c;
+}
+
+@media (max-width: 480px) {
+  .interactionBar {
+    padding: 12px 16px;
+  }
+
+  .interactionButton {
+    min-width: auto;
+    padding: 8px 12px;
+  }
+
+  .interactionButton span {
+    font-size: 13px;
+  }
 }
 
 .commentsSection {
@@ -120,6 +205,113 @@
   font-weight: 600;
   color: #1a1a1a;
   margin-bottom: 16px;
+}
+
+.actionIconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  color: #536471;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  min-width: 100px;
+}
+
+.actionIconButton svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.actionIconButton:hover svg {
+  transform: scale(1.1);
+}
+
+.actionIconButton span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #536471;
+}
+
+.shareMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  min-width: 220px;
+  z-index: 1000;
+  animation: slideIn 0.2s ease-out;
+  border: 1px solid #eaeaea;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shareOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.shareOption:hover {
+  background-color: #f0f7ff;
+  color: #1a73e8;
+}
+
+.shareOption svg {
+  font-size: 18px;
+}
+
+.copySuccess {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.shareContainer .interactionButton[aria-expanded="true"] {
+  background-color: #f0f7ff;
+  color: #1a73e8;
 }
 
 .commentsList {
@@ -181,22 +373,6 @@
   color: #65676b;
   font-style: italic;
   padding: 24px 0;
-}
-
-@keyframes likeAnimation {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.likeAnimation svg {
-  animation: likeAnimation 0.45s ease-in-out;
 }
 
 @media (max-width: 768px) {

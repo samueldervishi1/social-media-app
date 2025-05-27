@@ -2,6 +2,8 @@ package com.chattr.server.services;
 
 import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.User;
+import com.chattr.server.models.UserLiteDTO;
+import com.chattr.server.models.UserNetworkResponse;
 import com.chattr.server.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,4 +37,25 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public List<UserLiteDTO> getFollowers(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(404, "User not found"));
+
+        return userRepository.findByIdIn(user.getFollowers())
+                .stream()
+                .map(u -> new UserLiteDTO(u.getId(), u.getUsername(), u.getFullName()))
+                .toList();
+    }
+
+    public List<UserLiteDTO> getFollowing(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(404, "User not found"));
+
+        return userRepository.findByIdIn(user.getFollowing())
+                .stream()
+                .map(u -> new UserLiteDTO(u.getId(), u.getUsername(), u.getFullName()))
+                .toList();
+    }
+
 }

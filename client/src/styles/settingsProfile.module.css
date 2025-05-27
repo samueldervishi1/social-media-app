@@ -150,3 +150,25 @@
     border-radius: 4px;
     margin-bottom: 1rem;
 }
+
+.privacyLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.privacyLabel input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.privacyLabel input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.privacySpinner {
+    font-size: 0.875rem;
+    color: #666;
+    font-style: italic;
+}

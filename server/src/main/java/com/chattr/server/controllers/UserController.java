@@ -1,6 +1,8 @@
 package com.chattr.server.controllers;
 
 import com.chattr.server.models.User;
+import com.chattr.server.models.UserLiteDTO;
+import com.chattr.server.models.UserNetworkResponse;
 import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -18,47 +20,37 @@ public class UserController {
     private final UserService userService;
     private final ActivityLogService activityLogService;
 
-    /**
-     * Constructor for injecting UserService.
-     */
     public UserController(UserService userService, ActivityLogService activityLogService) {
         this.userService = userService;
         this.activityLogService = activityLogService;
     }
 
-    /**
-     * Fetch all registered users.
-     *
-     * @return list of users
-     */
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         activityLogService.log("anonymous", "USER_GET_ALL", "Fetching all users");
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    /**
-     * Fetch user details by username.
-     *
-     * @param username the unique username
-     * @return the user object
-     */
     @GetMapping("/lookup/{username}")
     public ResponseEntity<User> getUserInfo(@PathVariable String username) {
         activityLogService.log(username, "USER_GET_BY_USERNAME", "Fetching user info for username: " + username + " ...");
         return ResponseEntity.ok(userService.getUserInfo(username));
     }
 
-    /**
-     * Retrieve a username based on user ID.
-     *
-     * @param userId the unique user ID
-     * @return the associated username
-     */
     @GetMapping("/lookup/find")
     public ResponseEntity<String> getUsername(@RequestParam String userId) {
         String username = userService.getUsernameById(userId);
         activityLogService.log(username, "USER_GET_BY_ID", "Fetching username for user ID: " + userId);
         return ResponseEntity.ok(username);
+    }
+
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<List<UserLiteDTO>> getFollowers(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getFollowers(userId));
+    }
+
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<List<UserLiteDTO>> getFollowing(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getFollowing(userId));
     }
 }

@@ -43,6 +43,7 @@ public class PostService {
         User user = getUserByUsername(username);
         enrichPostWithMetadata(post, user);
         user.setPostCount(user.getPostCount() + 1);
+        user.setKarma(user.getKarma() + 10);
         userRepository.save(user);
 
         achievementService.evaluateAchievements(user);
