@@ -8,8 +8,8 @@ const NotificationListener = () => {
   useEffect(() => {
     startNotificationWebSocket((notif) => {
       console.log('New notification received:', notif);
-      addNotification(notif); // add to global state
-      showToast(notif.message); // show alert
+      addNotification(notif);
+      showToast(notif.message);
     });
   }, []);
 

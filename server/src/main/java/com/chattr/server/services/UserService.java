@@ -3,7 +3,6 @@ package com.chattr.server.services;
 import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.User;
 import com.chattr.server.models.UserLiteDTO;
-import com.chattr.server.models.UserNetworkResponse;
 import com.chattr.server.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 

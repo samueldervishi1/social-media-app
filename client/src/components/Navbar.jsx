@@ -71,7 +71,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setIsMenuOpen(false);
-    setIsDropdownOpen(false); // Close dropdown when route changes
+    setIsDropdownOpen(false);
   }, [location]);
 
   const handleLogout = useCallback(async () => {

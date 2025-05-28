@@ -36,14 +36,13 @@ const PostDetails = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const shareMenuRef = useRef(null);
 
-  // Function to sort comments by date and time
   const sortComments = (comments) => {
     if (!comments) return [];
     
     return [...comments].sort((a, b) => {
       const dateA = `${a.commentDate} ${a.commentTime}`;
       const dateB = `${b.commentDate} ${b.commentTime}`;
-      return new Date(dateB) - new Date(dateA); // Newest first
+      return new Date(dateB) - new Date(dateA);
     });
   };
 
@@ -55,9 +54,7 @@ const PostDetails = () => {
           withCredentials: true,
         });
         setPost(response.data);
-        // Sort comments initially
         setSortedComments(sortComments(response.data.commentList));
-        // Only set likes if not passed through navigation
         if (!initialState.initialLikes) {
           setLikesCount(response.data.likedUserIds?.length || 0);
           setIsLiked(response.data.likedUserIds?.includes(initialState.userId) || false);
@@ -75,7 +72,6 @@ const PostDetails = () => {
     }
   }, [postId, initialState.initialLikes, initialState.userId]);
 
-  // Update sorted comments whenever post.commentList changes
   useEffect(() => {
     if (post?.commentList) {
       setSortedComments(sortComments(post.commentList));
@@ -143,7 +139,6 @@ const PostDetails = () => {
       );
 
       if (response.status === 200 || response.status === 201) {
-        // Add the new comment to the list with the current date and time
         const now = new Date();
         const newCommentObj = {
           userId: initialState.userId,
@@ -153,14 +148,13 @@ const PostDetails = () => {
           commentTime: now.toTimeString().split(' ')[0]
         };
 
-        // Update post and sorted comments
         const updatedComments = [...(post.commentList || []), newCommentObj];
         setPost(prev => ({
           ...prev,
           commentList: updatedComments
         }));
         setSortedComments(sortComments(updatedComments));
-        setNewComment(''); // Clear the input
+        setNewComment('');
       }
     } catch (error) {
       console.error('Error posting comment:', error);
@@ -170,7 +164,7 @@ const PostDetails = () => {
   };
 
   const handleGoBack = () => {
-    navigate(-1); // This will go back to the previous page
+    navigate(-1);
   };
 
   const handleShare = (e) => {
@@ -337,7 +331,6 @@ const PostDetails = () => {
         <div className={styles.commentsSection}>
           <h3 className={styles.commentsHeader}>Comments</h3>
           
-          {/* Comment Form */}
           <form onSubmit={handleSubmitComment} className={styles.commentForm}>
             <input
               type="text"
@@ -355,8 +348,7 @@ const PostDetails = () => {
               {isSubmittingComment ? 'Posting...' : 'Post'}
             </button>
           </form>
-
-          {/* Comments List */}
+            
           {sortedComments.length > 0 ? (
             <div className={styles.commentsList}>
               {sortedComments.map((comment) => (

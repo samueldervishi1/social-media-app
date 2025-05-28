@@ -8,7 +8,6 @@ import {
 } from 'react-icons/fa';
 import styles from '../styles/contact.module.css';
 
-// Contact information constants
 const CONTACT_INFO = {
   email: 'support@chattr.com',
   phone: '(123) 456-7890',

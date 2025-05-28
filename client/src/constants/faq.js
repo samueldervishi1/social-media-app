@@ -4,11 +4,6 @@ export const faqs = [
     answer:
       'Chattr offers text posts and robust privacy controls to ensure a personalized and safe experience for its users.',
   },
-  // {
-  //   question: 'How can I create and join communities on Chattr?',
-  //   answer:
-  //     'On Chattr, users can create communities based on shared interests and join existing communities to participate in discussions and connect with other members.',
-  // },
   {
     question: 'How does Chattr foster a culture of kindness and respect?',
     answer:

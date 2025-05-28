@@ -69,9 +69,6 @@ const Register = () => {
         { query: '$.channelId=selfcare', operator: null },
         { query: 'A=1 | A=2 | A=3', operator: 'AND' },
         { query: '$.category=qr', operator: null },
-        { query: 'A=1 | A=2 | A=3', operator: 'AND' },
-        { query: '$.id=2DE002B9A6154288E0634E5C12C67F0B', operator: null },
-        { query: 'A=1 | A=2 | A=3', operator: 'AND' },
       ],
       queryOptions: {
         fields: '',

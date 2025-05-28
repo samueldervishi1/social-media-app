@@ -18,11 +18,11 @@ export const startNotificationWebSocket = async (onNotification) => {
     reconnectDelay: 5000,
     debug: () => {},
 
-    onConnect: (frame) => {
+    onConnect: (_frame) => {
       try {
         stompClient.subscribe(`/topic/notifications/${userId}`, (message) => {
           const payload = JSON.parse(message.body);
-          console.log('🔔 Notification:', payload);
+          console.log('Notification:', payload);
           if (onNotification) onNotification(payload);
         });
       } catch (err) {

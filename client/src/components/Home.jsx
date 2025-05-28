@@ -3,14 +3,12 @@ import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/home.module.css';
 import CreatePost from './CreatePost';
 
-// Lazy loaded components for better initial page load
 const PostList = React.lazy(() => import('./PostList'));
 const PopularHashtags = React.lazy(() => import('./PopularHashtags'));
 const AnimatedCard = React.lazy(() => import('./AnimatedCard'));
 
-// Constants
-const POST_REFRESH_INTERVAL = 300000; // 5 minutes in milliseconds
-const SNACKBAR_DURATION = 6000; // 6 seconds
+const POST_REFRESH_INTERVAL = 300000;
+const SNACKBAR_DURATION = 6000;
 
 
 const LoadingFallback = memo(() => (
@@ -34,7 +32,6 @@ NotificationSnackbar.displayName = 'NotificationSnackbar';
 
 
 const Home = () => {
-  // State for managing post list refresh and notifications
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -56,14 +53,12 @@ const Home = () => {
     });
   }, []);
 
-  // Set up automatic post refresh interval
   useEffect(() => {
     const postIntervalId = setInterval(
       handlePostRefresh,
       POST_REFRESH_INTERVAL
     );
 
-    // Cleanup interval on component unmount
     return () => clearInterval(postIntervalId);
   }, [handlePostRefresh]);
 
@@ -99,5 +94,4 @@ const Home = () => {
   );
 };
 
-// Prevent unnecessary re-renders of the entire Home component
 export default memo(Home);

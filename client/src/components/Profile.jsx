@@ -97,6 +97,7 @@ const Profile = () => {
         return <FaLink className={styles.socialIcon} />;
       }
     } catch (error) {
+      console.error('Error getting link icon:', error);
       return <FaLink className={styles.socialIcon} />;
     }
   };

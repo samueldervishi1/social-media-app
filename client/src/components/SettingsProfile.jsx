@@ -7,7 +7,7 @@ import { getUsernameFromServer, getUserIdFromServer } from '../auth/authUtils';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const SettingsProfile = () => {
-  const [profile, setProfile] = useState(null);
+  const [, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isTogglingPrivacy, setIsTogglingPrivacy] = useState(false);
@@ -77,7 +77,6 @@ const SettingsProfile = () => {
     } catch (error) {
       console.error('Error updating privacy settings:', error);
       setError('Failed to update privacy settings. Please try again.');
-      // Revert the checkbox state
       setFormData(prev => ({
         ...prev,
         isPrivate: !prev.isPrivate
@@ -90,7 +89,6 @@ const SettingsProfile = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === 'checkbox') {
-      // For privacy toggle, call the API
       handlePrivacyToggle(checked);
     } else {
       setFormData((prev) => ({

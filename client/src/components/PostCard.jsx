@@ -143,7 +143,6 @@ const PostCard = ({
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Fetch user data and post like status in parallel
         const [username, userId] = await Promise.all([
           getUsernameFromServer(),
           getUserIdFromServer(),
@@ -151,7 +150,6 @@ const PostCard = ({
         setLoggedInUsername(username);
         setLoggedInUserId(userId);
 
-        // Once we have the userId, fetch like status and count
         if (userId) {
           setIsSaved(savedUserIds.includes(userId));
           const [likeStatus, likesCountResponse, commentsCountResponse] = await Promise.all([
@@ -196,11 +194,9 @@ const PostCard = ({
     try {
       if (!loggedInUserId) return;
 
-      // Start animation and update UI optimistically
       setIsLikeAnimating(true);
       setIsLiked((prev) => !prev);
 
-      // Make the like request
       const response = await axios.post(
         `${API_URL}like/add`,
         {
@@ -216,21 +212,17 @@ const PostCard = ({
       );
 
       if (response.status === 200) {
-        // Fetch the updated like count
         const countResponse = await axios.get(`${API_URL}like/count/${id}`, {
           withCredentials: true,
         });
         setLikesCount(countResponse.data);
       } else {
-        // Revert like status if request failed
         setIsLiked((prev) => !prev);
       }
     } catch (error) {
       console.error('Error liking post:', error);
-      // Revert like status on error
       setIsLiked((prev) => !prev);
     } finally {
-      // Remove animation class after animation duration
       setTimeout(() => {
         setIsLikeAnimating(false);
       }, 450);
@@ -240,17 +232,14 @@ const PostCard = ({
   const handleShare = (e) => {
     e.stopPropagation();
     if (!showShareMenu) {
-      // Get the button position
       const buttonRect = e.currentTarget.getBoundingClientRect();
-      // Position the dropdown below the button
       const dropdown = shareMenuRef.current;
       if (dropdown) {
-        // Calculate position to align with the button
-        const left = buttonRect.left + (buttonRect.width - 220) / 2; // Center align (220 is dropdown width)
+        const left = buttonRect.left + (buttonRect.width - 220) / 2;
         dropdown.style.left = `${Math.max(
           16,
           Math.min(left, window.innerWidth - 236)
-        )}px`; // Keep within viewport with 16px margin
+        )}px`;
         dropdown.style.top = `${buttonRect.bottom}px`;
       }
     }
@@ -310,7 +299,6 @@ const PostCard = ({
 
     try {
       setIsSubmitting(true);
-      // Update UI optimistically
       setIsSaved((prev) => !prev);
 
       const response = await axios.post(
@@ -325,12 +313,10 @@ const PostCard = ({
       );
 
       if (response.status !== 200) {
-        // Revert save status if request failed
         setIsSaved((prev) => !prev);
       }
     } catch (error) {
       console.error('Error saving post:', error);
-      // Revert save status on error
       setIsSaved((prev) => !prev);
     } finally {
       setIsSubmitting(false);
@@ -345,7 +331,6 @@ const PostCard = ({
         userId: loggedInUserId,
         username: loggedInUsername,
         content: content,
-        username: username,
         postDate: postDate,
         postTime: postTime,
         commentsList: commentsList,

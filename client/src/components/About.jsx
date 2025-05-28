@@ -36,7 +36,6 @@ AboutSection.propTypes = {
 };
 
 const About = () => {
-  // Memoize the formatted sections to prevent unnecessary re-renders
   const formattedSections = useMemo(
     () =>
       aboutApp.map((section) => (
@@ -72,5 +71,4 @@ About.propTypes = {
 
 About.displayName = 'About';
 
-// Memoize the entire component to prevent unnecessary re-renders
 export default memo(About);

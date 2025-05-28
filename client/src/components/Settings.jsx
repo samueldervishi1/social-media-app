@@ -20,7 +20,6 @@ import styles from '../styles/settings.module.css';
 import { useAuth } from '../auth/AuthContext';
 import { getUserIdFromServer } from '../auth/authUtils';
 
-// Lazy load components for better initial load performance
 const About = lazy(() => import('./About'));
 const TermsAndServices = lazy(() => import('./Terms'));
 const Contact = lazy(() => import('./Contact'));
@@ -41,7 +40,6 @@ const ErrorMessage = memo(({ message }) =>
 ErrorMessage.displayName = 'ErrorMessage';
 
 const Settings = () => {
-  // State management
   const [activeSection, setActiveSection] = useState('about');
   const [deleteAccountState, setDeleteAccountState] = useState({
     password: '',
@@ -62,7 +60,6 @@ const Settings = () => {
   const [userId, setUserId] = useState(null);
   const { logout } = useAuth();
 
-  // Fetch user ID on component mount
   React.useEffect(() => {
     let isMounted = true;
 
@@ -181,7 +178,6 @@ const Settings = () => {
     [userId, logout, deactivateAccountState, clearCookies]
   );
 
-  // Memoize the sidebar menu items to prevent unnecessary re-renders
   const sidebarMenuItems = useMemo(
     () => [
       { id: 'about', icon: FaInfoCircle, label: 'About' },

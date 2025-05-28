@@ -33,4 +33,6 @@ public class Community {
         this.description = description;
         this.createTime = LocalDateTime.now();
     }
+
+    public Community(){}
 }

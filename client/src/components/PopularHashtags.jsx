@@ -5,7 +5,7 @@ import loadingGif from '../assets/377.gif';
 import styles from '../styles/PopularHashtags.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const LOADING_DELAY = 900; // Delay in milliseconds before showing content
+const LOADING_DELAY = 900;
 
 const LoadingSpinner = memo(() => (
   <div className={styles.loadingContainer}>
@@ -60,7 +60,6 @@ const PopularHashtags = () => {
   const [hashtags, setHashtags] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch hashtags on component mount
   useEffect(() => {
     let isSubscribed = true;
     const controller = new AbortController();
@@ -99,7 +98,6 @@ const PopularHashtags = () => {
     };
   }, []);
 
-  // Memoize rendered hashtags to prevent unnecessary re-renders
   const renderedHashtags = useMemo(() => {
     if (!Array.isArray(hashtags) || hashtags.length === 0) return null;
 

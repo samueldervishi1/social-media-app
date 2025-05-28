@@ -23,7 +23,6 @@ const TermSection = ({ id, title, content }) => (
 );
 
 const TermsAndServices = () => {
-  // Memoize the sections to avoid recomputing on each render
   const renderedSections = useMemo(
     () =>
       termsAndServices.map((term) => <TermSection key={term.id} {...term} />),

@@ -90,7 +90,7 @@ const LoginScript = () => {
 
         console.log('Login successful - checking account status');
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 400));
 
         const deactivated = await isUserDeactivated(formState.username);
 

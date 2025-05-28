@@ -46,7 +46,6 @@ const UserProfile = () => {
         setProfile(profileData);
         setUserPosts(postsResponse.data);
 
-        // --- fetch follow status ---
         if (profileData.id && userId !== profileData.userId) {
           const followStatusResponse = await axios.get(
             `${API_URL}follow/status`,
@@ -102,7 +101,7 @@ const UserProfile = () => {
       } catch (err) {
         console.error('Error checking follow status:', err);
       }
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, [currentUserId, profile]);
@@ -163,7 +162,6 @@ const UserProfile = () => {
     );
   }
 
-  // Don't show follow button if viewing own profile
   const showFollowButton = currentUserId !== profile.userId;
 
   return (
