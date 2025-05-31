@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, memo, Suspense } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/home.module.css';
 import CreatePost from './CreatePost';
+import Stories from './Stories';
 
 const PostList = React.lazy(() => import('./PostList'));
 const PopularHashtags = React.lazy(() => import('./PopularHashtags'));
@@ -65,6 +66,9 @@ const Home = () => {
   return (
     <div className={styles.home_container}>
       <div className={styles.main_content}>
+        <Suspense fallback={<LoadingFallback />}>
+          <Stories />
+        </Suspense>
         <CreatePost
           onPostCreated={handlePostRefresh}
           onNotification={showNotification}

@@ -11,3 +11,4 @@ ws-auth/model/model.py
 *.py
 ws-auth/.venv/pyvenv.cfg
 server/src/main/resources/application.properties
+server/uploads/stories/

@@ -45,6 +45,7 @@ public class User {
     private int likeCount;
     private int commentCount;
     private int karma;
+    private String profileColorHex;
 
     @Override
     public boolean equals(Object o) {
