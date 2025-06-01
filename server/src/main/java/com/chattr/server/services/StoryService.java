@@ -9,10 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class StoryService {
@@ -22,20 +19,29 @@ public class StoryService {
 	@Value("${story.upload-dir}")
 	private String uploadDir;
 
+	@Value("${story.allowed-extensions}")
+	private String allowedExtensionsConfig;
+
 	public StoryService(StoryRepository storyRepository) {
 		this.storyRepository = storyRepository;
 	}
 
 	public void createStory(String userId , MultipartFile[] files , String caption) {
 		try {
-			List<Story.MediaItem> mediaItems = new java.util.ArrayList<>();
+			List<Story.MediaItem> mediaItems = new ArrayList<>();
 
 			for (MultipartFile file : files) {
 				String extension = getFileExtension(file.getOriginalFilename());
 				String filename = UUID.randomUUID() + "." + extension;
-				Path destination = Paths.get(uploadDir).toAbsolutePath().resolve(filename).normalize();
-				Files.createDirectories(destination.getParent());
 
+				Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+				Path destination = uploadPath.resolve(filename).normalize();
+
+				if (!destination.startsWith(uploadPath)) {
+					throw new SecurityException("Invalid file path: outside upload directory");
+				}
+
+				Files.createDirectories(destination.getParent());
 				file.transferTo(destination.toFile());
 
 				Story.MediaItem mediaItem = new Story.MediaItem();
@@ -67,10 +73,6 @@ public class StoryService {
 		return storyRepository.findByExpiresAtAfter(LocalDateTime.now());
 	}
 
-	public List<Story> getExpiredStories() {
-		return storyRepository.findByExpiresAtBefore(LocalDateTime.now());
-	}
-
 	public Map<String, Integer> getStoryViewCount(String storyId) {
 		Story story = storyRepository.findById(storyId)
 				.orElseThrow(() -> new RuntimeException("Story not found"));
@@ -90,12 +92,28 @@ public class StoryService {
 	}
 
 	private String getFileExtension(String filename) {
-		return Objects.requireNonNull(filename)
-				.substring(filename.lastIndexOf('.') + 1)
-				.toLowerCase();
+		if (filename == null || filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
+			throw new IllegalArgumentException("Invalid filename: potential path traversal");
+		}
+		int lastDot = filename.lastIndexOf('.');
+		if (lastDot == -1 || lastDot == filename.length() - 1) {
+			throw new IllegalArgumentException("Missing or invalid file extension");
+		}
+		String ext = filename.substring(lastDot + 1).toLowerCase();
+		if (!getAllowedExtensions().contains(ext)) {
+			throw new IllegalArgumentException("Unsupported file extension: " + ext);
+		}
+		return ext;
 	}
 
 	private boolean isVideoFile(String extension) {
 		return List.of("mp4" , "mov" , "avi" , "webm" , "mkv").contains(extension.toLowerCase());
+	}
+
+	private List<String> getAllowedExtensions() {
+		return Arrays.stream(allowedExtensionsConfig.split(","))
+				.map(String::trim)
+				.map(String::toLowerCase)
+				.toList();
 	}
 }
