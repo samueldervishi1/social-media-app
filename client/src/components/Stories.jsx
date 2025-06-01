@@ -3,6 +3,7 @@ import { Avatar, CircularProgress } from '@mui/material';
 import logo from '../assets/user.webp';
 import styles from '../styles/stories.module.css';
 import StoryViewer from './StoryViewer';
+import { getUserIdFromServer } from '../auth/authUtils';
 
 const Stories = memo(() => {
     const [userStoriesMap, setUserStoriesMap] = useState(new Map());
@@ -11,6 +12,19 @@ const Stories = memo(() => {
     const [error, setError] = useState(null);
     const [viewerOpen, setViewerOpen] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
+
+    useEffect(() => {
+        const fetchCurrentUserId = async () => {
+            try {
+                const userId = await getUserIdFromServer();
+                setCurrentUserId(userId);
+            } catch (err) {
+                console.error('Error fetching current user ID:', err);
+            }
+        };
+        fetchCurrentUserId();
+    }, []);
 
     const fetchUserInfo = async (userId) => {
         try {
@@ -19,11 +33,10 @@ const Stories = memo(() => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch user info');
+                throw new Error(`Failed to fetch user info: ${response.status}`);
             }
 
             const username = await response.text();
-
             const userInfo = {
                 username,
                 profileImage: logo
@@ -37,36 +50,82 @@ const Stories = memo(() => {
         }
     };
 
+    const getStoryId = (story) => {
+        if (story._id?.$oid) return story._id.$oid;
+        return story._id || story.id;
+    };
+
+    const parseDate = (dateField) => {
+        if (dateField?.$date) return new Date(dateField.$date);
+        return new Date(dateField);
+    };
+
     useEffect(() => {
         const fetchStories = async () => {
             try {
+                
                 const response = await fetch(`${import.meta.env.VITE_API_URL}stories/feed/all`, {
                     credentials: 'include',
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch stories');
+                    throw new Error(`Failed to fetch stories: ${response.status}`);
                 }
 
                 const stories = await response.json();
 
+                if (!Array.isArray(stories)) {
+                    throw new Error('Stories response is not an array');
+                }
+                
                 const storyMap = new Map();
                 stories.forEach(story => {
-                    if (!storyMap.has(story.userId)) {
-                        storyMap.set(story.userId, {
-                            userId: story.userId,
-                            stories: []
+                    try {
+                        if (!story.userId) {
+                            console.warn('Story missing userId:', story);
+                            return;
+                        }
+
+                        const mediaItems = Array.isArray(story.media) ? story.media : [{ 
+                            path: story.mediaPath || story.path,
+                            isVideo: story.isVideo
+                        }];
+
+                        if (!mediaItems || mediaItems.length === 0) {
+                            console.warn('Story has no valid media:', story);
+                            return;
+                        }
+
+                        if (!storyMap.has(story.userId)) {
+                            storyMap.set(story.userId, {
+                                userId: story.userId,
+                                stories: []
+                            });
+                            fetchUserInfo(story.userId);
+                        }
+
+                        mediaItems.forEach((mediaItem, index) => {
+                            const mediaPath = mediaItem.path || mediaItem.mediaPath;
+                            if (!mediaPath) {
+                                console.warn('Media item missing path:', mediaItem);
+                                return;
+                            }
+
+                            const storyId = getStoryId(story);
+                            storyMap.get(story.userId).stories.push({
+                                id: `${storyId}_${index}`,
+                                mediaPath: `${import.meta.env.VITE_API_URL}${mediaPath.replace('./', '')}`,
+                                caption: story.caption,
+                                createdAt: parseDate(story.createdAt),
+                                expiresAt: parseDate(story.expiresAt),
+                                isVideo: mediaItem.isVideo,
+                                viewedBy: story.viewedBy || [],
+                                storyId: storyId
+                            });
                         });
-                        fetchUserInfo(story.userId);
+                    } catch (err) {
+                        console.error('Error processing story:', story, err);
                     }
-                    storyMap.get(story.userId).stories.push({
-                        id: story.id,
-                        mediaPath: `${import.meta.env.VITE_API_URL}${story.mediaPath.replace('./', '')}`,
-                        caption: story.caption,
-                        createdAt: new Date(story.createdAt),
-                        expiresAt: new Date(story.expiresAt),
-                        isVideo: story.video
-                    });
                 });
 
                 storyMap.forEach(userStories => {
@@ -75,6 +134,7 @@ const Stories = memo(() => {
 
                 setUserStoriesMap(storyMap);
             } catch (err) {
+                console.error('Error in fetchStories:', err);
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -90,6 +150,64 @@ const Stories = memo(() => {
     };
 
     const handleCloseViewer = () => {
+        const fetchStories = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}stories/feed/all`, {
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    const stories = await response.json();
+                    if (Array.isArray(stories)) {
+                        const storyMap = new Map();
+                        stories.forEach(story => {
+                            if (!story.userId) return;
+
+                            const mediaItems = Array.isArray(story.media) ? story.media : [{ 
+                                path: story.mediaPath || story.path,
+                                isVideo: story.isVideo
+                            }];
+
+                            if (!mediaItems || mediaItems.length === 0) return;
+
+                            if (!storyMap.has(story.userId)) {
+                                storyMap.set(story.userId, {
+                                    userId: story.userId,
+                                    stories: []
+                                });
+                            }
+
+                            mediaItems.forEach((mediaItem, index) => {
+                                const mediaPath = mediaItem.path || mediaItem.mediaPath;
+                                if (!mediaPath) return;
+
+                                const storyId = getStoryId(story);
+                                storyMap.get(story.userId).stories.push({
+                                    id: `${storyId}_${index}`,
+                                    mediaPath: `${import.meta.env.VITE_API_URL}${mediaPath.replace('./', '')}`,
+                                    caption: story.caption,
+                                    createdAt: parseDate(story.createdAt),
+                                    expiresAt: parseDate(story.expiresAt),
+                                    isVideo: mediaItem.isVideo,
+                                    viewedBy: story.viewedBy || [],
+                                    storyId: storyId
+                                });
+                            });
+                        });
+
+                        storyMap.forEach(userStories => {
+                            userStories.stories.sort((a, b) => b.createdAt - a.createdAt);
+                        });
+
+                        setUserStoriesMap(storyMap);
+                    }
+                }
+            } catch (err) {
+                console.error('Error refreshing stories:', err);
+            }
+        };
+
+        fetchStories();
         setViewerOpen(false);
         setSelectedUserId(null);
     };
@@ -103,13 +221,27 @@ const Stories = memo(() => {
     }
 
     if (error) {
-        return <div className={styles.error_message}>Error loading stories</div>;
+        return (
+            <div className={styles.error_message}>
+                Error loading stories: {error}
+                <button 
+                    onClick={() => window.location.reload()} 
+                    className={styles.retry_button}
+                >
+                    Retry
+                </button>
+            </div>
+        );
     }
 
     const userStoriesArray = Array.from(userStoriesMap.values());
 
     if (userStoriesArray.length === 0) {
-        return null;
+        return (
+            <div className={styles.no_stories}>
+                No stories available
+            </div>
+        );
     }
 
     return (
@@ -117,7 +249,9 @@ const Stories = memo(() => {
             <div className={styles.stories_container}>
                 <div className={styles.stories_wrapper}>
                     {userStoriesArray.map((userStories) => {
-                        const hasUnviewedStories = userStories.stories.some(story => !story.viewed);
+                        const hasUnviewedStories = userStories.stories.some(
+                            story => !story.viewedBy.includes(currentUserId)
+                        );
                         const userInfo = userInfoMap.get(userStories.userId);
 
                         return (
@@ -145,6 +279,7 @@ const Stories = memo(() => {
                     userInfo={userInfoMap.get(selectedUserId)}
                     open={viewerOpen}
                     onClose={handleCloseViewer}
+                    currentUserId={currentUserId}
                 />
             )}
         </>

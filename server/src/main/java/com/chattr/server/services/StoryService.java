@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -25,28 +26,36 @@ public class StoryService {
 		this.storyRepository = storyRepository;
 	}
 
-	public void createStory(String userId , MultipartFile file , String caption , boolean isVideo) {
+	public void createStory(String userId , MultipartFile[] files , String caption) {
 		try {
-			String extension = getFileExtension(file.getOriginalFilename());
-			String filename = UUID.randomUUID() + "." + extension;
+			List<Story.MediaItem> mediaItems = new java.util.ArrayList<>();
 
-			Path destination = Paths.get(uploadDir).toAbsolutePath().resolve(filename).normalize();
-			Files.createDirectories(destination.getParent());
+			for (MultipartFile file : files) {
+				String extension = getFileExtension(file.getOriginalFilename());
+				String filename = UUID.randomUUID() + "." + extension;
+				Path destination = Paths.get(uploadDir).toAbsolutePath().resolve(filename).normalize();
+				Files.createDirectories(destination.getParent());
 
-			file.transferTo(destination.toFile());
+				file.transferTo(destination.toFile());
+
+				Story.MediaItem mediaItem = new Story.MediaItem();
+				mediaItem.setPath(uploadDir + "/" + filename);
+				mediaItem.setVideo(isVideoFile(extension));
+
+				mediaItems.add(mediaItem);
+			}
 
 			Story story = new Story();
 			story.setUserId(userId);
-			story.setMediaPath(uploadDir + "/" + filename);
 			story.setCaption(caption);
-			story.setVideo(isVideo);
+			story.setMedia(mediaItems);
 			story.setCreatedAt(LocalDateTime.now());
 			story.setExpiresAt(LocalDateTime.now().plusHours(24));
 
 			storyRepository.save(story);
 
 		} catch (IOException e) {
-			throw new RuntimeException("Failed to store story file" , e);
+			throw new RuntimeException("Failed to store story files" , e);
 		}
 	}
 
@@ -62,9 +71,31 @@ public class StoryService {
 		return storyRepository.findByExpiresAtBefore(LocalDateTime.now());
 	}
 
+	public Map<String, Integer> getStoryViewCount(String storyId) {
+		Story story = storyRepository.findById(storyId)
+				.orElseThrow(() -> new RuntimeException("Story not found"));
+
+		int count = story.getViewedBy() != null ? story.getViewedBy().size() : 0;
+		return Map.of("views-count" , count);
+	}
+
+	public void markStoryAsViewed(String storyId , String viewerId) {
+		Story story = storyRepository.findById(storyId)
+				.orElseThrow(() -> new RuntimeException("Story not found"));
+
+		if (!story.getUserId().equals(viewerId) && !story.getViewedBy().contains(viewerId)) {
+			story.getViewedBy().add(viewerId);
+			storyRepository.save(story);
+		}
+	}
+
 	private String getFileExtension(String filename) {
 		return Objects.requireNonNull(filename)
 				.substring(filename.lastIndexOf('.') + 1)
 				.toLowerCase();
+	}
+
+	private boolean isVideoFile(String extension) {
+		return List.of("mp4" , "mov" , "avi" , "webm" , "mkv").contains(extension.toLowerCase());
 	}
 }
