@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { GrAchievement } from "react-icons/gr";
+import { GrAchievement } from 'react-icons/gr';
 import styles from '../styles/achievements.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -29,7 +29,7 @@ const ACHIEVEMENT_DETAILS = {
     title: 'Rising Star',
     description: 'Received 10 likes on your posts',
     icon: '⭐',
-    color: '#E91E63'
+    color: '#E91E63',
   },
   TEN_POSTS: {
     title: 'Active Poster',

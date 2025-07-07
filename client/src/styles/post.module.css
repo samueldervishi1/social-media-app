@@ -52,7 +52,9 @@
   color: #657786;
   cursor: pointer;
   font-size: 22px;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .icon:hover {
@@ -69,7 +71,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .post_the_post:hover {

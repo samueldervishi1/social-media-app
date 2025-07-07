@@ -140,7 +140,9 @@ h1 {
   border: 1px solid #ddd;
   background-color: #f8f9fa;
   color: #333;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .form_input:focus {
@@ -165,7 +167,9 @@ h1 {
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.3s, transform 0.2s;
+  transition:
+    background-color 0.3s,
+    transform 0.2s;
 }
 
 .submit_button:hover {

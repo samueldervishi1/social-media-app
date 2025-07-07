@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Snackbar, Alert } from '@mui/material';
+// import { Visibility, VisibilityOff } from '@mui/icons-material';
+// import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/register.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -84,7 +84,7 @@ const Register = () => {
     try {
       const response = await axios.post(`${API_URL}register`, fullRequestBody, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
       });
 
@@ -209,7 +209,7 @@ const Register = () => {
                 className={styles.password_toggle_icon}
                 onClick={() => setShowPassword((prev) => !prev)}
               >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
+                {/* {showPassword ? <VisibilityOff /> : <Visibility />} */}
               </span>
             </div>
             {errorMessages.password && (
@@ -238,7 +238,7 @@ const Register = () => {
         </form>
       </div>
 
-      <Snackbar
+      {/* <Snackbar
         open={snackbarOpen}
         autoHideDuration={2000}
         onClose={() => setSnackbarOpen(false)}
@@ -247,7 +247,7 @@ const Register = () => {
         <Alert severity='success' sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </div>
   );
 };

@@ -75,7 +75,9 @@ h1 {
   padding: 30px 20px;
   border-radius: 8px;
   background-color: #f8f9fa;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .contact_method:hover {

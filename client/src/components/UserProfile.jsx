@@ -78,30 +78,33 @@ const UserProfile = () => {
   }, [username]);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (!currentUserId || !profile?.id) return;
+    const interval = setInterval(
+      async () => {
+        if (!currentUserId || !profile?.id) return;
 
-      try {
-        const res = await axios.get(`${API_URL}follow/status`, {
-          params: {
-            senderId: currentUserId,
-            receiverId: profile.id,
-          },
-          withCredentials: true,
-        });
+        try {
+          const res = await axios.get(`${API_URL}follow/status`, {
+            params: {
+              senderId: currentUserId,
+              receiverId: profile.id,
+            },
+            withCredentials: true,
+          });
 
-        const newStatus = res.data.status;
-        setFollowStatus(newStatus);
+          const newStatus = res.data.status;
+          setFollowStatus(newStatus);
 
-        if (newStatus === 'ACCEPTED') {
-          setIsFollowing(true);
-        } else if (newStatus === 'REJECTED') {
-          setIsFollowing(false);
+          if (newStatus === 'ACCEPTED') {
+            setIsFollowing(true);
+          } else if (newStatus === 'REJECTED') {
+            setIsFollowing(false);
+          }
+        } catch (err) {
+          console.error('Error checking follow status:', err);
         }
-      } catch (err) {
-        console.error('Error checking follow status:', err);
-      }
-    }, 5 * 60 * 1000);
+      },
+      5 * 60 * 1000
+    );
 
     return () => clearInterval(interval);
   }, [currentUserId, profile]);

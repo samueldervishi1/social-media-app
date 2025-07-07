@@ -26,8 +26,12 @@ const Notifications = () => {
         }
 
         const [notificationsRes, followRequestsRes] = await Promise.all([
-          axios.get(`${API_URL}notifications/${userId}`, { withCredentials: true }),
-          axios.get(`${API_URL}follow/requests/pending?userId=${userId}`, { withCredentials: true }),
+          axios.get(`${API_URL}notifications/${userId}`, {
+            withCredentials: true,
+          }),
+          axios.get(`${API_URL}follow/requests/pending?userId=${userId}`, {
+            withCredentials: true,
+          }),
         ]);
 
         setNotifications(notificationsRes.data);
@@ -87,7 +91,8 @@ const Notifications = () => {
               (req) => req.receiverId === notif.userId
             );
 
-            const isAccepted = matchingRequest && acceptedRequests.includes(matchingRequest.id);
+            const isAccepted =
+              matchingRequest && acceptedRequests.includes(matchingRequest.id);
 
             return (
               <div
@@ -100,13 +105,20 @@ const Notifications = () => {
                 </span>
 
                 {notifType === 'FOLLOW' && matchingRequest && (
-                  <div style={{ marginTop: '10px', transition: 'opacity 0.3s ease-in' }}>
+                  <div
+                    style={{
+                      marginTop: '10px',
+                      transition: 'opacity 0.3s ease-in',
+                    }}
+                  >
                     {isAccepted ? (
                       <p style={{ color: 'green', fontWeight: 'bold' }}>
                         You accepted this follow request.
                       </p>
                     ) : (
-                      <div style={{ border: '1px dashed #888', padding: '10px' }}>
+                      <div
+                        style={{ border: '1px dashed #888', padding: '10px' }}
+                      >
                         <button
                           style={{
                             marginRight: '8px',
@@ -128,7 +140,7 @@ const Notifications = () => {
                             border: 'none',
                           }}
                           disabled
-                          title="Reject functionality not implemented"
+                          title='Reject functionality not implemented'
                         >
                           Reject
                         </button>

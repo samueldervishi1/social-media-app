@@ -53,7 +53,9 @@ const NotificationsPopup = ({ isOpen, onClose }) => {
   return (
     <div className={styles.popup_container} ref={popupRef}>
       <div className={styles.popup_header}>
-        <h3>Notifications | <a href="/notifications">View All</a></h3>
+        <h3>
+          Notifications | <a href='/notifications'>View All</a>
+        </h3>
         <button className={styles.close_button} onClick={onClose}>
           ×
         </button>

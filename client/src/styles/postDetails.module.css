@@ -309,7 +309,7 @@
   }
 }
 
-.shareContainer .interactionButton[aria-expanded="true"] {
+.shareContainer .interactionButton[aria-expanded='true'] {
   background-color: #f0f7ff;
   color: #1a73e8;
 }
@@ -516,4 +516,4 @@
     margin-left: 16px;
     margin-right: 16px;
   }
-} 
+}

@@ -59,7 +59,7 @@ const SettingsProfile = () => {
     try {
       const userId = await getUserIdFromServer();
       const endpoint = makePublic ? 'public' : 'private';
-      
+
       const response = await axios.post(
         `${API_URL}profile/change/account/${endpoint}?userId=${userId}`,
         {},
@@ -69,17 +69,17 @@ const SettingsProfile = () => {
       );
 
       if (response.status === 200) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          isPrivate: !makePublic
+          isPrivate: !makePublic,
         }));
       }
     } catch (error) {
       console.error('Error updating privacy settings:', error);
       setError('Failed to update privacy settings. Please try again.');
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        isPrivate: !prev.isPrivate
+        isPrivate: !prev.isPrivate,
       }));
     } finally {
       setIsTogglingPrivacy(false);
@@ -132,7 +132,7 @@ const SettingsProfile = () => {
         {
           bio: formData.bio,
           title: formData.title,
-          links: formData.links
+          links: formData.links,
         },
         {
           withCredentials: true,

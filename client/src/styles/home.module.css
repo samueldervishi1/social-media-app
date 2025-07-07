@@ -15,11 +15,11 @@
   box-sizing: border-box;
 }
 
-.main_content::-webkit-scrollbar{
+.main_content::-webkit-scrollbar {
   display: none;
 }
 
-.loading_container{
+.loading_container {
   text-align: center;
 }
 
@@ -30,7 +30,7 @@
   box-sizing: border-box;
   margin-top: 16px;
 }
-.health_check::-webkit-scrollbar{
+.health_check::-webkit-scrollbar {
   display: none;
 }
 

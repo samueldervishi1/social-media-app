@@ -152,17 +152,18 @@ const PostCard = ({
 
         if (userId) {
           setIsSaved(savedUserIds.includes(userId));
-          const [likeStatus, likesCountResponse, commentsCountResponse] = await Promise.all([
-            axios.get(`${API_URL}posts/${id}/liked/${userId}`, {
-              withCredentials: true,
-            }),
-            axios.get(`${API_URL}like/count/${id}`, {
-              withCredentials: true,
-            }),
-            axios.get(`${API_URL}posts/${id}/comments/count`, {
-              withCredentials: true,
-            })
-          ]);
+          const [likeStatus, likesCountResponse, commentsCountResponse] =
+            await Promise.all([
+              axios.get(`${API_URL}posts/${id}/liked/${userId}`, {
+                withCredentials: true,
+              }),
+              axios.get(`${API_URL}like/count/${id}`, {
+                withCredentials: true,
+              }),
+              axios.get(`${API_URL}posts/${id}/comments/count`, {
+                withCredentials: true,
+              }),
+            ]);
 
           setIsLiked(likeStatus.data === 1);
           setLikesCount(likesCountResponse.data);
@@ -335,8 +336,8 @@ const PostCard = ({
         postTime: postTime,
         commentsList: commentsList,
         savedUserIds: savedUserIds,
-        commentCount: commentCount
-      }
+        commentCount: commentCount,
+      },
     });
   };
 
@@ -381,18 +382,14 @@ const PostCard = ({
         </div>
       </div>
 
-      <div 
-        className={styles.content} 
+      <div
+        className={styles.content}
         onClick={handlePostClick}
         style={{ cursor: 'pointer' }}
       >
         <p>{content}</p>
         {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Post content"
-            className={styles.postImage}
-          />
+          <img src={imageUrl} alt='Post content' className={styles.postImage} />
         )}
       </div>
 
@@ -416,7 +413,7 @@ const PostCard = ({
           <FaComment />
           <span>{commentCount > 0 ? commentCount : ''}</span>
         </a>
-        
+
         <button
           className={`${styles.actionIconButton} ${
             isSaved ? styles.saved : ''

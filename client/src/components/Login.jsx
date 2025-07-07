@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+// import { Visibility, VisibilityOff } from '@mui/icons-material';
 import customLoadingGif from '../assets/377.gif';
 import styles from '../styles/login.module.css';
 
@@ -192,7 +192,7 @@ const LoginScript = () => {
               className={styles.password_toggle_icon}
               onClick={togglePasswordVisibility}
             >
-              {formState.showPassword ? <VisibilityOff /> : <Visibility />}
+              {/* {formState.showPassword ? <VisibilityOff /> : <Visibility />} */}
             </span>
           </div>
 

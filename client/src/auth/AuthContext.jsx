@@ -129,11 +129,14 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkSession();
-    const intervalId = setInterval(() => {
-      if (isAuthenticated) {
-        checkSession();
-      }
-    }, 15 * 60 * 1000);
+    const intervalId = setInterval(
+      () => {
+        if (isAuthenticated) {
+          checkSession();
+        }
+      },
+      15 * 60 * 1000
+    );
 
     return () => clearInterval(intervalId);
   }, [isAuthenticated]);
@@ -156,9 +159,18 @@ export const AuthProvider = ({ children }) => {
       username,
       login,
       logout,
-      markReactivated
+      markReactivated,
     }),
-    [isAuthenticated, isLoading, isDeactivated, userId, username, login, logout, markReactivated]
+    [
+      isAuthenticated,
+      isLoading,
+      isDeactivated,
+      userId,
+      username,
+      login,
+      logout,
+      markReactivated,
+    ]
   );
 
   return (

@@ -49,12 +49,12 @@ export const NotificationProvider = ({ children }) => {
 
   return (
     <NotificationContext.Provider
-      value={{ 
-        notifications, 
-        addNotification, 
-        markAsRead, 
+      value={{
+        notifications,
+        addNotification,
+        markAsRead,
         unreadCount,
-        setNotifications 
+        setNotifications,
       }}
     >
       {children}

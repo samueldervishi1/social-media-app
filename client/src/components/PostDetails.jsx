@@ -22,13 +22,15 @@ const PostDetails = () => {
   const { postId } = useParams();
   const location = useLocation();
   const initialState = location.state || {};
-  
+
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLikeAnimating, setIsLikeAnimating] = useState(false);
   const [likesCount, setLikesCount] = useState(initialState.initialLikes || 0);
-  const [isLiked, setIsLiked] = useState(initialState.isInitiallyLiked || false);
+  const [isLiked, setIsLiked] = useState(
+    initialState.isInitiallyLiked || false
+  );
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [sortedComments, setSortedComments] = useState([]);
@@ -38,7 +40,7 @@ const PostDetails = () => {
 
   const sortComments = (comments) => {
     if (!comments) return [];
-    
+
     return [...comments].sort((a, b) => {
       const dateA = `${a.commentDate} ${a.commentTime}`;
       const dateB = `${b.commentDate} ${b.commentTime}`;
@@ -57,7 +59,9 @@ const PostDetails = () => {
         setSortedComments(sortComments(response.data.commentList));
         if (!initialState.initialLikes) {
           setLikesCount(response.data.likedUserIds?.length || 0);
-          setIsLiked(response.data.likedUserIds?.includes(initialState.userId) || false);
+          setIsLiked(
+            response.data.likedUserIds?.includes(initialState.userId) || false
+          );
         }
       } catch (err) {
         setError('Failed to load post details');
@@ -80,7 +84,10 @@ const PostDetails = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target)) {
+      if (
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(event.target)
+      ) {
         setShowShareMenu(false);
       }
     };
@@ -109,8 +116,8 @@ const PostDetails = () => {
       );
 
       if (response.status === 200) {
-        setIsLiked(prev => !prev);
-        setLikesCount(prev => prev + (isLiked ? -1 : 1));
+        setIsLiked((prev) => !prev);
+        setLikesCount((prev) => prev + (isLiked ? -1 : 1));
       }
     } catch (error) {
       console.error('Error toggling like:', error);
@@ -123,7 +130,8 @@ const PostDetails = () => {
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || !initialState.userId || isSubmittingComment) return;
+    if (!newComment.trim() || !initialState.userId || isSubmittingComment)
+      return;
 
     setIsSubmittingComment(true);
     try {
@@ -145,13 +153,13 @@ const PostDetails = () => {
           content: newComment,
           id: response.data.id || Date.now().toString(),
           commentDate: now.toISOString().split('T')[0],
-          commentTime: now.toTimeString().split(' ')[0]
+          commentTime: now.toTimeString().split(' ')[0],
         };
 
         const updatedComments = [...(post.commentList || []), newCommentObj];
-        setPost(prev => ({
+        setPost((prev) => ({
           ...prev,
-          commentList: updatedComments
+          commentList: updatedComments,
         }));
         setSortedComments(sortComments(updatedComments));
         setNewComment('');
@@ -221,15 +229,15 @@ const PostDetails = () => {
   };
 
   if (loading) {
-    return <div className="text-center p-5">Loading...</div>;
+    return <div className='text-center p-5'>Loading...</div>;
   }
 
   if (error) {
-    return <div className="text-center p-5 text-danger">{error}</div>;
+    return <div className='text-center p-5 text-danger'>{error}</div>;
   }
 
   if (!post) {
-    return <div className="text-center p-5">Post not found</div>;
+    return <div className='text-center p-5'>Post not found</div>;
   }
 
   return (
@@ -259,14 +267,14 @@ const PostDetails = () => {
           {post.imageUrl && (
             <img
               src={post.imageUrl}
-              alt="Post content"
+              alt='Post content'
               className={styles.postImage}
             />
           )}
         </div>
 
         <div className={styles.interactionBar}>
-          <button 
+          <button
             className={`${styles.interactionButton} ${styles.likeButton} 
               ${isLiked ? styles.liked : ''} 
               ${isLikeAnimating ? styles.likeAnimation : ''}`}
@@ -283,7 +291,7 @@ const PostDetails = () => {
             <button
               className={styles.interactionButton}
               onClick={handleShare}
-              aria-label="Share post"
+              aria-label='Share post'
             >
               <FaShare />
               <span>Share</span>
@@ -311,10 +319,7 @@ const PostDetails = () => {
                   <FaWhatsapp />
                   Share on WhatsApp
                 </button>
-                <button 
-                  className={styles.shareOption} 
-                  onClick={handleCopyLink}
-                >
+                <button className={styles.shareOption} onClick={handleCopyLink}>
                   <FaLink />
                   Copy Link
                 </button>
@@ -330,25 +335,25 @@ const PostDetails = () => {
 
         <div className={styles.commentsSection}>
           <h3 className={styles.commentsHeader}>Comments</h3>
-          
+
           <form onSubmit={handleSubmitComment} className={styles.commentForm}>
             <input
-              type="text"
+              type='text'
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Write a comment..."
+              placeholder='Write a comment...'
               className={styles.commentInput}
               disabled={isSubmittingComment}
             />
             <button
-              type="submit"
+              type='submit'
               className={styles.commentSubmitButton}
               disabled={!newComment.trim() || isSubmittingComment}
             >
               {isSubmittingComment ? 'Posting...' : 'Post'}
             </button>
           </form>
-            
+
           {sortedComments.length > 0 ? (
             <div className={styles.commentsList}>
               {sortedComments.map((comment) => (
@@ -356,15 +361,19 @@ const PostDetails = () => {
                   <div className={styles.commentHeader}>
                     <img
                       src={userIcon}
-                      alt="User"
+                      alt='User'
                       className={styles.commentAvatar}
                     />
                     <div className={styles.commentInfo}>
                       <h4 className={styles.commentUsername}>
-                        {comment.userId === initialState.userId ? initialState.username : 'User'}
+                        {comment.userId === initialState.userId
+                          ? initialState.username
+                          : 'User'}
                       </h4>
                       <span className={styles.commentTime}>
-                        {comment.commentDate} {comment.commentTime && comment.commentTime.split('.')[0]}
+                        {comment.commentDate}{' '}
+                        {comment.commentTime &&
+                          comment.commentTime.split('.')[0]}
                       </span>
                     </div>
                   </div>
@@ -381,4 +390,4 @@ const PostDetails = () => {
   );
 };
 
-export default PostDetails; 
+export default PostDetails;

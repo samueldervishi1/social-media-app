@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, memo, Suspense } from 'react';
-import { Snackbar, Alert } from '@mui/material';
+// import { Snackbar, Alert } from '@mui/material';
 import styles from '../styles/home.module.css';
 import CreatePost from './CreatePost';
 import Stories from './Stories';
@@ -11,26 +11,25 @@ const AnimatedCard = React.lazy(() => import('./AnimatedCard'));
 const POST_REFRESH_INTERVAL = 300000;
 const SNACKBAR_DURATION = 6000;
 
-
 const LoadingFallback = memo(() => (
   <div className={styles.loading_container}>Loading...</div>
 ));
 LoadingFallback.displayName = 'LoadingFallback';
 
 const NotificationSnackbar = memo(({ open, message, onClose }) => (
-  <Snackbar
-    open={open}
-    autoHideDuration={SNACKBAR_DURATION}
-    onClose={onClose}
-    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-  >
-    <Alert onClose={onClose} severity='info' sx={{ width: '100%' }}>
-      {message}
-    </Alert>
-  </Snackbar>
+  //<Snackbar
+  // open={open}
+  // autoHideDuration={SNACKBAR_DURATION}
+  // onClose={onClose}
+  // anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+  //>
+  //{/* <Alert onClose={onClose} severity='info' sx={{ width: '100%' }}>
+  //{message}
+  //</Alert> */}
+  //</Snackbar>
+  <div className={styles.snackbar_container}>{message}</div>
 ));
 NotificationSnackbar.displayName = 'NotificationSnackbar';
-
 
 const Home = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);

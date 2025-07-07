@@ -5,7 +5,6 @@ export const getUserInfo = async () => {
   try {
     const response = await axios.get(`${API_URL}auth/me`, {
       withCredentials: true,
-      
     });
     return response.data;
   } catch (error) {
@@ -29,11 +28,10 @@ export const getCompleteUserProfile = async (username) => {
     console.error('Username is required to fetch complete profile');
     return null;
   }
-  
+
   try {
     const response = await axios.get(`${API_URL}users/lookup/${username}`, {
       withCredentials: true,
-      
     });
     return response.data;
   } catch (error) {
@@ -49,19 +47,23 @@ export const isUserDeactivated = async (username) => {
   return profile.deactivated === true || profile.deactivated === 'true';
 };
 
-export const reactivateAccount = async (userId, password, confirmReactivation) => {
+export const reactivateAccount = async (
+  userId,
+  password,
+  confirmReactivation
+) => {
   try {
     const response = await axios.put(
       `${API_URL}profile/${userId}/reactivate`,
       {
         password,
-        confirmReactivation
+        confirmReactivation,
       },
       {
         withCredentials: true,
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       }
     );
     return response.status === 200;

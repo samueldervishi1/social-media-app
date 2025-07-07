@@ -135,8 +135,10 @@
 
 .glowing_button:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(30, 144, 255, 0.5),
-    0 0 40px rgba(30, 144, 255, 0.3), inset 0 0 15px rgba(30, 144, 255, 0.4);
+  box-shadow:
+    0 8px 25px rgba(30, 144, 255, 0.5),
+    0 0 40px rgba(30, 144, 255, 0.3),
+    inset 0 0 15px rgba(30, 144, 255, 0.4);
   letter-spacing: 1px;
   background: linear-gradient(135deg, #4169e1, #1e90ff);
   animation: buttonPulseAndGlow 1.5s infinite;
@@ -147,20 +149,38 @@
   0% {
     transform: translate(-50%, -50%) scale(0);
     opacity: 1;
-    box-shadow: 0 0 3px #fff, 0 0 6px #17ff00, 0 0 9px #00ff95, 0 0 12px #00d9ff,
-      0 0 15px #001aff, 0 0 18px #a200ff, 0 0 21px #ff0055;
+    box-shadow:
+      0 0 3px #fff,
+      0 0 6px #17ff00,
+      0 0 9px #00ff95,
+      0 0 12px #00d9ff,
+      0 0 15px #001aff,
+      0 0 18px #a200ff,
+      0 0 21px #ff0055;
   }
   50% {
     transform: translate(-50%, -50%) scale(15);
     opacity: 0.5;
-    box-shadow: 0 0 6px #fff, 0 0 12px #17ff00, 0 0 18px #00ff95,
-      0 0 24px #00d9ff, 0 0 30px #001aff, 0 0 36px #a200ff, 0 0 42px #ff0055;
+    box-shadow:
+      0 0 6px #fff,
+      0 0 12px #17ff00,
+      0 0 18px #00ff95,
+      0 0 24px #00d9ff,
+      0 0 30px #001aff,
+      0 0 36px #a200ff,
+      0 0 42px #ff0055;
   }
   100% {
     transform: translate(-50%, -50%) scale(30);
     opacity: 0;
-    box-shadow: 0 0 9px #fff, 0 0 18px #17ff00, 0 0 27px #00ff95,
-      0 0 36px #00d9ff, 0 0 45px #001aff, 0 0 54px #a200ff, 0 0 63px #ff0055;
+    box-shadow:
+      0 0 9px #fff,
+      0 0 18px #17ff00,
+      0 0 27px #00ff95,
+      0 0 36px #00d9ff,
+      0 0 45px #001aff,
+      0 0 54px #a200ff,
+      0 0 63px #ff0055;
   }
 }
 
@@ -182,14 +202,18 @@
   0%,
   100% {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(30, 144, 255, 0.5),
-      0 0 40px rgba(30, 144, 255, 0.3), inset 0 0 15px rgba(30, 144, 255, 0.4);
+    box-shadow:
+      0 8px 25px rgba(30, 144, 255, 0.5),
+      0 0 40px rgba(30, 144, 255, 0.3),
+      inset 0 0 15px rgba(30, 144, 255, 0.4);
     filter: hue-rotate(0deg);
   }
   50% {
     transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 12px 30px rgba(30, 144, 255, 0.6),
-      0 0 50px rgba(30, 144, 255, 0.4), inset 0 0 20px rgba(30, 144, 255, 0.5);
+    box-shadow:
+      0 12px 30px rgba(30, 144, 255, 0.6),
+      0 0 50px rgba(30, 144, 255, 0.4),
+      inset 0 0 20px rgba(30, 144, 255, 0.5);
     filter: hue-rotate(90deg);
   }
 }

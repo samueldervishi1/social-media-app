@@ -204,7 +204,7 @@ const ChatAI = () => {
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -230,7 +230,7 @@ const ChatAI = () => {
           {
             withCredentials: true,
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
           }
         );
@@ -280,35 +280,38 @@ const ChatAI = () => {
     for (let i = 0; i < chunks.length; i += batchSize) {
       const batch = chunks.slice(i, i + batchSize);
 
-      setTimeout(() => {
-        currentContent += batch.join('');
-        const formattedContent = formatCodeBlocks(currentContent);
+      setTimeout(
+        () => {
+          currentContent += batch.join('');
+          const formattedContent = formatCodeBlocks(currentContent);
 
-        setChatMessages((prevMessages) => {
-          const updatedMessages = [...prevMessages];
-          const lastIndex = updatedMessages.length - 1;
+          setChatMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages];
+            const lastIndex = updatedMessages.length - 1;
 
-          if (lastIndex >= 0 && !updatedMessages[lastIndex].isUser) {
-            updatedMessages[lastIndex].content = formattedContent;
-            updatedMessages[lastIndex].timestamp = timestamp;
-          } else {
-            updatedMessages.push({
-              content: formattedContent,
-              isUser: false,
-              timestamp: timestamp,
-            });
+            if (lastIndex >= 0 && !updatedMessages[lastIndex].isUser) {
+              updatedMessages[lastIndex].content = formattedContent;
+              updatedMessages[lastIndex].timestamp = timestamp;
+            } else {
+              updatedMessages.push({
+                content: formattedContent,
+                isUser: false,
+                timestamp: timestamp,
+              });
+            }
+
+            return updatedMessages;
+          });
+
+          if (i + batchSize >= chunks.length) {
+            setIsThinking(false);
+            setIsTypingFinished(true);
+            setIsProcessingResponse(false);
+            scrollToBottom();
           }
-
-          return updatedMessages;
-        });
-
-        if (i + batchSize >= chunks.length) {
-          setIsThinking(false);
-          setIsTypingFinished(true);
-          setIsProcessingResponse(false);
-          scrollToBottom();
-        }
-      }, interval * (i / batchSize));
+        },
+        interval * (i / batchSize)
+      );
     }
   };
 

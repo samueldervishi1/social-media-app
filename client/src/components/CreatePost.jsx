@@ -4,7 +4,7 @@ import { openDB } from 'idb';
 import { getUsernameFromServer } from '../auth/authUtils';
 import { MdDelete } from 'react-icons/md';
 import { LuSendHorizontal } from 'react-icons/lu';
-import { Snackbar, Alert, CircularProgress } from '@mui/material';
+// import { Snackbar, Alert, CircularProgress } from '@mui/material';
 import styles from '../styles/post.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -72,7 +72,7 @@ const PostForm = ({ onPostCreated }) => {
           {
             withCredentials: true,
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
           }
         );
@@ -183,14 +183,19 @@ const PostForm = ({ onPostCreated }) => {
             title='Share your post'
           >
             {isSubmitting ? (
-              <CircularProgress size={18} color='inherit' />
+              //  <CircularProgress size={18} color='inherit' />
+              <div className={styles.loading_dots}>
+                <div className={styles.dot}></div>
+                <div className={styles.dot}></div>
+                <div className={styles.dot}></div>
+              </div>
             ) : (
               <LuSendHorizontal />
             )}
           </button>
         </div>
       </div>
-      <Snackbar
+      {/* <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
@@ -203,7 +208,7 @@ const PostForm = ({ onPostCreated }) => {
         >
           {snackbar.message}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </form>
   );
 };

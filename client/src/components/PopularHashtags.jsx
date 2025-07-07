@@ -21,7 +21,6 @@ const LoadingSpinner = memo(() => (
 
 LoadingSpinner.displayName = 'LoadingSpinner';
 
-
 const HashtagItem = memo(({ name, link, views }) => (
   <div className={styles.hashtagItem}>
     <a

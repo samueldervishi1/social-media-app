@@ -1,196 +1,196 @@
 .modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .viewer_container {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    height: 100vh;
-    max-height: 700px;
-    background-color: #000;
-    outline: none;
-    user-select: none;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 100vh;
+  max-height: 700px;
+  background-color: #000;
+  outline: none;
+  user-select: none;
 }
 
 .progress_container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    gap: 2px;
-    padding: 12px;
-    z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 2px;
+  padding: 12px;
+  z-index: 2;
 }
 
 .progress_bar_container {
-    flex: 1;
-    height: 2px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-    overflow: hidden;
+  flex: 1;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 .progress_bar {
-    height: 100%;
-    background-color: #fff;
-    transition: width 0.1s linear;
+  height: 100%;
+  background-color: #fff;
+  transition: width 0.1s linear;
 }
 
 .close_button {
-    position: absolute !important;
-    top: 12px;
-    right: 12px;
-    color: #fff !important;
-    z-index: 2;
+  position: absolute !important;
+  top: 12px;
+  right: 12px;
+  color: #fff !important;
+  z-index: 2;
 }
 
 .story_content {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .story_media {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .story_header {
-    position: absolute;
-    top: 40px;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    z-index: 2;
-    padding: 12px;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+  padding: 12px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
 }
 
 .user_avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
 }
 
 .story_username {
-    color: #fff;
-    font-weight: 600;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    margin-right: auto;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  margin-right: auto;
 }
 
 .story_timestamp {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 12px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .views_button {
-    color: #fff !important;
-    margin-left: 8px !important;
+  color: #fff !important;
+  margin-left: 8px !important;
 }
 
 .story_caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px;
-    color: #fff;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
-    font-size: 14px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    z-index: 2;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  z-index: 2;
 }
 
 .viewers_list {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.9);
-    color: #fff;
-    z-index: 3;
-    padding: 20px;
-    max-height: 50%;
-    overflow-y: auto;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  z-index: 3;
+  padding: 20px;
+  max-height: 50%;
+  overflow-y: auto;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 
 .viewers_list h3 {
-    margin: 0 0 16px;
-    font-size: 16px;
-    color: #fff;
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: #fff;
 }
 
 .viewer_item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-    padding: 8px;
-    border-radius: 8px;
-    transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
 }
 
 .viewer_item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .viewer_avatar {
-    width: 32px !important;
-    height: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
 }
 
 .viewer_username {
-    font-size: 14px;
-    color: #fff;
+  font-size: 14px;
+  color: #fff;
 }
 
 .no_viewers {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6);
-    padding: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 20px;
 }
 
 .nav_button {
-    position: absolute !important;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #fff !important;
-    background-color: rgba(0, 0, 0, 0.5) !important;
-    z-index: 2;
+  position: absolute !important;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  z-index: 2;
 }
 
 .prev_button {
-    left: 12px;
+  left: 12px;
 }
 
 .next_button {
-    right: 12px;
+  right: 12px;
 }
 
 @media (max-width: 480px) {
-    .viewer_container {
-        width: 100vw;
-        height: 100vh;
-        max-width: none;
-        max-height: none;
-    }
+  .viewer_container {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+  }
 
-    .viewers_list {
-        max-height: 70%;
-    }
+  .viewers_list {
+    max-height: 70%;
+  }
 }

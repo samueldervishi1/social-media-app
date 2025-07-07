@@ -136,9 +136,15 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(0.8); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .hamburger {
@@ -156,7 +162,9 @@
   height: 3px;
   background-color: #555;
   border-radius: 2px;
-  transition: transform 0.3s ease-in-out, opacity 0.2s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    opacity 0.2s ease-in-out;
   transform-origin: center;
 }
 
@@ -422,7 +430,7 @@
   color: #999;
 }
 
-.search_input:not([type="submit"]):not([type="button"]):not([type="reset"]) {
+.search_input:not([type='submit']):not([type='button']):not([type='reset']) {
   border: none !important;
   padding: 0 32px 0 12px !important;
   height: 28px !important;
@@ -519,7 +527,7 @@
     max-width: none;
     margin: 10px 0;
   }
-  
+
   .search_results {
     position: fixed;
     top: 60px;

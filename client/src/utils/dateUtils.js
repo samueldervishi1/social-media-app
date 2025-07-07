@@ -16,4 +16,4 @@ export const formatRelativeTime = (timestamp, now = Date.now()) => {
   } else {
     return 'Just now';
   }
-}; 
+};

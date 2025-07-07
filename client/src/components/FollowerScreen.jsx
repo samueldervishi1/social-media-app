@@ -11,7 +11,7 @@ const FollowerScreen = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { type,  } = useParams();
+  const { type } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {

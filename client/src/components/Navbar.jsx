@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import axios from 'axios';
 import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
+// import Box from '@mui/material/Box';
+// import Avatar from '@mui/material/Avatar';
 import { GoHome } from 'react-icons/go';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
@@ -176,7 +176,7 @@ const Navbar = () => {
                 onClick={toggleDropdown}
                 className={styles.profile_button}
               >
-                <Avatar className={styles.avatar} />
+                {/* <Avatar className={styles.avatar} /> */}
               </button>
 
               <div
@@ -200,7 +200,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            <Box sx={{ marginLeft: 2 }}>
+            {/* <Box sx={{ marginLeft: 2 }}>
               <a
                 style={{ textDecoration: 'none', color: 'black' }}
                 href='/home'
@@ -216,7 +216,7 @@ const Navbar = () => {
                   𝓒𝓱𝓪𝓽𝓽𝓻
                 </p>
               </a>
-            </Box>
+            </Box> */}
           </div>
 
           <div className={styles.search_container} ref={searchRef}>

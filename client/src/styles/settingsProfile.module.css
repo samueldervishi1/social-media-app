@@ -1,174 +1,178 @@
 .settingsProfileContainer {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 2rem;
-    text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .settingsForm {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .formGroup label {
-    font-weight: 500;
-    color: #555;
+  font-weight: 500;
+  color: #555;
 }
 
-.input, .textArea {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.2s ease;
+.input,
+.textArea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
 }
 
-.input:focus, .textArea:focus {
-    border-color: #0066cc;
-    outline: none;
+.input:focus,
+.textArea:focus {
+  border-color: #0066cc;
+  outline: none;
 }
 
 .textArea {
-    min-height: 100px;
-    resize: vertical;
+  min-height: 100px;
+  resize: vertical;
 }
 
 .linksContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .linkInput {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .removeLinkButton {
-    padding: 0.5rem;
-    background: none;
-    border: none;
-    color: #dc3545;
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
 }
 
 .removeLinkButton:hover {
-    background-color: rgba(220, 53, 69, 0.1);
+  background-color: rgba(220, 53, 69, 0.1);
 }
 
 .addLinkButton {
-    padding: 0.5rem;
-    background: none;
-    border: 2px dashed #ddd;
-    border-radius: 4px;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  padding: 0.5rem;
+  background: none;
+  border: 2px dashed #ddd;
+  border-radius: 4px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .addLinkButton:hover {
-    border-color: #0066cc;
-    color: #0066cc;
+  border-color: #0066cc;
+  color: #0066cc;
 }
 
 .checkbox {
-    margin-right: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .buttonGroup {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
 }
 
-.saveButton, .cancelButton {
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+.saveButton,
+.cancelButton {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.saveButton:disabled, .cancelButton:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+.saveButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .saveButton {
-    background-color: #0066cc;
-    color: white;
+  background-color: #0066cc;
+  color: white;
 }
 
 .saveButton:hover:not(:disabled) {
-    background-color: #0052a3;
+  background-color: #0052a3;
 }
 
 .cancelButton {
-    background-color: #eee;
-    color: #666;
+  background-color: #eee;
+  color: #666;
 }
 
 .cancelButton:hover:not(:disabled) {
-    background-color: #ddd;
+  background-color: #ddd;
 }
 
 .loadingContainer {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 }
 
 .errorContainer {
-    text-align: center;
-    padding: 2rem;
-    color: #dc3545;
-    background-color: rgba(220, 53, 69, 0.1);
-    border-radius: 4px;
-    margin-bottom: 1rem;
+  text-align: center;
+  padding: 2rem;
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+  border-radius: 4px;
+  margin-bottom: 1rem;
 }
 
 .privacyLabel {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
-.privacyLabel input[type="checkbox"] {
-    cursor: pointer;
+.privacyLabel input[type='checkbox'] {
+  cursor: pointer;
 }
 
-.privacyLabel input[type="checkbox"]:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
+.privacyLabel input[type='checkbox']:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .privacySpinner {
-    font-size: 0.875rem;
-    color: #666;
-    font-style: italic;
+  font-size: 0.875rem;
+  color: #666;
+  font-style: italic;
 }

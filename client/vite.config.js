@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 import { compression } from 'vite-plugin-compression2';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -72,5 +72,9 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-  }
+    exclude: ['@mui/system', '@mui/material', '@mui/styled-engine'],
+    esbuildOptions: {
+      external: ['hoist-non-react-statics'],
+    },
+  },
 });
