@@ -12,7 +12,7 @@ import java.util.List;
 public class NotificationController {
     private final NotificationService notificationService;
 
-    public NotificationController( NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 

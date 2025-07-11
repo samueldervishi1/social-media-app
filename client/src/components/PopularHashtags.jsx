@@ -23,19 +23,24 @@ LoadingSpinner.displayName = 'LoadingSpinner';
 
 const HashtagItem = memo(({ name, link, views }) => (
   <div className={styles.hashtagItem}>
-    <a
-      href={link}
-      className={styles.hashtagLink}
-      target='_blank'
-      rel='noopener noreferrer'
-      aria-label={`View posts with hashtag ${name}`}
-    >
-      #{name}
-    </a>
-    <span className={styles.separator} aria-hidden='true'>
-      —
-    </span>
-    <span className={styles.viewCount}>{views.toLocaleString()} views</span>
+    <div className={styles.hashtagContent}>
+      <a
+        href={link}
+        className={styles.hashtagLink}
+        target='_blank'
+        rel='noopener noreferrer'
+        aria-label={`View posts with hashtag ${name}`}
+      >
+        <span className={styles.hashSymbol}>#</span>{name}
+      </a>
+      <span className={styles.viewCount}>
+        <i className={styles.viewIcon}></i>
+        {views.toLocaleString()} views
+      </span>
+    </div>
+    <div className={styles.trendIndicator}>
+      <span className={styles.trendArrow}></span>
+    </div>
   </div>
 ));
 
@@ -48,7 +53,9 @@ HashtagItem.propTypes = {
 
 const EmptyState = memo(() => (
   <div className={styles.emptyState}>
+    <div className={styles.emptyStateIcon}></div>
     <p>No trending hashtags available at the moment.</p>
+    <span className={styles.emptyStateHint}>Check back later for updates</span>
   </div>
 ));
 
@@ -71,13 +78,18 @@ const PopularHashtags = () => {
         });
 
         if (isSubscribed) {
-          setHashtags(Array.isArray(response.data) ? response.data : []);
+          // Fix: Extract hashtags array from response object
+          const hashtagsData = response.data?.hashtags || response.data;
+          const hashtagsArray = Array.isArray(hashtagsData) ? hashtagsData : [];
+          setHashtags(hashtagsArray);
           setError(null);
         }
       } catch (error) {
-        if (error.name === 'AbortError') return;
+        // Check for CanceledError specifically
+        if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+          return; // Don't log or set error state for canceled requests
+        }
 
-        console.error('Error fetching hashtags:', error);
         if (isSubscribed) {
           setHashtags([]);
           setError('Failed to load trending hashtags');
@@ -98,16 +110,20 @@ const PopularHashtags = () => {
   }, []);
 
   const renderedHashtags = useMemo(() => {
-    if (!Array.isArray(hashtags) || hashtags.length === 0) return null;
-
-    return hashtags.map((hashtag) => (
-      <HashtagItem
-        key={hashtag.name}
-        name={hashtag.name}
-        link={hashtag.link}
-        views={hashtag.views}
-      />
-    ));
+    if (!Array.isArray(hashtags) || hashtags.length === 0) {
+      return null;
+    }
+    
+    return hashtags.map((hashtag) => {
+      return (
+        <HashtagItem
+          key={hashtag.name}
+          name={hashtag.name}
+          link={hashtag.link}
+          views={hashtag.views}
+        />
+      );
+    });
   }, [hashtags]);
 
   return (
@@ -116,13 +132,16 @@ const PopularHashtags = () => {
       role='complementary'
       aria-label='Popular hashtags'
     >
-      <h2 className={styles.title}>Popular Hashtags</h2>
+      <h2 className={styles.title}>
+        <span className={styles.titleText}>Trending Hashtags</span>
+      </h2>
       <div className={styles.card}>
         {loading ? (
           <LoadingSpinner />
         ) : error ? (
           <div className={styles.errorState} role='alert'>
-            {error}
+            <div className={styles.errorIcon}></div>
+            <p>{error}</p>
           </div>
         ) : (
           <div className={styles.hashtagsContainer}>

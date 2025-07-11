@@ -20,6 +20,7 @@ import java.util.Map;
 @Service
 public class ChatBotService {
 
+	private final LoggingService loggingService;
 	@Value("${model.api.key}")
 	private String apiKey;
 
@@ -32,10 +33,11 @@ public class ChatBotService {
 	private final RestTemplate restTemplate;
 	private final HttpHeaders headers;
 
-	public ChatBotService() {
+	public ChatBotService(LoggingService loggingService) {
 		this.restTemplate = new RestTemplate();
 		this.headers = new HttpHeaders();
 		this.headers.setContentType(MediaType.APPLICATION_JSON);
+		this.loggingService = loggingService;
 	}
 
 	@PostConstruct
@@ -61,10 +63,11 @@ public class ChatBotService {
 					}
 			);
 
+			loggingService.logInfo("ChatBotService" , "getResponses" , "Model API response: " + response.getBody());
 			return parseModelResponse(response.getBody() , message);
 
 		} catch (Exception e) {
-			log.error("Error while calling model API" , e);
+			loggingService.logError("ChatBotService" , "getResponses" , "Error while calling model API" , e);
 			return Map.of("answer" , Messages.ERROR_UNEXPECTED);
 		}
 	}

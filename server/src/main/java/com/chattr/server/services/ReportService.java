@@ -23,11 +23,13 @@ public class ReportService {
     private final ReportPostRepository reportPostRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LoggingService loggingService;
 
-    public ReportService(ReportPostRepository reportPostRepository, PostRepository postRepository, UserRepository userRepository) {
+    public ReportService(ReportPostRepository reportPostRepository, PostRepository postRepository, UserRepository userRepository, LoggingService loggingService) {
         this.reportPostRepository = reportPostRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.loggingService = loggingService;
     }
 
     public Report report(Report report) {
@@ -40,11 +42,14 @@ public class ReportService {
             updateUserReportedPosts(userId, postId);
 
             report.setReportTime(LocalDateTime.now());
+            loggingService.logInfo("ReportService", "report", "User" + userId + "reported post" + postId + ".");
             return reportPostRepository.save(report);
 
         } catch (CustomException e) {
+            loggingService.logError("ReportService", "report", "Error reporting", e);
             throw e;
         } catch (Exception e) {
+            loggingService.logError("ReportService", "report", "Unexpected error during reporting", e);
             throw new CustomException(500, Messages.REPORT_ERROR);
         }
     }

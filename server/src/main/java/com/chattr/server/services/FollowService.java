@@ -3,6 +3,7 @@ package com.chattr.server.services;
 import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.FollowRequest;
 import com.chattr.server.models.FollowStatus;
+import com.chattr.server.models.Messages;
 import com.chattr.server.models.User;
 import com.chattr.server.repositories.FollowRepository;
 import com.chattr.server.repositories.UserRepository;
@@ -30,14 +31,14 @@ public class FollowService {
 
     public void sendFollowRequest(String senderId, String receiverId) {
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
 
         User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, receiverId)));
 
         Optional<FollowRequest> existing = followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
         if (existing.isPresent()) {
-            throw new IllegalArgumentException("Follow request already exists");
+            throw new CustomException(404, String.format(Messages.FOLLOW_EXISTS));
         }
 
         if (!receiver.isPrivate()) {
@@ -52,12 +53,12 @@ public class FollowService {
 
     public void acceptFollowRequest(String requestId) {
         FollowRequest followRequest = followRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Follow request not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.FOLLOW_NOT_FOUND, requestId)));
 
         FollowStatus status = followRequest.getStatus();
 
         if (status != FollowStatus.PENDING && status != FollowStatus.FOLLOW_BACK) {
-            throw new IllegalArgumentException("Follow request is not actionable");
+            throw new CustomException(404, String.format(Messages.FOLLOW_NOT_ACTIONABLE));
         }
 
         followRequest.setStatus(FollowStatus.ACCEPTED);
@@ -69,7 +70,7 @@ public class FollowService {
         addToFollowers(followRequest.getSenderId(), followRequest.getReceiverId());
 
         User receiver = userRepository.findById(followRequest.getReceiverId())
-                .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.RECEIVER_NOT_FOUND, followRequest.getReceiverId())));
 
         notificationService.sendFollowAcceptedNotification(
                 followRequest.getSenderId(),
@@ -79,11 +80,11 @@ public class FollowService {
 
     public void followBack(String senderId, String receiverId) {
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
 
         Optional<FollowRequest> existing = followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
         if (existing.isPresent()) {
-            throw new IllegalArgumentException("Follow request already exists");
+            throw new CustomException(400, String.format(Messages.FOLLOW_EXISTS));
         }
 
         FollowRequest followBackRequest = new FollowRequest(senderId, receiverId, FollowStatus.FOLLOW_BACK);
@@ -94,9 +95,9 @@ public class FollowService {
 
     public boolean isMutualFollow(String userAId, String userBId) {
         User userA = userRepository.findById(userAId)
-                .orElseThrow(() -> new IllegalArgumentException("User A not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userAId)));
         User userB = userRepository.findById(userBId)
-                .orElseThrow(() -> new IllegalArgumentException("User B not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userBId)));
 
         boolean aFollowsB = userA.getFollowing() != null && userA.getFollowing().contains(userBId);
         boolean bFollowsA = userB.getFollowing() != null && userB.getFollowing().contains(userAId);
@@ -106,7 +107,7 @@ public class FollowService {
 
     public List<String> getMutualConnections(String viewerId, String profileId) {
         User viewer = userRepository.findById(viewerId)
-                .orElseThrow(() -> new IllegalArgumentException("Viewer not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, viewerId)));
 
         List<String> mutualUsernames = new ArrayList<>();
 
@@ -131,14 +132,14 @@ public class FollowService {
 
     public void rejectFollowRequest(String requestId, String receiverId) {
         FollowRequest request = followRepository.findById(requestId)
-                .orElseThrow(() -> new CustomException(404, "Follow request not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.FOLLOW_NOT_FOUND, requestId)));
 
         if (!request.getReceiverId().equals(receiverId)) {
-            throw new CustomException(403, "You can only reject requests sent to you");
+            throw new CustomException(403, String.format(Messages.REFUSE));
         }
 
         if (request.getStatus() != FollowStatus.PENDING) {
-            throw new CustomException(400, "Only pending requests can be rejected");
+            throw new CustomException(400, String.format(Messages.PENDING));
         }
 
         request.setStatus(FollowStatus.REJECTED);
@@ -155,10 +156,10 @@ public class FollowService {
 
     private void addToFollowers(String senderId, String receiverId) {
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
 
         User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.RECEIVER_NOT_FOUND, receiverId)));
 
         // receiver gets a new follower (sender)
         if (receiver.getFollowers() == null) receiver.setFollowers(new ArrayList<>());

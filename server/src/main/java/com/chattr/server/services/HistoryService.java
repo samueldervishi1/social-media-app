@@ -31,56 +31,38 @@ public class HistoryService {
         History history = historyRepository.findBySessionId(sessionId)
                 .map(existing -> {
                     existing.getQuestionAnswerPairs().addAll(questionAnswerPairs);
-                    LOGGER.info("Appending new entries to existing session '{}'", sessionId);
                     return existing;
                 })
-                .orElseGet(() -> {
-                    LOGGER.info("Creating new history entry for session '{}'", sessionId);
-                    return new History(sessionId, userId, questionAnswerPairs);
-                });
+                .orElseGet(() -> new History(sessionId, userId, questionAnswerPairs));
 
-        History saved = historyRepository.save(history);
-        LOGGER.info("History saved for session '{}'", sessionId);
-        return saved;
+        return historyRepository.save(history);
     }
 
     public List<History> getAllHistories() {
-        List<History> all = historyRepository.findAll();
-        LOGGER.info("Fetched {} total history records", all.size());
-        return all;
+        return historyRepository.findAll();
     }
 
     public List<History> getHistoryByUserId(String userId) {
-        List<History> histories = historyRepository.findByUserId(userId);
-        LOGGER.info("Fetched {} history records for userId '{}'", histories.size(), userId);
-        return histories;
+        return historyRepository.findByUserId(userId);
     }
 
     public Optional<History> getHistoryBySessionId(String sessionId) {
-        Optional<History> history = historyRepository.findBySessionId(sessionId);
-        LOGGER.info("History lookup by sessionId '{}': {}", sessionId, history.isPresent() ? "FOUND" : "NOT FOUND");
-        return history;
+        return historyRepository.findBySessionId(sessionId);
     }
 
     public void deleteHistoryBySessionId(String sessionId) {
         History history = historyRepository.findBySessionId(sessionId)
-                .orElseThrow(() -> {
-                    LOGGER.warn("Attempted to delete non-existing session '{}'", sessionId);
-                    return new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR, sessionId));
-                });
+                .orElseThrow(() -> new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR, sessionId)));
 
         historyRepository.delete(history);
-        LOGGER.info("Deleted history for session '{}'", sessionId);
     }
 
     public void deleteAllHistory(String userId) {
         List<History> histories = historyRepository.findByUserId(userId);
         if (histories.isEmpty()) {
-            LOGGER.warn("No history found for userId '{}', nothing to delete", userId);
             throw new IllegalArgumentException(String.format(Messages.NO_HISTORY_ERROR, userId));
         }
         historyRepository.deleteAll(histories);
-        LOGGER.info("Deleted {} history records for userId '{}'", histories.size(), userId);
     }
 
     @Scheduled(fixedRate = 86_400_000) // 24 hours in milliseconds

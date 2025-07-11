@@ -11,16 +11,19 @@ import java.util.Arrays;
 
 /**
  * Aspect for logging execution of service and controller layer methods.
- * Excludes utility classes like JwtAuthenticationFilter from logging.
+ * Excludes utility classes and performance-critical methods from logging.
  */
 @Aspect
 @Component
 @Slf4j
 public class LoggingAspect {
 
-    @Pointcut("within(com.chattr.server..*) && !within(com.chattr.server.utils.JwtAuthenticationFilter)")
+    @Pointcut("within(com.chattr.server..*) && " +
+            "!within(com.chattr.server.utils.JwtAuthenticationFilter) && " +
+            "!within(com.chattr.server.utils.JwtTokenUtil) && " +
+            "!execution(* com.chattr.server.services.*.findAndValidateUser(..)) && " +
+            "!execution(* com.chattr.server.services.*.verifyPassword(..))")
     public void applicationPackagePointcut() {
-        // This method defines the pointcut, it remains empty.
     }
 
     @Around("applicationPackagePointcut()")

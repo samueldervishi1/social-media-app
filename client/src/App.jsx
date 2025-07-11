@@ -32,6 +32,7 @@ const Notifications = lazy(() => import('./components/Notifications'));
 const UserSettings = lazy(() => import('./components/SettingsProfile'));
 const PostDetails = lazy(() => import('./components/PostDetails'));
 const FollowerScreen = lazy(() => import('./components/FollowerScreen'));
+const ModelUpdates = lazy(() => import('./components/ModelUpdates'));
 
 const App = () => {
   const { isAuthenticated, isDeactivated } = useAuth();
@@ -69,6 +70,7 @@ const App = () => {
             <Route path='/about' element={<About />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/faq' element={<FAQ />} />
+            <Route path='/model-updates' element={<ModelUpdates />} />
             <Route
               path='/account-deactivated'
               element={<DeactivatedAccount />}

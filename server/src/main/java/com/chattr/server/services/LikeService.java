@@ -2,6 +2,7 @@ package com.chattr.server.services;
 
 import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.Like;
+import com.chattr.server.models.Messages;
 import com.chattr.server.models.Post;
 import com.chattr.server.models.User;
 import com.chattr.server.repositories.LikeRepository;
@@ -22,7 +23,6 @@ public class LikeService {
     private final ActivityLogService activityLogService;
     private final AchievementService achievementService;
 
-
     public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository, ActivityLogService activityLogService, AchievementService achievementService) {
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
@@ -33,10 +33,10 @@ public class LikeService {
 
     public void likePost(String userId, String postId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(404, "User not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(404, "Post not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
 
         Like userLikes = likeRepository.findById(userId).orElse(null);
 
@@ -44,7 +44,7 @@ public class LikeService {
             userLikes = new Like(userId, postId);
         } else {
             if (userLikes.getPostIds().contains(postId)) {
-                throw new CustomException(400, "User already liked this post");
+                throw new CustomException(400, String.format(Messages.ALREADY_LIKED));
             }
             userLikes.getPostIds().add(postId);
             userLikes.setTimestamp(LocalDateTime.now());
@@ -63,13 +63,13 @@ public class LikeService {
 
     public void unlikePost(String userId, String postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(404, "Post not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
 
         Like userLikes = likeRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(400, "User has not liked anything"));
+                .orElseThrow(() -> new CustomException(400, String.format(Messages.USER_HAS_NOT_LIKED)));
 
         if (!userLikes.getPostIds().contains(postId)) {
-            throw new CustomException(400, "User has not liked this post");
+            throw new CustomException(400, String.format(Messages.USER_HAS_NOT_LIKED));
         }
 
         userLikes.getPostIds().remove(postId);
@@ -85,7 +85,7 @@ public class LikeService {
 
     public long getLikeCount(String postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(404, "Post not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
         return post.getLikedUserIds() == null ? 0 : post.getLikedUserIds().size();
     }
 

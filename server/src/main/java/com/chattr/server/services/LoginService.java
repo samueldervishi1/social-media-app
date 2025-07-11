@@ -5,46 +5,54 @@ import com.chattr.server.models.Messages;
 import com.chattr.server.models.User;
 import com.chattr.server.repositories.UserRepository;
 import com.chattr.server.utils.JwtTokenUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
-/**
- * Service responsible for handling user login, validation, and session generation.
- */
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class LoginService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final OAuth2EmailService emailService;
     private final AchievementService achievementService;
-
-    public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                        JwtTokenUtil jwtTokenUtil, OAuth2EmailService emailService,
-                        AchievementService achievementService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.emailService = emailService;
-        this.achievementService = achievementService;
-    }
+    private final LoggingService loggingService;
 
     public String login(String username, String password, String ipAddress) {
+        long totalStart = System.currentTimeMillis();
+
+        long step1Start = System.currentTimeMillis();
         User user = findAndValidateUser(username);
+        long step1Duration = System.currentTimeMillis() - step1Start;
+        loggingService.logExecutionTime("LoginService", "findAndValidateUser", step1Duration);
 
+        long step2Start = System.currentTimeMillis();
         verifyPassword(password, user);
+        long step2Duration = System.currentTimeMillis() - step2Start;
+        loggingService.logExecutionTime("LoginService", "verifyPassword", step2Duration);
 
-        if (ipChanged(user.getLastLoginIp(), ipAddress)) {
-            emailService.sendSecurityAlert(user.getEmail(), ipAddress);
-        }
+        long step3Start = System.currentTimeMillis();
+        String token = jwtTokenUtil.generateToken(user.getUsername(), user.getId(), user.isTwoFa());
+        long step3Duration = System.currentTimeMillis() - step3Start;
+        loggingService.logExecutionTime("LoginService", "generateToken", step3Duration);
 
-        updateLoginMetadata(user, ipAddress);
-        achievementService.evaluateAchievements(user);
-        userRepository.save(user);
+        long step4Start = System.currentTimeMillis();
+        runPostLoginAsync(user, ipAddress, username);
+        long step4Duration = System.currentTimeMillis() - step4Start;
+        loggingService.logExecutionTime("LoginService", "runPostLoginAsync", step4Duration);
 
-        return jwtTokenUtil.generateToken(user.getUsername(), user.getId(), user.isTwoFa());
+        long totalDuration = System.currentTimeMillis() - totalStart;
+        loggingService.logExecutionTime("LoginService", "login", totalDuration);
+
+        loggingService.logUserActivity(user.getId(), username, "login", ipAddress);
+
+        return token;
     }
 
     private User findAndValidateUser(String username) {
@@ -59,16 +67,33 @@ public class LoginService {
         }
     }
 
+    private void runPostLoginAsync(User user, String ipAddress, String username) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                if (ipChanged(user.getLastLoginIp(), ipAddress)) {
+                    emailService.sendSecurityAlert(user.getEmail(), ipAddress);
+                }
+                updateLoginMetadata(user, ipAddress);
+                userRepository.save(user);
+                achievementService.evaluateAchievements(user);
+            } catch (Exception e) {
+                loggingService.logError("LoginService", "runPostLoginAsync",
+                        "Post-login error for user: " + username, e);
+            }
+        });
+    }
+
     private boolean ipChanged(String lastIp, String currentIp) {
         return lastIp == null || !lastIp.equals(currentIp);
     }
 
     private void updateLoginMetadata(User user, String ipAddress) {
+        LocalDateTime now = LocalDateTime.now();
         if (user.getFirstTimeLoggedIn() == null) {
-            user.setFirstTimeLoggedIn(LocalDateTime.now());
+            user.setFirstTimeLoggedIn(now);
             user.setLoginStreak(1);
         }
         user.setLastLoginIp(ipAddress);
-        user.setLastLoginTime(LocalDateTime.now());
+        user.setLastLoginTime(now);
     }
 }

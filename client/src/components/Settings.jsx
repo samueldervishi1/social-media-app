@@ -24,6 +24,7 @@ const About = lazy(() => import('./About'));
 const TermsAndServices = lazy(() => import('./Terms'));
 const Contact = lazy(() => import('./Contact'));
 const FAQ = lazy(() => import('./FAQ'));
+const ServerHealthDashboard = lazy(() => import('./ServerHealthDashboard'));
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -229,21 +230,15 @@ const Settings = () => {
             </Suspense>
           </div>
         );
-      case 'server':
-        return (
-          <div className={styles.content_section}>
-            <h2>Server Health</h2>
-            <div className={styles.iframe_container}>
-              <iframe
-                src='http://localhost:9090/index.html'
-                title='Server Health Dashboard'
-                className={styles.server_health_iframe}
-                frameBorder='0'
-                allowFullScreen
-              />
+        case 'server':
+          return (
+            <div className={styles.content_section}>
+              <h2>Server Health</h2>
+              <Suspense fallback={<LoadingFallback />}>
+                <ServerHealthDashboard />
+              </Suspense>
             </div>
-          </div>
-        );
+          );
       case 'deactivate':
         return (
           <div className={styles.content_section}>

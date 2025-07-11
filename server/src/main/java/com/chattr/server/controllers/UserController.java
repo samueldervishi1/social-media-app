@@ -37,8 +37,8 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfo(username));
     }
 
-    @GetMapping("/lookup/find")
-    public ResponseEntity<String> getUsername(@RequestParam String userId) {
+    @GetMapping("/{userId}/username")
+    public ResponseEntity<String> getUsername(@PathVariable String userId) {
         String username = userService.getUsernameById(userId);
         activityLogService.log(username, "USER_GET_BY_ID", "Fetching username for user ID: " + userId);
         return ResponseEntity.ok(username);

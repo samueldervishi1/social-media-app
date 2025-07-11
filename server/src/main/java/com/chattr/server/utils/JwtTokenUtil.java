@@ -1,6 +1,5 @@
 package com.chattr.server.utils;
 
-import com.chattr.server.exceptions.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -12,13 +11,10 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
- * Utility class for generation and parsing JWT tokens.
- * Includes both access and refresh token creation
+ * Modern JWT utility using the latest JJWT API-no deprecated methods
  */
 @Slf4j
 @Component
@@ -29,60 +25,81 @@ public class JwtTokenUtil {
 
     @Getter
     private SecretKey secretKey;
+    private long expirationMillis;
 
     @Value("${jwt.secret}")
     private String secretKeyString;
 
-    @Value("${jwt.expiration:3600000}") // 1 hour in ms by default
+    @Value("${jwt.expiration:3600000}")
     private Long expiration;
 
     @PostConstruct
     public void init() {
-        this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
-        log.info("JWT Secret Key initialized successfully");
+        // Use the first 32 characters for optimal HS256 performance
+        String optimizedSecret = secretKeyString.length() > 32 ?
+                secretKeyString.substring(0, 32) : secretKeyString;
+
+        this.secretKey = Keys.hmacShaKeyFor(optimizedSecret.getBytes(StandardCharsets.UTF_8));
+        this.expirationMillis = expiration != null ? expiration : 3600000L;
+
+        // Warm up crypto operations
+        warmUpJWT();
+
+        log.info("JWT initialized with modern API and optimized secret");
     }
 
-    public String generateToken(String username, String userId, boolean twoFa) {
-        return generateTokenInternal(username, userId, twoFa, calculateExpiryDate(Instant.now()));
-    }
-
-    public String generateTokenInternal(String username, String userId, boolean twoFa, Instant expiryDate) {
+    /**
+     * Warm up JWT operations using modern API
+     */
+    private void warmUpJWT() {
         try {
-            Instant now = Instant.now();
+            long now = System.currentTimeMillis();
 
-            return Jwts.builder()
-                    .subject(username)
-                    .claim(CLAIM_USER_ID, userId)
-                    .claim(CLAIM_TWO_FACTOR, twoFa)
-                    .issuedAt(Date.from(now))
-                    .expiration(Date.from(expiryDate))
-                    .signWith(secretKey)
+            // Generate warmup token using modern API
+            String warmupToken = Jwts.builder()
+                    .subject("warmup")
+                    .claim("test", "value")
+                    .issuedAt(new Date(now))
+                    .expiration(new Date(now + 1000))
+                    .signWith(secretKey)  // Modern way - no deprecated SignatureAlgorithm
                     .compact();
-        } catch (Exception e) {
-            log.error("Error generating JWT token", e);
-            throw new CustomException("Error generating JWT token");
-        }
-    }
 
-    public Claims parseToken(String token) {
-        try {
-            return Jwts.parser()
+            // Parse it back to complete the warmup
+            Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+                    .parseSignedClaims(warmupToken);
 
+            log.debug("JWT crypto operations warmed up successfully");
         } catch (Exception e) {
-            log.error("Error parsing JWT token", e);
-            throw new CustomException("Invalid token");
+            log.warn("JWT warmup failed: {}", e.getMessage());
         }
     }
 
-    private Instant calculateExpiryDate(Instant now) {
-        if (expiration == null || expiration <= 0) {
-            log.warn("Invalid expiration configured. Falling back to 1 hour.");
-            return now.plus(1, ChronoUnit.HOURS);
-        }
-        return now.plus(expiration, ChronoUnit.MILLIS);
+    /**
+     * Generate JWT token using modern JJWT API
+     */
+    public String generateToken(String username, String userId, boolean twoFa) {
+        long now = System.currentTimeMillis();
+
+        return Jwts.builder()
+                .subject(username)
+                .claim(CLAIM_USER_ID, userId)
+                .claim(CLAIM_TWO_FACTOR, twoFa)
+                .issuedAt(new Date(now))
+                .expiration(new Date(now + expirationMillis))
+                .signWith(secretKey)  // Modern API automatically selects best algorithm
+                .compact();
+    }
+
+    /**
+     * Parse JWT token using modern API
+     */
+    public Claims parseToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

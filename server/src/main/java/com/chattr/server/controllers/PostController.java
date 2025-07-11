@@ -24,7 +24,7 @@ public class PostController {
         this.activityLogService = activityLogService;
     }
 
-    @GetMapping("/get/1/{postId}")
+    @GetMapping("/{postId}")
     public ResponseEntity<Post> getPost(@PathVariable String postId) {
         Post post = postService.getPostById(postId);
         activityLogService.log(post.getUserId(), "POST_GET_BY_ID", "Retrieving post with ID: " + postId);
@@ -38,7 +38,7 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/1/metrics/{userId}")
+    @GetMapping("/users/{userId}/count")
     public long getUserPostCount(@PathVariable String userId) {
         activityLogService.log(userId, "POST_COUNT_BY_USER", "Retrieving post count for user: " + userId);
         return postService.getPostCountPerUser(userId);
@@ -78,22 +78,22 @@ public class PostController {
         return ResponseEntity.ok(liked ? 1 : 0);
     }
 
-    @PostMapping("/create/{username}")
+    @PostMapping("/users/{username}")
     public ResponseEntity<String> createPost(@PathVariable String username, @RequestBody Post post) {
         postService.createPost(username, post);
         activityLogService.log(username, "POST_CREATE", "Post created by user: " + username);
         return ResponseEntity.ok("Post created successfully");
     }
 
-    @PostMapping("/save/{userId}/{postId}")
+    @PostMapping("/{postId}/save/{userId}")
     public ResponseEntity<?> savePost(@PathVariable String userId, @PathVariable String postId) {
         postService.savePost(userId, postId);
         activityLogService.log(userId, "POST_SAVE", "Post saved for user ID: " + userId + ".");
         return ResponseEntity.ok("Post saved");
     }
 
-    @PostMapping("/unsave")
-    public ResponseEntity<?> unsavePost(@RequestParam String userId, @RequestParam String postId) {
+    @PostMapping("/{postId}/unsave/{userId}")
+    public ResponseEntity<?> unsavePost(@PathVariable String postId, @PathVariable String userId) {
         postService.unsavePost(userId, postId);
         activityLogService.log(userId, "POST_UNSAVE", "Post unsaved for user ID: " + userId + ".");
         return ResponseEntity.ok("Post unsaved");

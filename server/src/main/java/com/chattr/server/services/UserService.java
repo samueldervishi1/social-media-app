@@ -1,6 +1,7 @@
 package com.chattr.server.services;
 
 import com.chattr.server.exceptions.CustomException;
+import com.chattr.server.models.Messages;
 import com.chattr.server.models.User;
 import com.chattr.server.models.UserLiteDTO;
 import com.chattr.server.repositories.UserRepository;
@@ -39,7 +40,7 @@ public class UserService {
 
     public List<UserLiteDTO> getFollowers(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(404, "User not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(USER_NOT_FOUND, userId)));
 
         return userRepository.findByIdIn(user.getFollowers())
                 .stream()
@@ -49,7 +50,7 @@ public class UserService {
 
     public List<UserLiteDTO> getFollowing(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(404, "User not found"));
+                .orElseThrow(() -> new CustomException(404, String.format(USER_NOT_FOUND, userId)));
 
         return userRepository.findByIdIn(user.getFollowing())
                 .stream()

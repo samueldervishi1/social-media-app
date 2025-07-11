@@ -38,7 +38,7 @@ public class RegisterService {
     }
 
     private void validateUser(User user) {
-        if (user == null) throw new CustomException(400, "User cannot be null");
+        if (user == null) throw new CustomException(400, String.format(Messages.USER_SHOULD_NOT_BE_NULL));
         validateEmail(user.getEmail());
         validateFullName(user.getFullName());
         validatePassword(user.getPassword());

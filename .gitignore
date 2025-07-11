@@ -13,3 +13,5 @@ ws-auth/.venv/pyvenv.cfg
 server/src/main/resources/application.properties
 server/uploads/stories/
 server/tokens/StoredCredential
+server/logs/app-2025-07-07.log
+/server/logs

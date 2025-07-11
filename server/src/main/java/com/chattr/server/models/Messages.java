@@ -34,10 +34,16 @@ public final class Messages {
     public static final String REPORT_ERROR = "Unable to submit report. Please try again.";
     public static final String NO_HISTORY_ERROR = "No history found for user ID: %s";
     public static final String COMMENT_NOT_FOUND = "Comment with ID %s not found.";
+    public static final String POST_ALREADY_SAVED = "Post %s already saved by user %s";
+    public static final String USER_HAS_NOT_LIKED = "User has not liked anything";
+    public static final String ALREADY_LIKED = "User already liked this post";
+    public static final String USER_SHOULD_NOT_BE_NULL = "User cannot be null";
 
     // === Community ===
     public static final String COMMUNITY_NOT_FOUND = "Community with identifier %s does not exist.";
     public static final String COMMUNITY_EXISTS = "A community with the name %s already exists.";
+    public static final String ALREADY_MEMBER = "User %s is already a member of this community.";
+    public static final String NOT_A_MEMBER = "User %s is not a member of this community.";
 
     // === Model & System Errors ===
     public static final String ERROR_MODEL_API_URL = "Model API URL is not configured correctly.";
@@ -52,6 +58,20 @@ public final class Messages {
     public static final String REGISTER_SUCCESS = "User have successfully registered.";
     public static final String REGISTER_FAILED = "Registration failed. Please try again.";
     public static final String MISSING_FIELDS = "Please fill in all required fields.";
+
+    public static final String SENDER_ERROR = "Sender not found";
+    public static final String FOLLOW_EXISTS = "Follow request already exists";
+    public static final String FOLLOW_NOT_FOUND = "Follow request %s not found";
+    public static final String RECEIVER_NOT_FOUND = "Receiver %s not found";
+    public static final String FOLLOW_NOT_ACTIONABLE = "Follow request is not actionable";
+    public static final String REFUSE = "You can only reject requests sent to you";
+    public static final String PENDING = "Only pending requests can be rejected";
+    public static final String STORY_NOT_FOUND = "Story not found";
+    public static final String BLOCK_NOT_ALLOWED = "You cannot block yourself";
+
+    public static final String INVALID_FILENAME = "Invalid filename: potential path traversal";
+    public static final String MISSING_FILE_EXTENSION = "Missing or invalid file extension";
+    public static final String UNSUPPORTED_FILE_EXTENSION = "Unsupported file extension";
 
     private Messages() {
         // Prevent instantiation

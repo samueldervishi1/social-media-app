@@ -153,7 +153,7 @@ public class OAuth2EmailService {
                         </ul>
                         <p>If it wasn't you, someone might be using your account.</p>
                         <div style='text-align:center;margin:20px 0;'>
-                            <a href='https://your-app-url.com/security' style='background:#1a73e8;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;'>Check activity</a>
+                            <a href='http://localhost:5173/home' style='background:#1a73e8;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;'>Check activity</a>
                         </div>
                         <p style='font-size:11px;color:#999;text-align:center;'>© 2025 Chattr LLC, Tirana, Albania</p>
                     </div>
