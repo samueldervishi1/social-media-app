@@ -26,4 +26,10 @@ public class NotificationController {
         notificationService.markAsSeen(id);
         return ResponseEntity.ok("Marked as seen");
     }
+
+    @PostMapping("/mark-all-seen/{userId}")
+    public ResponseEntity<?> markAllAsSeen(@PathVariable String userId) {
+        notificationService.markAllAsSeenForUser(userId);
+        return ResponseEntity.ok("All notifications marked as seen");
+    }
 }

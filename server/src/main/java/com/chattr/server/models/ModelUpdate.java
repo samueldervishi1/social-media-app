@@ -16,6 +16,7 @@ public class ModelUpdate {
     private String version;
     private String status;
     private String modelName;
+    private String modelId;
 
     public ModelUpdate() {
         this.dateTime = LocalDateTime.now();

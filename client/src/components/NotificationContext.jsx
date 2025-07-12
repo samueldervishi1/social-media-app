@@ -28,6 +28,23 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
+  const markAllAsRead = async () => {
+    try {
+      const userId = await getUserIdFromServer();
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}notifications/mark-all-seen/${userId}`,
+        {},
+        { withCredentials: true }
+      );
+
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, seen: true }))
+      );
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
+  };
+
   const unreadCount = notifications.filter((n) => !n.seen).length;
 
   useEffect(() => {
@@ -53,6 +70,7 @@ export const NotificationProvider = ({ children }) => {
         notifications,
         addNotification,
         markAsRead,
+        markAllAsRead,
         unreadCount,
         setNotifications,
       }}

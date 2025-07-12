@@ -52,7 +52,7 @@ const PostDetails = () => {
     const fetchPostDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_URL}posts/get/1/${postId}`, {
+        const response = await axios.get(`${API_URL}posts/${postId}`, {
           withCredentials: true,
         });
         setPost(response.data);

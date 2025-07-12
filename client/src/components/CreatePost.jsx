@@ -67,7 +67,7 @@ const PostForm = ({ onPostCreated }) => {
 
       try {
         const response = await axios.post(
-          `${API_URL}posts/create/${username}`,
+          `${API_URL}posts/users/${username}`,
           { content },
           {
             withCredentials: true,

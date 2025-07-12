@@ -39,6 +39,29 @@
   color: #333;
 }
 
+.mark_all_container {
+  padding: 8px 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mark_all_button {
+  background: none;
+  border: none;
+  color: #0066cc;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+
+.mark_all_button:hover {
+  color: #004999;
+  text-decoration: underline;
+}
+
 .popup_content {
   overflow-y: auto;
   max-height: 400px;

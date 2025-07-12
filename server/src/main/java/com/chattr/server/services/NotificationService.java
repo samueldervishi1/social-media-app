@@ -103,4 +103,19 @@ public class NotificationService {
         notif.setSeen(true);
         notificationsRepository.save(notif);
     }
+
+    public void markAllAsSeenForUser(String userId) {
+        List<Notifications> userNotifications = notificationsRepository.findAll()
+                .stream()
+                .filter(n -> n.getUserId().equals(userId) && !n.isSeen())
+                .toList();
+
+        for (Notifications notification : userNotifications) {
+            notification.setSeen(true);
+            notificationsRepository.save(notification);
+        }
+
+        activityLogService.log(userId, "MARK_ALL_NOTIFICATIONS_SEEN",
+                "Marked " + userNotifications.size() + " notifications as seen");
+    }
 }

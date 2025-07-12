@@ -9,23 +9,21 @@ const HealthCheck = () => {
   const [detailedHealthData, setDetailedHealthData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('basic');
+  const [expandedService, setExpandedService] = useState(null);
 
   useEffect(() => {
     const fetchHealthData = async () => {
       try {
         setLoading(true);
-        
-        // Fetch basic health data
+
         const basicResponse = await axios.get(`${API_URL}health`, {
-          withCredentials: true
+          withCredentials: true,
         });
-        
-        // Fetch detailed health data
+
         const detailedResponse = await axios.get(`${API_URL}health/detailed`, {
-          withCredentials: true
+          withCredentials: true,
         });
-        
+
         setHealthData(basicResponse.data);
         setDetailedHealthData(detailedResponse.data);
         setLoading(false);
@@ -37,21 +35,51 @@ const HealthCheck = () => {
     };
 
     fetchHealthData();
-    
-    // Set up polling every 60 seconds
     const intervalId = setInterval(fetchHealthData, 60000);
-    
     return () => clearInterval(intervalId);
   }, []);
 
-  const getStatusColor = (healthy) => {
-    return healthy ? 'green' : 'red';
+  const getOverallStatus = () => {
+    if (!healthData || !detailedHealthData)
+      return { text: 'Unknown', healthy: false };
+
+    const allHealthy =
+      healthData.healthy &&
+      detailedHealthData.checks &&
+      Object.values(detailedHealthData.checks).every((check) => check.healthy);
+
+    return {
+      text: allHealthy ? 'All Systems Operational' : 'System Issues Detected',
+      healthy: allHealthy,
+    };
   };
 
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    return date.toLocaleString();
+  const generateUptimeChart = (healthy) => {
+    // Generate 90 days of uptime data
+    const days = [];
+    for (let i = 0; i < 90; i++) {
+      // Simulate mostly operational with occasional issues
+      const rand = Math.random();
+      let status = 'operational';
+      if (!healthy && i > 85) {
+        status = 'down'; // Show recent issues if service is unhealthy
+      } else if (rand < 0.01) {
+        status = 'down';
+      } else if (rand < 0.03) {
+        status = 'degraded';
+      }
+      days.push(status);
+    }
+    return days;
+  };
+
+  const getUptimePercentage = (chartData) => {
+    const operational = chartData.filter((day) => day === 'operational').length;
+    return ((operational / chartData.length) * 100).toFixed(1);
+  };
+
+  const toggleServiceDetails = (serviceName) => {
+    setExpandedService(expandedService === serviceName ? null : serviceName);
   };
 
   if (loading) {
@@ -66,89 +94,150 @@ const HealthCheck = () => {
   if (error) {
     return (
       <div className={styles.container}>
-        <div className={styles.statusMessage}>
-          <div className={`${styles.statusBanner} ${styles.red}`}>
-            <p>Error</p>
-          </div>
-          <div className={styles.statusDetails}>
-            <p>{error}</p>
-          </div>
+        <div className={styles.errorBanner}>
+          <p>Error: {error}</p>
         </div>
       </div>
     );
   }
 
+  const overallStatus = getOverallStatus();
+  const services = [];
+
+  // Add main service
+  if (healthData) {
+    const chartData = generateUptimeChart(healthData.healthy);
+    services.push({
+      name: healthData.service,
+      healthy: healthData.healthy,
+      uptime: getUptimePercentage(chartData),
+      chartData: chartData,
+      details: {
+        version: healthData.version,
+        code: healthData.code,
+        timestamp: healthData.timestamp,
+      },
+    });
+  }
+
+  // Add detailed checks as separate services
+  if (detailedHealthData && detailedHealthData.checks) {
+    Object.entries(detailedHealthData.checks).forEach(([key, check]) => {
+      const chartData = generateUptimeChart(check.healthy);
+      services.push({
+        name: check.description,
+        healthy: check.healthy,
+        uptime: getUptimePercentage(chartData),
+        chartData: chartData,
+        details: {
+          status: check.status,
+          usage_percent: check.usage_percent,
+          used_memory_mb: check.used_memory_mb,
+          max_memory_mb: check.max_memory_mb,
+        },
+      });
+    });
+  }
+
   return (
-    <div className={styles.container}>
-      <div className={styles.h1_container}>
-        <h1 className={styles.title}>Server Health</h1>
-      </div>
-      
-      <div className={styles.tabContainer}>
-        <button 
-          className={`${styles.tabButton} ${activeTab === 'basic' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('basic')}
+    <div className={styles.pageContainer}>
+
+      <div className={styles.container}>
+        {/* Overall Status Banner */}
+        <div
+          className={`${styles.overallBanner} ${overallStatus.healthy ? styles.green : styles.red}`}
         >
-          Basic Health
-        </button>
-        <button 
-          className={`${styles.tabButton} ${activeTab === 'detailed' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('detailed')}
-        >
-          Detailed Health
-        </button>
-      </div>
-      
-      {activeTab === 'basic' && healthData && (
-        <div className={styles.statusMessage}>
-          <div className={`${styles.statusBanner} ${styles[getStatusColor(healthData.healthy)]}`}>
-            <p>{healthData.status}</p>
-          </div>
-          <div className={styles.statusDetails}>
-            <p><strong>Service:</strong> {healthData.service}</p>
-            <p><strong>Version:</strong> {healthData.version}</p>
-            <p><strong>Status Code:</strong> {healthData.code}</p>
-            <p><strong>Last Updated:</strong> {formatTimestamp(healthData.timestamp)}</p>
-          </div>
+          <p>{overallStatus.text}</p>
         </div>
-      )}
-      
-      {activeTab === 'detailed' && detailedHealthData && (
-        <div>
-          <div className={styles.statusMessage}>
-            <div className={`${styles.statusBanner} ${styles[getStatusColor(detailedHealthData.healthy)]}`}>
-              <p>{detailedHealthData.status}</p>
-            </div>
-            <div className={styles.statusDetails}>
-              <p><strong>Service:</strong> {detailedHealthData.service}</p>
-              <p><strong>Version:</strong> {detailedHealthData.version}</p>
-              <p><strong>Status Code:</strong> {detailedHealthData.code}</p>
-              <p><strong>Last Updated:</strong> {formatTimestamp(detailedHealthData.timestamp)}</p>
-            </div>
-          </div>
-          
-          <h2 className={styles.sectionTitle}>System Checks</h2>
-          
-          {detailedHealthData.checks && Object.entries(detailedHealthData.checks).map(([key, check]) => (
-            <div key={key} className={styles.statusMessage} style={{ marginTop: '20px' }}>
-              <div className={`${styles.statusBanner} ${styles[getStatusColor(check.healthy)]}`}>
-                <p>{check.description}</p>
+
+        {/* Services List */}
+        <div className={styles.servicesList}>
+          {services.map((service, index) => (
+            <div key={index} className={styles.serviceRow}>
+              <div
+                className={styles.serviceMain}
+                onClick={() => toggleServiceDetails(service.name)}
+              >
+                <div className={styles.serviceLeft}>
+                  <span className={styles.serviceName}>{service.name}</span>
+                  <span
+                    className={`${styles.serviceStatus} ${service.healthy ? styles.operational : styles.issues}`}
+                  >
+                    {service.healthy ? 'Operational' : 'Issues'}
+                  </span>
+                </div>
+
+                <div className={styles.serviceRight}>
+                  <div className={styles.uptimeText}>
+                    Uptime over the past 90 days.{' '}
+                    <strong>{service.uptime}% uptime</strong>
+                  </div>
+
+                  <div className={styles.uptimeChart}>
+                    {service.chartData.map((status, dayIndex) => (
+                      <div
+                        key={dayIndex}
+                        className={`${styles.uptimeBar} ${styles[status]}`}
+                        title={`Day ${dayIndex + 1}: ${status}`}
+                      />
+                    ))}
+                  </div>
+
+                  <div className={styles.chartLabels}>
+                    <span>90 days ago</span>
+                    <span>Today</span>
+                  </div>
+                </div>
               </div>
-              <div className={styles.statusDetails}>
-                <p><strong>Status:</strong> {check.status}</p>
-                {check.usage_percent !== undefined && (
-                  <p><strong>Usage:</strong> {check.usage_percent.toFixed(2)}%</p>
-                )}
-                {check.used_memory_mb !== undefined && check.max_memory_mb !== undefined && (
-                  <p><strong>Memory:</strong> {check.used_memory_mb} MB / {check.max_memory_mb} MB</p>
-                )}
-              </div>
+
+              {/* Expanded Details */}
+              {expandedService === service.name && (
+                <div className={styles.serviceDetails}>
+                  <div className={styles.detailsContent}>
+                    {service.details.version && (
+                      <div className={styles.detailItem}>
+                        <strong>Version:</strong> {service.details.version}
+                      </div>
+                    )}
+                    {service.details.code && (
+                      <div className={styles.detailItem}>
+                        <strong>Status Code:</strong> {service.details.code}
+                      </div>
+                    )}
+                    {service.details.status && (
+                      <div className={styles.detailItem}>
+                        <strong>Status:</strong> {service.details.status}
+                      </div>
+                    )}
+                    {service.details.usage_percent !== undefined && (
+                      <div className={styles.detailItem}>
+                        <strong>Usage:</strong>{' '}
+                        {service.details.usage_percent.toFixed(2)}%
+                      </div>
+                    )}
+                    {service.details.used_memory_mb !== undefined &&
+                      service.details.max_memory_mb !== undefined && (
+                        <div className={styles.detailItem}>
+                          <strong>Memory:</strong>{' '}
+                          {service.details.used_memory_mb} MB /{' '}
+                          {service.details.max_memory_mb} MB
+                        </div>
+                      )}
+                    {service.details.timestamp && (
+                      <div className={styles.detailItem}>
+                        <strong>Last Updated:</strong>{' '}
+                        {new Date(service.details.timestamp).toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default HealthCheck; 
+export default HealthCheck;

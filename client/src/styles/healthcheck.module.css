@@ -1,99 +1,202 @@
-.container {
-  padding: 40px 20px;
+/* Clean, minimal CSS for Anthropic-style status page */
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+}
+
+/* Header */
+.header {
+  background-color: white;
+  padding: 20px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.headerContent {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.h1_container {
-  margin: 0 auto 40px auto;
-  background-image: url('../assets/background.jpg');
-  background-size: cover;
-  background-position: center;
-  padding: 80px 40px;
-  border-radius: 8px;
-  text-align: center;
-  position: relative;
-}
-
-.h1_container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-}
-
-.title {
-  position: relative;
-  margin: 0;
-  color: #333;
-  font-size: 60px;
-  font-weight: 700;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.statusMessage {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  max-width: 700px;
-  margin: 0 auto;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.statusMessage:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.statusBanner {
-  padding: 25px;
-  color: white;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.statusBanner p {
-  margin: 0;
+.companyName {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.subscribeButton {
+  background-color: #333;
   color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease;
 }
 
-.statusBanner.green {
+.subscribeButton:hover {
+  background-color: #555;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Overall Status Banner */
+.overallBanner {
   background-color: #28a745;
+  color: white;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.statusBanner.yellow {
-  background-color: #ffc107;
-}
-
-.statusBanner.red {
+.overallBanner.red {
   background-color: #dc3545;
 }
 
-.statusDetails {
-  padding: 20px;
+.overallBanner p {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Services List */
+.servicesList {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.serviceRow {
   background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.serviceRow:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.serviceMain {
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.serviceLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.serviceName {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+.serviceStatus {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.serviceStatus.operational {
+  color: #28a745;
+}
+
+.serviceStatus.issues {
+  color: #dc3545;
+}
+
+.serviceRight {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.uptimeText {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.uptimeChart {
+  display: flex;
+  gap: 1px;
+  margin-bottom: 5px;
+  justify-content: flex-end;
+}
+
+.uptimeBar {
+  width: 3px;
+  height: 30px;
+  border-radius: 1px;
+}
+
+.uptimeBar.operational {
+  background-color: #28a745;
+}
+
+.uptimeBar.degraded {
+  background-color: #ffc107;
+}
+
+.uptimeBar.down {
+  background-color: #dc3545;
+}
+
+.chartLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #999;
+  width: 270px; /* Match chart width (90 days * 3px + gaps) */
+}
+
+/* Service Details (Expanded) */
+.serviceDetails {
+  border-top: 1px solid #f0f0f0;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.detailsContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.detailItem {
+  font-size: 14px;
   color: #555;
-  border-top: 1px solid #eee;
-  text-align: center;
 }
 
-.statusDetails p {
-  margin: 10px 0;
-  font-size: 16px;
-  line-height: 1.6;
+.detailItem strong {
+  color: #333;
 }
 
+/* Loading */
 .loader {
   display: flex;
   flex-direction: column;
@@ -102,9 +205,9 @@
   height: 200px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  max-width: 700px;
-  margin: 0 auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 50px auto;
   padding: 40px;
 }
 
@@ -117,8 +220,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(29, 161, 242, 0.1);
-  border-top-color: #1da1f2;
+  border: 4px solid rgba(0, 123, 255, 0.1);
+  border-top-color: #007bff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -129,162 +232,77 @@
   }
 }
 
-.green {
-  background-color: #28a745;
-}
-
-.yellow {
-  background-color: #ffc107;
-  color: black;
-}
-
-.red {
+/* Error */
+.errorBanner {
   background-color: #dc3545;
-}
-
-/* Tab styles */
-.tabContainer {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 30px;
-  gap: 15px;
-}
-
-.tabButton {
-  padding: 12px 24px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #495057;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tabButton:hover {
-  background-color: #e9ecef;
-}
-
-.activeTab {
-  background-color: #1da1f2;
   color: white;
-  border-color: #1da1f2;
-}
-
-.activeTab:hover {
-  background-color: #0d8ecf;
-}
-
-/* View mode styles */
-.viewModeContainer {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 30px;
-  gap: 15px;
-}
-
-.viewModeButton {
-  padding: 10px 20px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+  padding: 30px;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #495057;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.viewModeButton:hover {
-  background-color: #e9ecef;
-}
-
-.activeViewMode {
-  background-color: #6c757d;
-  color: white;
-  border-color: #6c757d;
-}
-
-.activeViewMode:hover {
-  background-color: #5a6268;
-}
-
-.sectionTitle {
   text-align: center;
-  margin: 40px 0 20px;
-  color: #333;
-  font-size: 28px;
-  font-weight: 600;
+  margin: 40px auto;
+  max-width: 600px;
 }
 
-/* Iframe styles */
-.iframeContainer {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  background-color: white;
-  height: 500px;
+.errorBanner p {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
 }
 
-.healthIframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
-
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .h1_container {
-    padding: 60px 20px;
+  .headerContent {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
   }
 
-  .title {
-    font-size: 40px;
-  }
-
-  .statusBanner p {
+  .companyName {
     font-size: 20px;
   }
 
-  .statusMessage {
-    width: 90%;
+  .overallBanner p {
+    font-size: 24px;
   }
 
-  .loader {
-    width: 90%;
-    padding: 30px;
-  }
-  
-  .tabContainer {
+  .serviceMain {
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .tabButton {
-    width: 100%;
-    max-width: 250px;
+    align-items: flex-start;
+    gap: 20px;
   }
 
-  .iframeContainer {
-    height: 400px;
+  .serviceRight {
+    text-align: left;
+    width: 100%;
+  }
+
+  .chartLabels {
+    width: 100%;
+  }
+
+  .uptimeChart {
+    justify-content: flex-start;
+  }
+
+  .detailsContent {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 480px) {
-  .statusBanner p {
-    font-size: 18px;
+  .container {
+    padding: 20px 10px;
   }
 
-  .statusDetails p {
-    font-size: 14px;
+  .overallBanner {
+    padding: 20px;
   }
 
-  .iframeContainer {
-    height: 350px;
+  .overallBanner p {
+    font-size: 20px;
+  }
+
+  .serviceMain {
+    padding: 15px;
   }
 }

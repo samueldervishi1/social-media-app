@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * REST controller for managing posts: creation, retrieval, deletion, and user-specific queries.
@@ -45,12 +47,25 @@ public class PostController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllPostsPaged(
+    public ResponseEntity<Map<String, Object>> getAllPostsPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Page<Post> pagedPosts = postService.getAllPostsPaged(page, size);
         activityLogService.log("anonymous", "POST_LIST_PAGED", "Paginated posts retrieved, page " + page);
-        return ResponseEntity.ok(pagedPosts);
+
+        // Create a stable response structure
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", pagedPosts.getContent());
+        response.put("totalElements", pagedPosts.getTotalElements());
+        response.put("totalPages", pagedPosts.getTotalPages());
+        response.put("currentPage", pagedPosts.getNumber());
+        response.put("pageSize", pagedPosts.getSize());
+        response.put("first", pagedPosts.isFirst());
+        response.put("last", pagedPosts.isLast());
+        response.put("hasNext", pagedPosts.hasNext());
+        response.put("hasPrevious", pagedPosts.hasPrevious());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{postId}/comments/count")

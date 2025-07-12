@@ -42,7 +42,7 @@ const PostList = ({ onPostRefresh }) => {
 
           try {
             const usernameResponse = await axios.get(
-              `${API_URL}users/lookup/find?userId=${post.userId}`,
+              `${API_URL}users/${post.userId}/username`,
               {
                 withCredentials: true,
               }

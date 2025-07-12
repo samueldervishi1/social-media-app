@@ -8,176 +8,269 @@ body.login_page {
   padding: 0;
   height: 100vh;
   overflow: auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f5f5f5;
 }
 
-body.login_page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.custom_login_loader {
-  width: 30px;
-}
-
-.form_container {
-  margin-top: 10%;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-  height: 80%;
+/* New Auth Layout Styles */
+.auth_container {
   display: flex;
-  align-items: center;
   justify-content: center;
-}
-
-.container_login {
-  width: 100%;
-  max-width: 400px;
-  background-color: white;
+  align-items: center;
+  min-height: 100vh;
   padding: 20px;
-  color: black;
-  border-radius: 1px;
-  border: 0.1px solid grey;
-  box-shadow: 0 6px 12px rgba(226, 226, 226, 0.445);
 }
 
-.text_center {
-  text-align: center;
-}
-
-.my_3 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.error_message_login {
-  color: red;
-  text-align: center;
-  font-size: 13px;
-}
-
-.spinner_container {
+.auth_card {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 600px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.username_login {
-  display: flex;
-  text-align: start;
-  justify-content: start;
-  margin-left: 10px;
-}
-
-.password_login {
-  display: flex;
-  text-align: start;
-  justify-content: start;
-  margin-left: 10px;
-}
-
-.fill {
-  text-align: center;
-}
-
-.login {
-  color: black;
-  text-align: center;
-}
-
-input[type='text'],
-input[type='password'] {
-  width: calc(100% - 5px);
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  display: inline-block;
-  border: 0.1px solid grey;
-  background: transparent;
-  color: black;
-  border-radius: 1px;
-  transition: background-color 0.2s ease-in-out;
-}
-
-input[type='text']:focus,
-input[type='password']:focus {
-  background-color: transparent !important;
-  outline: none;
-  box-shadow: none;
-}
-
-hr {
-  border: 1px solid black;
-  margin-bottom: 25px;
-}
-
-button:hover {
-  opacity: 1;
-}
-
-a {
-  color: dodgerblue;
-  text-decoration: none;
-}
-
-.signup {
-  text-align: center;
-  margin-top: 16px;
-}
-
-.screen {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.auth_left {
+  flex: 1;
+  background: linear-gradient(135deg, rgb(44 152 223 / 90%), rgba(160, 68, 255, 0.8)), url(/src/assets/background.jpg);
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 40px;
   position: relative;
-  height: 100vh;
-  gap: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.back_link {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+}
+
+.back_link a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.back_link a:hover {
+  text-decoration: underline;
+}
+
+.hero_content {
+  margin-top: auto;
+  margin-bottom: 60px;
+}
+
+.hero_content h2 {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 40px;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dots span {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+.dots span.active {
+  background-color: white;
+  width: 24px;
+  border-radius: 10px;
+}
+
+.auth_right {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth_form {
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.auth_form h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.login_link {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.login_link a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form_group {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.form_input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  background-color: transparent;
+}
+
+.form_input:focus {
+  border-color: #7e57c2;
+  outline: none;
 }
 
 .password_input_container {
   position: relative;
 }
 
-.password_input_container input {
-  width: 100%;
-  padding-right: 40px;
-}
-
 .password_toggle_icon {
   position: absolute;
-  top: 40%;
+  top: 50%;
   right: 15px;
   transform: translateY(-50%);
   cursor: pointer;
+  color: #666;
 }
 
+.terms_checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 8px;
+}
+
+.terms_checkbox input {
+  margin: 0;
+}
+
+.terms_checkbox label {
+  font-size: 14px;
+  color: #555;
+}
+
+.terms_checkbox a {
+  color: #7e57c2;
+  text-decoration: none;
+}
+
+.auth_divider {
+  position: relative;
+  text-align: center;
+  margin: 24px 0;
+}
+
+.auth_divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #eee;
+}
+
+.auth_divider span {
+  position: relative;
+  background-color: white;
+  padding: 0 16px;
+  color: #888;
+  font-size: 14px;
+}
+
+.social_auth {
+  display: flex;
+  gap: 16px;
+}
+
+.google_btn, .apple_btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.google_btn:hover, .apple_btn:hover {
+  background-color: #f5f5f5;
+}
+
+.error_message {
+  color: #e53935;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Media Queries */
 @media (max-width: 768px) {
-  .container_login {
-    width: 600px;
+  .auth_card {
+    flex-direction: column;
+  }
+  
+  .auth_left {
+    padding: 30px;
+    min-height: 200px;
+  }
+  
+  .hero_content {
     margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: 20px;
+  }
+  
+  .hero_content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .auth_right {
+    padding: 30px;
+  }
+  
+  .auth_form h1 {
+    font-size: 24px;
   }
 }
 
-@media (max-width: 468px) {
-  .container_login {
-    width: 380px;
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container_login {
-    width: 800px;
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
-  }
+/* Keep these styles for backward compatibility */
+.form_container, .container_login, .password_input_container, .input, .error_message_login, .signup {
+  display: none;
 }

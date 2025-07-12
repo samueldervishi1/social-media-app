@@ -28,6 +28,7 @@ const Navbar = () => {
   const [currentUsername, setCurrentUsername] = useState(null);
   const [, setUserId] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [userInitial, setUserInitial] = useState('');
   const searchRef = useRef(null);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -49,6 +50,10 @@ const Navbar = () => {
       try {
         const username = await getUsernameFromServer();
         setCurrentUsername(username);
+        // Set the first letter of the username as the initial for the avatar
+        if (username) {
+          setUserInitial(username.charAt(0).toUpperCase());
+        }
       } catch (err) {
         console.error('Failed to get current username', err);
       }
@@ -176,7 +181,9 @@ const Navbar = () => {
                 onClick={toggleDropdown}
                 className={styles.profile_button}
               >
-                {/* <Avatar className={styles.avatar} /> */}
+                <div className={styles.custom_avatar}>
+                  {userInitial || '?'}
+                </div>
               </button>
 
               <div
@@ -200,23 +207,21 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* <Box sx={{ marginLeft: 2 }}>
-              <a
-                style={{ textDecoration: 'none', color: 'black' }}
-                href='/home'
+            <a
+              style={{ textDecoration: 'none', color: 'black' }}
+              href='/home'
+            >
+              <p
+                style={{
+                  fontSize: 25,
+                  position: 'relative',
+                  right: 0,
+                  top: 4,
+                }}
               >
-                <p
-                  style={{
-                    fontSize: 25,
-                    position: 'relative',
-                    right: 0,
-                    top: 4,
-                  }}
-                >
-                  𝓒𝓱𝓪𝓽𝓽𝓻
-                </p>
-              </a>
-            </Box> */}
+                𝓒𝓱𝓪𝓽𝓽𝓻
+              </p>
+            </a>
           </div>
 
           <div className={styles.search_container} ref={searchRef}>
@@ -290,7 +295,7 @@ const Navbar = () => {
                   }}
                 >
                   <GiArtificialHive className={styles.icon_p} />
-                  <span>Eido</span>
+                  <span>Cattr Ultra</span>
                 </button>
                 <button
                   className={styles.mobile_item}
@@ -336,7 +341,7 @@ const Navbar = () => {
                 onClick={() => navigate('/chat')}
               >
                 <GiArtificialHive className={styles.icon_p} />
-                <span className={styles.nav_text}>Eido</span>
+                <span className={styles.nav_text}>Chattr Ultra</span>
               </button>
 
               <button

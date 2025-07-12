@@ -40,7 +40,7 @@ const Profile = () => {
             axios.get(`${API_URL}users/lookup/${username}`, {
               withCredentials: true,
             }),
-            axios.get(`${API_URL}posts/user/${userId}`, {
+            axios.get(`${API_URL}posts/saved-posts/${userId}`, {
               withCredentials: true,
             }),
             axios.get(`${API_URL}like/user/${userId}`, {
@@ -54,7 +54,7 @@ const Profile = () => {
 
         if (likedResponse.data && likedResponse.data.postIds) {
           const likedPostsPromises = likedResponse.data.postIds.map((postId) =>
-            axios.get(`${API_URL}posts/get/1/${postId}`, {
+            axios.get(`${API_URL}posts/${postId}`, {
               withCredentials: true,
             })
           );

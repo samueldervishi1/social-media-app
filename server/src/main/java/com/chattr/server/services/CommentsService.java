@@ -21,11 +21,13 @@ public class CommentsService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final LoggingService loggingService;
+    private final AchievementService achievementService;
 
-    public CommentsService(UserRepository userRepository, PostRepository postRepository, LoggingService loggingService) {
+    public CommentsService(UserRepository userRepository, PostRepository postRepository, LoggingService loggingService, AchievementService achievementService) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.loggingService = loggingService;
+        this.achievementService = achievementService;
     }
 
     @Transactional
@@ -36,7 +38,13 @@ public class CommentsService {
 
             comment.setUserId(user.getId());
             post.getCommentList().add(comment);
+
+            user.setCommentCount(user.getCommentCount() + 1);
+
             postRepository.save(post);
+            userRepository.save(user);
+
+            achievementService.evaluateAchievements(user);
 
             return comment;
         });

@@ -46,6 +46,29 @@
   transition: all 0.3s ease;
 }
 
+.custom_avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid #e6e6e6;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile_button:hover .custom_avatar {
+  border-color: #3498db;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
 .profile_button:hover .avatar {
   border-color: #3498db;
 }

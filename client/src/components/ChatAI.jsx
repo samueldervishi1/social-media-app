@@ -544,7 +544,7 @@ const ChatAI = () => {
               className={styles.ai_textArea}
               name='message'
               rows='1'
-              placeholder='Ask Eido...'
+              placeholder='Ask Chattr Ultra...'
               value={userInput}
               onChange={autoResizeTextarea}
               onPaste={handlePaste}
@@ -603,7 +603,7 @@ const ChatAI = () => {
               ? countdown > 0
                 ? `Too many requests. Please wait ${countdown} seconds before trying again.`
                 : 'You can continue now.'
-              : 'Eido can make mistakes. Check important info.'}
+              : 'Chattr Ultra can make mistakes. Check important info.'}
           </p>
         </div>
       </div>

@@ -303,7 +303,7 @@ const PostCard = ({
       setIsSaved((prev) => !prev);
 
       const response = await axios.post(
-        `${API_URL}posts/save/${loggedInUserId}/${id}`,
+        `${API_URL}posts/${id}/save/${loggedInUserId}`,
         {},
         {
           withCredentials: true,
