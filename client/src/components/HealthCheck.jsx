@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '../styles/healthcheck.module.css';
 
@@ -141,7 +141,6 @@ const HealthCheck = () => {
 
   return (
     <div className={styles.pageContainer}>
-
       <div className={styles.container}>
         {/* Overall Status Banner */}
         <div

@@ -7,172 +7,298 @@ body.register_page {
   margin: 0;
   padding: 0;
   height: 100vh;
-  height: auto;
-  margin: 10px auto;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f5f5f5;
 }
 
-body.register_page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  filter: blur(6px);
-  z-index: -1;
-}
-
-.error_message_register {
-  color: red;
-  text-align: center;
-  font-size: 13px;
-}
-
-.container_sign {
-  background: white;
-  color: black;
-  box-shadow: 0 6px 12px rgba(17, 17, 17, 0.445);
-  width: 600px;
+/* New Auth Layout Styles */
+.auth_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   padding: 20px;
-  margin-right: 10px;
-  box-sizing: border-box;
+}
+
+.auth_card {
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 600px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.auth_left {
+  flex: 1;
+  background:
+    linear-gradient(135deg, rgb(44 152 223 / 90%), rgba(160, 68, 255, 0.8)),
+    url(/src/assets/background.jpg);
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.back_link {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+}
+
+.back_link a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.back_link a:hover {
+  text-decoration: underline;
+}
+
+.hero_content {
+  margin-top: auto;
+  margin-bottom: 60px;
+}
+
+.hero_content h2 {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 40px;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dots span {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+.dots span.active {
+  background-color: white;
+  width: 24px;
+  border-radius: 10px;
+}
+
+.auth_right {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth_form {
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.auth_form h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.login_link {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.login_link a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form_group {
+  margin-bottom: 16px;
   position: relative;
 }
 
-.regTitle {
-  color: #1c1c1d;
+.form_input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  background-color: transparent;
 }
 
-.input_error {
-  color: red;
-  text-align: center;
+.form_input:focus {
+  border-color: #7e57c2;
+  outline: none;
 }
 
-.fill {
-  text-align: center;
-}
-
-.text_center {
-  text-align: center;
-}
-
-.my_3 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.name_register {
-  display: flex;
-  text-align: start;
-  justify-content: start;
-  margin-left: 10px;
-}
-
-label {
-  display: flex !important;
+.password_input_container {
+  position: relative;
 }
 
 .password_toggle_icon {
   position: absolute;
-  top: 71%;
-  color: black;
-  right: 35px;
+  top: 50%;
+  right: 15px;
   transform: translateY(-50%);
   cursor: pointer;
+  color: #666;
 }
 
-a {
-  color: dodgerblue;
+.terms_checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 8px;
 }
 
-.signin {
+.terms_checkbox input {
+  margin: 0;
+}
+
+.terms_checkbox label {
+  font-size: 14px;
+  color: #555;
+}
+
+.terms_checkbox a {
+  color: #7e57c2;
+  text-decoration: none;
+}
+
+.auth_divider {
+  position: relative;
   text-align: center;
+  margin: 24px 0;
 }
 
-.screen {
+.auth_divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #eee;
+}
+
+.auth_divider span {
+  position: relative;
+  background-color: white;
+  padding: 0 16px;
+  color: #888;
+  font-size: 14px;
+}
+
+.social_auth {
+  display: flex;
+  gap: 16px;
+}
+
+.google_btn,
+.apple_btn {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
-  flex-direction: column;
-  height: auto;
-  gap: 10px;
-}
-
-.info_register {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  max-width: 400px;
-  margin-top: 20px;
-  padding: 12px 20px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   background-color: white;
-  color: #ba9d46;
-  border: 2px solid #997404;
-  border-radius: 12px;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.info_register_info {
-  font-size: 30px;
-  margin-right: 10px;
-}
-
-.info_text {
+  cursor: pointer;
   font-size: 14px;
-  line-height: 1.4;
-  color: #ba9d46;
+  font-weight: 500;
+  color: #333;
+  transition: background-color 0.2s;
 }
 
+.google_btn:hover,
+.apple_btn:hover {
+  background-color: #f5f5f5;
+}
+
+.error_message {
+  color: #e53935;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Media Queries */
 @media (max-width: 768px) {
-  .container_sign {
-    width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+  .auth_card {
+    flex-direction: column;
+  }
+
+  .auth_left {
+    padding: 30px;
+    min-height: 200px;
+  }
+
+  .hero_content {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .hero_content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .auth_right {
+    padding: 30px;
+  }
+
+  .auth_form h1 {
+    font-size: 24px;
   }
 }
 
-@media (max-width: 468px) {
-  .container_sign {
-    width: 380px;
-    margin-left: auto;
-    margin-right: auto;
-  }
+/* Legacy styles for backward compatibility */
+.error_message_register {
+  color: #e53935;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
-@media (min-width: 1024px) {
-  .container_sign {
-    margin-left: auto;
-    margin-right: auto;
-  }
+.input_error {
+  color: #e53935;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
-@media (max-width: 768px) {
-  .message {
-    display: none;
-  }
-  .messageOpen {
-    right: 20px;
-    visibility: visible;
-    opacity: 1;
-    display: block;
-    transition: right 0.3s ease-in-out;
-  }
-}
-
-@media (min-width: 769px) {
-  .message {
-    display: none;
-  }
-  .messageOpen {
-    right: 20px;
-    visibility: visible;
-    opacity: 1;
-    display: block;
-    transition: right 0.3s ease-in-out;
-  }
+.container_sign,
+.screen,
+.fill,
+.name_register,
+.signin,
+.password_input_container,
+.info_register,
+.info_register_info,
+.info_text {
+  display: none;
 }

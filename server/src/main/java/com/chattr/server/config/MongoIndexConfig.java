@@ -15,34 +15,35 @@ import org.springframework.data.mongodb.core.index.IndexOperations;
 @Slf4j
 public class MongoIndexConfig {
 
-    private final MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
-    @PostConstruct
-    public void createIndexes() {
-        log.info("Creating MongoDB indexes...");
+  @PostConstruct
+  public void createIndexes() {
+    log.info("Creating MongoDB indexes...");
 
-        IndexOperations indexOps = mongoTemplate.indexOps(User.class);
+    IndexOperations indexOps = mongoTemplate.indexOps(User.class);
 
-        try {
-            indexOps.ensureIndex(new Index().on("username", Sort.Direction.ASC).unique());
-            log.info("Created unique index on username");
+    try {
+      indexOps.ensureIndex(new Index().on("username", Sort.Direction.ASC).unique());
+      log.info("Created unique index on username");
 
-            indexOps.ensureIndex(new Index().on("email", Sort.Direction.ASC).unique());
-            log.info("Created unique index on email");
+      indexOps.ensureIndex(new Index().on("email", Sort.Direction.ASC).unique());
+      log.info("Created unique index on email");
 
-            indexOps.ensureIndex(new Index()
-                    .on("email", Sort.Direction.ASC)
-                    .on("username", Sort.Direction.ASC)
-                    .named("email_username_compound"));
-            log.info("Created compound index on email+username");
+      indexOps.ensureIndex(
+          new Index()
+              .on("email", Sort.Direction.ASC)
+              .on("username", Sort.Direction.ASC)
+              .named("email_username_compound"));
+      log.info("Created compound index on email+username");
 
-            indexOps.ensureIndex(new Index().on("lastLoginTime", Sort.Direction.DESC));
-            log.info("Created index on lastLoginTime");
+      indexOps.ensureIndex(new Index().on("lastLoginTime", Sort.Direction.DESC));
+      log.info("Created index on lastLoginTime");
 
-            log.info("All MongoDB indexes created successfully");
+      log.info("All MongoDB indexes created successfully");
 
-        } catch (Exception e) {
-            log.error("Failed to create MongoDB indexes", e);
-        }
+    } catch (Exception e) {
+      log.error("Failed to create MongoDB indexes", e);
     }
+  }
 }

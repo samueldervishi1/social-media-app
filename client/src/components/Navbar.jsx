@@ -6,14 +6,14 @@ import { getUserIdFromServer, getUsernameFromServer } from '../auth/authUtils';
 // import Box from '@mui/material/Box';
 // import Avatar from '@mui/material/Avatar';
 import { GoHome } from 'react-icons/go';
-import { IoSettingsOutline } from 'react-icons/io5';
+import { IoSettingsOutline, IoSearchOutline } from 'react-icons/io5';
 import { CiLogout } from 'react-icons/ci';
 import { GiArtificialHive, GiAchievement } from 'react-icons/gi';
 import { CgProfile } from 'react-icons/cg';
-import { IoSearchOutline } from 'react-icons/io5';
+import { MdOutlineExplore } from 'react-icons/md';
 import loaderImage from '../assets/377.gif';
 import styles from '../styles/navbar.module.css';
-import { FaBell } from 'react-icons/fa';
+import { IoMdNotificationsOutline } from 'react-icons/io';
 import NotificationsPopup from './NotificationsPopup';
 import { useNotifications } from './NotificationContext';
 
@@ -181,9 +181,7 @@ const Navbar = () => {
                 onClick={toggleDropdown}
                 className={styles.profile_button}
               >
-                <div className={styles.custom_avatar}>
-                  {userInitial || '?'}
-                </div>
+                <div className={styles.custom_avatar}>{userInitial || '?'}</div>
               </button>
 
               <div
@@ -207,10 +205,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            <a
-              style={{ textDecoration: 'none', color: 'black' }}
-              href='/home'
-            >
+            <a style={{ textDecoration: 'none', color: 'black' }} href='/home'>
               <p
                 style={{
                   fontSize: 25,
@@ -315,7 +310,7 @@ const Navbar = () => {
                   }}
                 >
                   <div className={styles.notification_icon}>
-                    <FaBell className={styles.icon_p} />
+                    <IoMdNotificationsOutline className={styles.icon_p} />
                     {unreadCount > 0 && (
                       <span className={styles.notification_badge}>
                         {unreadCount}
@@ -334,6 +329,14 @@ const Navbar = () => {
               >
                 <GoHome className={styles.icon_p} />
                 <span className={styles.nav_text}>Home</span>
+              </button>
+
+              <button
+                className={styles.nav_item}
+                onClick={() => navigate('/explore')}
+              >
+                <MdOutlineExplore className={styles.icon_p} />
+                <span className={styles.nav_text}>Explore</span>
               </button>
 
               <button
@@ -357,7 +360,7 @@ const Navbar = () => {
                 onClick={() => setShowNotifications(!showNotifications)}
               >
                 <div className={styles.notification_icon}>
-                  <FaBell className={styles.icon_p} />
+                  <IoMdNotificationsOutline className={styles.icon_p} />
                   {unreadCount > 0 && (
                     <span className={styles.notification_badge}>
                       {unreadCount > 99 ? '99+' : unreadCount}

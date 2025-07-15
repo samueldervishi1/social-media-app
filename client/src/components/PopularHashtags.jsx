@@ -31,7 +31,8 @@ const HashtagItem = memo(({ name, link, views }) => (
         rel='noopener noreferrer'
         aria-label={`View posts with hashtag ${name}`}
       >
-        <span className={styles.hashSymbol}>#</span>{name}
+        <span className={styles.hashSymbol}>#</span>
+        {name}
       </a>
       <span className={styles.viewCount}>
         <i className={styles.viewIcon}></i>
@@ -113,7 +114,7 @@ const PopularHashtags = () => {
     if (!Array.isArray(hashtags) || hashtags.length === 0) {
       return null;
     }
-    
+
     return hashtags.map((hashtag) => {
       return (
         <HashtagItem

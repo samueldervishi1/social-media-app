@@ -7,173 +7,221 @@ import com.chattr.server.models.Messages;
 import com.chattr.server.models.User;
 import com.chattr.server.repositories.FollowRepository;
 import com.chattr.server.repositories.UserRepository;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class FollowService {
 
-    private final FollowRepository followRepository;
-    private final UserRepository userRepository;
-    private final ActivityLogService activityLogService;
-    private final NotificationService notificationService;
+  private final FollowRepository followRepository;
+  private final UserRepository userRepository;
+  private final ActivityLogService activityLogService;
+  private final NotificationService notificationService;
 
-    public FollowService(FollowRepository followRepository, UserRepository userRepository, ActivityLogService activityLogService, NotificationService notificationService) {
-        this.followRepository = followRepository;
-        this.userRepository = userRepository;
-        this.activityLogService = activityLogService;
-        this.notificationService = notificationService;
+  public FollowService(
+      FollowRepository followRepository,
+      UserRepository userRepository,
+      ActivityLogService activityLogService,
+      NotificationService notificationService) {
+    this.followRepository = followRepository;
+    this.userRepository = userRepository;
+    this.activityLogService = activityLogService;
+    this.notificationService = notificationService;
+  }
+
+  public void sendFollowRequest(String senderId, String receiverId) {
+    User sender =
+        userRepository
+            .findById(senderId)
+            .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
+
+    User receiver =
+        userRepository
+            .findById(receiverId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, receiverId)));
+
+    Optional<FollowRequest> existing =
+        followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
+    if (existing.isPresent()) {
+      throw new CustomException(404, String.format(Messages.FOLLOW_EXISTS));
     }
 
-    public void sendFollowRequest(String senderId, String receiverId) {
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
+    if (!receiver.isPrivate()) {
+      addToFollowers(senderId, receiverId);
+    } else {
+      FollowRequest followRequest = new FollowRequest(senderId, receiverId, FollowStatus.PENDING);
+      notificationService.sendFollowNotification(receiverId, sender.getUsername());
+      activityLogService.log(
+          senderId, "FOLLOW_REQUEST_SENT", receiverId + " has requested to follow you.");
+      followRepository.save(followRequest);
+    }
+  }
 
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, receiverId)));
+  public void acceptFollowRequest(String requestId) {
+    FollowRequest followRequest =
+        followRepository
+            .findById(requestId)
+            .orElseThrow(
+                () ->
+                    new CustomException(404, String.format(Messages.FOLLOW_NOT_FOUND, requestId)));
 
-        Optional<FollowRequest> existing = followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
-        if (existing.isPresent()) {
-            throw new CustomException(404, String.format(Messages.FOLLOW_EXISTS));
-        }
+    FollowStatus status = followRequest.getStatus();
 
-        if (!receiver.isPrivate()) {
-            addToFollowers(senderId, receiverId);
-        } else {
-            FollowRequest followRequest = new FollowRequest(senderId, receiverId, FollowStatus.PENDING);
-            notificationService.sendFollowNotification(receiverId, sender.getUsername());
-            activityLogService.log(senderId, "FOLLOW_REQUEST_SENT", receiverId + " has requested to follow you.");
-            followRepository.save(followRequest);
-        }
+    if (status != FollowStatus.PENDING && status != FollowStatus.FOLLOW_BACK) {
+      throw new CustomException(404, String.format(Messages.FOLLOW_NOT_ACTIONABLE));
     }
 
-    public void acceptFollowRequest(String requestId) {
-        FollowRequest followRequest = followRepository.findById(requestId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.FOLLOW_NOT_FOUND, requestId)));
+    followRequest.setStatus(FollowStatus.ACCEPTED);
+    followRepository.save(followRequest);
 
-        FollowStatus status = followRequest.getStatus();
+    activityLogService.log(
+        followRequest.getSenderId(),
+        "FOLLOW_REQUEST_ACCEPTED",
+        "You have accepted " + followRequest.getReceiverId() + "'s follow request.");
 
-        if (status != FollowStatus.PENDING && status != FollowStatus.FOLLOW_BACK) {
-            throw new CustomException(404, String.format(Messages.FOLLOW_NOT_ACTIONABLE));
-        }
+    addToFollowers(followRequest.getSenderId(), followRequest.getReceiverId());
 
-        followRequest.setStatus(FollowStatus.ACCEPTED);
-        followRepository.save(followRequest);
+    User receiver =
+        userRepository
+            .findById(followRequest.getReceiverId())
+            .orElseThrow(
+                () ->
+                    new CustomException(
+                        404,
+                        String.format(Messages.RECEIVER_NOT_FOUND, followRequest.getReceiverId())));
 
-        activityLogService.log(followRequest.getSenderId(), "FOLLOW_REQUEST_ACCEPTED",
-                "You have accepted " + followRequest.getReceiverId() + "'s follow request.");
+    notificationService.sendFollowAcceptedNotification(
+        followRequest.getSenderId(), receiver.getUsername());
+  }
 
-        addToFollowers(followRequest.getSenderId(), followRequest.getReceiverId());
+  public void followBack(String senderId, String receiverId) {
+    User sender =
+        userRepository
+            .findById(senderId)
+            .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
 
-        User receiver = userRepository.findById(followRequest.getReceiverId())
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.RECEIVER_NOT_FOUND, followRequest.getReceiverId())));
-
-        notificationService.sendFollowAcceptedNotification(
-                followRequest.getSenderId(),
-                receiver.getUsername()
-        );
+    Optional<FollowRequest> existing =
+        followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
+    if (existing.isPresent()) {
+      throw new CustomException(400, String.format(Messages.FOLLOW_EXISTS));
     }
 
-    public void followBack(String senderId, String receiverId) {
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
+    FollowRequest followBackRequest =
+        new FollowRequest(senderId, receiverId, FollowStatus.FOLLOW_BACK);
+    notificationService.sendFollowNotification(receiverId, sender.getUsername());
+    activityLogService.log(
+        senderId, "FOLLOW_BACK_REQUESTED", "You have requested to follow back " + receiverId + ".");
+    followRepository.save(followBackRequest);
+  }
 
-        Optional<FollowRequest> existing = followRepository.findBySenderIdAndReceiverId(senderId, receiverId);
-        if (existing.isPresent()) {
-            throw new CustomException(400, String.format(Messages.FOLLOW_EXISTS));
-        }
+  public boolean isMutualFollow(String userAId, String userBId) {
+    User userA =
+        userRepository
+            .findById(userAId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userAId)));
+    User userB =
+        userRepository
+            .findById(userBId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userBId)));
 
-        FollowRequest followBackRequest = new FollowRequest(senderId, receiverId, FollowStatus.FOLLOW_BACK);
-        notificationService.sendFollowNotification(receiverId, sender.getUsername());
-        activityLogService.log(senderId, "FOLLOW_BACK_REQUESTED", "You have requested to follow back " + receiverId + ".");
-        followRepository.save(followBackRequest);
+    boolean aFollowsB = userA.getFollowing() != null && userA.getFollowing().contains(userBId);
+    boolean bFollowsA = userB.getFollowing() != null && userB.getFollowing().contains(userAId);
+
+    return aFollowsB && bFollowsA;
+  }
+
+  public List<String> getMutualConnections(String viewerId, String profileId) {
+    User viewer =
+        userRepository
+            .findById(viewerId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, viewerId)));
+
+    List<String> mutualUsernames = new ArrayList<>();
+
+    if (viewer.getFollowing() == null || viewer.getFollowing().isEmpty()) {
+      return mutualUsernames;
     }
 
-    public boolean isMutualFollow(String userAId, String userBId) {
-        User userA = userRepository.findById(userAId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userAId)));
-        User userB = userRepository.findById(userBId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userBId)));
-
-        boolean aFollowsB = userA.getFollowing() != null && userA.getFollowing().contains(userBId);
-        boolean bFollowsA = userB.getFollowing() != null && userB.getFollowing().contains(userAId);
-
-        return aFollowsB && bFollowsA;
+    for (String followedUserId : viewer.getFollowing()) {
+      User followedUser = userRepository.findById(followedUserId).orElse(null);
+      if (followedUser != null
+          && followedUser.getFollowing() != null
+          && followedUser.getFollowing().contains(profileId)) {
+        mutualUsernames.add(followedUser.getUsername());
+      }
     }
 
-    public List<String> getMutualConnections(String viewerId, String profileId) {
-        User viewer = userRepository.findById(viewerId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, viewerId)));
+    return mutualUsernames;
+  }
 
-        List<String> mutualUsernames = new ArrayList<>();
+  public List<FollowRequest> getPendingFollowRequests(String userId) {
+    return followRepository.findByReceiverIdAndStatus(userId, FollowStatus.PENDING);
+  }
 
-        if (viewer.getFollowing() == null || viewer.getFollowing().isEmpty()) {
-            return mutualUsernames;
-        }
+  public void rejectFollowRequest(String requestId, String receiverId) {
+    FollowRequest request =
+        followRepository
+            .findById(requestId)
+            .orElseThrow(
+                () ->
+                    new CustomException(404, String.format(Messages.FOLLOW_NOT_FOUND, requestId)));
 
-        for (String followedUserId : viewer.getFollowing()) {
-            User followedUser = userRepository.findById(followedUserId).orElse(null);
-            if (followedUser != null && followedUser.getFollowing() != null &&
-                    followedUser.getFollowing().contains(profileId)) {
-                mutualUsernames.add(followedUser.getUsername());
-            }
-        }
-
-        return mutualUsernames;
+    if (!request.getReceiverId().equals(receiverId)) {
+      throw new CustomException(403, String.format(Messages.REFUSE));
     }
 
-    public List<FollowRequest> getPendingFollowRequests(String userId) {
-        return followRepository.findByReceiverIdAndStatus(userId, FollowStatus.PENDING);
+    if (request.getStatus() != FollowStatus.PENDING) {
+      throw new CustomException(400, String.format(Messages.PENDING));
     }
 
-    public void rejectFollowRequest(String requestId, String receiverId) {
-        FollowRequest request = followRepository.findById(requestId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.FOLLOW_NOT_FOUND, requestId)));
+    request.setStatus(FollowStatus.REJECTED);
+    request.setTimestamp(
+        LocalDateTime.now()); // Optional: update the timestamp to reflect the action time
 
-        if (!request.getReceiverId().equals(receiverId)) {
-            throw new CustomException(403, String.format(Messages.REFUSE));
-        }
+    followRepository.save(request);
+  }
 
-        if (request.getStatus() != FollowStatus.PENDING) {
-            throw new CustomException(400, String.format(Messages.PENDING));
-        }
+  public FollowStatus getFollowStatus(String senderId, String receiverId) {
+    return followRepository
+        .findBySenderIdAndReceiverId(senderId, receiverId)
+        .map(FollowRequest::getStatus)
+        .orElse(FollowStatus.NONE);
+  }
 
-        request.setStatus(FollowStatus.REJECTED);
-        request.setTimestamp(LocalDateTime.now()); // Optional: update the timestamp to reflect the action time
+  private void addToFollowers(String senderId, String receiverId) {
+    User sender =
+        userRepository
+            .findById(senderId)
+            .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
 
-        followRepository.save(request);
+    User receiver =
+        userRepository
+            .findById(receiverId)
+            .orElseThrow(
+                () ->
+                    new CustomException(
+                        404, String.format(Messages.RECEIVER_NOT_FOUND, receiverId)));
+
+    // receiver gets a new follower (sender)
+    if (receiver.getFollowers() == null) receiver.setFollowers(new ArrayList<>());
+    if (!receiver.getFollowers().contains(senderId)) {
+      receiver.getFollowers().add(senderId);
     }
 
-    public FollowStatus getFollowStatus(String senderId, String receiverId) {
-        return followRepository.findBySenderIdAndReceiverId(senderId, receiverId)
-                .map(FollowRequest::getStatus)
-                .orElse(FollowStatus.NONE);
+    // the sender is now following receiver
+    if (sender.getFollowing() == null) sender.setFollowing(new ArrayList<>());
+    if (!sender.getFollowing().contains(receiverId)) {
+      sender.getFollowing().add(receiverId);
     }
 
-    private void addToFollowers(String senderId, String receiverId) {
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.SENDER_ERROR)));
-
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.RECEIVER_NOT_FOUND, receiverId)));
-
-        // receiver gets a new follower (sender)
-        if (receiver.getFollowers() == null) receiver.setFollowers(new ArrayList<>());
-        if (!receiver.getFollowers().contains(senderId)) {
-            receiver.getFollowers().add(senderId);
-        }
-
-        // the sender is now following receiver
-        if (sender.getFollowing() == null) sender.setFollowing(new ArrayList<>());
-        if (!sender.getFollowing().contains(receiverId)) {
-            sender.getFollowing().add(receiverId);
-        }
-
-        userRepository.save(receiver);
-        userRepository.save(sender);
-    }
+    userRepository.save(receiver);
+    userRepository.save(sender);
+  }
 }

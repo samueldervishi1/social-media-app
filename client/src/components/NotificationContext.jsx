@@ -37,9 +37,7 @@ export const NotificationProvider = ({ children }) => {
         { withCredentials: true }
       );
 
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, seen: true }))
-      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, seen: true })));
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
     }

@@ -8,88 +8,107 @@ import com.chattr.server.models.User;
 import com.chattr.server.repositories.LikeRepository;
 import com.chattr.server.repositories.PostRepository;
 import com.chattr.server.repositories.UserRepository;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class LikeService {
 
-    private final LikeRepository likeRepository;
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
-    private final ActivityLogService activityLogService;
-    private final AchievementService achievementService;
+  private final LikeRepository likeRepository;
+  private final UserRepository userRepository;
+  private final PostRepository postRepository;
+  private final ActivityLogService activityLogService;
+  private final AchievementService achievementService;
 
-    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository, ActivityLogService activityLogService, AchievementService achievementService) {
-        this.likeRepository = likeRepository;
-        this.userRepository = userRepository;
-        this.postRepository = postRepository;
-        this.activityLogService = activityLogService;
-        this.achievementService = achievementService;
+  public LikeService(
+      LikeRepository likeRepository,
+      UserRepository userRepository,
+      PostRepository postRepository,
+      ActivityLogService activityLogService,
+      AchievementService achievementService) {
+    this.likeRepository = likeRepository;
+    this.userRepository = userRepository;
+    this.postRepository = postRepository;
+    this.activityLogService = activityLogService;
+    this.achievementService = achievementService;
+  }
+
+  public void likePost(String userId, String postId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));
+
+    Post post =
+        postRepository
+            .findById(postId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
+
+    Like userLikes = likeRepository.findById(userId).orElse(null);
+
+    if (userLikes == null) {
+      userLikes = new Like(userId, postId);
+    } else {
+      if (userLikes.getPostIds().contains(postId)) {
+        throw new CustomException(400, String.format(Messages.ALREADY_LIKED));
+      }
+      userLikes.getPostIds().add(postId);
+      userLikes.setTimestamp(LocalDateTime.now());
     }
 
-    public void likePost(String userId, String postId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));
+    likeRepository.save(userLikes);
+    user.setLikeCount(user.getLikeCount() + 1);
+    achievementService.evaluateAchievements(user);
+    activityLogService.log(userId, "LIKE_POST", userId + "liked this post.");
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
+    if (post.getLikedUserIds() == null) post.setLikedUserIds(new ArrayList<>());
+    post.getLikedUserIds().add(userId);
+    activityLogService.log(postId, "LIKE_POST", "This post has been liked by user." + userId + ".");
+    postRepository.save(post);
+  }
 
-        Like userLikes = likeRepository.findById(userId).orElse(null);
+  public void unlikePost(String userId, String postId) {
+    Post post =
+        postRepository
+            .findById(postId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
 
-        if (userLikes == null) {
-            userLikes = new Like(userId, postId);
-        } else {
-            if (userLikes.getPostIds().contains(postId)) {
-                throw new CustomException(400, String.format(Messages.ALREADY_LIKED));
-            }
-            userLikes.getPostIds().add(postId);
-            userLikes.setTimestamp(LocalDateTime.now());
-        }
+    Like userLikes =
+        likeRepository
+            .findById(userId)
+            .orElseThrow(
+                () -> new CustomException(400, String.format(Messages.USER_HAS_NOT_LIKED)));
 
-        likeRepository.save(userLikes);
-        user.setLikeCount(user.getLikeCount() + 1);
-        achievementService.evaluateAchievements(user);
-        activityLogService.log(userId, "LIKE_POST", userId + "liked this post.");
-
-        if (post.getLikedUserIds() == null) post.setLikedUserIds(new ArrayList<>());
-        post.getLikedUserIds().add(userId);
-        activityLogService.log(postId, "LIKE_POST", "This post has been liked by user." + userId + ".");
-        postRepository.save(post);
+    if (!userLikes.getPostIds().contains(postId)) {
+      throw new CustomException(400, String.format(Messages.USER_HAS_NOT_LIKED));
     }
 
-    public void unlikePost(String userId, String postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
+    userLikes.getPostIds().remove(postId);
+    userLikes.setTimestamp(LocalDateTime.now());
+    activityLogService.log(userId, "UNLIKE_POST", userId + "unliked this post.");
+    likeRepository.save(userLikes);
 
-        Like userLikes = likeRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(400, String.format(Messages.USER_HAS_NOT_LIKED)));
-
-        if (!userLikes.getPostIds().contains(postId)) {
-            throw new CustomException(400, String.format(Messages.USER_HAS_NOT_LIKED));
-        }
-
-        userLikes.getPostIds().remove(postId);
-        userLikes.setTimestamp(LocalDateTime.now());
-        activityLogService.log(userId, "UNLIKE_POST", userId + "unliked this post.");
-        likeRepository.save(userLikes);
-
-        if (post.getLikedUserIds() != null) {
-            post.getLikedUserIds().remove(userId);
-            postRepository.save(post);
-        }
+    if (post.getLikedUserIds() != null) {
+      post.getLikedUserIds().remove(userId);
+      postRepository.save(post);
     }
+  }
 
-    public long getLikeCount(String postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
-        return post.getLikedUserIds() == null ? 0 : post.getLikedUserIds().size();
-    }
+  public long getLikeCount(String postId) {
+    Post post =
+        postRepository
+            .findById(postId)
+            .orElseThrow(
+                () -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
+    return post.getLikedUserIds() == null ? 0 : post.getLikedUserIds().size();
+  }
 
-    public Optional<Like> getUserLikes(String userId) {
-        return likeRepository.findById(userId);
-    }
+  public Optional<Like> getUserLikes(String userId) {
+    return likeRepository.findById(userId);
+  }
 }

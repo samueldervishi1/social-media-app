@@ -22,6 +22,7 @@ const Settings = lazy(() => import('./components/Settings'));
 const DeactivatedAccount = lazy(
   () => import('./components/DeactivatedAccount')
 );
+const ExplorePage = lazy(() => import('./components/ExplorePage'));
 const Profile = lazy(() => import('./components/Profile'));
 const UserAchievements = lazy(() => import('./components/UserAchievements'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
@@ -32,7 +33,6 @@ const Notifications = lazy(() => import('./components/Notifications'));
 const UserSettings = lazy(() => import('./components/SettingsProfile'));
 const PostDetails = lazy(() => import('./components/PostDetails'));
 const FollowerScreen = lazy(() => import('./components/FollowerScreen'));
-const ModelUpdates = lazy(() => import('./components/ModelUpdates'));
 
 const App = () => {
   const { isAuthenticated, isDeactivated } = useAuth();
@@ -112,6 +112,10 @@ const App = () => {
             <Route
               path='/list/:type/:username'
               element={<ProtectedRoute element={<FollowerScreen />} />}
+            />
+            <Route
+              path='/explore'
+              element={<ProtectedRoute element={<ExplorePage />} />}
             />
 
             {/* Fallback Routes */}

@@ -5,7 +5,8 @@ import { getUserIdFromServer } from '../auth/authUtils';
 import styles from '../styles/notificationsPopup.module.css';
 
 const NotificationsPopup = ({ isOpen, onClose }) => {
-  const { notifications, markAsRead, markAllAsRead, setNotifications } = useNotifications();
+  const { notifications, markAsRead, markAllAsRead, setNotifications } =
+    useNotifications();
   const [loading, setLoading] = useState(false);
   const popupRef = useRef(null);
 
@@ -54,7 +55,9 @@ const NotificationsPopup = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const hasUnreadNotifications = notifications.some(notification => !notification.seen);
+  const hasUnreadNotifications = notifications.some(
+    (notification) => !notification.seen
+  );
 
   return (
     <div className={styles.popup_container} ref={popupRef}>
@@ -68,8 +71,8 @@ const NotificationsPopup = ({ isOpen, onClose }) => {
       </div>
       {hasUnreadNotifications && (
         <div className={styles.mark_all_container}>
-          <button 
-            className={styles.mark_all_button} 
+          <button
+            className={styles.mark_all_button}
             onClick={handleMarkAllAsRead}
           >
             Mark all as read
