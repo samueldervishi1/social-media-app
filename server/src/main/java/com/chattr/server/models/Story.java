@@ -15,20 +15,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "stories")
 public class Story {
 
-  @Id private String id;
-  private List<MediaItem> media = new ArrayList<>();
-  Set<String> viewedBy = new HashSet<>();
-  private String caption;
-  private boolean isVideo;
-  private String userId;
-
-  private LocalDateTime createdAt;
-  private LocalDateTime expiresAt;
-
-  @Getter
-  @Setter
-  public static class MediaItem {
-    private String path;
+    @Id
+    private String id;
+    private List<MediaItem> media = new ArrayList<>();
+    Set<String> viewedBy = new HashSet<>();
+    private String caption;
     private boolean isVideo;
-  }
+    private String userId;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime expiresAt;
+
+    @Getter
+    @Setter
+    public static class MediaItem {
+        private String path;
+        private boolean isVideo;
+    }
 }

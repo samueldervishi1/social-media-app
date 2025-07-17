@@ -239,7 +239,7 @@ const Stories = memo(() => {
   if (error) {
     return (
       <div className={styles.error_message}>
-        Error loading stories: {error}
+        Error loading stories. Please try again later.
         <button
           onClick={() => window.location.reload()}
           className={styles.retry_button}

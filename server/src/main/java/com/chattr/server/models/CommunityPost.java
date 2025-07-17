@@ -12,11 +12,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("communityPost")
 public class CommunityPost {
 
-  @Id private String id;
-  private String ownerId;
-  private String communityName;
-  private String content;
-  private LocalDateTime createTime;
-  private List<Comment> comments;
-  private boolean deleted;
+    @Id
+    private String id;
+    private String ownerId;
+    private String communityName;
+    private String content;
+    private LocalDateTime createTime;
+    private List<Comment> comments;
+    private boolean deleted;
 }

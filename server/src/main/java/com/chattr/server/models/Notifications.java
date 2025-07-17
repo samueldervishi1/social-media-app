@@ -11,10 +11,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "notifications")
 public class Notifications {
 
-  @Id private String id;
-  private String userId;
-  private String message;
-  private String type;
-  private boolean seen;
-  private LocalDateTime timestamp;
+    @Id
+    private String id;
+    private String userId;
+    private String message;
+    private String type;
+    private boolean seen;
+    private LocalDateTime timestamp;
 }

@@ -65,18 +65,28 @@ const PostList = ({ onPostRefresh }) => {
       setPosts(postsWithUsernames);
     } catch (err) {
       console.error('Error fetching posts:', err);
-      setError('Something went wrong. Please try again later.');
+      return (
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '20px',
+            color: 'red',
+            background: 'rgba(255, 0, 0, 0.1)',
+            borderRadius: '8px',
+            margin: '20px auto',
+            maxWidth: '400px',
+          }}
+        >
+          <p>Something went wrong. Please try again later.</p>
+        </div>
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   if (error) {
-    return (
-      <div className='error-message'>
-        <p>{error}</p>
-      </div>
-    );
+    return null;
   }
 
   if (isLoading || !delayOver) {

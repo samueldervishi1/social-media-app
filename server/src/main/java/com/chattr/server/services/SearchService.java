@@ -11,37 +11,31 @@ import org.springframework.stereotype.Service;
 @Service
 public class SearchService {
 
-  private final SearchRepository searchRepository;
-  private final SearchUserRepository searchUserRepository;
+    private final SearchRepository searchRepository;
+    private final SearchUserRepository searchUserRepository;
 
-  public SearchService(
-      SearchRepository searchRepository, SearchUserRepository searchUserRepository) {
-    this.searchRepository = searchRepository;
-    this.searchUserRepository = searchUserRepository;
-  }
+    public SearchService(SearchRepository searchRepository, SearchUserRepository searchUserRepository) {
+        this.searchRepository = searchRepository;
+        this.searchUserRepository = searchUserRepository;
+    }
 
-  // --- Community search (optional / future use) ---
-  public List<Community> searchCommunitiesByName(String name) {
-    return searchRepository.findByName(name);
-  }
+    // --- Community search (optional / future use) ---
+    public List<Community> searchCommunitiesByName(String name) {
+        return searchRepository.findByName(name);
+    }
 
-  public List<User> searchUsers(String query) {
-    String rawQuery = query.trim().toLowerCase();
-    String condensed = rawQuery.replaceAll("\\s+", "");
+    public List<User> searchUsers(String query) {
+        String rawQuery = query.trim().toLowerCase();
+        String condensed = rawQuery.replaceAll("\\s+", "");
 
-    List<User> results =
-        searchUserRepository.findByUsernameContainingIgnoreCaseOrFullNameContainingIgnoreCase(
-            query, query);
+        List<User> results = searchUserRepository
+                .findByUsernameContainingIgnoreCaseOrFullNameContainingIgnoreCase(query, query);
 
-    return results.stream()
-        .filter(
-            user -> {
-              String normalizedFullName =
-                  user.getFullName() != null
-                      ? user.getFullName().toLowerCase().replaceAll("\\s+", "")
-                      : "";
-              return normalizedFullName.contains(condensed);
-            })
-        .toList();
-  }
+        return results.stream().filter(user -> {
+            String normalizedFullName = user.getFullName() != null
+                    ? user.getFullName().toLowerCase().replaceAll("\\s+", "")
+                    : "";
+            return normalizedFullName.contains(condensed);
+        }).toList();
+    }
 }

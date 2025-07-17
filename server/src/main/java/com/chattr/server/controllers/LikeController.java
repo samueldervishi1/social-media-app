@@ -11,37 +11,37 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/like")
 public class LikeController {
 
-  private final LikeService likeService;
+    private final LikeService likeService;
 
-  public LikeController(LikeService likeService) {
-    this.likeService = likeService;
-  }
+    public LikeController(LikeService likeService) {
+        this.likeService = likeService;
+    }
 
-  @GetMapping("/count/{postId}")
-  public ResponseEntity<Long> getLikeCount(@PathVariable String postId) {
-    return ResponseEntity.ok(likeService.getLikeCount(postId));
-  }
+    @GetMapping("/count/{postId}")
+    public ResponseEntity<Long> getLikeCount(@PathVariable String postId) {
+        return ResponseEntity.ok(likeService.getLikeCount(postId));
+    }
 
-  @GetMapping("/user/{userId}")
-  public ResponseEntity<Optional<Like>> getUserLikeCount(@PathVariable String userId) {
-    return ResponseEntity.ok(likeService.getUserLikes(userId));
-  }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Optional<Like>> getUserLikeCount(@PathVariable String userId) {
+        return ResponseEntity.ok(likeService.getUserLikes(userId));
+    }
 
-  @PostMapping("/add")
-  public ResponseEntity<?> likePost(@RequestBody Map<String, String> payload) {
-    String userId = payload.get("userId");
-    String postId = payload.get("postId");
+    @PostMapping("/add")
+    public ResponseEntity<?> likePost(@RequestBody Map<String, String> payload) {
+        String userId = payload.get("userId");
+        String postId = payload.get("postId");
 
-    likeService.likePost(userId, postId);
-    return ResponseEntity.ok("Post liked");
-  }
+        likeService.likePost(userId, postId);
+        return ResponseEntity.ok("Post liked");
+    }
 
-  @PostMapping("/remove")
-  public ResponseEntity<?> unlikePost(@RequestBody Map<String, String> payload) {
-    String userId = payload.get("userId");
-    String postId = payload.get("postId");
+    @PostMapping("/remove")
+    public ResponseEntity<?> unlikePost(@RequestBody Map<String, String> payload) {
+        String userId = payload.get("userId");
+        String postId = payload.get("postId");
 
-    likeService.unlikePost(userId, postId);
-    return ResponseEntity.ok("Post unliked");
-  }
+        likeService.unlikePost(userId, postId);
+        return ResponseEntity.ok("Post unliked");
+    }
 }

@@ -9,8 +9,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Main application class for the Chattr server. Configures Spring Boot with MongoDB, caching, async
- * processing, and scheduling.
+ * Main application class for the Chattr server. Configures Spring Boot with
+ * MongoDB, caching, async processing, and scheduling.
  */
 @SpringBootApplication
 @EnableScheduling
@@ -20,9 +20,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ConfigurationPropertiesScan("com.chattr.server.config")
 public class ServerApplication {
 
-  public static void main(String[] args) {
-    System.setProperty("spring.application.name", "chattr-server");
-    SpringApplication app = new SpringApplication(ServerApplication.class);
-    app.run(args);
-  }
+    public static void main(String[] args) {
+        System.setProperty("spring.application.name", "chattr-server");
+        SpringApplication app = new SpringApplication(ServerApplication.class);
+        app.run(args);
+    }
 }

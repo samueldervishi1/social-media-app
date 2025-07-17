@@ -9,12 +9,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface HistoryRepository extends MongoRepository<History, String> {
 
-  List<History> findByUserId(String userId);
+    List<History> findByUserId(String userId);
 
-  @NonNull
-  List<History> findAll();
+    @NonNull
+    List<History> findAll();
 
-  Optional<History> findBySessionId(String sessionId);
+    Optional<History> findBySessionId(String sessionId);
 
-  List<History> findByHistoryDateBefore(LocalDate historyDate);
+    List<History> findByHistoryDateBefore(LocalDate historyDate);
 }

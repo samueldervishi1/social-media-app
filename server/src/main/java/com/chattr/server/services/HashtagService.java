@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class HashtagService {
 
-  private final HashtagRepository repository;
+    private final HashtagRepository repository;
 
-  public HashtagService(HashtagRepository repository) {
-    this.repository = repository;
-  }
+    public HashtagService(HashtagRepository repository) {
+        this.repository = repository;
+    }
 
-  public List<Hashtag> getAllHashtags() {
-    return repository.findAll();
-  }
+    public List<Hashtag> getAllHashtags() {
+        return repository.findAll();
+    }
 
-  public Hashtag createHashtag(Hashtag hashtag) {
-    return repository.save(hashtag);
-  }
+    public Hashtag createHashtag(Hashtag hashtag) {
+        return repository.save(hashtag);
+    }
 }

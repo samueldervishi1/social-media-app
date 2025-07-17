@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/questions")
 public class PredefinedQuestionsController {
 
-  private final PredefinedQuestionsService predefinedQuestionsService;
+    private final PredefinedQuestionsService predefinedQuestionsService;
 
-  public PredefinedQuestionsController(PredefinedQuestionsService predefinedQuestionsService) {
-    this.predefinedQuestionsService = predefinedQuestionsService;
-  }
+    public PredefinedQuestionsController(PredefinedQuestionsService predefinedQuestionsService) {
+        this.predefinedQuestionsService = predefinedQuestionsService;
+    }
 
-  @GetMapping
-  public List<PredefineQuestions> getAllQuestions() {
-    return predefinedQuestionsService.getAllQuestions();
-  }
+    @GetMapping
+    public List<PredefineQuestions> getAllQuestions() {
+        return predefinedQuestionsService.getAllQuestions();
+    }
 }

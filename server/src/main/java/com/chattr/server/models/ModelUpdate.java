@@ -7,16 +7,17 @@ import org.springframework.data.annotation.Id;
 @Data
 public class ModelUpdate {
 
-  @Id private String id;
+    @Id
+    private String id;
 
-  private LocalDateTime dateTime;
-  private String changes;
-  private String version;
-  private String status;
-  private String modelName;
-  private String modelId;
+    private LocalDateTime dateTime;
+    private String changes;
+    private String version;
+    private String status;
+    private String modelName;
+    private String modelId;
 
-  public ModelUpdate() {
-    this.dateTime = LocalDateTime.now();
-  }
+    public ModelUpdate() {
+        this.dateTime = LocalDateTime.now();
+    }
 }

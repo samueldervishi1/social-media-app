@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class QuestionAnswerPair {
-  private List<Map<String, Object>> content;
-  private String answer;
+    private List<Map<String, Object>> content;
+    private String answer;
 
-  public QuestionAnswerPair(List<Map<String, Object>> content, String answer) {
-    this.content = content;
-    this.answer = answer;
-  }
+    public QuestionAnswerPair(List<Map<String, Object>> content, String answer) {
+        this.content = content;
+        this.answer = answer;
+    }
 }

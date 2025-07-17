@@ -5,5 +5,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ReportPostRepository extends MongoRepository<Report, String> {
 
-  boolean existsByUserIdAndPostId(String userId, String postId);
+    boolean existsByUserIdAndPostId(String userId, String postId);
 }

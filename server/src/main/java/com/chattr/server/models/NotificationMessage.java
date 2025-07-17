@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NotificationMessage {
-  private String toUserId;
-  private String message;
-  private String type;
+    private String toUserId;
+    private String message;
+    private String type;
 }

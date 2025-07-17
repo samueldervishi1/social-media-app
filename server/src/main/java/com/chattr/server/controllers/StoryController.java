@@ -12,40 +12,37 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/stories")
 public class StoryController {
 
-  private final StoryService storyService;
+    private final StoryService storyService;
 
-  public StoryController(StoryService storyService) {
-    this.storyService = storyService;
-  }
+    public StoryController(StoryService storyService) {
+        this.storyService = storyService;
+    }
 
-  @GetMapping("/{userId}")
-  public ResponseEntity<List<Story>> getUserStories(@PathVariable String userId) {
-    return ResponseEntity.ok(storyService.getUserStories(userId));
-  }
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Story>> getUserStories(@PathVariable String userId) {
+        return ResponseEntity.ok(storyService.getUserStories(userId));
+    }
 
-  @GetMapping("/{storyId}/views")
-  public ResponseEntity<Map<String, Integer>> getStoryViews(@PathVariable String storyId) {
-    return ResponseEntity.ok(storyService.getStoryViewCount(storyId));
-  }
+    @GetMapping("/{storyId}/views")
+    public ResponseEntity<Map<String, Integer>> getStoryViews(@PathVariable String storyId) {
+        return ResponseEntity.ok(storyService.getStoryViewCount(storyId));
+    }
 
-  @GetMapping("/feed/all")
-  public ResponseEntity<List<Story>> getAllStories() {
-    return ResponseEntity.ok(storyService.getAllActiveStories());
-  }
+    @GetMapping("/feed/all")
+    public ResponseEntity<List<Story>> getAllStories() {
+        return ResponseEntity.ok(storyService.getAllActiveStories());
+    }
 
-  @PostMapping("/upload")
-  public ResponseEntity<String> uploadStory(
-      @RequestParam("files") MultipartFile[] files,
-      @RequestParam("userId") String userId,
-      @RequestParam(value = "caption", required = false) String caption) {
-    storyService.createStory(userId, files, caption);
-    return ResponseEntity.ok("Story uploaded successfully.");
-  }
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadStory(@RequestParam("files") MultipartFile[] files,
+            @RequestParam("userId") String userId, @RequestParam(value = "caption", required = false) String caption) {
+        storyService.createStory(userId, files, caption);
+        return ResponseEntity.ok("Story uploaded successfully.");
+    }
 
-  @PutMapping("/{storyId}/view")
-  public ResponseEntity<String> viewStory(
-      @PathVariable String storyId, @RequestParam("viewerId") String viewerId) {
-    storyService.markStoryAsViewed(storyId, viewerId);
-    return ResponseEntity.ok("View registered");
-  }
+    @PutMapping("/{storyId}/view")
+    public ResponseEntity<String> viewStory(@PathVariable String storyId, @RequestParam("viewerId") String viewerId) {
+        storyService.markStoryAsViewed(storyId, viewerId);
+        return ResponseEntity.ok("View registered");
+    }
 }

@@ -10,52 +10,50 @@ import org.springframework.stereotype.Service;
 @Service
 public class AchievementService {
 
-  private final UserRepository userRepository;
-  private final NotificationService notificationService;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-  public AchievementService(
-      UserRepository userRepository, NotificationService notificationService) {
-    this.userRepository = userRepository;
-    this.notificationService = notificationService;
-  }
-
-  public void evaluateAchievements(User user) {
-    Set<AchievementType> newAchievements = new HashSet<>();
-
-    if (user.getPostCount() >= 1) {
-      newAchievements.add(AchievementType.FIRST_POST);
-    }
-    if (user.getLikeCount() >= 1) {
-      newAchievements.add(AchievementType.FIRST_LIKE);
-    }
-    if (user.getCommentCount() >= 1) {
-      newAchievements.add(AchievementType.FIRST_COMMENT);
-    }
-    if (user.getLikeCount() >= 10) {
-      newAchievements.add(AchievementType.TEN_LIKES);
-    }
-    if (user.getPostCount() >= 10) {
-      newAchievements.add(AchievementType.TEN_POSTS);
-    }
-    if (user.getLoginStreak() >= 7) {
-      newAchievements.add(AchievementType.WEEKLY_STREAK);
-    }
-    if (user.getLoginStreak() >= 30) {
-      newAchievements.add(AchievementType.MONTHLY_STREAK);
+    public AchievementService(UserRepository userRepository, NotificationService notificationService) {
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
-    boolean updated = user.getAchievements().addAll(newAchievements);
+    public void evaluateAchievements(User user) {
+        Set<AchievementType> newAchievements = new HashSet<>();
 
-    if (updated) {
-      userRepository.save(user);
-      notifyUser(user, newAchievements);
-    }
-  }
+        if (user.getPostCount() >= 1) {
+            newAchievements.add(AchievementType.FIRST_POST);
+        }
+        if (user.getLikeCount() >= 1) {
+            newAchievements.add(AchievementType.FIRST_LIKE);
+        }
+        if (user.getCommentCount() >= 1) {
+            newAchievements.add(AchievementType.FIRST_COMMENT);
+        }
+        if (user.getLikeCount() >= 10) {
+            newAchievements.add(AchievementType.TEN_LIKES);
+        }
+        if (user.getPostCount() >= 10) {
+            newAchievements.add(AchievementType.TEN_POSTS);
+        }
+        if (user.getLoginStreak() >= 7) {
+            newAchievements.add(AchievementType.WEEKLY_STREAK);
+        }
+        if (user.getLoginStreak() >= 30) {
+            newAchievements.add(AchievementType.MONTHLY_STREAK);
+        }
 
-  private void notifyUser(User user, Set<AchievementType> newAchievements) {
-    for (AchievementType achievement : newAchievements) {
-      notificationService.sendAchievementNotification(
-          user.getId(), user.getUsername(), achievement);
+        boolean updated = user.getAchievements().addAll(newAchievements);
+
+        if (updated) {
+            userRepository.save(user);
+            notifyUser(user, newAchievements);
+        }
     }
-  }
+
+    private void notifyUser(User user, Set<AchievementType> newAchievements) {
+        for (AchievementType achievement : newAchievements) {
+            notificationService.sendAchievementNotification(user.getId(), user.getUsername(), achievement);
+        }
+    }
 }

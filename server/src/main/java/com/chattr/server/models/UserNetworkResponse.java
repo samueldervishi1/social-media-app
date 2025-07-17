@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class UserNetworkResponse {
 
-  private UserLiteDTO user;
-  private List<UserLiteDTO> followers;
-  private List<UserLiteDTO> following;
+    private UserLiteDTO user;
+    private List<UserLiteDTO> followers;
+    private List<UserLiteDTO> following;
 }

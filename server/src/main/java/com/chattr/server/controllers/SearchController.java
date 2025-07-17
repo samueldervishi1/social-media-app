@@ -13,24 +13,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/search")
 public class SearchController {
 
-  private final SearchService searchService;
-  private final ActivityLogService activityLogService;
+    private final SearchService searchService;
+    private final ActivityLogService activityLogService;
 
-  public SearchController(SearchService searchService, ActivityLogService activityLogService) {
-    this.searchService = searchService;
-    this.activityLogService = activityLogService;
-  }
+    public SearchController(SearchService searchService, ActivityLogService activityLogService) {
+        this.searchService = searchService;
+        this.activityLogService = activityLogService;
+    }
 
-  @GetMapping("/community")
-  public List<Community> findByNameContainingIgnoreCase(@RequestParam String name) {
-    activityLogService.log(
-        name, "SEARCH_COMMUNITY", "Searching for communities with name containing: " + name + ".");
-    return searchService.searchCommunitiesByName(name);
-  }
+    @GetMapping("/community")
+    public List<Community> findByNameContainingIgnoreCase(@RequestParam String name) {
+        activityLogService.log(name, "SEARCH_COMMUNITY",
+                "Searching for communities with name containing: " + name + ".");
+        return searchService.searchCommunitiesByName(name);
+    }
 
-  @GetMapping("/all")
-  public ResponseEntity<List<User>> searchAll(@RequestParam String query) {
-    List<User> users = searchService.searchUsers(query);
-    return ResponseEntity.ok(users);
-  }
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> searchAll(@RequestParam String query) {
+        List<User> users = searchService.searchUsers(query);
+        return ResponseEntity.ok(users);
+    }
 }

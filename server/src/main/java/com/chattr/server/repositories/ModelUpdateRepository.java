@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ModelUpdateRepository extends MongoRepository<ModelUpdate, String> {
 
-  List<ModelUpdate> findByStatus(String status);
+    List<ModelUpdate> findByStatus(String status);
 
-  List<ModelUpdate> findByVersion(String version);
+    List<ModelUpdate> findByVersion(String version);
 
-  List<ModelUpdate> findByModelName(String modelName);
+    List<ModelUpdate> findByModelName(String modelName);
 }

@@ -5,5 +5,5 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface CommunityPostRepository extends MongoRepository<CommunityPost, String> {
-  List<CommunityPost> findByCommunityName(String communityName);
+    List<CommunityPost> findByCommunityName(String communityName);
 }

@@ -9,26 +9,26 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
-  private final NotificationService notificationService;
+    private final NotificationService notificationService;
 
-  public NotificationController(NotificationService notificationService) {
-    this.notificationService = notificationService;
-  }
+    public NotificationController(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
-  @GetMapping("/{userId}")
-  public List<Notifications> getUserNotifications(@PathVariable String userId) {
-    return notificationService.getNotifications(userId);
-  }
+    @GetMapping("/{userId}")
+    public List<Notifications> getUserNotifications(@PathVariable String userId) {
+        return notificationService.getNotifications(userId);
+    }
 
-  @PostMapping("/mark-seen/{id}")
-  public ResponseEntity<?> markAsSeen(@PathVariable String id) {
-    notificationService.markAsSeen(id);
-    return ResponseEntity.ok("Marked as seen");
-  }
+    @PostMapping("/mark-seen/{id}")
+    public ResponseEntity<?> markAsSeen(@PathVariable String id) {
+        notificationService.markAsSeen(id);
+        return ResponseEntity.ok("Marked as seen");
+    }
 
-  @PostMapping("/mark-all-seen/{userId}")
-  public ResponseEntity<?> markAllAsSeen(@PathVariable String userId) {
-    notificationService.markAllAsSeenForUser(userId);
-    return ResponseEntity.ok("All notifications marked as seen");
-  }
+    @PostMapping("/mark-all-seen/{userId}")
+    public ResponseEntity<?> markAllAsSeen(@PathVariable String userId) {
+        notificationService.markAllAsSeenForUser(userId);
+        return ResponseEntity.ok("All notifications marked as seen");
+    }
 }

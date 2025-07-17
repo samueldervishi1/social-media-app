@@ -11,16 +11,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 public class FollowRequest {
 
-  @Id private String id;
-  private String senderId;
-  private String receiverId;
-  private FollowStatus status;
-  private LocalDateTime timestamp;
+    @Id
+    private String id;
+    private String senderId;
+    private String receiverId;
+    private FollowStatus status;
+    private LocalDateTime timestamp;
 
-  public FollowRequest(String senderId, String receiverId, FollowStatus status) {
-    this.senderId = senderId;
-    this.receiverId = receiverId;
-    this.status = status;
-    this.timestamp = LocalDateTime.now();
-  }
+    public FollowRequest(String senderId, String receiverId, FollowStatus status) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.status = status;
+        this.timestamp = LocalDateTime.now();
+    }
 }

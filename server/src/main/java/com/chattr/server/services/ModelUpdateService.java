@@ -9,37 +9,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class ModelUpdateService {
 
-  private final ModelUpdateRepository modelUpdateRepository;
+    private final ModelUpdateRepository modelUpdateRepository;
 
-  public ModelUpdateService(ModelUpdateRepository modelUpdateRepository) {
-    this.modelUpdateRepository = modelUpdateRepository;
-  }
+    public ModelUpdateService(ModelUpdateRepository modelUpdateRepository) {
+        this.modelUpdateRepository = modelUpdateRepository;
+    }
 
-  public ModelUpdate save(ModelUpdate modelUpdate) {
-    return modelUpdateRepository.save(modelUpdate);
-  }
+    public ModelUpdate save(ModelUpdate modelUpdate) {
+        return modelUpdateRepository.save(modelUpdate);
+    }
 
-  public List<ModelUpdate> findAll() {
-    return modelUpdateRepository.findAll();
-  }
+    public List<ModelUpdate> findAll() {
+        return modelUpdateRepository.findAll();
+    }
 
-  public Optional<ModelUpdate> findById(String id) {
-    return modelUpdateRepository.findById(id);
-  }
+    public Optional<ModelUpdate> findById(String id) {
+        return modelUpdateRepository.findById(id);
+    }
 
-  public List<ModelUpdate> findByStatus(String status) {
-    return modelUpdateRepository.findByStatus(status);
-  }
+    public List<ModelUpdate> findByStatus(String status) {
+        return modelUpdateRepository.findByStatus(status);
+    }
 
-  public List<ModelUpdate> findByVersion(String version) {
-    return modelUpdateRepository.findByVersion(version);
-  }
+    public List<ModelUpdate> findByVersion(String version) {
+        return modelUpdateRepository.findByVersion(version);
+    }
 
-  public List<ModelUpdate> findByModelName(String modelName) {
-    return modelUpdateRepository.findByModelName(modelName);
-  }
+    public List<ModelUpdate> findByModelName(String modelName) {
+        return modelUpdateRepository.findByModelName(modelName);
+    }
 
-  public void deleteById(String id) {
-    modelUpdateRepository.deleteById(id);
-  }
+    public void deleteById(String id) {
+        modelUpdateRepository.deleteById(id);
+    }
 }

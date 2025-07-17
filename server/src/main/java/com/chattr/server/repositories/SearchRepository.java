@@ -6,5 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface SearchRepository extends MongoRepository<Community, String> {
 
-  List<Community> findByName(String name);
+    List<Community> findByName(String name);
 }

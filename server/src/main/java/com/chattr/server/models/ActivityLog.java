@@ -11,19 +11,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "activity_logs")
 public class ActivityLog {
 
-  @Id private String id;
+    @Id
+    private String id;
 
-  private String username;
-  private String action;
-  private String details;
-  private LocalDateTime timestamp;
+    private String username;
+    private String action;
+    private String details;
+    private LocalDateTime timestamp;
 
-  public ActivityLog() {}
+    public ActivityLog() {
+    }
 
-  public ActivityLog(String username, String action, String details) {
-    this.username = username;
-    this.action = action;
-    this.details = details;
-    this.timestamp = LocalDateTime.now();
-  }
+    public ActivityLog(String username, String action, String details) {
+        this.username = username;
+        this.action = action;
+        this.details = details;
+        this.timestamp = LocalDateTime.now();
+    }
 }

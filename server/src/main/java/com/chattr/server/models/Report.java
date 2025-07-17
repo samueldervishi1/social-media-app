@@ -12,14 +12,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(value = "reports")
 public class Report {
 
-  @Id private String id;
-  private String userId;
-  private String postId;
-  private String reason;
-  private LocalDateTime reportTime;
+    @Id
+    private String id;
+    private String userId;
+    private String postId;
+    private String reason;
+    private LocalDateTime reportTime;
 
-  public Report(String id) {
-    this.id = id;
-    this.id = UUID.randomUUID().toString();
-  }
+    public Report(String id) {
+        this.id = id;
+        this.id = UUID.randomUUID().toString();
+    }
 }
