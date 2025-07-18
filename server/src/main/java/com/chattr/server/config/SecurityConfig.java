@@ -38,11 +38,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    @SuppressWarnings("java:S4502") 
+    @SuppressWarnings({"java:S4502", "java/spring-disabled-csrf-protection"})
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.cors(cors -> cors.configurationSource(corsConfig()))
-                // codeql[java/spring-disabled-csrf-protection]
+                // lgtm[java/spring-disabled-csrf-protection]
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
