@@ -5,7 +5,7 @@ import com.chattr.server.models.Error;
 import com.chattr.server.models.Messages;
 import com.chattr.server.models.User;
 import com.chattr.server.models.UserInfo;
-import com.chattr.server.services.ActivityLogService;
+import com.chattr.server.services.LoggingService;
 import com.chattr.server.services.LoginService;
 import com.chattr.server.services.RegisterService;
 import com.chattr.server.utils.JwtTokenUtil;
@@ -36,14 +36,14 @@ public class AuthController {
     private final LoginService loginService;
     private final RegisterService registerService;
     private final JwtTokenUtil jwtTokenUtil;
-    private final ActivityLogService activityLogService;
+    private final LoggingService loggingService;
 
     public AuthController(LoginService loginService, RegisterService registerService, JwtTokenUtil jwtTokenUtil,
-            ActivityLogService activityLogService) {
+            LoggingService loggingService) {
         this.loginService = loginService;
         this.registerService = registerService;
         this.jwtTokenUtil = jwtTokenUtil;
-        this.activityLogService = activityLogService;
+        this.loggingService = loggingService;
     }
 
     @PostMapping("/login")
@@ -92,8 +92,6 @@ public class AuthController {
         try {
             String token = loginService.login(username, password, ipAddress);
 
-            activityLogService.log(username, "LOGIN", "Logged in from IP: " + ipAddress);
-
             ResponseCookie cookie = ResponseCookie.from("token", token).httpOnly(true).secure(true).path("/")
                     .sameSite("None").maxAge(Duration.ofHours(4)).build();
 
@@ -102,10 +100,10 @@ public class AuthController {
             return ResponseEntity.ok("Login successful");
 
         } catch (CustomException e) {
-            activityLogService.log(username, "FAILED_LOGIN", "Attempted from IP: " + ipAddress);
+            loggingService.logError("loginController", "login", "Failed to login", e);
             return createErrorResponse(e);
         } catch (Exception e) {
-            logger.error("Unexpected login error", e);
+            loggingService.logError("loginController", "login", "Internal Server Error", e);
             return createErrorResponse(new CustomException(500, "Internal server error"));
         }
     }
@@ -116,9 +114,7 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("token", "").httpOnly(true).secure(true).path("/").maxAge(0)
                 .sameSite("None").build();
-
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        activityLogService.log("anonymous", "LOGOUT", "User logged out");
 
         return ResponseEntity.ok("Logged out");
     }
@@ -135,7 +131,6 @@ public class AuthController {
         try {
             Claims claims = jwtTokenUtil.parseToken(token);
             String username = claims.getSubject();
-            activityLogService.log(username, "GET_USER_INFO", "Accessed /me endpoint");
 
             UserInfo userInfo = new UserInfo();
             userInfo.setUsername(claims.getSubject());
@@ -145,6 +140,7 @@ public class AuthController {
 
             return ResponseEntity.ok(userInfo);
         } catch (Exception e) {
+            loggingService.logError("loginController", "getCurrentUser", "Invalid token", e);
             return createErrorResponse(new CustomException(401, "Invalid token"));
         }
     }
@@ -184,8 +180,6 @@ public class AuthController {
             user.setFullName(fullName);
             user.setPassword(password);
             user.setIpAddress(ipAddress);
-            activityLogService.log(username, "REGISTER", "Registered from IP: " + ipAddress);
-
             registerService.createUser(user);
 
             return ResponseEntity
@@ -193,12 +187,12 @@ public class AuthController {
 
         } catch (CustomException e) {
             String username = getFallbackUsername(requestBody);
-            activityLogService.log(username, "FAILED_REGISTER", "Registration failed: " + e.getMessage());
+            loggingService.logError("loginController", "register", "Failed to register", e);
 
             return ResponseEntity.badRequest()
                     .body(createResponse("400", e.getMessage(), Messages.REGISTER_FAILED, "error"));
         } catch (Exception e) {
-            activityLogService.log("unknown", "REGISTER_ERROR", "Unexpected registration error: " + e.getMessage());
+            loggingService.logError("loginController", "register", "Internal Server Error", e);
             return ResponseEntity.internalServerError()
                     .body(createResponse("500", e.getMessage(), Messages.ERROR_500, "error"));
         }

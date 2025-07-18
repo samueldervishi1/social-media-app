@@ -19,15 +19,13 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final ActivityLogService activityLogService;
     private final AchievementService achievementService;
 
     public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository,
-            ActivityLogService activityLogService, AchievementService achievementService) {
+            AchievementService achievementService) {
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
-        this.activityLogService = activityLogService;
         this.achievementService = achievementService;
     }
 
@@ -53,12 +51,9 @@ public class LikeService {
         likeRepository.save(userLikes);
         user.setLikeCount(user.getLikeCount() + 1);
         achievementService.evaluateAchievements(user);
-        activityLogService.log(userId, "LIKE_POST", userId + "liked this post.");
-
         if (post.getLikedUserIds() == null)
             post.setLikedUserIds(new ArrayList<>());
         post.getLikedUserIds().add(userId);
-        activityLogService.log(postId, "LIKE_POST", "This post has been liked by user." + userId + ".");
         postRepository.save(post);
     }
 
@@ -75,7 +70,6 @@ public class LikeService {
 
         userLikes.getPostIds().remove(postId);
         userLikes.setTimestamp(LocalDateTime.now());
-        activityLogService.log(userId, "UNLIKE_POST", userId + "unliked this post.");
         likeRepository.save(userLikes);
 
         if (post.getLikedUserIds() != null) {

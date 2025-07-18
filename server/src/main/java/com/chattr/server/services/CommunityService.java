@@ -10,6 +10,10 @@ import com.chattr.server.repositories.CommunityRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.mongodb.DuplicateKeyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +26,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final CommunityPostRepository communityPostRepository;
     private final LoggingService loggingService;
+    private static final Logger logger = LoggerFactory.getLogger(CommunityService.class);
 
     public CommunityService(CommunityRepository communityRepository, CommunityPostRepository communityPostRepository,
             LoggingService loggingService) {
@@ -31,15 +36,29 @@ public class CommunityService {
     }
 
     public Community createCommunity(String name, String ownerId, String description, List<Faq> faqs) {
-        communityRepository.findByName(name).ifPresent(existing -> {
+        long startTime = System.currentTimeMillis();
+        logger.info("Starting createCommunity() for name: '{}', ownerId: '{}', faqsCount: {}", name, ownerId,
+                faqs != null ? faqs.size() : 0);
+
+        try {
+            // Remove manual check - let MongoDB handle uniqueness
+            Community community = new Community(name, ownerId, description);
+            community.setUserIds(List.of(ownerId));
+            community.setFaqs(faqs);
+
+            long saveStartTime = System.currentTimeMillis();
+            Community savedCommunity = communityRepository.save(community);
+            long saveDuration = System.currentTimeMillis() - saveStartTime;
+
+            long totalDuration = System.currentTimeMillis() - startTime;
+            logger.info("Community '{}' created successfully with ID: {}. Total duration: {} ms", name,
+                    savedCommunity.getId(), totalDuration);
+
+            return savedCommunity;
+
+        } catch (DuplicateKeyException e) {
             throw new CustomException(400, String.format(Messages.COMMUNITY_EXISTS, name));
-        });
-
-        Community community = new Community(name, ownerId, description);
-        community.setUserIds(List.of(ownerId));
-        community.setFaqs(faqs);
-
-        return communityRepository.save(community);
+        }
     }
 
     public CommunityPost createCommunityPost(String name, String ownerId, String description) {

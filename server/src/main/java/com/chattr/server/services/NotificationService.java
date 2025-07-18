@@ -14,13 +14,11 @@ public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationsRepository notificationsRepository;
-    private final ActivityLogService activityLogService;
 
-    public NotificationService(SimpMessagingTemplate messagingTemplate, NotificationsRepository notificationsRepository,
-            ActivityLogService activityLogService) {
+    public NotificationService(SimpMessagingTemplate messagingTemplate,
+            NotificationsRepository notificationsRepository) {
         this.messagingTemplate = messagingTemplate;
         this.notificationsRepository = notificationsRepository;
-        this.activityLogService = activityLogService;
     }
 
     public void sendFollowNotification(String toUserId, String followerUsername) {
@@ -38,15 +36,12 @@ public class NotificationService {
         dbNotification.setSeen(false);
         dbNotification.setTimestamp(LocalDateTime.now());
         notificationsRepository.save(dbNotification);
-        activityLogService.log(toUserId, "FOLLOW_NOTIFICATION", message);
 
         // Send real-time via WebSocket
         NotificationMessage notification = new NotificationMessage();
         notification.setToUserId(toUserId);
         notification.setMessage(message);
         notification.setType("FOLLOW");
-        activityLogService.log(toUserId, "FOLLOW_NOTIFICATION", message);
-
         messagingTemplate.convertAndSend("/topic/notifications/" + toUserId, notification);
     }
 
@@ -60,7 +55,6 @@ public class NotificationService {
         dbNotification.setSeen(false);
         dbNotification.setTimestamp(LocalDateTime.now());
         notificationsRepository.save(dbNotification);
-        activityLogService.log(toUserId, "FOLLOW_ACCEPTED_NOTIFICATION", message);
 
         NotificationMessage notification = new NotificationMessage();
         notification.setToUserId(toUserId);
@@ -84,7 +78,6 @@ public class NotificationService {
         dbNotification.setSeen(false);
         dbNotification.setTimestamp(LocalDateTime.now());
         notificationsRepository.save(dbNotification);
-        activityLogService.log(toUserId, "ACHIEVEMENT_NOTIFICATION", message);
 
         NotificationMessage notification = new NotificationMessage();
         notification.setToUserId(toUserId);
@@ -109,8 +102,5 @@ public class NotificationService {
             notification.setSeen(true);
             notificationsRepository.save(notification);
         }
-
-        activityLogService.log(userId, "MARK_ALL_NOTIFICATIONS_SEEN",
-                "Marked " + userNotifications.size() + " notifications as seen");
     }
 }

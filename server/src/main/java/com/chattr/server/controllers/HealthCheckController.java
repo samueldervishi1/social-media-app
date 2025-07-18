@@ -1,7 +1,6 @@
 package com.chattr.server.controllers;
 
 import com.chattr.server.models.HealthLog;
-import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.HealthLogService;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,11 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class HealthCheckController {
 
     private final HealthLogService healthLogService;
-    private final ActivityLogService activityLogService;
 
-    public HealthCheckController(HealthLogService healthLogService, ActivityLogService activityLogService) {
+    public HealthCheckController(HealthLogService healthLogService) {
         this.healthLogService = healthLogService;
-        this.activityLogService = activityLogService;
     }
 
     @GetMapping
@@ -28,7 +25,6 @@ public class HealthCheckController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // Perform basic health checks
             boolean isHealthy = performHealthChecks();
 
             HealthLog.HealthEntry lastEntry = healthLogService.getLastHealthEntry();
@@ -46,27 +42,19 @@ public class HealthCheckController {
                 healthLogService.saveHealthCheck(defaultStatus);
             }
 
-            // Add additional health metrics
             response.put("healthy", isHealthy);
             response.put("service", "chattr-server");
-            response.put("version", "1.1.2");
+            response.put("version", "1.3.2");
 
-            activityLogService.log("anonymous", "HEALTH_CHECK", "Health check performed");
-
-            // Return appropriate HTTP status code
             if (isHealthy) {
                 response.put("code", 200);
-                return ResponseEntity.ok(response); // 200 OK
+                return ResponseEntity.ok(response);
             } else {
                 response.put("code", 503);
                 return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
             }
 
         } catch (Exception e) {
-            // Log the error
-            activityLogService.log("anonymous", "HEALTH_CHECK_ERROR", "Health check failed: " + e.getMessage());
-
-            // Return error response
             response.put("status", "Health check failed");
             response.put("error", e.getMessage());
             response.put("timestamp", LocalDateTime.now());
@@ -120,11 +108,9 @@ public class HealthCheckController {
         Map<String, Object> checks = new HashMap<>();
 
         try {
-            // Database check
             boolean dbHealthy = isDatabaseHealthy();
             checks.put("database", createCheckResult(dbHealthy, "Database connectivity"));
 
-            // Memory check
             boolean memoryHealthy = isMemoryHealthy();
             Runtime runtime = Runtime.getRuntime();
             long maxMemory = runtime.maxMemory();
@@ -139,7 +125,6 @@ public class HealthCheckController {
             memoryDetails.put("used_memory_mb", usedMemory / 1024 / 1024);
             checks.put("memory", memoryDetails);
 
-            // Disk space check
             boolean diskHealthy = isDiskSpaceHealthy();
             checks.put("disk_space", createCheckResult(diskHealthy, "Disk space availability"));
 
@@ -150,9 +135,7 @@ public class HealthCheckController {
             response.put("timestamp", LocalDateTime.now());
             response.put("checks", checks);
             response.put("service", "chattr-server");
-            response.put("version", "1.1.2");
-
-            activityLogService.log("anonymous", "DETAILED_HEALTH_CHECK", "Detailed health check performed");
+            response.put("version", "1.3.2");
 
             if (overallHealthy) {
                 response.put("code", 200);

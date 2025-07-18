@@ -18,14 +18,12 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
-    private final ActivityLogService activityLogService;
     private final NotificationService notificationService;
 
     public FollowService(FollowRepository followRepository, UserRepository userRepository,
-            ActivityLogService activityLogService, NotificationService notificationService) {
+            NotificationService notificationService) {
         this.followRepository = followRepository;
         this.userRepository = userRepository;
-        this.activityLogService = activityLogService;
         this.notificationService = notificationService;
     }
 
@@ -46,7 +44,6 @@ public class FollowService {
         } else {
             FollowRequest followRequest = new FollowRequest(senderId, receiverId, FollowStatus.PENDING);
             notificationService.sendFollowNotification(receiverId, sender.getUsername());
-            activityLogService.log(senderId, "FOLLOW_REQUEST_SENT", receiverId + " has requested to follow you.");
             followRepository.save(followRequest);
         }
     }
@@ -63,10 +60,6 @@ public class FollowService {
 
         followRequest.setStatus(FollowStatus.ACCEPTED);
         followRepository.save(followRequest);
-
-        activityLogService.log(followRequest.getSenderId(), "FOLLOW_REQUEST_ACCEPTED",
-                "You have accepted " + followRequest.getReceiverId() + "'s follow request.");
-
         addToFollowers(followRequest.getSenderId(), followRequest.getReceiverId());
 
         User receiver = userRepository.findById(followRequest.getReceiverId())
@@ -87,8 +80,6 @@ public class FollowService {
 
         FollowRequest followBackRequest = new FollowRequest(senderId, receiverId, FollowStatus.FOLLOW_BACK);
         notificationService.sendFollowNotification(receiverId, sender.getUsername());
-        activityLogService.log(senderId, "FOLLOW_BACK_REQUESTED",
-                "You have requested to follow back " + receiverId + ".");
         followRepository.save(followBackRequest);
     }
 

@@ -1,7 +1,6 @@
 package com.chattr.server.controllers;
 
 import com.chattr.server.models.Hashtag;
-import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.HashtagService;
 
 import java.util.HashMap;
@@ -20,11 +19,9 @@ import org.springframework.web.bind.annotation.*;
 public class HashtagController {
 
     private final HashtagService hashtagService;
-    private final ActivityLogService activityLogService;
 
-    public HashtagController(HashtagService hashtagService, ActivityLogService activityLogService) {
+    public HashtagController(HashtagService hashtagService) {
         this.hashtagService = hashtagService;
-        this.activityLogService = activityLogService;
     }
 
     @GetMapping
@@ -37,7 +34,6 @@ public class HashtagController {
             response.put("count", hashtags.size());
             response.put("code", 200);
 
-            activityLogService.log("anonymous", "HASHTAG_GET", "Retrieved all hashtags successfully");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -46,14 +42,12 @@ public class HashtagController {
             errorResponse.put("message", e.getMessage());
             errorResponse.put("code", 500);
 
-            activityLogService.log("anonymous", "HASHTAG_GET_ERROR", "Failed to retrieve hashtags: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
     @PostMapping("/post")
     public Hashtag createHashtag(@RequestBody Hashtag hashtag) {
-        activityLogService.log("anonymous", "HASHTAG_CREATE", "Creating hashtag: " + hashtag.getName());
         return hashtagService.createHashtag(hashtag);
     }
 }

@@ -38,19 +38,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("java:S4502") 
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("CONFIGURING SECURITY FILTER CHAIN");
 
         http.cors(cors -> cors.configurationSource(corsConfig()))
-                // CSRF Protection Disabled - Safe for Stateless JWT API
-                // Rationale:
-                // 1. SessionCreationPolicy.STATELESS - No server-side sessions created or used
-                // 2. JWT tokens manually extracted/validated per request - No automatic browser
-                // auth
-                // 3. No server state to exploit - Each request is independent and
-                // self-contained
-                // 4. Custom authentication flow prevents traditional CSRF attack vectors
-                // CodeQL suppression: lgtm[java/spring-disabled-csrf-protection]
+                // codeql[java/spring-disabled-csrf-protection]
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())

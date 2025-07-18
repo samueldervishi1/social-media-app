@@ -1,6 +1,5 @@
 package com.chattr.server.controllers;
 
-import com.chattr.server.services.ActivityLogService;
 import com.chattr.server.services.ChatBotService;
 
 import java.util.Map;
@@ -18,11 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatBotController {
 
     private final ChatBotService chatBotService;
-    private final ActivityLogService activityLogService;
 
-    public ChatBotController(ChatBotService chatBotService, ActivityLogService activityLogService) {
+    public ChatBotController(ChatBotService chatBotService) {
         this.chatBotService = chatBotService;
-        this.activityLogService = activityLogService;
     }
 
     @PostMapping("/query")
@@ -32,8 +29,6 @@ public class ChatBotController {
         if (question.isEmpty()) {
             return Map.of("error", "Message cannot be empty.");
         }
-
-        activityLogService.log(question, "CHAT_ASK_QUESTION", "Sending question to chatbot: " + question + ".");
 
         return chatBotService.getResponses(question);
     }

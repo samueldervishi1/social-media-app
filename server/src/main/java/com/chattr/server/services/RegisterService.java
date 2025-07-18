@@ -27,7 +27,6 @@ public class RegisterService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
-        user.setSalt(null);
         user.setRole(user.getRole() != null ? user.getRole() : Messages.DEFAULT_ROLE);
         user.setAccountCreationDate(LocalDateTime.now());
 
