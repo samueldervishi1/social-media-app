@@ -6,6 +6,7 @@ import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.User;
 import com.chattr.server.models.UserLiteDTO;
 import com.chattr.server.repositories.UserRepository;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class UserService {
     }
 
     public String getUsernameById(String userId) {
-        return userRepository.findById(userId).map(User::getUsername)
+        return userRepository.findUsernameById(userId).map(User::getUsername)
                 .orElseThrow(() -> new CustomException(404, String.format(USER_NOT_FOUND_BY_ID, userId)));
     }
 
@@ -34,18 +35,34 @@ public class UserService {
     }
 
     public List<UserLiteDTO> getFollowers(String userId) {
-        User user = userRepository.findById(userId)
+        if (!userRepository.existsById(userId)) {
+            throw new CustomException(404, String.format(USER_NOT_FOUND, userId));
+        }
+
+        User userWithFollowers = userRepository.findFollowersById(userId)
                 .orElseThrow(() -> new CustomException(404, String.format(USER_NOT_FOUND, userId)));
 
-        return userRepository.findByIdIn(user.getFollowers()).stream()
+        if (userWithFollowers.getFollowers() == null || userWithFollowers.getFollowers().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return userRepository.findUserLiteByIdIn(userWithFollowers.getFollowers()).stream()
                 .map(u -> new UserLiteDTO(u.getId(), u.getUsername(), u.getFullName())).toList();
     }
 
     public List<UserLiteDTO> getFollowing(String userId) {
-        User user = userRepository.findById(userId)
+        if (!userRepository.existsById(userId)) {
+            throw new CustomException(404, String.format(USER_NOT_FOUND, userId));
+        }
+
+        User userWithFollowing = userRepository.findFollowingById(userId)
                 .orElseThrow(() -> new CustomException(404, String.format(USER_NOT_FOUND, userId)));
 
-        return userRepository.findByIdIn(user.getFollowing()).stream()
+        if (userWithFollowing.getFollowing() == null || userWithFollowing.getFollowing().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return userRepository.findUserLiteByIdIn(userWithFollowing.getFollowing()).stream()
                 .map(u -> new UserLiteDTO(u.getId(), u.getUsername(), u.getFullName())).toList();
     }
 }

@@ -6,8 +6,7 @@ import com.chattr.server.models.Post;
 import com.chattr.server.models.User;
 import com.chattr.server.repositories.PostRepository;
 import com.chattr.server.repositories.UserRepository;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Service responsible for managing user posts, including creation, retrieval,
- * and soft deletion.
- */
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -34,23 +29,28 @@ public class PostService {
     public void createPost(String username, Post post) {
         User user = getUserByUsername(username);
         enrichPostWithMetadata(post, user);
+
         user.setPostCount(user.getPostCount() + 1);
         user.setKarma(user.getKarma() + 10);
+
+        // Save both in single transaction
         userRepository.save(user);
+        postRepository.save(post);
 
         achievementService.evaluateAchievements(user);
-        postRepository.save(post);
     }
 
     private void enrichPostWithMetadata(Post post, User user) {
         post.setUserId(user.getId());
-        post.setPostDate(LocalDate.now().toString());
-        post.setPostTime(LocalTime.now().toString());
+        LocalDateTime now = LocalDateTime.now();
+        post.setPostDate(now.toLocalDate().toString());
+        post.setPostTime(now.toLocalTime().toString());
+        post.setDeleted(false);
     }
 
     public Page<Post> getAllPostsPaged(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postDate").descending());
-        return postRepository.findAll(pageable);
+        return postRepository.findAllActivePostsPaged(pageable);
     }
 
     public Post getPostById(String postId) {
@@ -59,7 +59,7 @@ public class PostService {
     }
 
     public List<Post> getUserPosts(String userId) {
-        return postRepository.findByUserId(userId);
+        return postRepository.findActivePostsByUserId(userId);
     }
 
     public long getPostCountPerUser(String userId) {
@@ -67,8 +67,7 @@ public class PostService {
     }
 
     public boolean isPostLikedByUser(String postId, String userId) {
-        Post post = getPostById(postId);
-        return post.getLikedUserIds() != null && post.getLikedUserIds().contains(userId);
+        return postRepository.existsByIdAndLikedUserId(postId, userId);
     }
 
     @Transactional
@@ -79,53 +78,65 @@ public class PostService {
     }
 
     public List<Post> getTopPosts(int limit) {
-        List<Post> allPosts = postRepository.findAll();
-        return allPosts.stream().filter(p -> p.getLikedUserIds() != null)
-                .sorted((p1, p2) -> Integer.compare(p2.getLikedUserIds().size(), p1.getLikedUserIds().size()))
-                .limit(limit).toList();
+        Pageable pageable = PageRequest.of(0, limit);
+        return postRepository.findTopPostsByLikes(pageable);
     }
 
+    @Transactional
     public void savePost(String userId, String postId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.POST_NOT_FOUND, postId)));
+        User user = getUserById(userId);
+        Post post = getPostById(postId);
 
         if (user.getSavedPostIds() == null) {
             user.setSavedPostIds(new ArrayList<>());
         }
 
-        if (!user.getSavedPostIds().contains(postId)) {
-            user.getSavedPostIds().add(postId);
-            post.getSavedUserIds().add(userId);
-            userRepository.save(user);
-            postRepository.save(post);
-        } else {
+        if (user.getSavedPostIds().contains(postId)) {
             throw new CustomException(409, String.format(Messages.POST_ALREADY_SAVED, postId, userId));
         }
+
+        user.getSavedPostIds().add(postId);
+        if (post.getSavedUserIds() == null) {
+            post.setSavedUserIds(new ArrayList<>());
+        }
+        post.getSavedUserIds().add(userId);
+
+        userRepository.save(user);
+        postRepository.save(post);
     }
 
+    @Transactional
     public void unsavePost(String userId, String postId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));
+        User user = getUserById(userId);
+        Post post = getPostById(postId);
 
-        if (user.getSavedPostIds() != null && user.getSavedPostIds().contains(postId)) {
+        if (user.getSavedPostIds() != null) {
             user.getSavedPostIds().remove(postId);
             userRepository.save(user);
+        }
+
+        if (post.getSavedUserIds() != null) {
+            post.getSavedUserIds().remove(userId);
+            postRepository.save(post);
         }
     }
 
     public List<Post> getSavedPosts(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));
-
-        return postRepository.findAllById(user.getSavedPostIds());
+        User user = getUserById(userId);
+        if (user.getSavedPostIds() == null || user.getSavedPostIds().isEmpty()) {
+            return List.of();
+        }
+        return postRepository.findActivePostsByIds(user.getSavedPostIds());
     }
 
     private User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(String.format(Messages.USER_NOT_FOUND, username)));
+    }
+
+    private User getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(404, String.format(Messages.USER_NOT_FOUND, userId)));
     }
 
     public int getCommentCountForPost(String postId) {

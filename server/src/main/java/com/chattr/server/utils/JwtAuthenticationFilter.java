@@ -151,9 +151,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().flush();
     }
 
-    private final String[] publicUrls = {"/chattr/api/storm/provision/v1.3.2/auth/login",
-            "/chattr/api/storm/provision/v1.3.2/auth/register", "/chattr/api/storm/provision/v1.3.2/internal/token",
-            "/chattr/api/storm/provision/v1.3.2/auth/me", "/chattr/api/storm/provision/v1.3.2/auth/logout",
-            "/chattr/api/storm/provision/v1.3.2/health", "/chattr/api/storm/provision/v1.3.2/hashtags/get",
-            "/chattr/api/storm/provision/v1.3.2/hashtags/save", "/chattr/api/storm/provision/v1.3.2/create/questions"};
+    private final String[] publicUrls = {"/chattr/api/core/v2.0/auth/login", "/chattr/api/core/v2.0/auth/register",
+            "/chattr/api/core/v2.0/internal/token", "/chattr/api/core/v2.0/auth/me",
+            "/chattr/api/core/v2.0/auth/logout", "/chattr/api/core/v2.0/health", "/chattr/api/core/v2.0/hashtags/get",
+            "/chattr/api/core/v2.0/hashtags/save", "/chattr/api/core/v2.0/create/questions"};
 }
