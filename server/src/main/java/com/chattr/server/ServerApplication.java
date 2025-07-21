@@ -22,7 +22,10 @@ public class ServerApplication {
 
     public static void main(String[] args) {
         System.setProperty("spring.application.name", "chattr-server");
+        long start = System.currentTimeMillis();
         SpringApplication app = new SpringApplication(ServerApplication.class);
         app.run(args);
+        long end = System.currentTimeMillis();
+        System.out.println("Cold start time: " + (end - start) + " ms");
     }
 }

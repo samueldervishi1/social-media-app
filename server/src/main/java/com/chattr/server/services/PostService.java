@@ -23,7 +23,6 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final AchievementService achievementService;
 
     @Transactional
     public void createPost(String username, Post post) {
@@ -33,11 +32,8 @@ public class PostService {
         user.setPostCount(user.getPostCount() + 1);
         user.setKarma(user.getKarma() + 10);
 
-        // Save both in single transaction
         userRepository.save(user);
         postRepository.save(post);
-
-        achievementService.evaluateAchievements(user);
     }
 
     private void enrichPostWithMetadata(Post post, User user) {

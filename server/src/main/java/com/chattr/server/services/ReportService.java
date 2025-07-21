@@ -42,7 +42,6 @@ public class ReportService {
             updateUserReportedPosts(userId, postId);
 
             report.setReportTime(LocalDateTime.now());
-            loggingService.logInfo("ReportService", "report", "User" + userId + "reported post" + postId + ".");
             return reportPostRepository.save(report);
 
         } catch (CustomException e) {

@@ -1,6 +1,5 @@
 package com.chattr.server.services;
 
-import com.chattr.server.models.AchievementType;
 import com.chattr.server.models.NotificationMessage;
 import com.chattr.server.models.Notifications;
 import com.chattr.server.repositories.NotificationsRepository;
@@ -67,26 +66,6 @@ public class NotificationService {
     public List<Notifications> getNotifications(String userId) {
         return notificationsRepository.findAll().stream().filter(n -> n.getUserId().equals(userId)).toList();
     }
-
-    public void sendAchievementNotification(String toUserId, String username, AchievementType achievement) {
-        String message = "🎉 You unlocked the achievement: " + achievement.name().replace("_", " ").toLowerCase();
-
-        Notifications dbNotification = new Notifications();
-        dbNotification.setUserId(toUserId);
-        dbNotification.setMessage(message);
-        dbNotification.setType("ACHIEVEMENT");
-        dbNotification.setSeen(false);
-        dbNotification.setTimestamp(LocalDateTime.now());
-        notificationsRepository.save(dbNotification);
-
-        NotificationMessage notification = new NotificationMessage();
-        notification.setToUserId(toUserId);
-        notification.setMessage(message);
-        notification.setType("ACHIEVEMENT");
-
-        messagingTemplate.convertAndSend("/topic/notifications/" + toUserId, notification);
-    }
-
     public void markAsSeen(String id) {
         Notifications notif = notificationsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));

@@ -36,24 +36,6 @@ public class OAuth2EmailService {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String USER_ID = "me";
 
-    @Value("${google.oauth2.client-id}")
-    private String clientId;
-
-    @Value("${google.oauth2.client-secret}")
-    private String clientSecret;
-
-    @Value("${google.oauth2.redirect-uri}")
-    private String redirectUri;
-
-    @Value("${google.oauth2.tokens-directory}")
-    private String tokensDirectoryPath;
-
-    @Value("${google.oauth2.application-name}")
-    private String applicationName;
-
-    @Value("${mail.from}")
-    private String fromEmail;
-
     private final GeoLocationService geoLocationService;
     private Gmail gmailService;
 
@@ -158,4 +140,22 @@ public class OAuth2EmailService {
                 """
                 .formatted(ipAddress, location);
     }
+
+    @Value("${google.oauth2.client-id}")
+    private String clientId;
+
+    @Value("${google.oauth2.client-secret}")
+    private String clientSecret;
+
+    @Value("${google.oauth2.redirect-uri}")
+    private String redirectUri;
+
+    @Value("${google.oauth2.tokens-directory}")
+    private String tokensDirectoryPath;
+
+    @Value("${google.oauth2.application-name}")
+    private String applicationName;
+
+    @Value("${mail.from}")
+    private String fromEmail;
 }

@@ -10,9 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,6 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String TOKEN_COOKIE_NAME = "token";
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private final JwtTokenUtil jwtTokenUtil;
+
+    @Value("#{'${chattr.security.public-urls}'.split(',')}")
+    private List<String> publicUrls;
 
     @Autowired
     public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil) {
@@ -104,8 +110,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isPublicEndpoint(String uri) {
         for (String publicUrl : publicUrls) {
-            boolean matches = pathMatcher.match(publicUrl, uri);
-            if (matches) {
+            if (pathMatcher.match(publicUrl.trim(), uri)) {
                 return true;
             }
         }
@@ -150,9 +155,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
     }
-
-    private final String[] publicUrls = {"/chattr/api/core/v2.0/auth/login", "/chattr/api/core/v2.0/auth/register",
-            "/chattr/api/core/v2.0/internal/token", "/chattr/api/core/v2.0/auth/me",
-            "/chattr/api/core/v2.0/auth/logout", "/chattr/api/core/v2.0/health", "/chattr/api/core/v2.0/hashtags/get",
-            "/chattr/api/core/v2.0/hashtags/save", "/chattr/api/core/v2.0/create/questions"};
 }

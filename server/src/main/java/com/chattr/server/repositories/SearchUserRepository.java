@@ -12,9 +12,4 @@ public interface SearchUserRepository extends MongoRepository<User, String> {
             + "{ 'fullName': { $regex: ?0, $options: 'i' } } " + "] }")
     List<User> findUsersWithTextSearch(String query, Pageable pageable);
 
-    @Query("{ $or: [ " + "{ 'username': { $regex: '^.*?0.*$', $options: 'i' } }, "
-            + "{ 'fullName': { $regex: '^.*?0.*$', $options: 'i' } } " + "] }")
-    List<User> findUsersFlexibleSearch(String query, Pageable pageable);
-
-    List<User> findByUsernameContainingIgnoreCaseOrFullNameContainingIgnoreCase(String username, String fullName);
 }

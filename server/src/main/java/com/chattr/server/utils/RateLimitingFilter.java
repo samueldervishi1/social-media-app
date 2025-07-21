@@ -71,6 +71,8 @@ public class RateLimitingFilter implements Filter {
             }
 
         } catch (Exception e) {
+            loggingService.logError("Rate Limit Filter", "doFilter", "Something went wrong while applying rate limit",
+                    e);
             log.error("Error in rate limiting filter", e);
             chain.doFilter(request, response);
         }
@@ -108,7 +110,7 @@ public class RateLimitingFilter implements Filter {
                     .build();
         } catch (Exception e) {
             loggingService.logError("Rate Limit Filter", "createRateLimitBucket",
-                    "Something went wrong whilte creating rate limit bucket", e);
+                    "Something went wrong while creating rate limit bucket", e);
             log.error("Failed to create rate limit bucket", e);
             return Bucket.builder()
                     .addLimit(Bandwidth.builder().capacity(1000).refillIntervally(1000, Duration.ofMinutes(1)).build())

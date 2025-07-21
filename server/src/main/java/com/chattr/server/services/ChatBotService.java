@@ -21,16 +21,6 @@ import org.springframework.web.client.RestTemplate;
 public class ChatBotService {
 
     private final LoggingService loggingService;
-
-    @Value("${model.api.key}")
-    private String apiKey;
-
-    @Value("${model.api.url}")
-    private String modelApiUrl;
-
-    @Value("${model.api.model}")
-    private String model;
-
     private final RestTemplate restTemplate;
     private final HttpHeaders headers;
 
@@ -74,7 +64,6 @@ public class ChatBotService {
                 List.of(Map.of("role", "user", "content", List.of(Map.of("type", "text", "text", message)))));
     }
 
-    /** Parses the model API response and extracts the answer. */
     private Map<String, Object> parseModelResponse(Map<String, Object> responseBody, String userMessage) {
         if (responseBody == null || !responseBody.containsKey("choices")) {
             return Map.of("answer", Messages.ERROR_UNEXPECTED_FORMAT);
@@ -95,4 +84,13 @@ public class ChatBotService {
         String answer = (String) messageMap.get("content");
         return Map.of("message", userMessage, "answer", answer);
     }
+
+    @Value("${model.api.key}")
+    private String apiKey;
+
+    @Value("${model.api.url}")
+    private String modelApiUrl;
+
+    @Value("${model.api.model}")
+    private String model;
 }

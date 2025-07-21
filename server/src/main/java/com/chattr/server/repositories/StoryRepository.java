@@ -11,5 +11,4 @@ public interface StoryRepository extends MongoRepository<Story, String> {
 
     List<Story> findByExpiresAtAfter(LocalDateTime now);
 
-    List<Story> findByExpiresAtBefore(LocalDateTime now);
 }

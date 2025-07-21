@@ -20,7 +20,6 @@ public class LoginService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final OAuth2EmailService emailService;
-    private final AchievementService achievementService;
     private final LoggingService loggingService;
 
     public String login(String username, String password, String ipAddress) {
@@ -73,7 +72,6 @@ public class LoginService {
                 }
                 updateLoginMetadata(user, ipAddress);
                 userRepository.save(user);
-                achievementService.evaluateAchievements(user);
             } catch (Exception e) {
                 loggingService.logError("LoginService", "runPostLoginAsync", "Post-login error for user: " + username,
                         e);

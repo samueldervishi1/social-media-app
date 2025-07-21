@@ -9,8 +9,6 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface PostRepository extends MongoRepository<Post, String> {
 
-    List<Post> findByUserId(String userId);
-
     long countByUserIdAndDeletedFalse(String userId);
 
     @Query("{ 'deleted': { $ne: true } }")

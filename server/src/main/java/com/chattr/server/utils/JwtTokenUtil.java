@@ -48,8 +48,6 @@ public class JwtTokenUtil {
         this.expirationMillis = expiration != null ? expiration : 3600000L;
 
         warmUpJWT();
-
-        log.info("JWT initialized with modern API and optimized secret");
     }
 
     private void warmUpJWT() {
@@ -62,8 +60,6 @@ public class JwtTokenUtil {
                     .compact();
 
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(warmupToken);
-
-            log.debug("JWT crypto operations warmed up successfully");
         } catch (Exception e) {
             loggingService.logError("JWT TOKEN UTIL", "warmUpJWT", "Something went wrong while warming up jw token", e);
             log.warn("JWT warmup failed: {}", e.getMessage());

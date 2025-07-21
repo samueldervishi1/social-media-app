@@ -20,9 +20,11 @@ import org.springframework.stereotype.Service;
 public class HealthLogService {
 
     private final HealthLogRepository healthLogRepository;
+    private final LoggingService loggingService;
 
-    public HealthLogService(HealthLogRepository healthLogRepository) {
+    public HealthLogService(HealthLogRepository healthLogRepository, LoggingService loggingService) {
         this.healthLogRepository = healthLogRepository;
+        this.loggingService = loggingService;
     }
 
     @Scheduled(cron = "0 */30 * * * *")
@@ -50,7 +52,6 @@ public class HealthLogService {
                     long minutesDiff = Duration.between(lastTimestamp, now).toMinutes();
 
                     if (minutesDiff < 30) {
-                        log.info("Last health check was {} minutes ago. Skipping save.", minutesDiff);
                         return;
                     }
                 }
@@ -67,7 +68,7 @@ public class HealthLogService {
             log.info("Health check saved at {}", now);
 
         } catch (Exception e) {
-            log.error("Error while saving health check: {}", e.getMessage(), e);
+            loggingService.logError("HealthLogService", "saveHealthCheck", "Error while saving health check", e);
             throw new CustomException(500, "Something went wrong while saving health check");
         }
     }

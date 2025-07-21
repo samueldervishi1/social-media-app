@@ -38,7 +38,7 @@ public class AppConfig {
 
         registrationBean.setFilter(rateLimitingFilter);
 
-        registrationBean.addUrlPatterns("/chattr/api/storm/provision/v1.3.2/auth/*");
+        registrationBean.addUrlPatterns("/chattr/api/core/v2.1/auth/*");
 
         registrationBean.setOrder(1); // Execute before JWT filter
         registrationBean.setName("authRateLimitingFilter");

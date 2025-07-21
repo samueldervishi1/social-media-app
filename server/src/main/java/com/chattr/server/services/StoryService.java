@@ -18,12 +18,6 @@ public class StoryService {
     private final StoryRepository storyRepository;
     private final LoggingService loggingService;
 
-    @Value("${story.upload-dir}")
-    private String uploadDir;
-
-    @Value("${story.allowed-extensions}")
-    private String allowedExtensionsConfig;
-
     public StoryService(StoryRepository storyRepository, LoggingService loggingService) {
         this.storyRepository = storyRepository;
         this.loggingService = loggingService;
@@ -31,9 +25,21 @@ public class StoryService {
 
     public void createStory(String userId, MultipartFile[] files, String caption) {
         try {
+            long maxSize = getMaxFileSizeInBytes();
             List<Story.MediaItem> mediaItems = new ArrayList<>();
 
             for (MultipartFile file : files) {
+                if (file.isEmpty()) {
+                    throw new CustomException(400, "Uploaded file is empty.");
+                }
+
+                if (file.getSize() > maxSize) {
+                    loggingService.logWarn("StoryService", "createStory",
+                            "File exceeds the maximus allowed size of 6 MB");
+                    throw new CustomException(413,
+                            "File exceeds the maximum allowed size of " + maxSize / (1024 * 1024) + "MB");
+                }
+
                 String extension = getFileExtension(file.getOriginalFilename());
                 String filename = UUID.randomUUID() + "." + extension;
 
@@ -41,6 +47,8 @@ public class StoryService {
                 Path destination = uploadPath.resolve(filename).normalize();
 
                 if (!destination.startsWith(uploadPath)) {
+                    loggingService.logWarn("StoryService", "createStory",
+                            "Invalid file path: outside upload directory");
                     throw new SecurityException("Invalid file path: outside upload directory");
                 }
 
@@ -60,13 +68,11 @@ public class StoryService {
             story.setMedia(mediaItems);
             story.setCreatedAt(LocalDateTime.now());
             story.setExpiresAt(LocalDateTime.now().plusHours(24));
-
-            loggingService.logInfo("StoryService", "createStory", "New story created by user " + userId + ".");
             storyRepository.save(story);
 
         } catch (IOException e) {
             loggingService.logError("StoryService", "createStory", "Failed to store story files", e);
-            throw new CustomException(500, "Internal Server error: " + e);
+            throw new CustomException(500, "Internal Server error: " + e.getMessage());
         }
     }
 
@@ -114,6 +120,17 @@ public class StoryService {
         return ext;
     }
 
+    private long getMaxFileSizeInBytes() {
+        String size = maxFileSizeConfig.trim().toUpperCase();
+        if (size.endsWith("MB")) {
+            return Long.parseLong(size.replace("MB", "").trim()) * 1024 * 1024;
+        } else if (size.endsWith("KB")) {
+            return Long.parseLong(size.replace("KB", "").trim()) * 1024;
+        } else {
+            return Long.parseLong(size);
+        }
+    }
+
     private boolean isVideoFile(String extension) {
         return List.of("mp4", "mov", "avi", "webm", "mkv").contains(extension.toLowerCase());
     }
@@ -121,4 +138,13 @@ public class StoryService {
     private List<String> getAllowedExtensions() {
         return Arrays.stream(allowedExtensionsConfig.split(",")).map(String::trim).map(String::toLowerCase).toList();
     }
+
+    @Value("${story.upload-dir}")
+    private String uploadDir;
+
+    @Value("${story.allowed-extensions}")
+    private String allowedExtensionsConfig;
+
+    @Value("${story.max-file-size}")
+    private String maxFileSizeConfig;
 }

@@ -27,7 +27,6 @@ public class LoggingService {
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    /** Log info level events */
     public void logInfo(String service, String method, String message) {
         logEvent("INFO", service, method, message, null, null);
     }
@@ -36,7 +35,6 @@ public class LoggingService {
         logEvent("INFO", service, method, message, data, null);
     }
 
-    /** Log warning level events */
     public void logWarn(String service, String method, String message) {
         logEvent("WARN", service, method, message, null, null);
     }
@@ -45,7 +43,6 @@ public class LoggingService {
         logEvent("WARN", service, method, message, data, null);
     }
 
-    /** Log error level events */
     public void logError(String service, String method, String message, Exception exception) {
         logEvent("ERROR", service, method, message, null, exception);
     }
@@ -54,7 +51,6 @@ public class LoggingService {
         logEvent("ERROR", service, method, message, data, exception);
     }
 
-    /** Log debug level events */
     public void logDebug(String service, String method, String message) {
         logEvent("DEBUG", service, method, message, null, null);
     }
@@ -63,7 +59,6 @@ public class LoggingService {
         logEvent("DEBUG", service, method, message, data, null);
     }
 
-    /** Log method execution time */
     public void logExecutionTime(String service, String method, long executionTimeMs) {
         Map<String, Object> data = new HashMap<>();
         data.put("executionTimeMs", executionTimeMs);
@@ -72,7 +67,6 @@ public class LoggingService {
         logEvent("PERF", service, method, String.format("Method executed in %dms", executionTimeMs), data, null);
     }
 
-    /** Core logging method that handles all log events */
     @Async
     public void logEvent(String level, String service, String method, String message, Object data,
             Exception exception) {
@@ -80,10 +74,8 @@ public class LoggingService {
             try {
                 Map<String, Object> logEntry = createLogEntry(level, service, method, message, data, exception);
 
-                // Log to console (standard logging)
                 logToConsole(level, logEntry);
 
-                // Store to a local file
                 storeToFile(logEntry);
 
             } catch (Exception e) {
@@ -92,7 +84,6 @@ public class LoggingService {
         });
     }
 
-    /** Create structured log entry */
     private Map<String, Object> createLogEntry(String level, String service, String method, String message, Object data,
             Exception exception) {
         Map<String, Object> logEntry = new HashMap<>();
@@ -119,7 +110,6 @@ public class LoggingService {
         return logEntry;
     }
 
-    /** Log to console using standard SLF4J */
     private void logToConsole(String level, Map<String, Object> logEntry) {
         String message = String.format("[%s.%s] %s", logEntry.get("service"), logEntry.get("method"),
                 logEntry.get("message"));
@@ -145,19 +135,16 @@ public class LoggingService {
         }
     }
 
-    /** Store log entry to local file in JSON format */
     private void storeToFile(Map<String, Object> logEntry) {
         try {
             String today = LocalDateTime.now().format(FILE_DATE_FORMAT);
             String fileName = LOG_DIR + "app-" + today + ".log";
 
-            // Create directory if it doesn't exist
             java.io.File directory = new java.io.File(LOG_DIR);
             if (!directory.exists()) {
                 directory.mkdirs();
             }
 
-            // Write log entry as JSON line
             try (FileWriter writer = new FileWriter(fileName, true)) {
                 writer.write(objectMapper.writeValueAsString(logEntry) + "\n");
             }
@@ -167,14 +154,12 @@ public class LoggingService {
         }
     }
 
-    /** Get stack trace as string */
     private String getStackTrace(Exception exception) {
         java.io.StringWriter sw = new java.io.StringWriter();
         exception.printStackTrace(new java.io.PrintWriter(sw));
         return sw.toString();
     }
 
-    /** Log user activity (login, logout, etc.) */
     public void logUserActivity(String userId, String username, String activity, String ipAddress) {
         Map<String, Object> data = new HashMap<>();
         data.put("userId", userId);
@@ -185,7 +170,6 @@ public class LoggingService {
                 data, null);
     }
 
-    /** Log API requests */
     public void logApiRequest(String endpoint, String method, String userAgent, String ipAddress, long responseTimeMs,
             int statusCode) {
         Map<String, Object> data = new HashMap<>();
@@ -201,7 +185,6 @@ public class LoggingService {
                 String.format("%s %s - %d (%dms)", method, endpoint, statusCode, responseTimeMs), data, null);
     }
 
-    /** Log database operations */
     public void logDatabaseOperation(String operation, String collection, long executionTimeMs) {
         Map<String, Object> data = new HashMap<>();
         data.put("operation", operation);
@@ -213,7 +196,6 @@ public class LoggingService {
                 String.format("DB %s on %s (%dms)", operation, collection, executionTimeMs), data, null);
     }
 
-    /** Log security events */
     public void logSecurityEvent(String event, String username, String ipAddress, String details) {
         Map<String, Object> data = new HashMap<>();
         data.put("username", username);

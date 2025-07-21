@@ -22,7 +22,6 @@ public class ProfileService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final LoggingService loggingService;
 
     public User updateProfile(String userId, User updatedUser) {
         validateUserId(userId);
@@ -38,8 +37,6 @@ public class ProfileService {
         User user = findUserById(userId);
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            loggingService.logWarn("ProfileService", "updatePassword",
-                    "Password update failed for userId " + userId + ": incorrect old password");
             throw new CustomException(400, String.format(Messages.INVALID_CREDENTIALS));
         }
 
@@ -49,17 +46,14 @@ public class ProfileService {
 
     public void softDeleteUser(String userId) {
         toggleUserFlag(userId, true, false, null);
-        loggingService.logInfo("ProfileService", "softDeleteUser", "User soft-deleted: userId " + userId);
     }
 
     public void deactivateUser(String userId) {
         toggleUserFlag(userId, false, true, LocalDateTime.now());
-        loggingService.logInfo("ProfileService", "deactivateUser", "User deactivated: userId " + userId);
     }
 
     public void activateUser(String userId) {
         toggleUserFlag(userId, false, false, null);
-        loggingService.logInfo("ProfileService", "activateUser", "User reactivated: userId " + userId);
     }
 
     public void blockUser(String blockerId, String targetId) {

@@ -19,14 +19,11 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final AchievementService achievementService;
 
-    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository,
-            AchievementService achievementService) {
+    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository) {
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
-        this.achievementService = achievementService;
     }
 
     public void likePost(String userId, String postId) {
@@ -50,7 +47,6 @@ public class LikeService {
 
         likeRepository.save(userLikes);
         user.setLikeCount(user.getLikeCount() + 1);
-        achievementService.evaluateAchievements(user);
         if (post.getLikedUserIds() == null)
             post.setLikedUserIds(new ArrayList<>());
         post.getLikedUserIds().add(userId);

@@ -1,6 +1,8 @@
 package com.chattr.server.config;
 
+import com.chattr.server.exceptions.CustomException;
 import com.chattr.server.models.User;
+import com.chattr.server.services.LoggingService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.data.mongodb.core.index.IndexOperations;
 public class MongoIndexConfig {
 
     private final MongoTemplate mongoTemplate;
+    private final LoggingService loggingService;
 
     @PostConstruct
     public void createIndexes() {
@@ -32,7 +35,8 @@ public class MongoIndexConfig {
             indexOps.ensureIndex(new Index().on("lastLoginTime", Sort.Direction.DESC));
 
         } catch (Exception e) {
-            log.error("Failed to create MongoDB indexes", e);
+            loggingService.logError("MongoIndexConfig", "createIndexes", "Failed to create MongoDB indexes", e);
+            throw new CustomException(500, String.valueOf(e));
         }
     }
 }

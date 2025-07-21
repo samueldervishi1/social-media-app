@@ -3,6 +3,8 @@ package com.chattr.server.repositories;
 import com.chattr.server.models.User;
 import java.util.List;
 import java.util.Optional;
+
+import com.mongodb.lang.NonNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -11,7 +13,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     Optional<User> findByUsername(String username);
-    List<User> findByIdIn(List<String> ids);
 
     @Query(value = "{ '_id': ?0 }", fields = "{ 'username': 1 }")
     Optional<User> findUsernameById(String userId);
@@ -25,5 +26,5 @@ public interface UserRepository extends MongoRepository<User, String> {
     @Query(value = "{ '_id': ?0 }", fields = "{ 'following': 1 }")
     Optional<User> findFollowingById(String userId);
 
-    boolean existsById(String userId);
+    boolean existsById(@NonNull String userId);
 }

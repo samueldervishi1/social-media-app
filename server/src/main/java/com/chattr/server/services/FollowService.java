@@ -133,7 +133,7 @@ public class FollowService {
         }
 
         request.setStatus(FollowStatus.REJECTED);
-        request.setTimestamp(LocalDateTime.now()); // Optional: update the timestamp to reflect the action time
+        request.setTimestamp(LocalDateTime.now());
 
         followRepository.save(request);
     }
@@ -150,14 +150,12 @@ public class FollowService {
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new CustomException(404, String.format(Messages.RECEIVER_NOT_FOUND, receiverId)));
 
-        // receiver gets a new follower (sender)
         if (receiver.getFollowers() == null)
             receiver.setFollowers(new ArrayList<>());
         if (!receiver.getFollowers().contains(senderId)) {
             receiver.getFollowers().add(senderId);
         }
 
-        // the sender is now following receiver
         if (sender.getFollowing() == null)
             sender.setFollowing(new ArrayList<>());
         if (!sender.getFollowing().contains(receiverId)) {
