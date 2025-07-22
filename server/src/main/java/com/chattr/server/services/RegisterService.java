@@ -15,14 +15,18 @@ public class RegisterService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoggingService loggingService;
 
-    public RegisterService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public RegisterService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            LoggingService loggingService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.loggingService = loggingService;
     }
 
-    public void createUser(User user) {
-        validateUser(user);
+    public void createAccount(User user) {
+        String sessionId = loggingService.getCurrentSessionId();
+        validateAccount(user);
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
@@ -30,10 +34,13 @@ public class RegisterService {
         user.setRole(user.getRole() != null ? user.getRole() : Messages.DEFAULT_ROLE);
         user.setAccountCreationDate(LocalDateTime.now());
 
+        loggingService.logSecurityEvent("REGISTER_ACCOUNT", user.getUsername(), sessionId,
+                String.format("User %s created his account with role %s", null, ""));
+
         userRepository.save(user);
     }
 
-    private void validateUser(User user) {
+    private void validateAccount(User user) {
         if (user == null)
             throw new CustomException(400, String.format(Messages.USER_SHOULD_NOT_BE_NULL));
         validateEmail(user.getEmail());

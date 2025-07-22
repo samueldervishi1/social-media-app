@@ -22,14 +22,39 @@ public class ProfileService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoggingService loggingService;
 
     public User updateProfile(String userId, User updatedUser) {
-        validateUserId(userId);
-        User user = findUserById(userId);
+        String sessionId = loggingService.getCurrentSessionId();
 
-        applyProfileChanges(user, updatedUser);
+        try {
+            validateUserId(userId);
+            User user = findUserById(userId);
 
-        return userRepository.save(user);
+            List<String> changedFields = getChangedFields(user, updatedUser);
+
+            loggingService.logSecurityEvent("PROFILE_UPDATE_ATTEMPT", userId, sessionId,
+                    String.format("User attempting to update profile. Fields: %s", String.join(", ", changedFields)));
+
+            applyProfileChanges(user, updatedUser);
+            User savedUser = userRepository.save(user);
+
+            loggingService.logSecurityEvent("PROFILE_UPDATE_SUCCESS", userId, sessionId, String
+                    .format("Profile updated successfully. Fields changed: %s", String.join(", ", changedFields)));
+
+            return savedUser;
+
+        } catch (CustomException e) {
+            loggingService.logSecurityEvent("PROFILE_UPDATE_FAILED", userId, sessionId,
+                    String.format("Profile update failed: %s", e.getMessage()));
+            loggingService.logError("UserService", "updateProfile", "Profile update error", e);
+            throw e;
+        } catch (Exception e) {
+            loggingService.logSecurityEvent("PROFILE_UPDATE_ERROR", userId, sessionId,
+                    String.format("System error during profile update: %s", e.getMessage()));
+            loggingService.logError("UserService", "updateProfile", "Unexpected error during profile update", e);
+            throw new CustomException(500, "Failed to update profile");
+        }
     }
 
     public void updatePassword(String userId, String oldPassword, String newPassword) {
@@ -168,5 +193,24 @@ public class ProfileService {
         if (userId == null || userId.isBlank()) {
             throw new IllegalArgumentException(Messages.USER_ID_ERROR);
         }
+    }
+
+    private List<String> getChangedFields(User original, User updated) {
+        List<String> changes = new ArrayList<>();
+
+        if (updated.getUsername() != null && !Objects.equals(original.getUsername(), updated.getUsername())) {
+            changes.add("username");
+        }
+        if (updated.getEmail() != null && !Objects.equals(original.getEmail(), updated.getEmail())) {
+            changes.add("email");
+        }
+        if (updated.getFullName() != null && !Objects.equals(original.getFullName(), updated.getFullName())) {
+            changes.add("fullName");
+        }
+        if (updated.getBio() != null && !Objects.equals(original.getBio(), updated.getBio())) {
+            changes.add("bio");
+        }
+
+        return changes;
     }
 }

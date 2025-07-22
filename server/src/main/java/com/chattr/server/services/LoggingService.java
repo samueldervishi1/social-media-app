@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,16 +32,8 @@ public class LoggingService {
         logEvent("INFO", service, method, message, null, null);
     }
 
-    public void logInfo(String service, String method, String message, Object data) {
-        logEvent("INFO", service, method, message, data, null);
-    }
-
     public void logWarn(String service, String method, String message) {
         logEvent("WARN", service, method, message, null, null);
-    }
-
-    public void logWarn(String service, String method, String message, Object data) {
-        logEvent("WARN", service, method, message, data, null);
     }
 
     public void logError(String service, String method, String message, Exception exception) {
@@ -53,10 +46,6 @@ public class LoggingService {
 
     public void logDebug(String service, String method, String message) {
         logEvent("DEBUG", service, method, message, null, null);
-    }
-
-    public void logDebug(String service, String method, String message, Object data) {
-        logEvent("DEBUG", service, method, message, data, null);
     }
 
     public void logExecutionTime(String service, String method, long executionTimeMs) {
@@ -185,24 +174,17 @@ public class LoggingService {
                 String.format("%s %s - %d (%dms)", method, endpoint, statusCode, responseTimeMs), data, null);
     }
 
-    public void logDatabaseOperation(String operation, String collection, long executionTimeMs) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("operation", operation);
-        data.put("collection", collection);
-        data.put("executionTimeMs", executionTimeMs);
-
-        String level = executionTimeMs > 500 ? "WARN" : "INFO";
-        logEvent(level, "Database", operation,
-                String.format("DB %s on %s (%dms)", operation, collection, executionTimeMs), data, null);
-    }
-
-    public void logSecurityEvent(String event, String username, String ipAddress, String details) {
+    public void logSecurityEvent(String event, String username, String sessionId, String details) {
         Map<String, Object> data = new HashMap<>();
         data.put("username", username);
-        data.put("ipAddress", ipAddress);
+        data.put("sessionId", sessionId);
         data.put("details", details);
 
         logEvent("SECURITY", "Security", event, String.format("Security event: %s for user %s", event, username), data,
                 null);
+    }
+
+    public String getCurrentSessionId() {
+        return UUID.randomUUID().toString().substring(0, 12);
     }
 }

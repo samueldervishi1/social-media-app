@@ -38,6 +38,10 @@ public class RateLimitingFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
+        loggingService.logInfo("RateLimitingFilter", "init",
+                String.format("RateLimitingFilter initialized with %d requests per %d minute(s)", defaultLimit,
+                        defaultDurationMinutes));
+
         log.info("RateLimitingFilter initialized: {} requests / {} minute(s)", defaultLimit, defaultDurationMinutes);
     }
 
@@ -63,6 +67,7 @@ public class RateLimitingFilter implements Filter {
                 if (bucket.tryConsume(1)) {
                     chain.doFilter(request, response);
                 } else {
+                    loggingService.logWarn("Rate limit exceeded for client: {} on endpoint: {}", clientKey, requestUri);
                     log.warn("Rate limit exceeded for client: {} on endpoint: {}", clientKey, requestUri);
                     sendRateLimitResponse(httpResponse);
                 }

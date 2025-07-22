@@ -130,7 +130,6 @@ public class AuthController {
 
         try {
             Claims claims = jwtTokenUtil.parseToken(token);
-            String username = claims.getSubject();
 
             UserInfo userInfo = new UserInfo();
             userInfo.setUsername(claims.getSubject());
@@ -180,7 +179,7 @@ public class AuthController {
             user.setFullName(fullName);
             user.setPassword(password);
             user.setIpAddress(ipAddress);
-            registerService.createUser(user);
+            registerService.createAccount(user);
 
             return ResponseEntity
                     .ok(createResponse("200", Messages.REGISTER_SUCCESS, Messages.REGISTER_SUCCESS, "success"));

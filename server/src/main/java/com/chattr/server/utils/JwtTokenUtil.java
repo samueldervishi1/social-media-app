@@ -52,16 +52,19 @@ public class JwtTokenUtil {
 
     private void warmUpJWT() {
         try {
+            loggingService.logInfo("JWTTokenUtil", "warmUpJWT", "Starting JWT warmup process");
+
             long now = System.currentTimeMillis();
 
             String warmupToken = Jwts.builder().subject("warmup").claim("test", "value").issuedAt(new Date(now))
-                    .expiration(new Date(now + 1000)).signWith(secretKey)
-
-                    .compact();
+                    .expiration(new Date(now + 1000)).signWith(secretKey).compact();
 
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(warmupToken);
+
+            loggingService.logInfo("JWTTokenUtil", "warmUpJWT", "JWT warmup completed successfully");
+
         } catch (Exception e) {
-            loggingService.logError("JWT TOKEN UTIL", "warmUpJWT", "Something went wrong while warming up jw token", e);
+            loggingService.logError("JWTTokenUtil", "warmUpJWT", "JWT warmup failed", e);
             log.warn("JWT warmup failed: {}", e.getMessage());
         }
     }

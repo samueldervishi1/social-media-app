@@ -23,17 +23,41 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final LoggingService loggingService;
 
     @Transactional
     public void createPost(String username, Post post) {
-        User user = getUserByUsername(username);
-        enrichPostWithMetadata(post, user);
+        String sessionId = loggingService.getCurrentSessionId();
 
-        user.setPostCount(user.getPostCount() + 1);
-        user.setKarma(user.getKarma() + 10);
+        try {
+            User user = getUserByUsername(username);
 
-        userRepository.save(user);
-        postRepository.save(post);
+            loggingService.logSecurityEvent("POST_CREATE_ATTEMPT", user.getId(), sessionId,
+                    String.format("User %s attempting to create post with content length: %d chars", username,
+                            post.getContent() != null ? post.getContent().length() : 0));
+
+            enrichPostWithMetadata(post, user);
+
+            user.setPostCount(user.getPostCount() + 1);
+            user.setKarma(user.getKarma() + 10);
+
+            postRepository.save(post);
+            userRepository.save(user);
+
+            loggingService.logSecurityEvent("POST_CREATE_SUCCESS", user.getId(), sessionId, String
+                    .format("User %s successfully created post. New post count: %d", username, user.getPostCount()));
+
+        } catch (CustomException e) {
+            loggingService.logSecurityEvent("POST_CREATE_FAILED", username, sessionId,
+                    String.format("Post creation failed for user %s: %s", username, e.getMessage()));
+            loggingService.logError("PostService", "createPost", "Post creation error", e);
+            throw e;
+        } catch (Exception e) {
+            loggingService.logSecurityEvent("POST_CREATE_ERROR", username, sessionId,
+                    String.format("System error during post creation for user %s", username));
+            loggingService.logError("PostService", "createPost", "Unexpected error during post creation", e);
+            throw new CustomException(500, "Failed to create post");
+        }
     }
 
     private void enrichPostWithMetadata(Post post, User user) {
